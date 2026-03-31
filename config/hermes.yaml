@@ -1,0 +1,26 @@
+# Hermes runtime config for Vizier Pro-Max
+model:
+  provider: "custom"
+  default: "gpt-5.4-mini"
+  base_url: "https://api.openai.com/v1"
+
+fallback_model:
+  provider: "custom"
+  model: "gpt-5.4-mini"
+  base_url: "https://api.openai.com/v1"
+
+agent:
+  max_turns: 90
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+
+compression:
+  enabled: true
+  threshold: 0.50
+
+telegram:
+  require_mention: false
+  mention_patterns:
+    - '^vizier\b'
