@@ -3,8 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from adapter.schemas import ManifestConfig, manifest_to_openai_schema, parse_manifest
-
+from adapter.schemas import manifest_to_openai_schema, parse_manifest
 
 VALID_MANIFEST_YAML = """
 name: typst_render

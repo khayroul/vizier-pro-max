@@ -1,13 +1,12 @@
 """Tests for prompt logger lifecycle hooks."""
 from __future__ import annotations
 
-import json
 import sqlite3
 from pathlib import Path
 
 import pytest
 
-from plugins.prompt_logger import post_llm_call, pre_llm_call, _ensure_table
+from plugins.prompt_logger import _ensure_table, post_llm_call, pre_llm_call
 
 
 @pytest.fixture()

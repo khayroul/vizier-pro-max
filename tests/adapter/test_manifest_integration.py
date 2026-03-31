@@ -5,7 +5,6 @@ from pathlib import Path
 
 from adapter.loader import load_all_manifests
 
-
 MANIFESTS_DIR = Path(__file__).parent.parent.parent / "manifests"
 
 

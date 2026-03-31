@@ -1,9 +1,7 @@
 """Tests for quality gate middleware layers 1-2."""
 from __future__ import annotations
 
-import pytest
-
-from middleware.quality_gate import validate_input, validate_output, ValidationResult
+from middleware.quality_gate import validate_input, validate_output
 
 
 class TestValidateInput:

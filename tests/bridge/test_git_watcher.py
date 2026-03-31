@@ -4,12 +4,8 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-import pytest
-
 from bridge.git_watcher import (
     detect_new_commits,
-    extract_changes,
-    format_memory_entry,
     update_memory_md,
 )
 

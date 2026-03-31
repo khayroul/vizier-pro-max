@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.run_pipeline import run_pipeline, load_pipeline_registry
+from tools.run_pipeline import load_pipeline_registry, run_pipeline
 
 
 @pytest.fixture()
