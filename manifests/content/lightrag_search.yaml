@@ -1,0 +1,25 @@
+name: lightrag_search
+description: "Search the Wisdom Vault via LightRAG"
+version: "1.0"
+toolset: vizier-core
+
+execution:
+  type: python_script
+  path: scripts/content/search_rag.py
+  entrypoint: search
+  timeout: 15
+
+input:
+  query:
+    type: string
+    required: true
+    description: "Search query"
+  mode:
+    type: string
+    required: false
+    description: "Search mode: naive, local, global, hybrid (default: hybrid)"
+
+output:
+  results:
+    type: string
+    description: "Retrieved context from Wisdom Vault"

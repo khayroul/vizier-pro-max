@@ -1,0 +1,24 @@
+name: jinja2_render
+description: "Render a Jinja2 template with provided variables"
+version: "1.0"
+toolset: vizier-content
+
+execution:
+  type: python_script
+  path: scripts/content/render_template.py
+  entrypoint: render
+  timeout: 10
+
+input:
+  template_string:
+    type: string
+    required: true
+    description: "Jinja2 template string"
+  variables:
+    type: object
+    required: true
+    description: "Variables to inject into template"
+
+output:
+  rendered:
+    type: string

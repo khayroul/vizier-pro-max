@@ -1,0 +1,24 @@
+name: typst_render
+description: "Compile Typst markup into PDF"
+version: "1.0"
+toolset: vizier-document
+
+execution:
+  type: cli
+  command: "typst compile {input_path} {output_path}"
+  timeout: 30
+
+input:
+  input_path:
+    type: string
+    required: true
+    description: "Path to .typ source file"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output PDF"
+
+output:
+  file_path:
+    type: string
+    description: "Path to generated PDF"

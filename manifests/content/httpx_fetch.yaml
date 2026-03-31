@@ -1,0 +1,26 @@
+name: httpx_fetch
+description: "Fetch a URL and return response body"
+version: "1.0"
+toolset: vizier-core
+
+execution:
+  type: python_script
+  path: scripts/content/fetch_url.py
+  entrypoint: fetch
+  timeout: 15
+
+input:
+  url:
+    type: string
+    required: true
+    description: "URL to fetch"
+  method:
+    type: string
+    required: false
+    description: "HTTP method (default: GET)"
+
+output:
+  status_code:
+    type: integer
+  body:
+    type: string
