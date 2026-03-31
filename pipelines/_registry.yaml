@@ -1,0 +1,26 @@
+# pipelines/_registry.yaml
+# Pipeline index — consumed by tools/run_pipeline.py
+
+pipelines:
+  - name: content_generate
+    description: "Brief -> RAG retrieval -> content generation -> PDF render -> delivery-ready"
+    input:
+      brief:
+        type: string
+        required: true
+        description: "Content brief describing what to produce"
+      client_id:
+        type: string
+        required: false
+        description: "Client ID for brand context"
+      output_format:
+        type: string
+        required: false
+        description: "Output format: 'pdf', 'markdown', 'html' (default: markdown)"
+    output:
+      content:
+        type: string
+        description: "Generated content"
+      pdf_path:
+        type: string
+        description: "Path to rendered PDF (if output_format=pdf)"
