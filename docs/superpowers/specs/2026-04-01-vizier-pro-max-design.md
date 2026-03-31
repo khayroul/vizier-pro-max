@@ -2,9 +2,10 @@
 
 **Date:** 2026-04-01
 **Author:** Khairul / Premier Marketing
-**Status:** Draft — pending review
+**Status:** Draft v2 — post-review fixes applied
 **Repo:** ~/vizier-pro-max/ (clean slate)
 **Fallback:** ~/vizier-ultimate/ (Gate 2, Hermes v0.6.0)
+**Hermes version:** v0.6.0 at ~/hermes-agent/
 
 ---
 
@@ -18,16 +19,80 @@
 ### Core Principles
 
 1. **Hermes is the sole runtime.** No competing runtimes. No LangGraph, no CrewAI, no OpenAI Agents SDK as runtime. Patterns extracted, runtimes rejected.
-2. **Superagent model.** ONE Hermes agent with workflow-scoped toolset loading. No named agent roles.
+2. **Superagent model.** ONE Hermes agent with workflow-scoped toolset loading. No named agent roles. Complex tasks use Hermes's native `delegate_task` for sub-agents (not custom spawning).
 3. **Scripts as hands.** Stable Python libraries/CLIs are the tool layer. The model never touches raw APIs — scripts encapsulate all execution.
 4. **Collapse what repeats.** Deterministic sequences become collapsed pipelines behind `run_pipeline`. Atomic tools exist as fallback. `execute_code` for improvisation. OpenSpace captures new patterns automatically.
-5. **Toolsets control token cost.** Tools are grouped into named toolsets. Only the relevant toolset loads per task. `switch_toolset` enables mid-session changes.
+5. **Toolsets control token cost.** Tools are grouped into named toolsets. Only the relevant toolset loads per task. Gate 1: toolset set at session start. Gate 2: `switch_toolset` enables mid-session changes (requires Hermes patch).
 6. **Bridge connects inside and outside.** Claude Code builds on the outside, the bridge informs Vizier on the inside. Bidirectional awareness.
 7. **Gate-by-gate revenue rule.** Each gate must produce billable output before the next unlocks.
 
 ---
 
-## 2. Repository Structure
+## 2. Session Model
+
+Vizier operates across three session types. Each has distinct toolset, trigger, and supervision characteristics.
+
+### 2.1 Interactive Sessions (Gate 1+)
+
+**Trigger:** Human prompt via Telegram, WhatsApp, dashboard chat, API call.
+**Toolset:** Set at session start based on task classification. Gate 2+: switchable mid-session.
+**Supervision:** Human in the loop. Vizier asks for clarification when needed.
+**Concurrency:** One session per channel. Sequential.
+
+### 2.2 Parallel Sessions (Gate 2+)
+
+**Trigger:** Complex task decomposed via Hermes `delegate_task`. Parent spawns 2-3 child sessions.
+**Toolset:** Each child gets its own toolset at spawn time (scoped by the parent).
+**Supervision:** Parent agent synthesizes results. No human in the loop during execution.
+**Concurrency:** Up to 3 parallel children per parent. Each child runs in isolated context with its own tool surface.
+
+**How it works with Hermes:** `delegate_task` is a built-in Hermes tool that creates a scoped sub-conversation. Each sub-conversation gets its own `enabled_toolsets` at init. The parent receives structured results when children complete.
+
+**Example:**
+```
+Parent receives: "Produce campaign for DMB: research + copy + poster + PDF"
+  -> delegate_task("research brief for DMB", toolsets=["vizier-research", "vizier-core"])
+  -> delegate_task("generate 3 ad copies for DMB", toolsets=["vizier-content", "vizier-core"])
+  -> delegate_task("design poster for DMB campaign", toolsets=["vizier-visual", "vizier-core"])
+  -> Parent waits for all 3 -> synthesizes into campaign package
+  -> run_pipeline("report") to compile PDF
+  -> send_telegram to deliver
+```
+
+### 2.3 Unattended Sessions (Gate 2+)
+
+**Trigger:** Hermes cron, event-driven (Islamic calendar, client milestones), data-driven (file upload).
+**Toolset:** Predefined per scheduled task in cron config. Fixed for the session.
+**Supervision:** Zero human input. Quality gate is the only checkpoint. If quality score < threshold, output is held for human review instead of delivered.
+**Concurrency:** Multiple unattended sessions can run simultaneously via Hermes cron scheduler.
+
+**Safety constraints for unattended:**
+- Only modules with test_parser confidence "high" or "medium" are eligible
+- Quality gate must pass all active layers (no override)
+- Token budget cap per unattended session (prevent runaway costs)
+- Delivery held if quality score < configurable threshold (default: 7/10)
+- Structlog captures full trace for post-mortem review
+
+**Scheduled task types:**
+| Type | Trigger | Example |
+|------|---------|---------|
+| Content calendar | Hermes cron (daily/weekly) | Generate scheduled social posts per client |
+| Quality review | Hermes cron (weekly) | Audit last week's output scores, flag regressions |
+| Health check | Hermes cron (daily) | System status, token usage, error rates |
+| Event-driven | Islamic calendar (adhan-python) | Ramadan content, Eid campaigns, Friday posts |
+| Client milestone | Campaign deadline, product launch | Auto-generate deliverables before due date |
+| Data-driven | CSV/file upload via API | Batch poster production from product data |
+
+**Gate mapping for session types:**
+| Session type | Gate 1 | Gate 2 | Gate 3 | Gate 4 |
+|-------------|--------|--------|--------|--------|
+| Interactive | Human prompts only | + Telegram/WhatsApp channels | + code workflow | Full |
+| Parallel | Not available | delegate_task with scoped toolsets | + pattern-driven | + observation-driven |
+| Unattended | Not available | Scheduled + event-driven cron | + data-driven triggers | + research-driven, self-evolving |
+
+---
+
+## 3. Repository Structure
 
 ```
 ~/vizier-pro-max/
@@ -36,12 +101,12 @@
 │   ├── git_watcher.py        # Commits -> Hermes MEMORY.md
 │   ├── skill_syncer.py       # Bi-directional skill flow (repo <-> ~/.hermes/skills/)
 │   ├── test_parser.py        # Module confidence registry
-│   └── manifest_syncer.py    # New manifests -> auto-register in Hermes
+│   └── manifest_syncer.py    # New manifests -> updates registry (next session picks up)
 │
 ├── adapter/                  # Universal manifest -> Hermes tool engine
-│   ├── loader.py             # Reads manifests -> registers Hermes tools into toolsets
+│   ├── loader.py             # Reads manifests -> calls tools.registry.register() with OpenAI-format schemas
 │   ├── executor.py           # Runs scripts with validation + error handling
-│   └── schemas.py            # Manifest schema, base types
+│   └── schemas.py            # Manifest schema, base types, YAML -> OpenAI tool dict conversion
 │
 ├── manifests/                # YAML tool definitions (atomic tools, ~70% of tools)
 │   ├── content/
@@ -51,11 +116,10 @@
 │   ├── audio/
 │   └── code/
 │
-├── tools/                    # Custom PydanticAI wrappers (complex tools only)
-│   ├── switch_toolset.py     # Meta: change active toolset mid-session
-│   ├── run_pipeline.py       # Meta: execute collapsed pipelines by name
-│   ├── execute_code.py       # Meta: sandboxed Python execution (improvisation)
-│   └── prompt_logger.py      # Meta: full chain visibility
+├── tools/                    # Custom Hermes tool handlers (complex tools only)
+│   ├── run_pipeline.py       # Execute collapsed pipelines by name or list them
+│   ├── execute_code.py       # Sandboxed Python execution (improvisation)
+│   └── prompt_logger.py      # Full chain visibility (Hermes lifecycle hooks)
 │
 ├── pipelines/                # Collapsed pipeline scripts
 │   ├── _registry.yaml        # Pipeline index (name, description, input/output schema)
@@ -69,8 +133,8 @@
 │
 ├── augments/                 # Absorbed agentic components (nervous system)
 │   ├── openspace/            # Skill evolution (CAPTURED/FIXED/DERIVED)
-│   │   ├── capturer.py       # Successful patterns -> SKILL.md
-│   │   ├── fixer.py          # Auto-repair broken skills from error logs
+│   │   ├── capturer.py       # Successful patterns -> SKILL.md + pipeline drafts
+│   │   ├── fixer.py          # Auto-repair broken skills/pipelines from error logs
 │   │   ├── deriver.py        # Promote better variants
 │   │   ├── version_dag.py    # Skill lineage tracking
 │   │   ├── safety.py         # check_skill_safety before load
@@ -79,25 +143,16 @@
 │   │   ├── consolidator.py   # DECIDE -> GATHER -> CONSOLIDATE -> PRUNE
 │   │   ├── signals.py        # Signal extraction from structlog traces
 │   │   └── pruner.py         # MEMORY.md size management
-│   └── deerflow/             # Sub-agent spawning patterns
-│       ├── spawner.py        # Scoped sub-agent creation
-│       ├── parallel.py       # Concurrent execution + result synthesis
-│       └── shared_memory.py  # Debounced async queue
-│
-├── workflows/                # TOML workflow definitions
-│   ├── content.toml
-│   ├── document.toml
-│   ├── visual.toml
-│   ├── research.toml
-│   ├── code.toml
-│   ├── knowledge.toml
-│   └── audio.toml
+│   └── deerflow/             # Sub-agent coordination patterns (for delegate_task)
+│       ├── task_decomposer.py  # Complex task -> parallel sub-task specs
+│       ├── result_synthesizer.py # Merge sub-agent outputs into final deliverable
+│       └── shared_memory.py  # Debounced async queue for cross-agent observations
 │
 ├── middleware/                # Cross-cutting concerns (not model-callable tools)
-│   └── quality_gate.py       # 6-layer QA on every workflow output
+│   └── quality_gate.py       # 6-layer QA — called by pipeline scripts and adapter/executor.py
 │
 ├── scripts/                  # The actual hands (stable executables)
-│   ├── content/              # Cherry-picked + new scripts
+│   ├── content/
 │   ├── document/
 │   ├── visual/
 │   ├── research/
@@ -108,7 +163,11 @@
 │   ├── clients/              # Per-client YAML ({client_id})
 │   ├── hermes.yaml           # Hermes runtime config
 │   ├── models.yaml           # Model routing (GPT-5.4-mini + Qwen local)
-│   └── SOUL.md               # Vizier persona, voice, tool-layer priority rules
+│   ├── SOUL.md               # Vizier persona, voice, tool-layer priority rules
+│   └── cron/                 # Unattended session definitions (Gate 2+)
+│       ├── content_calendar.yaml
+│       ├── quality_review.yaml
+│       └── health_check.yaml
 │
 ├── tests/
 ├── docs/
@@ -116,71 +175,70 @@
 └── CLAUDE.md
 ```
 
+### Key design decisions (post-review)
+
+- **No PydanticAI in the tool registration layer.** Hermes uses `tools.registry.register()` with OpenAI-format tool dicts. The adapter generates these directly from YAML manifests. PydanticAI is used only inside scripts for input validation — not for tool registration.
+- **No TOML workflow files in Gate 1.** Workflow definitions are documentation, not runtime config. Hermes doesn't consume TOML natively. Workflows are implicit in toolset groupings and pipeline definitions.
+- **Quality gate wiring:** Pipeline scripts call `middleware.quality_gate.validate()` directly. The adapter's `executor.py` calls it after every atomic tool execution. Not magic — explicit function calls.
+- **`manifest_syncer` updates the registry file, not the running session.** New tools are available on next session start, not mid-session. This is honest about Hermes's session init model.
+
 ---
 
-## 3. Tool Architecture: Three Layers
+## 4. Tool Architecture: Three Layers
 
-### 3.1 Layer 1 — Collapsed Pipelines (Cheapest)
+### 4.1 Layer 1 — Collapsed Pipelines (Cheapest)
 
 Deterministic sequences wrapped as single scripts. Registered in `pipelines/_registry.yaml`, executed via `run_pipeline` tool.
 
-**Token cost:** 1 LLM turn per pipeline execution. The `run_pipeline` tool schema is ~1.5KB regardless of how many pipelines exist.
-
-**Pipeline registry injected into system prompt** as a summary (~500 tokens for 20 pipelines):
-```
-Available pipelines: invoice (brief->PDF->deliver), report (data->typst->PDF),
-content_generate (brief->RAG->copy), poster_batch (template+CSV->images), ...
-```
+**Token cost per turn:** `run_pipeline` tool schema ~1.5KB + pipeline registry summary in system prompt ~2KB = **~3.5KB baseline** regardless of pipeline count.
 
 **`run_pipeline` has a `list` mode:** When model is uncertain, it calls `run_pipeline(action="list")` to get full pipeline schemas. Costs one turn but only when needed.
 
-### 3.2 Layer 2 — Atomic Tools (Moderate)
+### 4.2 Layer 2 — Atomic Tools (Moderate)
 
 Individual library/CLI wrappers registered via YAML manifests. Loaded per toolset. Used when:
 - No pipeline covers the task
 - Pipeline failed and model needs manual control
-- Steps require model reasoning between them (e.g., RAG retrieval -> decide what to generate)
+- Steps require model reasoning between them
 
-### 3.3 Layer 3 — Improvisation (Expensive, Creative)
+### 4.3 Layer 3 — Improvisation (Expensive, Creative)
 
-`execute_code` tool runs arbitrary Python in a sandboxed subprocess. Used when:
-- No pipeline or atomic tool combination fits
-- Novel task requiring new composition
-- One-off operations
+`execute_code` tool runs Python in a sandboxed subprocess. **Note:** Hermes already has a built-in `execute_code` tool with Unix domain socket RPC. Pro-Max extends it with additional sandbox constraints rather than replacing it.
 
-**Sandbox constraints:**
+**Additional sandbox constraints (on top of Hermes built-in):**
 - Allowlisted imports only (libraries in the tool stack)
 - Write access restricted to `output/` and `tmp/`
 - Network access only to configured endpoints
 - Timeout: 30s default (configurable)
 
-### 3.4 Priority Rule (in SOUL.md)
+### 4.4 Priority Rule (in SOUL.md)
 
 ```
 When executing a task:
 1. FIRST: Try run_pipeline. If a pipeline exists for this task, use it.
 2. IF NO PIPELINE: Use atomic tools from your active toolset.
-3. IF TOOLSET INSUFFICIENT: Call switch_toolset to load the right one.
-4. IF ATOMIC TOOLS INSUFFICIENT: Use execute_code to compose a solution.
-5. NEVER skip layers. Always try the cheaper option first.
+3. IF ATOMIC TOOLS INSUFFICIENT: Use execute_code to compose a solution.
+4. NEVER skip layers. Always try the cheaper option first.
 ```
 
-### 3.5 The Capture Loop (OpenSpace Integration)
+(Gate 1 has no `switch_toolset` — toolset is set at session start. Gate 2 adds mid-session switching.)
+
+### 4.5 The Capture Loop (OpenSpace Integration, Gate 2+)
 
 ```
 Novel task -> no pipeline exists
   -> Model uses atomic tools (4-5 calls)
   -> Prompt logger records full chain
-  -> Same pattern repeats 5+ times (configurable threshold)
+  -> Same pattern repeats 5+ times (configurable, default 5)
   -> OpenSpace CAPTURED generates pipeline script -> pipelines/_drafts/
   -> Quality gate validates draft pipeline
-  -> Bridge: manifest_syncer promotes to pipelines/ + updates _registry.yaml
-  -> Next occurrence: 1 call instead of 4-5
+  -> Bridge: manifest_syncer updates _registry.yaml
+  -> Next session: run_pipeline handles it in 1 call instead of 4-5
 
 Pipeline breaks -> run_pipeline returns error
   -> Model falls back to atomic tools (graceful degradation)
   -> OpenSpace FIXED detects failure -> patches pipeline script
-  -> Next occurrence: patched pipeline works
+  -> Next session: patched pipeline works
 
 Pipeline doesn't quite fit -> model mixes pipeline + atomic tools
   -> Variant repeats -> OpenSpace captures as new pipeline variant
@@ -188,18 +246,19 @@ Pipeline doesn't quite fit -> model mixes pipeline + atomic tools
 
 ---
 
-## 4. Toolset Map
+## 5. Toolset Map
 
-### 4.1 vizier-core (always loaded, 4 tools)
+### 5.1 vizier-core (always loaded, 3 tools)
 
 | Tool | Type | Purpose |
 |------|------|---------|
-| `switch_toolset` | custom wrapper | Change active toolset mid-session |
-| `run_pipeline` | custom wrapper | Execute collapsed pipelines by name or list them |
-| `execute_code` | custom wrapper | Sandboxed Python execution (improvisation) |
-| `prompt_logger` | custom wrapper | Full chain visibility, query execution logs |
+| `run_pipeline` | custom handler | Execute collapsed pipelines by name or list them |
+| `execute_code` | extended built-in | Sandboxed Python execution (improvisation) |
+| `prompt_logger` | Hermes lifecycle hook | Full chain visibility, query execution logs |
 
-### 4.2 Workflow Toolsets (loaded per task)
+Note: `switch_toolset` is **Gate 2** (requires Hermes patch to mutate `self.tools` mid-session). Gate 1 sets toolset at session init only.
+
+### 5.2 Workflow Toolsets (loaded per task)
 
 **vizier-content (3 atomic tools):**
 | Tool | Library | Purpose |
@@ -270,32 +329,32 @@ No collapsed pipelines — destination/message always varies.
 
 **Collapsed pipelines:** `knowledge_query`, `wisdom_vault_search`
 
-**vizier-fallback (all atomic tools combined):**
+**vizier-fallback (all atomic tools combined, ~22 tools):**
 
-Loaded ONLY when a pipeline fails and atomic tools in the current toolset are insufficient. Contains all atomic tools from all workflows. ~22 tools, ~44KB — expensive but recoverable.
+Loaded ONLY on explicit request when current toolset is insufficient and no pipeline fits. Contains all atomic tools from all workflows. Expensive (~44KB) but available as last resort before `execute_code`.
 
-### 4.3 Token Cost Summary
+### 5.3 Token Cost Summary
 
-| Scenario | Tools in context | Approx schema cost |
-|----------|-----------------|-------------------|
-| Single workflow | core (4) + workflow (2-3) | 6-7 tools, ~12-14KB |
-| Complex task (2 workflows) | core (4) + 2 workflows (4-6) | 8-10 tools, ~16-20KB |
-| Pipeline failure + fallback | core (4) + fallback (22) | 26 tools, ~52KB |
+| Scenario | Tools in context | Approx cost (schemas + system prompt) |
+|----------|-----------------|--------------------------------------|
+| Single workflow | core (3) + workflow (2-3) + pipeline summary | ~14-18KB total |
+| Complex task (parallel sub-agents) | Each child: core (3) + its workflow (2-3) | ~14-18KB per child |
+| Pipeline failure + fallback | core (3) + fallback (22) + pipeline summary | ~54KB total |
 
-Compare: v6.2 architecture = 47 tools all loaded = ~94KB per turn.
+Compare: v6.2 architecture = 47 tools all loaded = ~94KB+ per turn.
 
 ---
 
-## 5. Manifest Format
+## 6. Manifest Format
 
-A YAML file that turns any script/CLI into a Hermes tool with zero wrapper code.
+A YAML file that turns any script/CLI into a Hermes tool with zero handler code.
 
 ```yaml
 # manifests/document/typst_render.yaml
 name: typst_render
 description: "Compile Typst markup into PDF"
 version: "1.0"
-workflow: document                    # -> registers into vizier-document toolset
+toolset: vizier-document             # registers into this Hermes toolset
 
 execution:
   type: cli                           # or "python_script", "python_function"
@@ -322,182 +381,145 @@ retry:
   on: [timeout, runtime_error]
 ```
 
-**Execution types:**
-- `cli` — subprocess call, args interpolated from input
-- `python_script` — imports and calls `entrypoint` function from `path`
-- `python_function` — direct function call (for tools already importable)
+### Adapter -> Hermes Integration (resolves review C3)
 
-**The adapter** (`adapter/loader.py`) reads all manifests on startup, generates Pydantic models for each input/output schema, and registers them as Hermes tools in the appropriate toolset.
+`adapter/loader.py` converts each manifest YAML into an OpenAI-format tool dict and calls Hermes's `tools.registry.register()`:
+
+```python
+# Pseudocode for adapter/loader.py
+from tools.registry import registry
+
+def register_manifest(manifest: dict) -> None:
+    """Convert YAML manifest to Hermes tool registration."""
+    tool_schema = {
+        "type": "object",
+        "properties": {
+            name: {"type": prop["type"], "description": prop.get("description", "")}
+            for name, prop in manifest["input"].items()
+        },
+        "required": [n for n, p in manifest["input"].items() if p.get("required")],
+    }
+
+    registry.register(
+        name=manifest["name"],
+        toolset=manifest["toolset"],           # e.g., "vizier-document"
+        schema=tool_schema,
+        handler=lambda args: executor.run(manifest, args),
+        check_fn=lambda: True,                  # or check for CLI availability
+        description=manifest["description"],
+    )
+```
+
+No PydanticAI in this path. Pydantic (not PydanticAI) validates manifest YAML structure. PydanticAI is used only inside pipeline/script code for structured LLM output validation.
 
 ---
 
-## 6. Bridge (Claude Code <-> Vizier Awareness)
+## 7. Bridge (Claude Code <-> Vizier Awareness)
 
-### 6.1 git_watcher.py
+### 7.1 git_watcher.py
 
-Detects commits by Claude Code (or human), extracts file/function/class changes from git diff, writes structured entries to Hermes MEMORY.md. Skips commits by "aider" and "hermes" authors.
+Cherry-picked from vizier-ultimate (`vizier/adapter/git_watcher.py`, 373 lines, proven). Detects commits, extracts file/function/class changes, writes to Hermes MEMORY.md.
 
 **Trigger:** Post-commit git hook + launchd cron (5-min fallback).
 
-Cherry-picked from vizier-ultimate (`vizier/adapter/git_watcher.py`, 373 lines, proven).
+### 7.2 skill_syncer.py
 
-### 6.2 skill_syncer.py
+Cherry-picked from vizier-ultimate (94 lines, proven). Bi-directional sync. Newer mtime wins on conflict.
 
-Bi-directional sync between repo skills and `~/.hermes/skills/vizier/`.
-- Repo -> Hermes: newer mtime wins (Claude Code writes skill, Hermes picks it up)
-- Hermes -> Repo: only new skills (Hermes auto-creates skill, it appears in git)
+### 7.3 test_parser.py
 
-Cherry-picked from vizier-ultimate (`vizier/adapter/skill_syncer.py`, 94 lines, proven).
+Cherry-picked from vizier-ultimate (119 lines, proven). Module confidence classification for unattended session eligibility.
 
-### 6.3 test_parser.py
+### 7.4 manifest_syncer.py (NEW)
 
-Maps source modules to test files. Classifies confidence: high/medium/low/none. Modules with "none" excluded from autonomous overnight runs.
+Watches `manifests/` and `pipelines/` directories. When new files appear:
+1. Validates YAML against manifest schema
+2. Updates `pipelines/_registry.yaml` if new pipeline
+3. Logs to Hermes MEMORY.md: "New tool available: {name}. Restart session to use."
 
-Cherry-picked from vizier-ultimate (`vizier/adapter/test_parser.py`, 119 lines, proven).
+**Honest behavior:** New tools available on next session start, not mid-session. Hermes rebuilds its tool surface at init.
 
-### 6.4 manifest_syncer.py (NEW)
+**Error handling:** Invalid manifests logged and skipped (not crash). Merge conflicts in skill_syncer detected and flagged for human resolution. Large git diffs (50+ files) summarized, not listed individually.
 
-Watches `manifests/` and `pipelines/` directories. When a new YAML or pipeline script appears:
-1. Validates against manifest schema
-2. Triggers `adapter/loader.py` to hot-register the new tool
-3. Updates `pipelines/_registry.yaml` if it's a new pipeline
-4. Logs the addition to Hermes MEMORY.md
+### 7.5 watcher.py (Entry Point)
 
-**Effect:** Claude Code creates a manifest file, Vizier gains a new tool immediately.
-
-### 6.5 watcher.py (Entry Point)
-
-Single entry point that runs all bridge components. Called by:
-- Post-commit git hook (immediate)
-- Launchd plist (5-min cron fallback)
-
-```python
-def run():
-    git_watcher.run(repo_path)
-    skill_syncer.sync_both(repo_skills, hermes_skills)
-    test_parser.update_confidence(repo_path)
-    manifest_syncer.check_and_register(manifests_dir, pipelines_dir)
-```
+Runs all bridge components. Called by post-commit hook + launchd cron.
 
 ---
 
-## 7. Augments (Nervous System)
+## 8. Augments (Nervous System)
 
-### 7.1 OpenSpace — Skill Evolution
+### 8.1 OpenSpace — Skill Evolution (Gate 2+)
 
-Ported from HKUDS/OpenSpace. Three evolution modes as Hermes plugins.
+Three evolution modes ported from HKUDS/OpenSpace as Hermes plugins.
 
-**CAPTURED:** After workflow succeeds, distill execution pattern into SKILL.md. Also detects repeating atomic tool chains (5+ occurrences, configurable) and generates collapsed pipeline drafts in `pipelines/_drafts/`.
+**CAPTURED:** Distill successful patterns into SKILL.md. Detect repeating atomic tool chains (threshold: 5 occurrences, configurable in `config/openspace.yaml`) and generate collapsed pipeline drafts.
 
-**FIXED:** When a skill or pipeline breaks, auto-analyze error log, generate repair patch, verify fix, create new version. No human intervention.
+**FIXED:** Auto-repair broken skills/pipelines from error logs. Create new version, archive broken version.
 
-**DERIVED:** When a better pattern detected (higher quality score, fewer tokens), promote as new version. Old version archived, not deleted.
+**DERIVED:** Promote better variants (higher quality score, fewer tokens). Version DAG tracks lineage.
 
-**Pruner:** Periodically reviews skill usage frequency. Skills not invoked in N sessions moved to `~/.hermes/skills/_archived/` — excluded from index scan but recoverable.
+**Pruner:** Skills not invoked in N sessions -> `~/.hermes/skills/_archived/`. Recoverable but excluded from index scan.
 
-**Gate mapping:**
-- Gate 2: OpenSpace as MCP server alongside Hermes
-- Gate 4: Embedded directly into Hermes plugins
+### 8.2 Dream-Skill — Memory Consolidation (Gate 2+)
 
-### 7.2 Dream-Skill — Memory Consolidation
+4-phase model on Qwen 3.5 9B local (zero cost). Triggered on session exit.
 
-Ported from grandamenium/dream-skill. 4-phase model on Qwen 3.5 9B local (zero cost).
+1. **DECIDE** — threshold check (~10ms)
+2. **GATHER SIGNAL** — scan structlog traces
+3. **CONSOLIDATE** — merge into MEMORY.md, resolve contradictions
+4. **PRUNE & INDEX** — keep under 200 lines
 
-1. **DECIDE** — threshold check on session exit (~10ms). Skip if below threshold.
-2. **GATHER SIGNAL** — scan structlog traces for corrections, preferences, decisions, patterns.
-3. **CONSOLIDATE** — merge into Hermes MEMORY.md. Resolve contradictions. Absolute dates. No duplicates.
-4. **PRUNE & INDEX** — keep MEMORY.md under 200 lines. Demote verbose entries to topic files.
+### 8.3 DeerFlow — Sub-Agent Coordination (Gate 2+)
 
-Consolidates both Vizier's own learnings AND Claude Code commits (via bridge/git_watcher). Single unified memory.
+Patterns applied to Hermes's native `delegate_task` (NOT a custom runtime):
 
-### 7.3 DeerFlow — Sub-Agent Spawning
-
-Ported from ByteDance/deer-flow (patterns only, not LangGraph runtime).
-
-**Scoped spawning:** Lead agent spawns sub-agent with scoped context, scoped toolset, and termination conditions (timeout, quality threshold, max iterations).
-
-**Parallel execution:** 2-3 sub-agents run concurrently. Each gets its own toolset via `switch_toolset`. Parent synthesizes results.
-
-**Shared memory:** Debounced async queue prevents memory fragmentation from concurrent sub-agent writes.
-
-**When used:** Complex tasks only — "produce a campaign with research + copy + poster + PDF." Simple tasks (single workflow) handled by superagent directly.
+- **task_decomposer.py** — Complex task -> parallel sub-task specs with toolset assignments
+- **result_synthesizer.py** — Merge sub-agent outputs into coherent deliverable
+- **shared_memory.py** — Debounced async queue for cross-agent observations
 
 ---
 
-## 8. Middleware
+## 9. Middleware
 
-### 8.1 Quality Gate
+### 9.1 Quality Gate
 
-6-layer QA that runs after every workflow output. NOT a model-callable tool — it's a pipeline step wired into every workflow.
+6-layer QA. Wiring mechanism: pipeline scripts call `quality_gate.validate()` directly. `adapter/executor.py` calls it after atomic tool execution. Explicit function calls, not magic injection.
 
-| Layer | What it checks | Tools used |
-|-------|---------------|-----------|
-| 1. Input validation | Brief schema, required fields | pydantic |
-| 2. Output verification | Structured output matches expected schema | pydantic |
-| 3. Visual QA | Rendered images match expectations | pixelmatch, imagehash |
-| 4. Content quality | Language, tone, register checks | lingua-py |
-| 5. Delivery verification | Confirm delivery succeeded | httpx status checks |
-| 6. Feedback loop | Quality scores feed into OpenSpace | structlog |
+| Layer | Gate | What it checks |
+|-------|------|---------------|
+| 1. Input validation | 1 | Brief schema, required fields (pydantic) |
+| 2. Output verification | 1 | Structured output matches expected schema (pydantic) |
+| 3. Visual QA | 2 | Rendered images match expectations (pixelmatch, imagehash) |
+| 4. Content quality | 2 | Language, tone, register (lingua-py) |
+| 5. Delivery verification | 2 | Confirm delivery succeeded (httpx status) |
+| 6. Feedback loop | 2 | Quality scores feed into OpenSpace (structlog) |
 
-Gate 1: Layers 1-2 only.
-Gate 2: Layers 1-6.
+### 9.2 Prompt Logger
 
-### 8.2 Prompt Logger
-
-Captures full prompt chain for every LLM call. SQLite table in Hermes state.db. Enables:
-- Click any task in dashboard -> see every step with full prompt + tools + tokens
-- Compare high-scoring vs low-scoring output chains
-- Feed chains into OpenSpace for pattern detection
-- Track token usage per step to find expensive workflow steps
-
-Cherry-picked from v6.2 architecture Section 27 (30-line plugin, proven design).
+Hermes lifecycle hooks (`pre_llm_call`, `post_llm_call`). SQLite table in state.db. Cherry-picked from v6.2 §27 (30-line plugin).
 
 ---
 
-## 9. Configuration
+## 10. Configuration
 
-### 9.1 SOUL.md (Vizier Persona)
+### 10.1 SOUL.md (Vizier Persona)
 
-Defines Vizier's identity, voice, and behavioral rules. Loaded by Hermes as agent identity.
+Loaded by Hermes as agent identity (`~/.hermes/SOUL.md`, symlinked from `config/SOUL.md`).
 
 Key behavioral rules:
 - Tool-layer priority: pipeline -> atomic -> improvise
 - Always try `run_pipeline` first
-- Use `switch_toolset` when current toolset is insufficient
 - Never skip layers — cheaper option first
+- For unattended sessions: hold delivery if quality score < 7/10
 
-### 9.2 hermes.yaml
+### 10.2 Model Routing
 
-```yaml
-model:
-  provider: "custom"
-  default: "gpt-5.4-mini"
-  base_url: "https://api.openai.com/v1"
+Gate 1: GPT-5.4-mini only (free 10M/day). Qwen 3.5 9B used for dream-skill memory consolidation (Gate 2+).
 
-agent:
-  max_turns: 90
+Two-pass routing (Gate 2+): Qwen classifies task -> determines toolset -> Hermes session starts with that toolset + GPT-5.4-mini as the reasoning model. Implementation: a pre-session Python script that calls Ollama, classifies, and passes `--toolsets vizier-{workflow}` to the Hermes CLI.
 
-memory:
-  memory_enabled: true
-
-compression:
-  enabled: true
-  threshold: 0.50
-```
-
-### 9.3 models.yaml
-
-```yaml
-routing:
-  pass_1: "qwen-3.5-9b"    # Local, free — task classification + tool selection
-  pass_2: "gpt-5.4-mini"   # Cloud, free 10M/day — reasoning + generation
-
-distillation:
-  target: "qwen-3.5-9b"
-  threshold: 0.5            # Delta below this -> ship on Qwen
-```
-
-### 9.4 clients/{client_id}.yaml
+### 10.3 clients/{client_id}.yaml
 
 ```yaml
 client_id: "dmb"
@@ -511,119 +533,117 @@ No client names hardwired in code. New client = new YAML file.
 
 ---
 
-## 10. Gate 1 Scope — "It Works"
+## 11. Gate 1 Scope — "It Works"
 
-**Objective:** Hermes running as Vizier, one content workflow producing billable output end-to-end, quality gate active, dashboard visible, bridge connected.
+**Objective:** Hermes running as Vizier, one content workflow producing billable output end-to-end, quality gate active, bridge connected.
 
 ### What gets built in Gate 1
 
 | Component | What | Estimated effort |
 |-----------|------|-----------------|
-| adapter/ | Manifest loader + executor + schemas | ~300 lines |
-| tools/switch_toolset.py | Toolset switching meta-tool | ~50 lines |
+| adapter/ | Manifest loader (-> registry.register()) + executor + schemas | ~300 lines |
 | tools/run_pipeline.py | Pipeline executor + list mode | ~100 lines |
-| tools/execute_code.py | Sandboxed code execution | ~80 lines |
-| tools/prompt_logger.py | Chain logging plugin | ~30 lines (from v6.2 §27) |
+| tools/prompt_logger.py | Hermes lifecycle hook plugin | ~30 lines |
 | manifests/content/ | httpx_fetch, jinja2_render, lightrag_search | 3 YAML files |
 | manifests/document/ | typst_render | 1 YAML file |
 | pipelines/content_generate.py | Brief -> RAG -> copy pipeline | ~80 lines |
+| pipelines/_registry.yaml | Pipeline index | ~20 lines |
 | middleware/quality_gate.py | Layers 1-2 (input + output validation) | ~100 lines |
-| bridge/ | git_watcher, skill_syncer, test_parser, watcher | ~600 lines (cherry-picked) |
+| bridge/ | git_watcher, skill_syncer, test_parser, manifest_syncer, watcher | ~650 lines |
 | config/SOUL.md | Vizier persona + tool priority rules | ~50 lines |
-| workflows/content.toml | Content workflow definition | ~20 lines |
+| config/hermes.yaml | Hermes runtime config | ~20 lines |
+
+**Total new code:** ~1,350 lines + 4 YAML manifests.
 
 ### What gets installed in Gate 1
 
 ```bash
-# Hermes Agent (already installed at ~/.hermes/)
-# PydanticAI
-pip install pydantic-ai --break-system-packages
-# DSPy
-pip install dspy --break-system-packages
-# Promptfoo
-npm install -g promptfoo
-# Knowledge Graph Tool (Wisdom Vault)
-# Qwen 3.5 9B via Ollama
+# Qwen 3.5 9B for future routing/memory (install now, use in Gate 2)
 ollama pull qwen3.5:9b
+# Knowledge Graph Tool (Wisdom Vault)
+# Follow Jesse Vincent's install → set KG_VAULT_PATH → run kg-index
 ```
 
 ### What does NOT happen in Gate 1
 
-- No visual/audio/code workflows
-- No OpenSpace/dream-skill/DeerFlow augments (Gate 2)
-- No dashboard customization (use Mission Control fork as-is)
-- No scheduled/event triggers (human prompts only)
+- No `switch_toolset` (requires Hermes patch — deferred to Gate 2)
+- No `execute_code` sandbox extensions (use Hermes built-in as-is)
+- No visual/audio/code/research workflows
+- No OpenSpace/dream-skill/DeerFlow augments
+- No scheduled/event/data triggers (human prompts only)
+- No parallel or unattended sessions
 - No distillation pipeline
-- No template cloning loop
+- No dashboard customization (Mission Control fork as-is)
 
 ### Gate 1 Exit Criteria
 
 - [ ] Hermes running as Vizier (SOUL.md loaded) on Mac Mini M4
-- [ ] Manifest adapter registering tools into toolsets
-- [ ] `switch_toolset` working mid-session
-- [ ] `run_pipeline` executing content_generate pipeline
-- [ ] Content workflow producing billable output end-to-end
-- [ ] Quality gate layers 1-2 active
-- [ ] Prompt logger capturing every LLM call
-- [ ] Bridge: git_watcher + skill_syncer connected
-- [ ] Dashboard (Mission Control) accessible remotely
-- [ ] DSPy + Promptfoo installed with baseline delta measured
-- [ ] Knowledge Graph indexing Wisdom Vault
-- [ ] First revenue from Vizier Pro-Max output
+- [ ] Manifest adapter registering tools into Hermes toolsets via `registry.register()`
+- [ ] `run_pipeline` executing content_generate pipeline end-to-end
+- [ ] Content workflow producing complete deliverable (brief -> RAG -> copy -> PDF -> deliver)
+- [ ] Quality gate layers 1-2 active on every output
+- [ ] Prompt logger capturing every LLM call with full chain
+- [ ] Bridge connected: git_watcher updating MEMORY.md, skill_syncer flowing skills
+- [ ] Dashboard (Mission Control fork) running and remotely accessible
+- [ ] Knowledge Graph indexing Wisdom Vault (21,000 atoms)
+- [ ] Qwen 3.5 9B installed via Ollama (ready for Gate 2 routing/memory)
 
 ---
 
-## 11. Gate 2-4 Overview (Not Detailed Here)
+## 12. Gate 2-4 Overview
 
 **Gate 2 — "Works While I Sleep" (Week 3-6):**
-- All workflow toolsets active (visual, research, audio, document-full)
-- OpenSpace skill evolution
-- Dream-skill memory consolidation
-- Scheduled + event-driven triggers
+- `switch_toolset` meta-tool (Hermes patch: flag-based `self.tools` rebuild after each turn)
+- All workflow toolsets active
+- Parallel sessions via `delegate_task` + DeerFlow patterns
+- Unattended sessions: scheduled cron + event-driven triggers
+- OpenSpace skill evolution (MCP server mode)
+- Dream-skill memory consolidation (Qwen local)
 - Template cloning loop
-- DeerFlow sub-agent patterns
 - Quality gate layers 1-6
 - Telegram/WhatsApp channels
 
 **Gate 3 — "Builds Itself" (Week 7-12):**
 - DSPy distillation pipeline (GPT-5.4-mini -> Qwen local)
-- Pipeline collapser auto-generating from atomic chains
-- OpenSpace CAPTURED -> pipeline promotion
-- Code workflow active (self-building)
+- OpenSpace CAPTURED -> auto-pipeline promotion
+- Code workflow active (self-building tools and pipelines)
 - Data-driven + pattern-driven triggers
+- `execute_code` sandbox extensions
 
 **Gate 4 — "Improves Itself" (Week 13-24):**
 - Self-distillation (autonomous migration to Qwen)
-- OpenSpace embedded (local mode)
+- OpenSpace embedded (local mode, no MCP server)
 - Research-driven + observation-driven triggers
-- Vizier-fallback toolset rarely needed (most tasks have pipelines)
 - Human role: auditor, not operator
 
 ---
 
-## 12. Key Differences from v6.2 Architecture
+## 13. Key Differences from v6.2 Architecture
 
 | Aspect | v6.2 | Pro-Max |
 |--------|------|---------|
-| Tool registration | 47 individual PydanticAI wrappers | YAML manifests + adapter (zero code for ~70%) |
-| Tool loading | All tools per session | Toolset-scoped, `switch_toolset` mid-session |
-| Token cost per turn | ~94KB (all 47 tools) | ~12-20KB (one toolset + core) |
-| Pipeline handling | execute_code collapses manually | `run_pipeline` + auto-capture via OpenSpace |
-| Bridge | Not specified | First-class: git_watcher, skill_syncer, test_parser, manifest_syncer |
-| Improvisation | Not specified | `execute_code` sandbox + capture loop |
-| Fallback on failure | Not specified | Pipeline -> atomic -> execute_code -> vizier-fallback toolset |
+| Tool registration | 47 individual wrappers | YAML manifests -> registry.register() (~70% zero code) |
+| Tool loading | All tools per session | Toolset-scoped (Gate 1: session init, Gate 2: mid-session switch) |
+| Token cost per turn | ~94KB (all 47 tools) | ~14-18KB (one toolset + core + pipeline summary) |
+| Pipelines | execute_code manual collapse | `run_pipeline` + auto-capture via OpenSpace |
+| Session types | Not specified | Interactive, parallel, unattended — each with distinct rules |
+| Bridge | Not specified | git_watcher, skill_syncer, test_parser, manifest_syncer |
+| Improvisation | Not specified | `execute_code` -> capture loop -> new pipeline |
+| Fallback chain | Not specified | Pipeline -> atomic -> execute_code -> vizier-fallback |
 
 ---
 
-## 13. Risk Register
+## 14. Risk Register
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Qwen local misroutes task to wrong toolset | Stuck with wrong tools for session | `switch_toolset` meta-tool enables mid-session correction |
-| `run_pipeline` is a god-tool, model doesn't know pipeline schemas | Wastes turns discovering pipelines | Pipeline registry summary in system prompt (~500 tokens) + list mode |
-| `execute_code` sandbox bypass | Security breach | Allowlisted imports, restricted filesystem, configured network endpoints, timeout |
-| OpenSpace CAPTURED generates bad pipelines | Bad output shipped | Quality gate validates draft pipelines before promotion from _drafts/ |
-| Capture threshold too low (false patterns) | Noise pipelines bloat registry | Default threshold 5 (configurable), prune stale pipelines |
-| Manifest adapter is single point of failure | All tools break | Comprehensive test suite for adapter, fallback to direct tool registration |
-| Too many pipelines bloat system prompt | Token cost creeps up | Pipeline registry summary capped at 500 tokens, pruner archives unused |
-| vizier-ultimate fallback needed | Wasted Pro-Max effort | Pro-Max is additive — worst case, proven tools cherry-picked back |
+| Wrong toolset at session start (Gate 1) | Wrong tools, must restart | Pre-session Qwen classification (Gate 2). Gate 1: user specifies workflow. |
+| `switch_toolset` Hermes patch fails | No mid-session switching | Acceptable in Gate 1. Gate 2 fallback: restart session with correct toolset. |
+| `run_pipeline` god-tool: model doesn't know schemas | Wasted turns | Pipeline registry summary in system prompt (~2KB) + list mode |
+| `execute_code` sandbox bypass | Security breach | Extend Hermes built-in with allowlists, not replace it |
+| OpenSpace generates bad pipelines | Bad output | Quality gate validates before promotion from _drafts/ |
+| Capture threshold too low | Noise pipelines | Default 5 (configurable), pruner archives unused |
+| Adapter is single point of failure | Tools don't load | Test suite + fallback to direct registry.register() calls |
+| Unattended session produces bad output | Client receives garbage | Quality threshold hold: score < 7/10 -> held for human review |
+| Pipeline registry bloats system prompt | Token creep | Summary capped at ~2KB, pruner archives unused pipelines |
+| Manifest syncer fails validation | Broken tool registration | Invalid manifests logged and skipped, not crash |
