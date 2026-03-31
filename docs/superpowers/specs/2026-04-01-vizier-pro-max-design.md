@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-01
 **Author:** Khairul / Premier Marketing
-**Status:** Draft v2 — post-review fixes applied
+**Status:** Draft v3 — second review fixes applied
 **Repo:** ~/vizier-pro-max/ (clean slate)
 **Fallback:** ~/vizier-ultimate/ (Gate 2, Hermes v0.6.0)
 **Hermes version:** v0.6.0 at ~/hermes-agent/
@@ -46,14 +46,22 @@ Vizier operates across three session types. Each has distinct toolset, trigger, 
 **Supervision:** Parent agent synthesizes results. No human in the loop during execution.
 **Concurrency:** Up to 3 parallel children per parent. Each child runs in isolated context with its own tool surface.
 
-**How it works with Hermes:** `delegate_task` is a built-in Hermes tool that creates a scoped sub-conversation. Each sub-conversation gets its own `enabled_toolsets` at init. The parent receives structured results when children complete.
+**How it works with Hermes:** `delegate_task` is a built-in Hermes tool that creates a scoped sub-conversation. Each child's toolsets are **intersected with the parent's** — children cannot access tools the parent doesn't have. This means the parent orchestration session must be started with broad toolsets.
+
+**Parent session strategy:** The parent runs with `vizier-fallback` (all tools, ~54KB) so it can delegate to any workflow. The token cost is acceptable for the orchestrating session because it's coordinating, not doing heavy reasoning. Each child runs lean with its scoped toolset (~14-18KB).
+
+**Child constraints (Hermes built-in):**
+- Children cannot use `execute_code` (blocked by `DELEGATE_BLOCKED_TOOLS`)
+- Children are restricted to Layer 1 (pipelines) and Layer 2 (atomic tools) — no improvisation
+- If a child needs improvisation, the parent must handle it after child results return
 
 **Example:**
 ```
 Parent receives: "Produce campaign for DMB: research + copy + poster + PDF"
-  -> delegate_task("research brief for DMB", toolsets=["vizier-research", "vizier-core"])
-  -> delegate_task("generate 3 ad copies for DMB", toolsets=["vizier-content", "vizier-core"])
-  -> delegate_task("design poster for DMB campaign", toolsets=["vizier-visual", "vizier-core"])
+Parent session: enabled_toolsets=["vizier-fallback"] (~54KB, orchestration session)
+  -> delegate_task("research brief for DMB", toolsets=["vizier-research"])  # child: ~14KB
+  -> delegate_task("generate 3 ad copies for DMB", toolsets=["vizier-content"])  # child: ~14KB
+  -> delegate_task("design poster for DMB campaign", toolsets=["vizier-visual"])  # child: ~14KB
   -> Parent waits for all 3 -> synthesizes into campaign package
   -> run_pipeline("report") to compile PDF
   -> send_telegram to deliver
@@ -118,8 +126,10 @@ Parent receives: "Produce campaign for DMB: research + copy + poster + PDF"
 │
 ├── tools/                    # Custom Hermes tool handlers (complex tools only)
 │   ├── run_pipeline.py       # Execute collapsed pipelines by name or list them
-│   ├── execute_code.py       # Sandboxed Python execution (improvisation)
-│   └── prompt_logger.py      # Full chain visibility (Hermes lifecycle hooks)
+│   └── query_logs.py         # Inspect prompt logger traces (model-callable)
+│
+├── plugins/                  # Hermes lifecycle hooks (NOT tools — auto-invoked)
+│   └── prompt_logger.py      # pre_llm_call / post_llm_call capture
 │
 ├── pipelines/                # Collapsed pipeline scripts
 │   ├── _registry.yaml        # Pipeline index (name, description, input/output schema)
@@ -203,13 +213,15 @@ Individual library/CLI wrappers registered via YAML manifests. Loaded per toolse
 
 ### 4.3 Layer 3 — Improvisation (Expensive, Creative)
 
-`execute_code` tool runs Python in a sandboxed subprocess. **Note:** Hermes already has a built-in `execute_code` tool with Unix domain socket RPC. Pro-Max extends it with additional sandbox constraints rather than replacing it.
+Hermes's built-in `execute_code` tool (Unix domain socket RPC to sandboxed subprocess). Gate 1 uses it unmodified. Gate 2+ adds a wrapper with additional constraints:
 
-**Additional sandbox constraints (on top of Hermes built-in):**
+**Gate 2+ sandbox extensions (on top of Hermes built-in):**
 - Allowlisted imports only (libraries in the tool stack)
 - Write access restricted to `output/` and `tmp/`
 - Network access only to configured endpoints
 - Timeout: 30s default (configurable)
+
+**Note:** `execute_code` is blocked for `delegate_task` children (Hermes built-in restriction). Improvisation via execute_code is parent-session only. Children are restricted to Layer 1 (pipelines) and Layer 2 (atomic tools).
 
 ### 4.4 Priority Rule (in SOUL.md)
 
@@ -248,24 +260,31 @@ Pipeline doesn't quite fit -> model mixes pipeline + atomic tools
 
 ## 5. Toolset Map
 
-### 5.1 vizier-core (always loaded, 3 tools)
+### 5.1 Always-Loaded Toolsets
 
+**vizier-core (3 tools):**
 | Tool | Type | Purpose |
 |------|------|---------|
 | `run_pipeline` | custom handler | Execute collapsed pipelines by name or list them |
-| `execute_code` | extended built-in | Sandboxed Python execution (improvisation) |
-| `prompt_logger` | Hermes lifecycle hook | Full chain visibility, query execution logs |
+| `query_logs` | custom handler | Inspect prompt logger traces (last N calls, filter by task) |
+| `httpx_fetch` | manifest (shared) | Fetch URLs, APIs — used by content, research, delivery |
+
+**Hermes built-in toolsets (always enabled alongside vizier-core):**
+- `code_execution` — Hermes's built-in `execute_code` (improvisation layer)
+- `delegation` — Hermes's built-in `delegate_task` (parallel sessions, Gate 2+)
+
+**Prompt logger** is a Hermes lifecycle hook plugin (`pre_llm_call`, `post_llm_call`), NOT a tool. It captures every LLM call automatically. The `query_logs` tool provides model-accessible inspection of captured traces.
+
+**`lightrag_search`** is registered in vizier-core (shared across content, knowledge, and research workflows) to avoid name collisions when multiple toolsets load.
 
 Note: `switch_toolset` is **Gate 2** (requires Hermes patch to mutate `self.tools` mid-session). Gate 1 sets toolset at session init only.
 
 ### 5.2 Workflow Toolsets (loaded per task)
 
-**vizier-content (3 atomic tools):**
+**vizier-content (1 atomic tool — httpx_fetch and lightrag_search are in vizier-core):**
 | Tool | Library | Purpose |
 |------|---------|---------|
-| `httpx_fetch` | httpx | Fetch URLs, APIs |
 | `jinja2_render` | jinja2 | Template rendering |
-| `lightrag_search` | lightrag | RAG retrieval |
 
 **Collapsed pipelines:** `content_generate`, `content_social`, `content_email`
 
@@ -287,10 +306,9 @@ Note: `switch_toolset` is **Gate 2** (requires Hermes patch to mutate `self.tool
 
 **Collapsed pipelines:** `clone_converge`, `poster_batch`, `bg_remove_batch`
 
-**vizier-research (3 atomic tools):**
+**vizier-research (2 atomic tools — httpx_fetch is in vizier-core):**
 | Tool | Library | Purpose |
 |------|---------|---------|
-| `httpx_fetch` | httpx | Web fetching (shared with content) |
 | `pandas_analyze` | pandas | Data analysis |
 | `matplotlib_chart` | matplotlib | Chart generation |
 
@@ -320,10 +338,9 @@ No collapsed pipelines — destination/message always varies.
 
 **Collapsed pipelines:** `build_tool_wrapper`
 
-**vizier-knowledge (3 atomic tools):**
+**vizier-knowledge (2 atomic tools — lightrag_search is in vizier-core):**
 | Tool | Library | Purpose |
 |------|---------|---------|
-| `lightrag_search` | lightrag | RAG retrieval (shared with content) |
 | `sqlite_query` | sqlite3 | Direct DB queries |
 | `kg_search` | kg-tools | Knowledge graph queries |
 
@@ -404,7 +421,7 @@ def register_manifest(manifest: dict) -> None:
         name=manifest["name"],
         toolset=manifest["toolset"],           # e.g., "vizier-document"
         schema=tool_schema,
-        handler=lambda args: executor.run(manifest, args),
+        handler=lambda args, **kw: executor.run(manifest, args),
         check_fn=lambda: True,                  # or check for CLI availability
         description=manifest["description"],
     )
@@ -543,7 +560,8 @@ No client names hardwired in code. New client = new YAML file.
 |-----------|------|-----------------|
 | adapter/ | Manifest loader (-> registry.register()) + executor + schemas | ~300 lines |
 | tools/run_pipeline.py | Pipeline executor + list mode | ~100 lines |
-| tools/prompt_logger.py | Hermes lifecycle hook plugin | ~30 lines |
+| tools/query_logs.py | Inspect prompt logger traces | ~50 lines |
+| plugins/prompt_logger.py | Hermes lifecycle hook (pre/post LLM call) | ~30 lines |
 | manifests/content/ | httpx_fetch, jinja2_render, lightrag_search | 3 YAML files |
 | manifests/document/ | typst_render | 1 YAML file |
 | pipelines/content_generate.py | Brief -> RAG -> copy pipeline | ~80 lines |
@@ -557,11 +575,17 @@ No client names hardwired in code. New client = new YAML file.
 
 ### What gets installed in Gate 1
 
+No additional installs beyond what Hermes v0.6.0 already provides. Pro-Max tools are Python libraries installed into the project venv.
+
+### Pre-Gate 2 Setup (install when Gate 1 is complete)
+
 ```bash
-# Qwen 3.5 9B for future routing/memory (install now, use in Gate 2)
+# Qwen 3.5 9B for routing/memory
 ollama pull qwen3.5:9b
 # Knowledge Graph Tool (Wisdom Vault)
-# Follow Jesse Vincent's install → set KG_VAULT_PATH → run kg-index
+# Follow Jesse Vincent's install -> set KG_VAULT_PATH -> run kg-index
+# DSPy for distillation pipeline (Gate 3)
+pip install dspy --break-system-packages
 ```
 
 ### What does NOT happen in Gate 1
@@ -582,11 +606,10 @@ ollama pull qwen3.5:9b
 - [ ] `run_pipeline` executing content_generate pipeline end-to-end
 - [ ] Content workflow producing complete deliverable (brief -> RAG -> copy -> PDF -> deliver)
 - [ ] Quality gate layers 1-2 active on every output
-- [ ] Prompt logger capturing every LLM call with full chain
+- [ ] Prompt logger lifecycle hook capturing every LLM call
+- [ ] `query_logs` tool returning prompt chain data
 - [ ] Bridge connected: git_watcher updating MEMORY.md, skill_syncer flowing skills
 - [ ] Dashboard (Mission Control fork) running and remotely accessible
-- [ ] Knowledge Graph indexing Wisdom Vault (21,000 atoms)
-- [ ] Qwen 3.5 9B installed via Ollama (ready for Gate 2 routing/memory)
 
 ---
 
