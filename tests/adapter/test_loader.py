@@ -69,3 +69,80 @@ class TestRegisterManifest:
         assert call_kwargs[1]["name"] == "httpx_fetch"
         assert call_kwargs[1]["toolset"] == "vizier-core"
         assert "url" in call_kwargs[1]["schema"]["properties"]
+
+    @patch("adapter.loader._get_registry")
+    def test_skips_registration_when_no_registry(
+        self, mock_get_registry: MagicMock, manifest_dir: Path
+    ) -> None:
+        mock_get_registry.return_value = None
+        manifests = load_all_manifests(manifest_dir)
+        # Should not raise even with no registry
+        register_manifest(manifests[0])
+
+
+class TestRegisterAll:
+    @patch("adapter.loader._get_registry")
+    def test_registers_all_valid_manifests(
+        self, mock_get_registry: MagicMock, manifest_dir: Path
+    ) -> None:
+        from adapter.loader import register_all
+
+        mock_registry = MagicMock()
+        mock_get_registry.return_value = mock_registry
+
+        count = register_all(manifest_dir)
+        assert count == 1
+        mock_registry.register.assert_called_once()
+
+    @patch("adapter.loader._get_registry")
+    def test_returns_zero_for_empty_dir(
+        self, mock_get_registry: MagicMock, tmp_path: Path
+    ) -> None:
+        from adapter.loader import register_all
+
+        mock_registry = MagicMock()
+        mock_get_registry.return_value = mock_registry
+
+        count = register_all(tmp_path / "nonexistent")
+        assert count == 0
+
+    @patch("adapter.loader._get_registry")
+    def test_continues_when_one_manifest_fails_to_register(
+        self, mock_get_registry: MagicMock, tmp_path: Path
+    ) -> None:
+        from adapter.loader import register_all
+
+        # Create two valid manifests
+        for name in ("tool_a", "tool_b"):
+            (tmp_path / f"{name}.yaml").write_text(f"""
+name: {name}
+description: "Tool {name}"
+version: "1.0"
+toolset: vizier-core
+execution:
+  type: python_script
+  path: scripts/{name}.py
+  entrypoint: run
+  timeout: 10
+input:
+  x:
+    type: string
+    required: true
+""")
+
+        mock_registry = MagicMock()
+        # First call succeeds, second raises
+        mock_registry.register.side_effect = [None, RuntimeError("registry boom")]
+        mock_get_registry.return_value = mock_registry
+
+        # Should return 1 (only one succeeded)
+        count = register_all(tmp_path)
+        assert count == 1
+
+    def test_get_registry_returns_none_when_unavailable(self) -> None:
+        from adapter.loader import _get_registry
+
+        # The import of tools.registry will fail in test env — should return None
+        with patch("adapter.loader._get_registry", return_value=None):
+            result = _get_registry()
+            assert result is None
