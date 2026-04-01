@@ -1,0 +1,28 @@
+name: edge_tts_speak
+description: "Text-to-speech via Microsoft Edge TTS (free, no API key)"
+version: "1.0"
+toolset: vizier-audio
+
+execution:
+  type: python_function
+  entrypoint: "scripts.audio.speak_text:run"
+  timeout: 30
+
+input:
+  text:
+    type: string
+    required: true
+    description: "Text to convert to speech"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output MP3"
+  voice:
+    type: string
+    required: false
+    description: "Voice name (default: en-US-AriaNeural). Malay: ms-MY-YasminNeural"
+
+output:
+  file_path:
+    type: string
+    description: "Path to generated audio"
