@@ -15,6 +15,16 @@ dependencies = [
     "pypdf>=4.0",
     "pillow>=10.0",
     "python-telegram-bot>=22.0",
+    "playwright>=1.40,<2",
+    "pandas>=2.0,<3",
+    "matplotlib>=3.8,<4",
+    "edge-tts>=6.1,<7",
+    "scikit-image>=0.22,<1",
+    "pixelmatch>=0.3,<1",
+    "opencv-python-headless>=4.9,<5",
+    "pytesseract>=0.3,<1",
+    "lingua-py>=2.0,<3",
+    "mcp>=1.0,<2",
 ]
 
 [project.optional-dependencies]
@@ -27,7 +37,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["adapter*", "tools*", "plugins*", "pipelines*", "middleware*", "bridge*"]
+include = ["adapter*", "tools*", "plugins*", "pipelines*", "middleware*", "bridge*", "augments*", "config*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

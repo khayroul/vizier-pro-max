@@ -1,0 +1,1 @@
+"""Vizier configuration."""
