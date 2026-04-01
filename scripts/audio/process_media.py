@@ -107,6 +107,15 @@ def run(
         cmd += ["-c", "copy", output_path]
     elif operation == "concat":
         all_paths = [input_path] + (concat_paths or [])
+        for cpath in all_paths:
+            resolved_concat = Path(cpath).resolve()
+            if not resolved_concat.exists():
+                msg = f"Concat input does not exist: {cpath}"
+                raise FileNotFoundError(msg)
+            # Prevent path traversal in concat file list (ffmpeg reads from these)
+            if ".." in Path(cpath).parts:
+                msg = f"Path traversal not allowed in concat_paths: {cpath}"
+                raise ValueError(msg)
         list_content = "\n".join(f"file '{p}'" for p in all_paths)
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".txt", delete=False

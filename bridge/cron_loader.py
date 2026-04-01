@@ -111,6 +111,6 @@ def register_jobs(
                 "Registered cron job: %s (%s)", config.id, config.schedule
             )
             registered += 1
-        except (yaml.YAMLError, OSError, KeyError, ValueError) as exc:
+        except (OSError, ValueError, TypeError) as exc:
             logger.warning("Failed to register cron job %s: %s", config.id, exc)
     return registered

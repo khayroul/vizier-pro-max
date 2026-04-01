@@ -3,13 +3,17 @@ from __future__ import annotations
 
 import logging
 import sqlite3
-from dataclasses import dataclass
+from collections import deque
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Literal
 
 logger = logging.getLogger(__name__)
 
+_SkillOrigin = Literal["IMPORTED", "CAPTURED", "FIXED", "DERIVED"]
 
-@dataclass
+
+@dataclass(frozen=True)
 class SkillRecord:
     """A skill record in the version DAG."""
 
@@ -17,16 +21,19 @@ class SkillRecord:
     name: str
     path: Path
     is_active: bool
-    origin: str  # IMPORTED | CAPTURED | FIXED | DERIVED
+    origin: _SkillOrigin
     generation: int
-    parent_ids: list[str]
-    change_summary: str
+    parent_ids: tuple[str, ...] = ()
+    change_summary: str = ""
     total_selections: int = 0
     total_completions: int = 0
 
 
 class VersionDAG:
-    """SQLite-backed skill lineage store."""
+    """SQLite-backed skill lineage store.
+
+    Implements context manager protocol for resource cleanup.
+    """
 
     def __init__(self, db_path: Path | None = None) -> None:
         self._db_path = db_path or Path("state/openspace_skills.db")
@@ -34,6 +41,21 @@ class VersionDAG:
         self._conn = sqlite3.connect(str(self._db_path))
         self._conn.execute("PRAGMA journal_mode=WAL")
         self._create_tables()
+
+    def __enter__(self) -> VersionDAG:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: object,
+    ) -> None:
+        self.close()
+
+    def close(self) -> None:
+        """Close the underlying SQLite connection."""
+        self._conn.close()
 
     def _create_tables(self) -> None:
         """Create tables if they don't exist."""
@@ -108,7 +130,7 @@ class VersionDAG:
             change_summary=row[6],
             total_selections=row[7],
             total_completions=row[8],
-            parent_ids=[r[0] for r in parent_rows],
+            parent_ids=tuple(r[0] for r in parent_rows),
         )
 
     def deactivate(self, skill_id: str) -> None:
@@ -167,10 +189,10 @@ class VersionDAG:
     def get_lineage(self, skill_id: str) -> list[SkillRecord]:
         """Walk the parent DAG back to roots, returning all ancestors."""
         visited: list[SkillRecord] = []
-        queue = [skill_id]
+        queue: deque[str] = deque([skill_id])
         seen: set[str] = set()
         while queue:
-            current = queue.pop(0)
+            current = queue.popleft()
             if current in seen:
                 continue
             seen.add(current)

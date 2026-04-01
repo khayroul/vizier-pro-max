@@ -1,6 +1,7 @@
 """Pandoc CLI wrapper for document format conversion."""
 from __future__ import annotations
 
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -54,6 +55,10 @@ def run(
 
     effective_from = from_format or _FORMAT_MAP.get(in_path.suffix, "markdown")
     effective_to = to_format or _FORMAT_MAP.get(out_path.suffix, "html")
+
+    if not shutil.which("pandoc"):
+        msg = "pandoc binary not found on PATH"
+        raise FileNotFoundError(msg)
 
     cmd = [
         "pandoc",

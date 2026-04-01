@@ -36,7 +36,7 @@ def prune_stale_skills(
             continue  # Still in use -- keep active
         # Derivative with zero use -- archive it
         if record.path.exists():
-            dest = archive / record.path.name
+            dest = archive / f"{record.skill_id}_{record.path.name}"
             shutil.move(str(record.path), str(dest))
             logger.info("Archived stale skill: %s -> %s", record.path, dest)
         dag.deactivate(record.skill_id)

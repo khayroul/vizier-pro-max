@@ -52,6 +52,9 @@ def run(
         raise ValueError(msg)
 
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    if not token:
+        msg = "TELEGRAM_BOT_TOKEN environment variable is required"
+        raise RuntimeError(msg)
 
     if file_path:
         return _send_document(chat_id, file_path, caption, token)

@@ -15,13 +15,12 @@ logger = logging.getLogger(__name__)
 
 def _load_session_chains(db_path: Path) -> dict[str, list[str]]:
     """Load tool call sequences grouped by session."""
-    conn = sqlite3.connect(str(db_path))
-    rows = conn.execute(
-        "SELECT session_id, tool_name FROM prompt_log "
-        "WHERE tool_name IS NOT NULL "
-        "ORDER BY session_id, timestamp, id"
-    ).fetchall()
-    conn.close()
+    with sqlite3.connect(str(db_path)) as conn:
+        rows = conn.execute(
+            "SELECT session_id, tool_name FROM prompt_log "
+            "WHERE tool_name IS NOT NULL "
+            "ORDER BY session_id, timestamp, id"
+        ).fetchall()
 
     sessions: dict[str, list[str]] = {}
     for session_id, tool_name in rows:

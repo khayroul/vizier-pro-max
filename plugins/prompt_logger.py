@@ -17,6 +17,7 @@ logger = structlog.get_logger(__name__)
 
 DB_PATH = str(Path.home() / ".hermes" / "state.db")
 
+_MAX_TRACKED_TASKS = 10_000
 _step_counter: dict[str, int] = {}
 _lock = threading.Lock()
 _table_ensured = False
@@ -60,6 +61,8 @@ def pre_llm_call(
         _ensure_table()
         effective_task_id = task_id or "unknown"
         with _lock:
+            if len(_step_counter) >= _MAX_TRACKED_TASKS:
+                _step_counter.clear()
             _step_counter[effective_task_id] = (
                 _step_counter.get(effective_task_id, 0) + 1
             )

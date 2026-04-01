@@ -89,14 +89,15 @@ def _phase_consolidate_qwen(
         )
         if resp.status_code == 200:
             result = resp.json().get("response", "")
-            # Validate: must contain markdown list items
-            if result.strip().startswith("-"):
+            # Validate: must contain markdown list items (at least 1 line starting with "- [")
+            stripped = result.strip()
+            if stripped.startswith("-") and "- [" in stripped:
                 return result
             logger.warning("Qwen returned non-list output, falling back to rule-based")
             return None
         logger.warning("Ollama returned status %d", resp.status_code)
         return None
-    except Exception as exc:
+    except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
         logger.warning("Ollama unreachable, falling back to rule-based: %s", exc)
         return None
 

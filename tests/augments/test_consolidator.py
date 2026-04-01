@@ -84,7 +84,7 @@ class TestConsolidator:
         """Falls back to rule-based when Ollama is unreachable."""
         with patch(
             "augments.dreamskill.consolidator.httpx.post",
-            side_effect=Exception("Connection refused"),
+            side_effect=ConnectionError("Connection refused"),
         ):
             result = consolidate(
                 db_path=mock_log_db,

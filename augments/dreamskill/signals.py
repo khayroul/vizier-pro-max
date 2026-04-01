@@ -36,12 +36,11 @@ _SIGNAL_PATTERNS = [
 
 def extract_signals(*, db_path: Path) -> list[dict[str, Any]]:
     """Scan prompt_log for correction/preference/decision signals."""
-    conn = sqlite3.connect(str(db_path))
-    rows = conn.execute(
-        "SELECT session_id, timestamp, result FROM prompt_log "
-        "WHERE result IS NOT NULL ORDER BY timestamp"
-    ).fetchall()
-    conn.close()
+    with sqlite3.connect(str(db_path)) as conn:
+        rows = conn.execute(
+            "SELECT session_id, timestamp, result FROM prompt_log "
+            "WHERE result IS NOT NULL ORDER BY timestamp"
+        ).fetchall()
 
     signals: list[dict[str, Any]] = []
     for session_id, timestamp, result in rows:
