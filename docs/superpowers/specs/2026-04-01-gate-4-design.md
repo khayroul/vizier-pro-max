@@ -7,6 +7,8 @@
 
 **Note on Gate 3:** Gate 3 does not yet have a design spec. Section 10 defines the exact interfaces Gate 4 requires from Gate 3. Gate 3 spec must be written and reviewed before Gate 4 implementation begins for Track 3 components.
 
+**Implementation sequencing:** Track 1 (Deliverable Ledger) is planned and built first — it has no Gate 2/3 dependencies. Tracks 2 and 3 are planned after Gate 2 is built and Gate 3 is specced, to avoid building against assumed interfaces that may change.
+
 **Note on DSPy:** The main design spec (Section 12) references DSPy for Gate 3 distillation. This Gate 4 spec supersedes that approach — distillation uses direct quality gate evaluation against exemplar traces instead. The main spec should be updated to remove DSPy references when Gate 3 is specced.
 
 ---
