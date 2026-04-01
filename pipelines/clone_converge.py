@@ -13,16 +13,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import httpx
 import structlog
 
+from adapter.llm_client import chat as llm_chat
 from scripts.visual.calculate_delta import calculate_delta
 from scripts.visual.screenshot_html import run as screenshot_run
 
 logger = structlog.get_logger(__name__)
-
-_LLM_ENDPOINT = "http://localhost:11435/v1/chat/completions"
-_LLM_MODEL = "gpt-5.4-mini"
 
 
 def _call_llm_for_html(
@@ -30,7 +27,7 @@ def _call_llm_for_html(
     delta_feedback: str | None = None,
     previous_html: str | None = None,
 ) -> str:
-    """Call GPT-5.4-mini to generate or refine HTML/CSS."""
+    """Call LLM to generate or refine HTML/CSS (OpenAI -> Ollama fallback)."""
     parts = ["Generate clean semantic HTML5 with inline CSS matching a visual design."]
 
     if previous_html and delta_feedback:
@@ -40,43 +37,22 @@ def _call_llm_for_html(
         parts.append(f"\nTarget image path: {target_image_path}")
         parts.append("\nGenerate the initial HTML/CSS approximation.")
 
-    try:
-        resp = httpx.post(
-            _LLM_ENDPOINT,
-            json={
-                "model": _LLM_MODEL,
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are an HTML/CSS generator. Output clean semantic "
-                            "HTML5 with inline CSS. Output ONLY the HTML document, "
-                            "no explanation."
-                        ),
-                    },
-                    {"role": "user", "content": "\n".join(parts)},
-                ],
-                "max_tokens": 4096,
+    result = llm_chat(
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are an HTML/CSS generator. Output clean semantic "
+                    "HTML5 with inline CSS. Output ONLY the HTML document, "
+                    "no explanation."
+                ),
             },
-            timeout=45.0,
-        )
-        if resp.status_code != 200:
-            logger.warning("LLM returned status %d", resp.status_code)
-            return _fallback_html("LLM returned non-200")
-
-        body = resp.json()
-        choices = body.get("choices") or []
-        if not choices:
-            return _fallback_html("No choices returned")
-
-        content = choices[0].get("message", {}).get("content", "")
-        if not content.strip():
-            return _fallback_html("Empty content")
-
-        return content
-    except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
-        logger.warning("LLM unreachable for HTML generation: %s", exc)
-        return _fallback_html(str(exc))
+            {"role": "user", "content": "\n".join(parts)},
+        ],
+        max_tokens=4096,
+        timeout=45.0,
+    )
+    return result or _fallback_html("LLM unavailable")
 
 
 def _fallback_html(reason: str) -> str:

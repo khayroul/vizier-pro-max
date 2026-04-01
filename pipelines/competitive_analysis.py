@@ -1,63 +1,39 @@
 """Competitive analysis — data load -> pandas analysis -> chart -> LLM narrative."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
-import httpx
 import structlog
 
+from adapter.llm_client import chat as llm_chat
 from scripts.research.analyze_data import run as analyze_run
 from scripts.research.render_chart import run as chart_run
 
 logger = structlog.get_logger(__name__)
 
-_LLM_ENDPOINT = "http://localhost:11435/v1/chat/completions"
-_LLM_MODEL = "gpt-5.4-mini"
-
 
 def _generate_narrative(topic: str, data_summary: str) -> str:
-    """Call LLM for narrative analysis of competitive data."""
-    try:
-        resp = httpx.post(
-            _LLM_ENDPOINT,
-            json={
-                "model": _LLM_MODEL,
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a market analyst. Given competitive data, "
-                            "write a concise analysis with key findings and "
-                            "recommendations. Use markdown formatting."
-                        ),
-                    },
-                    {
-                        "role": "user",
-                        "content": (
-                            f"Topic: {topic}\n\n"
-                            f"Data summary:\n{data_summary}"
-                        ),
-                    },
-                ],
-                "max_tokens": 1024,
+    """Call LLM for narrative analysis (OpenAI -> Ollama fallback)."""
+    result = llm_chat(
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a market analyst. Given competitive data, "
+                    "write a concise analysis with key findings and "
+                    "recommendations. Use markdown formatting."
+                ),
             },
-            timeout=30.0,
-        )
-        if resp.status_code != 200:
-            logger.warning("LLM returned status %d", resp.status_code)
-            return f"## {topic}\n\nData summary:\n```\n{data_summary}\n```\n"
-
-        body = resp.json()
-        choices = body.get("choices") or []
-        if not choices:
-            return f"## {topic}\n\nData summary:\n```\n{data_summary}\n```\n"
-
-        content = choices[0].get("message", {}).get("content", "")
-        return content or f"## {topic}\n\nData summary:\n```\n{data_summary}\n```\n"
-    except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
-        logger.warning("LLM unavailable for narrative: %s", exc)
-        return f"## {topic}\n\nData summary:\n```\n{data_summary}\n```\n"
+            {
+                "role": "user",
+                "content": f"Topic: {topic}\n\nData summary:\n{data_summary}",
+            },
+        ],
+        max_tokens=1024,
+    )
+    return result or f"## {topic}\n\nData summary:\n```\n{data_summary}\n```\n"
 
 
 def run(
@@ -97,8 +73,6 @@ def run(
         data_summary = analysis["summary"]
 
         # Step 2: Generate chart
-        import json
-
         summary_data = json.loads(data_summary)
         columns = list(summary_data.keys())
         if len(columns) >= 2:

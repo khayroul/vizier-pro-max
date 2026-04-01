@@ -7,61 +7,33 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
 import structlog
 
+from adapter.llm_client import chat as llm_chat
 from middleware.quality_gate import validate_input
 from scripts.document.render_typst import render_to_pdf
 
 logger = structlog.get_logger(__name__)
 
-_LLM_ENDPOINT = "http://localhost:11435/v1/chat/completions"
-_LLM_MODEL = "gpt-5.4-mini"
-_LLM_SYSTEM_PROMPT = (
+_SYSTEM_PROMPT = (
     "You are Vizier, a content creation assistant for Malaysian SMEs. "
     "Write engaging social media copy."
 )
 
 
 def _call_llm(brief: str, client_id: str | None = None) -> str | None:
-    """Call GPT-5.4-mini via Hermes proxy for content generation.
-
-    Returns generated content, or None if LLM unavailable (falls back to stub).
-    """
+    """Call LLM for content generation (OpenAI -> Ollama fallback)."""
     prompt = f"Generate social media content based on this brief:\n\n{brief}"
     if client_id:
         prompt += f"\n\nClient: {client_id}"
 
-    try:
-        resp = httpx.post(
-            _LLM_ENDPOINT,
-            json={
-                "model": _LLM_MODEL,
-                "messages": [
-                    {"role": "system", "content": _LLM_SYSTEM_PROMPT},
-                    {"role": "user", "content": prompt},
-                ],
-                "max_tokens": 1024,
-            },
-            timeout=30.0,
-        )
-        if resp.status_code != 200:
-            logger.warning(
-                "LLM returned status %d, falling back to stub", resp.status_code
-            )
-            return None
-
-        body = resp.json()
-        choices = body.get("choices") or []
-        if not choices:
-            raise ValueError("LLM returned no choices")
-        content = choices[0].get("message", {}).get("content", "")
-        if not content:
-            raise ValueError("LLM returned empty content")
-        return content
-    except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
-        logger.warning("LLM unavailable (%s), falling back to stub", exc)
-        return None
+    return llm_chat(
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+        max_tokens=1024,
+    )
 
 
 _INPUT_SCHEMA = {

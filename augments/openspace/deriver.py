@@ -9,70 +9,42 @@ import logging
 import uuid
 from pathlib import Path
 
-import httpx
-
+from adapter.llm_client import chat as llm_chat
 from augments.openspace.version_dag import SkillRecord, VersionDAG
 
 logger = logging.getLogger(__name__)
-
-_LLM_ENDPOINT = "http://localhost:11435/v1/chat/completions"
-_LLM_MODEL = "gpt-5.4-mini"
 
 
 def _call_llm_for_enhancement(
     skill_content: str, quality_scores: dict[str, float]
 ) -> str:
-    """Call GPT-5.4-mini via Hermes to generate an enhanced version.
+    """Call LLM to generate an enhanced version (OpenAI -> Ollama fallback).
 
     Returns enhanced SKILL.md content, or original unchanged on failure.
     """
     scores_text = "\n".join(f"  {k}: {v:.3f}" for k, v in quality_scores.items())
-    try:
-        resp = httpx.post(
-            _LLM_ENDPOINT,
-            json={
-                "model": _LLM_MODEL,
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a skill enhancement engine. Given a SKILL.md "
-                            "and quality scores, output an improved version. "
-                            "Preserve structure, improve clarity and coverage. "
-                            "Output ONLY valid markdown."
-                        ),
-                    },
-                    {
-                        "role": "user",
-                        "content": (
-                            f"SKILL.md:\n{skill_content}\n\n"
-                            f"Quality scores:\n{scores_text}"
-                        ),
-                    },
-                ],
-                "max_tokens": 2048,
+    result = llm_chat(
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a skill enhancement engine. Given a SKILL.md "
+                    "and quality scores, output an improved version. "
+                    "Preserve structure, improve clarity and coverage. "
+                    "Output ONLY valid markdown."
+                ),
             },
-            timeout=30.0,
-        )
-        if resp.status_code != 200:
-            logger.warning("LLM returned status %d, returning original", resp.status_code)
-            return skill_content
-
-        body = resp.json()
-        choices = body.get("choices") or []
-        if not choices:
-            logger.warning("LLM returned no choices")
-            return skill_content
-
-        content = choices[0].get("message", {}).get("content", "")
-        if not content.strip():
-            logger.warning("LLM returned empty content")
-            return skill_content
-
-        return content
-    except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
-        logger.warning("LLM unreachable for enhancement: %s", exc)
-        return skill_content
+            {
+                "role": "user",
+                "content": (
+                    f"SKILL.md:\n{skill_content}\n\n"
+                    f"Quality scores:\n{scores_text}"
+                ),
+            },
+        ],
+        max_tokens=2048,
+    )
+    return result or skill_content
 
 
 def derive_skill(
