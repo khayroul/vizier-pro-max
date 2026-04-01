@@ -1,0 +1,4 @@
+[submodule "hermes-agent"]
+	path = hermes-agent
+	url = git@github.com:khayroul/hermes-agent.git
+	branch = vizier-gate2-patch
