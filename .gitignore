@@ -17,3 +17,7 @@ tmp/
 *.db-wal
 .DS_Store
 .worktrees/
+tests/benchmarks/baseline/**/*.pdf
+tests/benchmarks/baseline/**/*.mp3
+tests/benchmarks/baseline/**/*.png
+tests/benchmarks/outputs/**

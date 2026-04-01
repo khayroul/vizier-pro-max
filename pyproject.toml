@@ -23,7 +23,8 @@ dependencies = [
     "pixelmatch>=0.3,<1",
     "opencv-python-headless>=4.9,<5",
     "pytesseract>=0.3,<1",
-    "lingua-py>=2.0,<3",
+    # lingua-py excluded: no Python 3.14 wheel. L4 language detection degrades gracefully.
+    # "lingua-py>=2.0,<3",
     "mcp>=1.0,<2",
 ]
 
