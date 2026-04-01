@@ -1,0 +1,33 @@
+name: send_telegram
+description: "Send text, files, or images via Telegram"
+version: "1.0"
+toolset: vizier-delivery
+
+execution:
+  type: python_function
+  entrypoint: "scripts.delivery.send_telegram:run"
+  timeout: 15
+
+input:
+  chat_id:
+    type: string
+    required: true
+    description: "Telegram chat ID"
+  text:
+    type: string
+    required: false
+    description: "Text message to send"
+  file_path:
+    type: string
+    required: false
+    description: "Path to file to send"
+  caption:
+    type: string
+    required: false
+    description: "Caption for file/image"
+
+output:
+  status:
+    type: string
+  message_id:
+    type: integer

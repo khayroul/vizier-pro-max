@@ -1,0 +1,29 @@
+name: send_whatsapp
+description: "Send text, files, or images via WhatsApp Business API"
+version: "1.0"
+toolset: vizier-delivery
+
+execution:
+  type: python_function
+  entrypoint: "scripts.delivery.send_whatsapp:run"
+  timeout: 15
+
+input:
+  to_phone:
+    type: string
+    required: true
+    description: "Recipient phone number (E.164 format)"
+  text:
+    type: string
+    required: false
+    description: "Text message to send"
+  file_path:
+    type: string
+    required: false
+    description: "Path to file to send"
+
+output:
+  status:
+    type: string
+  message_id:
+    type: string
