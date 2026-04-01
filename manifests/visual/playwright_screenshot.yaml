@@ -1,0 +1,40 @@
+name: playwright_screenshot
+description: "Render HTML to PNG screenshot via Playwright"
+version: "1.0"
+toolset: vizier-visual
+
+execution:
+  type: python_function
+  entrypoint: "scripts.visual.screenshot_html:run"
+  timeout: 30
+
+input:
+  html_content:
+    type: string
+    required: false
+    description: "Raw HTML string to render"
+  input_path:
+    type: string
+    required: false
+    description: "Path to HTML file to render"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output PNG"
+  viewport_width:
+    type: integer
+    required: false
+    description: "Viewport width in pixels (default: 1280)"
+  viewport_height:
+    type: integer
+    required: false
+    description: "Viewport height in pixels (default: 800)"
+
+output:
+  file_path:
+    type: string
+    description: "Path to generated PNG"
+
+retry:
+  max_attempts: 2
+  on: [timeout, runtime_error]
