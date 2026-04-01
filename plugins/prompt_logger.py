@@ -31,7 +31,8 @@ def _ensure_table(db_path: str | None = None) -> None:
             tools_json TEXT,
             timestamp REAL,
             tokens_in INTEGER DEFAULT 0,
-            tokens_out INTEGER DEFAULT 0
+            tokens_out INTEGER DEFAULT 0,
+            deliverable_id TEXT
         )
     """)
     conn.commit()
