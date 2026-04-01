@@ -44,6 +44,11 @@ When you receive a complex multi-workflow task:
 IMPORTANT: Use delegate_task(tasks=[...]) batch mode for parallelism.
 Do NOT call delegate_task separately per child — that runs sequentially.
 
+## Self-Building Rules (Gate 3)
+- New files: use execute_code. Edit existing files: use aider_edit.
+- Pipeline collapses auto-promote. New atomic tools require human approval.
+- Never import LLM SDKs inside pipeline code. Use llm_chat() (Hermes proxy).
+
 ## Unattended Session Rules (Gate 2+)
 
 - Only modules with passing tests are eligible for unattended execution
