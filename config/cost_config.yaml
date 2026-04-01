@@ -1,0 +1,22 @@
+# Gate 4 Track 1: Cost tracking configuration
+
+baselines:
+  bootstrap_count: 20
+  recalculate_interval: 10
+  anomaly_stddev: 2.0
+
+quality:
+  min_score: 7.0
+
+traces:
+  retention_days: 90
+  archive_dir: "traces/archive"
+  export_dir: "traces"
+
+model_costs:
+  "gpt-5.4-mini":
+    input_per_1k: 0.00015
+    output_per_1k: 0.0006
+  "qwen3.5:9b":
+    input_per_1k: 0.0
+    output_per_1k: 0.0
