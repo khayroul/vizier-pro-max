@@ -92,8 +92,7 @@ def _compute_pixel_diff(
             rgba_b.flatten().tolist(),
             w,
             h,
-            None,
-            {"threshold": 0.1},
+            threshold=0.1,
         )
         total_pixels = h * w
         return (diff_count / total_pixels) * 100.0 if total_pixels > 0 else 0.0
