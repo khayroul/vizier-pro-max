@@ -2895,7 +2895,7 @@ Expected: FAIL
 
 ```python
 # augments/deerflow/shared_memory.py
-"""Cross-agent shared memory via debounced file-based IPC.
+"""Cross-agent shared memory via file-based IPC.
 
 Thread-safe. JSON file at tmp/shared_memory_{session_id}.json.
 Parent reads after children complete. Children write observations.
@@ -3199,9 +3199,9 @@ def _tools_have_tests(toolsets: list[str]) -> bool:
             if manifest.toolset != toolset:
                 continue
             # Check if the script has a test file
-            if manifest.execution and hasattr(manifest.execution, "entrypoint"):
+            if manifest.execution and manifest.execution.entrypoint is not None:
                 module_path = manifest.execution.entrypoint.split(":")[0].replace(".", "/") + ".py"
-                test_file = find_test_file(module_path)
+                test_file = find_test_file(module_path, Path("."))
                 if test_file is None:
                     logger.warning("No test file for %s (toolset: %s)", module_path, toolset)
                     return False
@@ -3774,6 +3774,8 @@ git commit -m "feat: Chunk 3 complete — parallel sessions, cron, delivery chan
 ## Chunk 4: OpenSpace + Dream-skill + Template Cloning + Quality Gates 3-6
 
 > **Note:** Chunk 4 is the largest chunk. Tasks 18-27 cover all remaining subsystems.
+>
+> **Tasks 21-26 have abbreviated steps** referencing spec sections rather than full code. These tasks MUST be expanded into full TDD code via a dedicated execution prompt before agentic execution. The executing agent should use the spec sections cited in each task to generate complete test + implementation code matching the detail level of Tasks 1-20.
 
 ### Task 18: OpenSpace — version_dag (SQLite store)
 
@@ -4197,10 +4199,18 @@ def prune_stale_skills(
     for record in dag.list_active():
         total_use = record.total_selections + record.total_completions
         if total_use == 0 and record.generation == 0:
-            # Never used, not a derivative — candidate for pruning
-            continue  # Skip imported skills that haven't been tested yet
-        # TODO: implement session-count tracking in Gate 3
+            continue  # Skip imported root skills — they haven't had a chance yet
+        if total_use > 0:
+            continue  # Still in use — keep active
+        # Derivative with zero use — archive it
+        if record.path.exists():
+            dest = archive / record.path.name
+            shutil.move(str(record.path), str(dest))
+            logger.info("Archived stale skill: %s -> %s", record.path, dest)
+        dag.deactivate(record.skill_id)
+        pruned.append(record.skill_id)
 
+    # Gate 3: add session-count-based pruning (threshold: N sessions without invocation)
     return pruned
 ```
 
@@ -4712,12 +4722,25 @@ git commit -m "feat: template cloning loop — vision → HTML → delta → con
 - Modify: `middleware/quality_gate.py`
 - Test: `tests/middleware/test_quality_gate_extended.py`
 
+**IMPORTANT:** The implementation MUST export a `LAYERS` dict constant from `middleware/quality_gate.py` so Task 27 integration test can verify all 6 layers are registered. Example:
+
+```python
+LAYERS: dict[int, str] = {
+    1: "input_validation",
+    2: "output_verification",
+    3: "visual_qa",
+    4: "content_quality",
+    5: "delivery_verification",
+    6: "feedback_loop",
+}
+```
+
 - [ ] **Step 1: Write failing tests — see spec Section 6.4 for layers 3-6**
 - [ ] **Step 2: Run to verify fail**
-- [ ] **Step 3: Implement layer 3 (visual QA — scoped to template-based renders)**
-- [ ] **Step 4: Implement layer 4 (content quality — lingua-py + tone checker)**
-- [ ] **Step 5: Implement layer 5 (delivery verification — httpx status)**
-- [ ] **Step 6: Implement layer 6 (feedback loop — structlog)**
+- [ ] **Step 3: Implement layer 3 (visual QA — scoped to template-based renders, uses `calculate_delta.py`)**
+- [ ] **Step 4: Implement layer 4 (content quality — lingua-py language detection + keyword tone checker against client config)**
+- [ ] **Step 5: Implement layer 5 (delivery verification — check httpx response status after send_telegram/send_whatsapp)**
+- [ ] **Step 6: Implement layer 6 (feedback loop — log structured data via structlog: `{tool_name, layer, score, pass_fail, session_id}`)**
 - [ ] **Step 7: Run tests**
 - [ ] **Step 8: Commit**
 
