@@ -1,0 +1,7 @@
+{
+  "openspace": {
+    "command": "python3",
+    "args": ["-m", "augments.openspace.server"],
+    "cwd": "/Users/Executor/vizier-pro-max"
+  }
+}
