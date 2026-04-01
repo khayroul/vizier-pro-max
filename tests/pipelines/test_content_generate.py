@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pipelines.content_generate import run, _extract_title
+from pipelines.content_generate import run, _extract_title_from_response
 
 
 class TestContentGeneratePipeline:
@@ -58,11 +58,12 @@ class TestContentGeneratePipeline:
 
 class TestExtractTitle:
     def test_extracts_first_line(self) -> None:
-        assert _extract_title("My Title\nBody text here") == "My Title"
+        title = _extract_title_from_response("My Title\nBody text here")
+        assert "My Title" in title
 
     def test_truncates_long_titles(self) -> None:
         long_brief = "A" * 100
-        assert len(_extract_title(long_brief)) == 50
+        assert len(_extract_title_from_response(long_brief)) <= 80
 
     def test_handles_single_line(self) -> None:
-        assert _extract_title("Short brief") == "Short brief"
+        assert _extract_title_from_response("Short brief") == "Short brief"

@@ -68,7 +68,13 @@ def run(
 
         # Screenshot to PNG
         poster_path = str(out / f"poster_{idx:04d}.png")
-        result = screenshot_run(html_content=html, output_path=poster_path)
+        result = screenshot_run(
+            html_content=html,
+            output_path=poster_path,
+            viewport_width=800,
+            viewport_height=600,
+            full_page=False,
+        )
         posters.append(result["file_path"])
         logger.info("Poster %d/%d rendered: %s", idx + 1, len(rows), poster_path)
 

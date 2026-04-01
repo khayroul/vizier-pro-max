@@ -1,6 +1,7 @@
 """Tests for competitive_analysis pipeline."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -17,10 +18,16 @@ class TestCompetitiveAnalysis:
 
         output_dir = str(tmp_path / "reports")
 
-        with patch("pipelines.competitive_analysis.analyze_run") as mock_analyze, \
-             patch("pipelines.competitive_analysis.chart_run") as mock_chart, \
-             patch("pipelines.competitive_analysis._generate_narrative") as mock_llm:
-            mock_analyze.return_value = {"summary": '{"company": {}, "revenue": {}}'}
+        with (
+            patch("pipelines.competitive_analysis._select_analysis_operations") as mock_ops,
+            patch("pipelines.competitive_analysis.analyze_run") as mock_analyze,
+            patch("pipelines.competitive_analysis.chart_run") as mock_chart,
+            patch("pipelines.competitive_analysis._generate_narrative") as mock_llm,
+        ):
+            mock_ops.return_value = [
+                {"operation": "groupby", "group_column": "company", "agg_column": "revenue", "agg_function": "sum"},
+            ]
+            mock_analyze.return_value = {"summary": json.dumps({"Acme": 100, "Beta": 200})}
             mock_chart.return_value = {"file_path": str(tmp_path / "chart.png")}
             mock_llm.return_value = "## Analysis\nBeta leads in growth."
 
@@ -48,12 +55,14 @@ class TestCompetitiveAnalysis:
         assert "report" in result
         assert "chart_path" not in result
 
-    def test_empty_topic_raises(self) -> None:
-        """Empty topic raises ValueError."""
-        with pytest.raises(ValueError, match="topic must not be empty"):
-            run(topic="   ")
+    def test_empty_topic_returns_error(self) -> None:
+        """Empty topic returns error via quality gates."""
+        result = run(topic="   ")
+        assert "error" in result
+        assert "quality_report" in result
 
-    def test_missing_data_file_raises(self, tmp_path: Path) -> None:
-        """Non-existent data file raises FileNotFoundError."""
-        with pytest.raises(FileNotFoundError, match="Data file not found"):
-            run(topic="test", data_path="/nonexistent.csv")
+    def test_missing_data_file_returns_error(self, tmp_path: Path) -> None:
+        """Non-existent data file returns error via quality gates."""
+        result = run(topic="test", data_path="/nonexistent.csv")
+        assert "error" in result
+        assert "quality_report" in result

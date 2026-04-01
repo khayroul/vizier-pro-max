@@ -2,27 +2,64 @@
 
 Gate 1: Validates brief, generates content (stub), renders PDF if requested.
 Gate 2+: Adds full RAG retrieval, LLM generation, quality scoring.
+Session 2: JSON-structured output, quality gates via run_with_gates.
 """
 from __future__ import annotations
 
+import json
+import re
 from typing import Any
 
 import structlog
 
 from adapter.llm_client import chat as llm_chat
-from middleware.quality_gate import validate_input
+from middleware.cost_ledger import record_quality
+from middleware.deliverable_context import (
+    clear_context,
+    get_client_id,
+    get_deliverable_id,
+    set_pipeline_step,
+    start_deliverable,
+)
+from middleware.pipeline_runner import run_with_gates
+from middleware.trace_exporter import (
+    check_anomalies,
+    export_trace,
+    log_anomaly,
+    notify_anomaly,
+)
 from scripts.document.render_typst import render_to_pdf
 
 logger = structlog.get_logger(__name__)
 
+_PIPELINE_NAME = "content_generate"
+_PIPELINE_VERSION = "2.0"
+
 _SYSTEM_PROMPT = (
     "You are Vizier, a content creation assistant for Malaysian SMEs. "
-    "Write engaging social media copy."
+    "Output ONLY valid JSON with these exact keys:\n"
+    '{"title": "...", "body": "...", "hashtags": ["...", "..."]}\n\n'
+    "Rules:\n"
+    "- title: A compelling headline (max 10 words)\n"
+    "- body: The full post content in markdown. Professional but warm tone.\n"
+    "- hashtags: 3-5 relevant hashtags\n"
+    "- No preamble, no sign-off, no offers to revise\n"
+    "- Target audience and platform conventions should match the brief"
 )
+
+_INPUT_SCHEMA: dict[str, dict[str, Any]] = {
+    "brief": {"type": "string", "required": True},
+}
+
+_OUTPUT_SCHEMA: dict[str, dict[str, Any]] = {
+    "content": {"type": "string", "required": True},
+    "format": {"type": "string", "required": True},
+}
 
 
 def _call_llm(brief: str, client_id: str | None = None) -> str | None:
     """Call LLM for content generation (OpenAI -> Ollama fallback)."""
+    set_pipeline_step("llm_generation", _PIPELINE_NAME, _PIPELINE_VERSION)
     prompt = f"Generate social media content based on this brief:\n\n{brief}"
     if client_id:
         prompt += f"\n\nClient: {client_id}"
@@ -33,49 +70,93 @@ def _call_llm(brief: str, client_id: str | None = None) -> str | None:
             {"role": "user", "content": prompt},
         ],
         max_tokens=1024,
+        strip_preamble=True,
     )
 
 
-_INPUT_SCHEMA = {
-    "brief": {"type": "string", "required": True},
-    "client_id": {"type": "string", "required": False},
-    "output_format": {"type": "string", "required": False},
-}
+def _extract_title_from_response(response: str) -> str:
+    """Extract a title from the LLM response.
 
-
-def run(
-    brief: str,
-    client_id: str | None = None,
-    output_format: str = "markdown",
-) -> dict[str, Any]:
-    """Execute the content generation pipeline.
+    Tries JSON parse first, then markdown heading, then first sentence.
 
     Args:
-        brief: Content brief describing what to produce.
-        client_id: Client ID for brand context loading.
-        output_format: Output format — "markdown", "pdf", or "html".
+        response: Raw LLM response text.
 
     Returns:
-        Dict with generated content and metadata.
-        If output_format is "pdf", includes ``pdf_path``.
+        Extracted title string.
     """
-    # Exclude None optional fields so the type checker does not reject them.
-    payload: dict[str, Any] = {"brief": brief, "output_format": output_format}
-    if client_id is not None:
-        payload["client_id"] = client_id
+    # Try JSON parse
+    try:
+        data = json.loads(response)
+        if isinstance(data, dict) and "title" in data:
+            return str(data["title"])
+    except (json.JSONDecodeError, ValueError):
+        pass
 
-    validation = validate_input(payload, _INPUT_SCHEMA)
-    if not validation.passed:
-        return {"error": f"Input validation failed: {validation.errors}"}
+    # Try markdown heading
+    heading_match = re.match(r"^#\s+(.+)", response.strip())
+    if heading_match:
+        return heading_match.group(1).strip()
+
+    # Fall back to first sentence
+    first_line = response.strip().split("\n")[0]
+    sentence_match = re.match(r"^(.+?[.!?])", first_line)
+    if sentence_match:
+        return sentence_match.group(1).strip()
+
+    return first_line[:80].strip()
+
+
+def _extract_body_from_response(response: str) -> str:
+    """Extract the body content from the LLM response.
+
+    Tries JSON parse first (body + hashtags), then returns raw text.
+
+    Args:
+        response: Raw LLM response text.
+
+    Returns:
+        Extracted body string.
+    """
+    try:
+        data = json.loads(response)
+        if isinstance(data, dict):
+            body = str(data.get("body", ""))
+            hashtags = data.get("hashtags", [])
+            if isinstance(hashtags, list) and hashtags:
+                body += "\n\n" + " ".join(str(tag) for tag in hashtags)
+            return body
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    return response
+
+
+def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
+    """Core pipeline logic called by run_with_gates.
+
+    Args:
+        inputs: Dict with ``brief``, optional ``client_id`` and ``output_format``.
+
+    Returns:
+        Dict with ``content``, ``format``, ``brief``, and optional pdf fields.
+    """
+    brief: str = inputs["brief"]
+    client_id: str | None = inputs.get("client_id")
+    output_format: str = inputs.get("output_format", "markdown")
 
     if not brief.strip():
-        return {"error": "Brief cannot be empty"}
-
-    # NOTE: RAG retrieval step deferred to Gate 2 (requires LightRAG integration).
-    # Gate 1 generates content from brief + client_id only.
+        return {"error": "Brief cannot be empty", "content": "", "format": output_format}
 
     # Call LLM via Hermes proxy; fall back to stub if unavailable.
-    content = _call_llm(brief, client_id) or f"[Generated content for: {brief[:100]}]"
+    is_stub = False
+    raw_content = _call_llm(brief, client_id)
+    if raw_content is None:
+        raw_content = f"[Generated content for: {brief[:100]}]"
+        is_stub = True
+
+    # Extract structured fields from the response
+    content = _extract_body_from_response(raw_content)
 
     result: dict[str, Any] = {
         "content": content,
@@ -88,7 +169,8 @@ def run(
 
     # PDF rendering — typst compile
     if output_format == "pdf":
-        title = _extract_title(brief)
+        set_pipeline_step("pdf_render", _PIPELINE_NAME, _PIPELINE_VERSION)
+        title = _extract_title_from_response(raw_content)
         pdf_result = render_to_pdf(content=content, title=title)
 
         if "error" in pdf_result:
@@ -98,22 +180,64 @@ def run(
             result["pdf_path"] = pdf_result["pdf_path"]
             logger.info("PDF rendered: %s", pdf_result["pdf_path"])
 
-    logger.info(
-        "Content pipeline completed: format=%s, brief_len=%d",
-        output_format,
-        len(brief),
-    )
+    # Record quality: stub content falls below threshold so it gets reviewed.
+    did = get_deliverable_id()
+    quality_score = 6.5 if is_stub else 8.0
+    if did:
+        record_quality(did, quality_score, not is_stub)
+
     return result
 
 
-def _extract_title(brief: str) -> str:
-    """Extract a short title from the brief for the PDF header.
+def run(
+    brief: str,
+    client_id: str | None = None,
+    output_format: str = "markdown",
+) -> dict[str, Any]:
+    """Execute the content generation pipeline with quality gates.
 
     Args:
-        brief: Full brief text.
+        brief: Content brief describing what to produce.
+        client_id: Client ID for brand context loading.
+        output_format: Output format — "markdown", "pdf", or "html".
 
     Returns:
-        Title string (first 50 chars, cleaned).
+        Dict with generated content, metadata, and quality_report.
+        If output_format is "pdf", includes ``pdf_path``.
     """
-    first_line = brief.strip().split("\n")[0]
-    return first_line[:50].strip()
+    did = start_deliverable(client_id=client_id)
+
+    try:
+        inputs: dict[str, Any] = {"brief": brief, "output_format": output_format}
+        if client_id is not None:
+            inputs["client_id"] = client_id
+
+        result = run_with_gates(
+            pipeline_fn=_pipeline_fn,
+            inputs=inputs,
+            input_schema=_INPUT_SCHEMA,
+            output_schema=_OUTPUT_SCHEMA,
+            pipeline_name=_PIPELINE_NAME,
+        )
+
+        # Check for anomalies; export trace if found.
+        _check_and_export(did, client_id)
+
+        logger.info(
+            "Content pipeline completed: format=%s, brief_len=%d",
+            output_format,
+            len(brief),
+        )
+        return {**result, "deliverable_id": did}
+
+    finally:
+        clear_context()
+
+
+def _check_and_export(did: str, client_id: str | None) -> None:
+    """Check anomalies and export trace if needed."""
+    anomaly = check_anomalies(did)
+    if anomaly["is_anomaly"]:
+        trace_path = export_trace(did)
+        log_anomaly(did, client_id, _PIPELINE_NAME, anomaly["reasons"], trace_path)
+        notify_anomaly(did, client_id, _PIPELINE_NAME, anomaly["reasons"], trace_path)

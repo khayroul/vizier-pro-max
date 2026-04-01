@@ -7,10 +7,83 @@ from typing import Any
 
 import structlog
 
+from middleware.quality_gate import ValidationResult
 from scripts.audio.process_media import run as ffmpeg_run
 from scripts.audio.speak_text import run as tts_run
 
 logger = structlog.get_logger(__name__)
+
+
+_KNOWN_VOICES = {
+    "en-US-AriaNeural",
+    "en-US-GuyNeural",
+    "en-US-JennyNeural",
+    "en-GB-SoniaNeural",
+    "en-AU-NatashaNeural",
+    "ms-MY-YasminNeural",
+    "ms-MY-OsmanNeural",
+}
+
+
+def _validate_voice(voice: str | None) -> str:
+    """Validate and default the TTS voice name.
+
+    Args:
+        voice: Edge TTS voice name, or None for default.
+
+    Returns:
+        Validated voice string.
+    """
+    if voice is None:
+        return "en-US-AriaNeural"
+    if voice not in _KNOWN_VOICES:
+        logger.warning("Unknown voice '%s' — may fail at Edge TTS", voice)
+    return voice
+
+
+def _verify_output(file_path: str, text_length: int) -> ValidationResult:
+    """L2 output verification for TTS audio files.
+
+    Args:
+        file_path: Path to the generated MP3 file.
+        text_length: Length of the source text in characters.
+
+    Returns:
+        ValidationResult indicating pass/fail with error details.
+    """
+    errors: list[str] = []
+    path = Path(file_path)
+
+    if not path.exists():
+        return ValidationResult(
+            passed=False,
+            errors=[f"Output file not found: {file_path}"],
+            layer="output_verification",
+        )
+
+    size = path.stat().st_size
+    if size == 0:
+        return ValidationResult(
+            passed=False,
+            errors=["Output file is empty (0 bytes)"],
+            layer="output_verification",
+        )
+
+    header = path.read_bytes()[:4]
+    has_id3 = header[:3] == b"ID3"
+    has_sync = len(header) >= 2 and header[0] == 0xFF and (header[1] & 0xE0) == 0xE0
+    if not has_id3 and not has_sync:
+        errors.append("File does not have a valid MP3 header")
+
+    min_expected = max(100, text_length * 50)
+    if size < min_expected:
+        errors.append(f"File suspiciously small ({size} bytes) for {text_length} chars")
+
+    return ValidationResult(
+        passed=len(errors) == 0,
+        errors=errors,
+        layer="output_verification",
+    )
 
 
 def run(
@@ -32,6 +105,8 @@ def run(
     if not text.strip():
         msg = "text must not be empty"
         raise ValueError(msg)
+
+    voice = _validate_voice(voice)
 
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -55,8 +130,20 @@ def run(
     finally:
         Path(raw_path).unlink(missing_ok=True)
 
+    # Step 3: L2 output verification
+    quality_result = _verify_output(output_path, text_length=len(text))
+    if not quality_result.passed:
+        logger.warning(
+            "TTS output quality check failed: %s", quality_result.errors
+        )
+
     return {
         "file_path": output_path,
-        "voice": voice or "en-US-AriaNeural",
+        "voice": voice,
         "status": "completed",
+        "quality_report": {
+            "passed": quality_result.passed,
+            "errors": quality_result.errors,
+            "layer": quality_result.layer,
+        },
     }

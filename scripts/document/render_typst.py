@@ -100,6 +100,46 @@ def render_to_pdf(
         Path(typ_path).unlink(missing_ok=True)
 
 
+def _markdown_to_typst(content: str) -> str:
+    """Convert common markdown formatting to Typst equivalents.
+
+    Handles headings, bold, italic, hashtags, and code blocks so that
+    LLM-generated markdown compiles cleanly in Typst.
+    """
+    lines: list[str] = []
+    in_code_block = False
+    for line in content.splitlines():
+        # Toggle code blocks
+        if line.strip().startswith("```"):
+            if in_code_block:
+                lines.append("```")
+                in_code_block = False
+            else:
+                lang = line.strip().removeprefix("```").strip()
+                lines.append(f"```{lang}" if lang else "```")
+                in_code_block = True
+            continue
+
+        if in_code_block:
+            lines.append(line)
+            continue
+
+        # Markdown headings -> Typst headings
+        heading_match = re.match(r"^(#{1,6})\s+(.*)", line)
+        if heading_match:
+            level = "=" * len(heading_match.group(1))
+            lines.append(f"{level} {heading_match.group(2)}")
+            continue
+
+        # Escape standalone # (hashtags like #AI) that aren't headings
+        processed = re.sub(r"#(\w)", r"\#\1", line)
+        # Markdown bold **text** -> Typst *text*
+        processed = re.sub(r"\*\*(.+?)\*\*", r"*\1*", processed)
+        lines.append(processed)
+
+    return "\n".join(lines)
+
+
 def _wrap_content_as_typst(content: str, title: str) -> str:
     """Wrap plain text content in minimal Typst formatting.
 
@@ -110,12 +150,16 @@ def _wrap_content_as_typst(content: str, title: str) -> str:
     Returns:
         Typst markup string ready for compilation.
     """
-    # Escape content that could be interpreted as Typst markup
-    # For Gate 1, keep it simple — raw text with basic heading
-    return f"""#set page(margin: 2cm)
-#set text(font: "Linux Libertine", size: 11pt)
+    typst_content = _markdown_to_typst(content)
+    return f"""#set page(margin: (top: 2.5cm, bottom: 2cm, left: 2cm, right: 2cm))
+#set text(size: 11pt)
+#set par(justify: true)
 
-= {title}
+#align(center)[
+  #text(size: 18pt, weight: "bold")[{title}]
+]
 
-{content}
+#v(1em)
+
+{typst_content}
 """
