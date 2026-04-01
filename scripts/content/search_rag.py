@@ -35,7 +35,7 @@ def _get_rag_instance() -> Any | None:
         return None
 
 
-def search(query: str, mode: str = "hybrid") -> dict[str, Any]:
+def run(*, query: str, mode: str = "hybrid") -> dict[str, Any]:
     """Search the knowledge base.
 
     Args:
