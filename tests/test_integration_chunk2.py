@@ -32,7 +32,8 @@ class TestChunk2Integration:
         from pipelines.poster_batch import run as pb_run
         from pipelines.tts_generate import run as tts_run
 
-        assert cc_run(target_image_path="/fake.png")["status"] == "stub"
+        # clone_converge was upgraded from stub to full implementation in Chunk 4
+        assert cc_run(target_image_path="/fake.png")["status"] in ("stub", "error")
         assert pb_run()["status"] == "stub"
         assert ca_run(topic="test")["status"] == "stub"
         assert tts_run(text="hello")["status"] == "stub"
