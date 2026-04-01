@@ -1,0 +1,36 @@
+name: pypdf_merge
+description: "Merge, extract, or manipulate PDF files"
+version: "1.0"
+toolset: vizier-document
+
+execution:
+  type: python_function
+  entrypoint: "scripts.document.merge_pdfs:run"
+  timeout: 30
+
+input:
+  input_paths:
+    type: array
+    required: true
+    description: "Paths to input PDF files"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output PDF"
+  operation:
+    type: string
+    required: true
+    description: "Operation: merge, extract, rotate"
+  pages:
+    type: array
+    required: false
+    description: "Page indices for extract/rotate (0-indexed)"
+  rotation:
+    type: integer
+    required: false
+    description: "Rotation angle for rotate operation"
+
+output:
+  file_path:
+    type: string
+    description: "Path to output PDF"

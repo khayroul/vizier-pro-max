@@ -1,0 +1,32 @@
+name: pandoc_convert
+description: "Convert between document formats via pandoc"
+version: "1.0"
+toolset: vizier-document
+
+execution:
+  type: python_function
+  entrypoint: "scripts.document.convert_format:run"
+  timeout: 30
+
+input:
+  input_path:
+    type: string
+    required: true
+    description: "Path to input file"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output file"
+  from_format:
+    type: string
+    required: false
+    description: "Input format (auto-detected from extension if omitted)"
+  to_format:
+    type: string
+    required: false
+    description: "Output format (auto-detected from extension if omitted)"
+
+output:
+  file_path:
+    type: string
+    description: "Path to converted file"
