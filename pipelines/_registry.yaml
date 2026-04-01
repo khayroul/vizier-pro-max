@@ -24,3 +24,40 @@ pipelines:
       pdf_path:
         type: string
         description: "Path to rendered PDF (if output_format=pdf)"
+
+  - name: clone_converge
+    description: "Clone visual design into reusable Jinja2 template via convergence loop"
+    input:
+      target_image_path: { type: string, required: true }
+      output_dir: { type: string, required: false }
+      max_iterations: { type: integer, required: false }
+      threshold: { type: number, required: false }
+    output:
+      status: { type: string }
+      score: { type: number }
+
+  - name: poster_batch
+    description: "CSV + template → batch poster production"
+    input:
+      template_path: { type: string, required: false }
+      data_path: { type: string, required: false }
+      output_dir: { type: string, required: false }
+    output:
+      posters: { type: array }
+
+  - name: competitive_analysis
+    description: "Market scan → data analysis → charts → report"
+    input:
+      topic: { type: string, required: true }
+      output_dir: { type: string, required: false }
+    output:
+      status: { type: string }
+
+  - name: tts_generate
+    description: "Text → TTS audio via edge-tts + ffmpeg normalization"
+    input:
+      text: { type: string, required: true }
+      output_path: { type: string, required: false }
+      voice: { type: string, required: false }
+    output:
+      output_path: { type: string }
