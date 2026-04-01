@@ -53,6 +53,21 @@ pipelines:
     output:
       status: { type: string }
 
+  - name: poster_generate
+    description: "Two-layer poster: AI background (OpenAI/fal.ai) + HTML text overlay via Playwright"
+    input:
+      headline: { type: string, required: true, description: "Poster headline (max ~8 words)" }
+      body: { type: string, required: true, description: "Poster body text (max ~220 chars)" }
+      cta: { type: string, required: false, description: "Call-to-action button text" }
+      image_prompt: { type: string, required: false, description: "Custom prompt for AI background" }
+      template_name: { type: string, required: false, description: "HTML template name (default: social-post)" }
+      image_mode: { type: string, required: false, description: "openai or falai (default: openai)" }
+      output_path: { type: string, required: false }
+    output:
+      poster_path: { type: string }
+      hero_path: { type: string }
+      template_used: { type: string }
+
   - name: tts_generate
     description: "Text → TTS audio via edge-tts + ffmpeg normalization"
     input:

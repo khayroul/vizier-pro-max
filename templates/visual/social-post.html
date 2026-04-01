@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="reactor-width" content="1080">
+<meta name="reactor-height" content="1080">
+<meta name="reactor-slots" content="headline,body,cta,image_url">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 1080px; height: 1080px; overflow: hidden;
+    font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+  }
+  .canvas {
+    position: relative;
+    width: 1080px; height: 1080px;
+    background: #0a0a0f;
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: flex-end;
+    padding: 72px 80px;
+    color: #f0f0f0;
+  }
+
+  /* --- Background layers --- */
+  .bg-image {
+    position: absolute; inset: 0;
+    background-image: url("{{image_url}}");
+    background-size: cover; background-position: center;
+  }
+  .bg-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      178deg,
+      rgba(10,10,15,0.05) 0%,
+      rgba(10,10,15,0.12) 25%,
+      rgba(10,10,15,0.40) 50%,
+      rgba(10,10,15,0.78) 70%,
+      rgba(10,10,15,0.94) 88%,
+      rgba(10,10,15,0.97) 100%
+    );
+  }
+  /* Subtle film grain for premium print feel */
+  .noise {
+    position: absolute; inset: 0;
+    opacity: 0.035; z-index: 3;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 256px;
+    pointer-events: none;
+  }
+
+  /* --- Content block — pinned to bottom-left --- */
+  .content {
+    position: relative;
+    display: flex; flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 900px;
+    z-index: 2;
+  }
+
+  /* Decorative accent — thicker, glowing */
+  .accent-bar {
+    width: 64px; height: 5px;
+    background: linear-gradient(90deg, #d4a853, #f0d48a);
+    border-radius: 3px;
+    box-shadow: 0 0 16px rgba(212,168,83,0.4);
+  }
+
+  .headline {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-size: 66px; font-weight: 900; line-height: 1.08;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    text-shadow: 0 3px 24px rgba(0,0,0,0.7), 0 0 48px rgba(0,0,0,0.3);
+  }
+  .body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 26px; font-weight: 400; line-height: 1.6;
+    color: rgba(255,255,255,0.90);
+    max-width: 780px;
+    text-shadow: 0 1px 10px rgba(0,0,0,0.6);
+  }
+  .cta-wrapper {
+    padding-top: 12px;
+  }
+  .cta {
+    display: inline-block;
+    padding: 18px 44px;
+    background: linear-gradient(135deg, #d4a853, #c49340);
+    color: #0a0a0f;
+    font-family: 'Inter', sans-serif;
+    font-size: 21px; font-weight: 600;
+    border-radius: 50px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 28px rgba(212,168,83,0.35);
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="bg-image"></div>
+  <div class="bg-overlay"></div>
+  <div class="noise"></div>
+  <div class="content">
+    <div class="accent-bar"></div>
+    <div class="headline">{{headline}}</div>
+    <div class="body">{{body}}</div>
+    <div class="cta-wrapper">
+      <div class="cta">{{cta}}</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
