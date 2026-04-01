@@ -8,10 +8,53 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+import httpx
+
 from middleware.quality_gate import validate_input
 from scripts.document.render_typst import render_to_pdf
 
 logger = logging.getLogger(__name__)
+
+_LLM_ENDPOINT = "http://localhost:11435/v1/chat/completions"
+_LLM_MODEL = "gpt-5.4-mini"
+_LLM_SYSTEM_PROMPT = (
+    "You are Vizier, a content creation assistant for Malaysian SMEs. "
+    "Write engaging social media copy."
+)
+
+
+def _call_llm(brief: str, client_id: str | None = None) -> str | None:
+    """Call GPT-5.4-mini via Hermes proxy for content generation.
+
+    Returns generated content, or None if LLM unavailable (falls back to stub).
+    """
+    prompt = f"Generate social media content based on this brief:\n\n{brief}"
+    if client_id:
+        prompt += f"\n\nClient: {client_id}"
+
+    try:
+        resp = httpx.post(
+            _LLM_ENDPOINT,
+            json={
+                "model": _LLM_MODEL,
+                "messages": [
+                    {"role": "system", "content": _LLM_SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
+                "max_tokens": 1024,
+            },
+            timeout=30.0,
+        )
+        if resp.status_code == 200:
+            return resp.json()["choices"][0]["message"]["content"]
+        logger.warning(
+            "LLM returned status %d, falling back to stub", resp.status_code
+        )
+        return None
+    except httpx.HTTPError as exc:
+        logger.warning("LLM unavailable (%s), falling back to stub", exc)
+        return None
+
 
 _INPUT_SCHEMA = {
     "brief": {"type": "string", "required": True},
@@ -48,8 +91,8 @@ def run(
     if not brief.strip():
         return {"error": "Brief cannot be empty"}
 
-    # Gate 1: stub content (Gate 2+ replaces with RAG -> LLM)
-    content = f"[Generated content for: {brief[:100]}]"
+    # Call LLM via Hermes proxy; fall back to stub if unavailable.
+    content = _call_llm(brief, client_id) or f"[Generated content for: {brief[:100]}]"
 
     result: dict[str, Any] = {
         "content": content,
