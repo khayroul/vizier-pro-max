@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from bridge.cron_loader import load_cron_configs, register_jobs
+from bridge.cron_loader import CronJobConfig, load_cron_configs, register_jobs
 
 
 class TestCronLoaderRegister:
@@ -30,7 +30,7 @@ class TestCronLoaderRegister:
         mock_scheduler.add_job.side_effect = ValueError("bad schedule")
 
         registered = register_jobs(
-            [{"id": "bad", "schedule": "invalid", "prompt": "x", "toolsets": []}],
+            [CronJobConfig(id="bad", schedule="invalid", prompt="x", toolsets=[])],
             scheduler=mock_scheduler,
         )
         assert registered == 0

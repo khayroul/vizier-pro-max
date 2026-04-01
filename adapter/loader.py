@@ -1,9 +1,10 @@
 """Load YAML manifests and register tools into Hermes via registry.register()."""
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+import structlog
 
 from adapter.executor import execute_tool
 from adapter.schemas import ManifestConfig, manifest_to_openai_schema, parse_manifest
@@ -11,7 +12,7 @@ from adapter.schemas import ManifestConfig, manifest_to_openai_schema, parse_man
 if TYPE_CHECKING:
     pass
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 def _get_registry() -> object | None:

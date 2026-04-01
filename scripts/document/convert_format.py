@@ -1,11 +1,12 @@
 """Pandoc CLI wrapper for document format conversion."""
 from __future__ import annotations
 
-import logging
 import subprocess
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 _FORMAT_MAP = {
     ".md": "markdown",
@@ -38,6 +39,18 @@ def run(
     """
     in_path = Path(input_path)
     out_path = Path(output_path)
+
+    _VALID_FORMATS = set(_FORMAT_MAP.values())
+
+    if from_format is not None and from_format not in _VALID_FORMATS:
+        msg = (
+            f"Disallowed from_format: {from_format!r}."
+            f" Valid: {sorted(_VALID_FORMATS)}"
+        )
+        raise ValueError(msg)
+    if to_format is not None and to_format not in _VALID_FORMATS:
+        msg = f"Disallowed to_format: {to_format!r}. Valid: {sorted(_VALID_FORMATS)}"
+        raise ValueError(msg)
 
     effective_from = from_format or _FORMAT_MAP.get(in_path.suffix, "markdown")
     effective_to = to_format or _FORMAT_MAP.get(out_path.suffix, "html")

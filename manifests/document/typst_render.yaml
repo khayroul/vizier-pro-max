@@ -4,21 +4,26 @@ version: "1.0"
 toolset: vizier-document
 
 execution:
-  type: cli
-  command: "typst compile {input_path} {output_path}"
+  type: python_function
+  path: "scripts/document/render_typst.py"
+  entrypoint: "render_to_pdf"
   timeout: 30
 
 input:
-  input_path:
+  content:
     type: string
     required: true
-    description: "Path to .typ source file"
+    description: "Text content to render (plain text or Typst markup)"
   output_path:
     type: string
     required: true
     description: "Path for output PDF"
+  title:
+    type: string
+    required: false
+    description: "Document title for the header (default: 'Document')"
 
 output:
-  file_path:
+  pdf_path:
     type: string
     description: "Path to generated PDF"

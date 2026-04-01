@@ -6,19 +6,28 @@ Idempotent — safe to call multiple times for the same commits.
 from __future__ import annotations
 
 import json
-import logging
+import os
 import re
 import subprocess
+import tempfile
+import threading
 from datetime import UTC, datetime
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+import structlog  # type: ignore[import-untyped]
+
+logger = structlog.get_logger(__name__)
 
 _SKIP_AUTHORS = {"aider", "hermes"}
 _STATE_FILE = Path.home() / ".vizier-pro-max" / "watcher-state.json"
-_MEMORY_LOCK = Path.home() / ".vizier-pro-max" / "memory.lock"
+_MEMORY_LOCK = threading.Lock()
 _FUNC_PATTERN = re.compile(r"^[+-](async )?def (\w+)")
 _CLASS_PATTERN = re.compile(r"^[+-]class (\w+)")
+
+
+def _validate_sha(sha: str) -> bool:
+    """Return True if sha is a valid 40-hex-char git SHA."""
+    return bool(re.match(r"^[0-9a-f]{40}$", sha))
 
 
 def detect_new_commits(last_sha: str, repo_path: Path) -> list[dict[str, str]]:
@@ -32,9 +41,13 @@ def detect_new_commits(last_sha: str, repo_path: Path) -> list[dict[str, str]]:
         List of commit dicts with keys ``sha``, ``subject``, ``author``.
         Authors in ``_SKIP_AUTHORS`` are excluded. Returns ``[]`` on error.
     """
+    if not _validate_sha(last_sha):
+        logger.warning("Invalid last_sha %r — treating as fresh start", last_sha)
+        return []
+
     try:
         result = subprocess.run(
-            ["git", "log", "--format=%H|%s|%an", f"{last_sha}..HEAD"],
+            ["git", "log", "--format=%H%x00%s%x00%an", f"{last_sha}..HEAD"],
             cwd=repo_path,
             capture_output=True,
             text=True,
@@ -49,7 +62,7 @@ def detect_new_commits(last_sha: str, repo_path: Path) -> list[dict[str, str]]:
         line = line.strip()
         if not line:
             continue
-        parts = line.split("|", 2)
+        parts = line.split("\x00", 2)
         if len(parts) != 3:
             continue
         sha, subject, author = parts
@@ -72,6 +85,23 @@ def extract_changes(last_sha: str, repo_path: Path) -> dict[str, list[str]]:
         ``functions_added``, ``functions_removed``, ``classes_added``,
         ``classes_removed``. Values are deduplicated lists of strings.
     """
+    empty_result: dict[str, list[str]] = {
+        "files_modified": [],
+        "files_added": [],
+        "files_deleted": [],
+        "functions_added": [],
+        "functions_removed": [],
+        "classes_added": [],
+        "classes_removed": [],
+    }
+    if not _validate_sha(last_sha):
+        logger.warning(
+            "Invalid last_sha %r in extract_changes"
+            " — returning empty",
+            last_sha,
+        )
+        return empty_result
+
     files_modified: list[str] = []
     files_added: list[str] = []
     files_deleted: list[str] = []
@@ -209,44 +239,47 @@ def update_memory_md(memory_path: Path, entry: str, max_entries: int = 50) -> No
         entry: Formatted markdown entry (starts with ``###``).
         max_entries: Maximum number of ``###`` entries to retain.
     """
-    if memory_path.exists():
-        content = memory_path.read_text(encoding="utf-8")
-    else:
-        content = "# Hermes Memory\n"
-
-    git_activity_header = "## Git Activity"
-
-    if git_activity_header in content:
-        # Split on the section header
-        before, _, after = content.partition(git_activity_header)
-        # Find where the next ## section starts (if any)
-        next_section_match = re.search(r"\n## ", after)
-        if next_section_match:
-            section_body = after[: next_section_match.start()]
-            rest = after[next_section_match.start() :]
+    with _MEMORY_LOCK:
+        if memory_path.exists():
+            content = memory_path.read_text(encoding="utf-8")
         else:
-            section_body = after
-            rest = ""
+            content = "# Hermes Memory\n"
 
-        # Split existing entries on ### boundaries
-        raw_entries = _split_entries(section_body)
-        # Prepend new entry, trim to max
-        all_entries = [entry] + raw_entries
-        all_entries = all_entries[:max_entries]
+        git_activity_header = "## Git Activity"
 
-        new_section = "\n".join(e.rstrip("\n") for e in all_entries)
-        new_content = (
-            before.rstrip("\n")
-            + f"\n{git_activity_header}\n\n"
-            + new_section
-            + "\n"
-            + rest
-        )
-    else:
-        # Append the section at the end
-        new_content = content.rstrip("\n") + f"\n\n{git_activity_header}\n\n" + entry
+        if git_activity_header in content:
+            # Split on the section header
+            before, _, after = content.partition(git_activity_header)
+            # Find where the next ## section starts (if any)
+            next_section_match = re.search(r"\n## ", after)
+            if next_section_match:
+                section_body = after[: next_section_match.start()]
+                rest = after[next_section_match.start() :]
+            else:
+                section_body = after
+                rest = ""
 
-    memory_path.write_text(new_content, encoding="utf-8")
+            # Split existing entries on ### boundaries
+            raw_entries = _split_entries(section_body)
+            # Prepend new entry, trim to max
+            all_entries = [entry] + raw_entries
+            all_entries = all_entries[:max_entries]
+
+            new_section = "\n".join(e.rstrip("\n") for e in all_entries)
+            new_content = (
+                before.rstrip("\n")
+                + f"\n{git_activity_header}\n\n"
+                + new_section
+                + "\n"
+                + rest
+            )
+        else:
+            # Append the section at the end
+            new_content = (
+                content.rstrip("\n") + f"\n\n{git_activity_header}\n\n" + entry
+            )
+
+        memory_path.write_text(new_content, encoding="utf-8")
 
 
 def _split_entries(section_body: str) -> list[str]:
@@ -292,13 +325,38 @@ def _load_state() -> dict[str, str]:
 
 
 def _save_state(state: dict[str, str]) -> None:
-    """Persist watcher state to _STATE_FILE.
+    """Persist watcher state to _STATE_FILE (atomic via temp + rename).
 
     Args:
         state: Dict to serialise as JSON.
     """
     _STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    _STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    fd, tmp_path = tempfile.mkstemp(
+        dir=str(_STATE_FILE.parent), suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(state, fh, indent=2)
+        os.replace(tmp_path, str(_STATE_FILE))
+    except BaseException:
+        with _suppress_os_error():
+            os.unlink(tmp_path)
+        raise
+
+
+class _suppress_os_error:
+    """Context manager that suppresses OSError (for cleanup paths)."""
+
+    def __enter__(self) -> None:
+        pass
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: object,
+    ) -> bool:
+        return isinstance(exc_val, OSError)
 
 
 def run(repo_path: Path | None = None) -> None:
@@ -309,7 +367,7 @@ def run(repo_path: Path | None = None) -> None:
             this file's grandparent (i.e. the repo root).
     """
     if repo_path is None:
-        repo_path = Path(__file__).parent.parent.parent
+        repo_path = Path(__file__).parent.parent
 
     state = _load_state()
     last_sha = state.get("last_sha", "")
@@ -368,5 +426,7 @@ def _now_iso() -> str:
 
 
 if __name__ == "__main__":
+    import logging
+
     logging.basicConfig(level=logging.INFO)
     run()

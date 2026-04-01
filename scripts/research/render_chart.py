@@ -1,16 +1,16 @@
 """Matplotlib chart generation wrapper."""
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 from typing import Any
 
 import matplotlib
+import structlog
 
 matplotlib.use("Agg")  # Non-interactive backend
 import matplotlib.pyplot as plt  # noqa: E402
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _CHART_TYPES = {"bar", "line", "pie", "scatter"}
 

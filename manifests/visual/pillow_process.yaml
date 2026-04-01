@@ -20,7 +20,7 @@ input:
   operation:
     type: string
     required: true
-    description: "Operation: resize, crop, rotate, watermark, composite, adjust_color"
+    description: "Operation: resize, crop, rotate, watermark, composite"
   width:
     type: integer
     required: false

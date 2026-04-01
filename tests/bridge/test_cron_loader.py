@@ -22,8 +22,8 @@ class TestCronLoader:
         )
         configs = load_cron_configs(tmp_path)
         assert len(configs) == 1
-        assert configs[0]["id"] == "test_job"
-        assert configs[0]["schedule"] == "0 8 * * 1-5"
+        assert configs[0].id == "test_job"
+        assert configs[0].schedule == "0 8 * * 1-5"
 
     def test_skip_invalid_config(self, tmp_path: Path) -> None:
         bad = tmp_path / "bad.yaml"

@@ -1,5 +1,5 @@
 name: ffmpeg_process
-description: "Audio/video processing — convert, trim, concat, normalize, extract"
+description: "Audio/video processing — convert, trim, concat, normalize, extract_audio"
 version: "1.0"
 toolset: vizier-audio
 
@@ -33,7 +33,6 @@ input:
     type: array
     required: false
     description: "Additional files to concatenate"
-
 output:
   file_path:
     type: string

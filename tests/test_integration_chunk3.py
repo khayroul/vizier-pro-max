@@ -53,7 +53,7 @@ class TestChunk3Integration:
 
         configs = load_cron_configs(Path("config/cron"))
         assert len(configs) == 3
-        ids = {c["id"] for c in configs}
+        ids = {c.id for c in configs}
         assert ids == {"content_calendar", "quality_review", "health_check"}
 
     def test_deerflow_plugin_registers_tools(self) -> None:

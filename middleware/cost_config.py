@@ -1,15 +1,18 @@
 """Cost Config — loads cost tracking configuration from YAML."""
 from __future__ import annotations
 
-import logging
+import copy
+import threading
 from pathlib import Path
 from typing import Any
 
+import structlog
 import yaml
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _CONFIG_PATH = Path(__file__).parent.parent / "config" / "cost_config.yaml"
+_config_lock = threading.Lock()
 _cached_config: dict[str, Any] | None = None
 
 
@@ -24,19 +27,23 @@ def load_config(path: Path | None = None) -> dict[str, Any]:
     """
     global _cached_config  # noqa: PLW0603
     if _cached_config is not None and path is None:
-        return _cached_config
+        return copy.deepcopy(_cached_config)
 
-    config_path = path or _CONFIG_PATH
-    if not config_path.exists():
-        logger.warning("Cost config not found at %s, using defaults", config_path)
-        return _defaults()
+    with _config_lock:
+        if _cached_config is not None and path is None:
+            return copy.deepcopy(_cached_config)
 
-    with config_path.open() as fh:
-        config = yaml.safe_load(fh)
+        config_path = path or _CONFIG_PATH
+        if not config_path.exists():
+            logger.warning("Cost config not found at %s, using defaults", config_path)
+            return _defaults()
 
-    if path is None:
-        _cached_config = config
-    return config
+        with config_path.open() as fh:
+            config = yaml.safe_load(fh) or _defaults()
+
+        if path is None:
+            _cached_config = config
+        return copy.deepcopy(config)
 
 
 def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
@@ -60,8 +67,16 @@ def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
 def _defaults() -> dict[str, Any]:
     """Return default config when YAML is missing."""
     return {
-        "baselines": {"bootstrap_count": 20, "recalculate_interval": 10, "anomaly_stddev": 2.0},
+        "baselines": {
+            "bootstrap_count": 20,
+            "recalculate_interval": 10,
+            "anomaly_stddev": 2.0,
+        },
         "quality": {"min_score": 7.0},
-        "traces": {"retention_days": 90, "archive_dir": "traces/archive", "export_dir": "traces"},
+        "traces": {
+            "retention_days": 90,
+            "archive_dir": "traces/archive",
+            "export_dir": "traces",
+        },
         "model_costs": {},
     }

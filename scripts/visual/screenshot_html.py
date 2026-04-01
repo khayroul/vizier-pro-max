@@ -1,11 +1,12 @@
 """Playwright HTML → PNG screenshot wrapper."""
 from __future__ import annotations
 
-import logging
 import tempfile
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 def _render_with_playwright(
@@ -40,16 +41,22 @@ def run(
     if not html_content and not input_path:
         msg = "Must provide html_content or input_path"
         raise ValueError(msg)
+    tmp_path: str | None = None
     if html_content:
         tmp = tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode="w")
         tmp.write(html_content)
         tmp.close()
         html_path = tmp.name
+        tmp_path = tmp.name
     else:
         html_path = str(Path(input_path).resolve())  # type: ignore[arg-type]
-    result_path = _render_with_playwright(
-        html_path=html_path, output_path=output_path,
-        viewport_width=viewport_width, viewport_height=viewport_height,
-    )
-    logger.info("Screenshot saved to %s", result_path)
-    return {"file_path": result_path}
+    try:
+        result_path = _render_with_playwright(
+            html_path=html_path, output_path=output_path,
+            viewport_width=viewport_width, viewport_height=viewport_height,
+        )
+        logger.info("Screenshot saved to %s", result_path)
+        return {"file_path": result_path}
+    finally:
+        if tmp_path is not None:
+            Path(tmp_path).unlink(missing_ok=True)

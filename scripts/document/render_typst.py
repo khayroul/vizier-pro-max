@@ -4,13 +4,34 @@ Wraps the typst CLI: writes a .typ file from content, compiles to PDF.
 """
 from __future__ import annotations
 
-import logging
+import os
+import re
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
+
+_ALLOWED_OUTPUT_DIR = (Path(__file__).parent.parent.parent / "output").resolve()
+
+
+def _is_output_path_allowed(resolved_path: Path) -> bool:
+    """Check if an output path is within allowed directories.
+
+    Allows the project output/ dir by default, plus any dirs listed in
+    VIZIER_ALLOWED_ROOTS (colon-separated), used by tests with tmp dirs.
+    """
+    if resolved_path.is_relative_to(_ALLOWED_OUTPUT_DIR):
+        return True
+    extra = os.environ.get("VIZIER_ALLOWED_ROOTS", "")
+    if extra:
+        for root in extra.split(":"):
+            if root and resolved_path.is_relative_to(Path(root).resolve()):
+                return True
+    return False
 
 
 def render_to_pdf(
@@ -35,11 +56,19 @@ def render_to_pdf(
     if typst_bin is None:
         return {"error": "typst CLI not found — install via 'brew install typst'"}
 
+    # Sanitize title to prevent path traversal
+    title = re.sub(r"[^a-zA-Z0-9 _-]", "", title)
+
     # Default output path
     if output_path is None:
         output_dir = Path(__file__).parent.parent.parent / "output"
         output_dir.mkdir(parents=True, exist_ok=True)
         output_path = str(output_dir / f"{title.replace(' ', '_').lower()}.pdf")
+
+    # Verify output path stays within allowed directories
+    resolved_output = Path(output_path).resolve()
+    if not _is_output_path_allowed(resolved_output):
+        return {"error": f"Output path escapes allowed directory: {output_path}"}
 
     # Write Typst source to temp file
     typst_source = _wrap_content_as_typst(content, title)

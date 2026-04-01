@@ -1,11 +1,10 @@
 """Pillow image manipulation wrapper."""
 from __future__ import annotations
 
-import logging
-
+import structlog
 from PIL import Image, ImageDraw
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _OPERATIONS = {"resize", "crop", "rotate", "watermark", "composite"}
 

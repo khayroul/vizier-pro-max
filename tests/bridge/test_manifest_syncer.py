@@ -45,7 +45,7 @@ output:
     type: string
 """)
         state: dict[str, float] = {}
-        new_manifests = check_new_manifests(manifest_dir, state)
+        new_manifests, _updated_state = check_new_manifests(manifest_dir, state)
         assert len(new_manifests) == 1
         assert new_manifests[0] == "new_tool"
 
@@ -64,7 +64,7 @@ input: {}
 output: {}
 """)
         state: dict[str, float] = {str(yaml_path): yaml_path.stat().st_mtime}
-        new_manifests = check_new_manifests(manifest_dir, state)
+        new_manifests, _updated_state = check_new_manifests(manifest_dir, state)
         assert len(new_manifests) == 0
 
 
@@ -72,7 +72,7 @@ class TestCheckNewPipelines:
     def test_detects_new_pipeline(self, pipelines_dir: Path) -> None:
         (pipelines_dir / "new_pipeline.py").write_text("def run(): pass")
         state: dict[str, float] = {}
-        new_pipelines = check_new_pipelines(pipelines_dir, state)
+        new_pipelines, _updated_state = check_new_pipelines(pipelines_dir, state)
         assert len(new_pipelines) == 1
         assert new_pipelines[0] == "new_pipeline"
 
@@ -80,5 +80,5 @@ class TestCheckNewPipelines:
         py_path = pipelines_dir / "old_pipeline.py"
         py_path.write_text("def run(): pass")
         state: dict[str, float] = {str(py_path): py_path.stat().st_mtime}
-        new_pipelines = check_new_pipelines(pipelines_dir, state)
+        new_pipelines, _updated_state = check_new_pipelines(pipelines_dir, state)
         assert len(new_pipelines) == 0

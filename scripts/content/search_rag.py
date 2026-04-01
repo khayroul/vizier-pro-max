@@ -5,9 +5,9 @@ Full integration requires LightRAG instance configured with Wisdom Vault path.
 """
 from __future__ import annotations
 
-import logging
+import structlog
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 def search(query: str, mode: str = "hybrid") -> dict[str, object]:

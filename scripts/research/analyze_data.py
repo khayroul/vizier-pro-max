@@ -1,14 +1,83 @@
 """Pandas data analysis wrapper."""
 from __future__ import annotations
 
-import logging
+import operator
+import re
 from pathlib import Path
 
 import pandas as pd
+import structlog
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _OPERATIONS = {"describe", "groupby", "filter"}
+
+_SAFE_OPERATORS: dict[str, operator.gt[object, object]] = {  # type: ignore[type-arg]
+    "==": operator.eq,
+    "!=": operator.ne,
+    "<": operator.lt,
+    ">": operator.gt,
+    "<=": operator.le,
+    ">=": operator.ge,
+}
+
+_FILTER_PATTERN = re.compile(
+    r"^\s*(\w+)\s*(==|!=|<=|>=|<|>)\s*(.+?)\s*$"
+)
+
+
+def _safe_filter(df: pd.DataFrame, filter_expr: str | None) -> pd.DataFrame:
+    """Apply a simple comparison filter without eval().
+
+    Only allows expressions like ``column_name operator value``.
+
+    Args:
+        df: DataFrame to filter.
+        filter_expr: Expression such as ``"age > 30"`` or ``"name == 'Alice'"``.
+
+    Returns:
+        Filtered DataFrame.
+
+    Raises:
+        ValueError: If expression is None, unparseable, uses an unknown
+            operator, or references a column not in the DataFrame.
+    """
+    if filter_expr is None:
+        msg = "filter_expr is required for the filter operation"
+        raise ValueError(msg)
+
+    match = _FILTER_PATTERN.match(filter_expr)
+    if not match:
+        msg = (
+            f"Cannot parse filter expression: {filter_expr!r}. "
+            "Expected format: column operator value (e.g. 'age > 30')"
+        )
+        raise ValueError(msg)
+
+    col, op_str, raw_value = match.group(1), match.group(2), match.group(3)
+
+    if col not in df.columns:
+        msg = (
+            f"Column {col!r} not in DataFrame."
+            f" Available: {sorted(df.columns.tolist())}"
+        )
+        raise ValueError(msg)
+
+    op_func = _SAFE_OPERATORS[op_str]
+
+    # Coerce value to the column's dtype
+    stripped = raw_value.strip("'\"")
+    try:
+        typed_value = df[col].dtype.type(stripped)
+    except (ValueError, TypeError):
+        typed_value = stripped  # type: ignore[assignment]
+
+    mask = op_func(df[col], typed_value)
+    result = df[mask]
+    if not isinstance(result, pd.DataFrame):
+        msg = "Filter did not produce a DataFrame"
+        raise ValueError(msg)
+    return result
 
 
 def run(
@@ -58,7 +127,7 @@ def run(
         grouped = df.groupby(group_column)[agg_column].agg(agg_function)  # type: ignore[index]
         raw = grouped.to_json()
     else:  # filter
-        filtered = df.query(filter_expr)  # type: ignore[arg-type]
+        filtered = _safe_filter(df, filter_expr)
         raw = filtered.to_json(orient="records")
 
     summary: str = raw or "{}"

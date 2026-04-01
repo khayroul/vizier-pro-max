@@ -1,13 +1,14 @@
 """fal.ai image generation wrapper via httpx."""
 from __future__ import annotations
 
-import logging
 import os
+import re
 from pathlib import Path
 
 import httpx
+import structlog
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 FAL_API_URL = "https://fal.run"
 DEFAULT_MODEL = "fal-ai/flux/schnell"
@@ -43,6 +44,9 @@ def run(
         raise RuntimeError(msg)
 
     effective_model = model or DEFAULT_MODEL
+    if not re.match(r"^[a-zA-Z0-9_/-]+$", effective_model) or ".." in effective_model:
+        msg = f"Invalid model ID: {effective_model!r}"
+        raise ValueError(msg)
     url = f"{FAL_API_URL}/{effective_model}"
 
     response = httpx.post(

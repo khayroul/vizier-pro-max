@@ -20,7 +20,7 @@ input:
   file_path:
     type: string
     required: false
-    description: "Path to file to send"
+    description: "Not yet implemented — text only in Gate 1"
 
 output:
   status:

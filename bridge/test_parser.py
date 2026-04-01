@@ -11,6 +11,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+import structlog  # type: ignore[import-untyped]
+
+logger = structlog.get_logger(__name__)
+
 _TEST_FUNC_RE = re.compile(r"^def (test_\w+)", re.MULTILINE)
 
 
@@ -67,7 +71,11 @@ def _count_tests(test_file: Path) -> int:
     Returns:
         Number of test functions found.
     """
-    content = test_file.read_text(encoding="utf-8")
+    try:
+        content = test_file.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        logger.warning("Cannot read test file %s: %s", test_file, exc)
+        return 0
     return len(_TEST_FUNC_RE.findall(content))
 
 

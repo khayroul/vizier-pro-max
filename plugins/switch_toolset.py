@@ -7,12 +7,13 @@ handler is a fallback if on_agent_ready failed to inject the real handler.
 from __future__ import annotations
 
 import json
-import logging
 from typing import Any
+
+import structlog
 
 from config.toolsets import VIZIER_WORKFLOW_TOOLSETS
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 SWITCH_TOOLSET_SCHEMA = {
     "type": "object",

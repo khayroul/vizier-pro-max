@@ -149,7 +149,7 @@ output:
         parsed = json.loads(result)
         assert "hello_world" in parsed.get("stdout", "")
 
-    def test_cli_missing_command_returns_error(self) -> None:
+    def test_cli_missing_command_rejected_at_parse(self) -> None:
         from adapter.schemas import parse_manifest as pm
 
         yaml_str = """
@@ -162,11 +162,8 @@ execution:
   timeout: 5
 input: {}
 """
-        config = pm(yaml_str)
-        result = execute_tool(config, {})
-        parsed = json.loads(result)
-        assert "error" in parsed
-        assert "command" in parsed["error"].lower()
+        with pytest.raises(ValueError, match="(?i)command"):
+            pm(yaml_str)
 
     def test_cli_missing_template_arg_returns_error(self) -> None:
         from adapter.schemas import parse_manifest as pm
@@ -206,7 +203,7 @@ input: {}
         parsed = json.loads(result)
         assert "error" in parsed
 
-    def test_python_script_missing_path_returns_error(self) -> None:
+    def test_python_script_missing_path_rejected_at_parse(self) -> None:
         from adapter.schemas import parse_manifest as pm
 
         yaml_str = """
@@ -219,25 +216,24 @@ execution:
   timeout: 5
 input: {}
 """
-        config = pm(yaml_str)
-        result = execute_tool(config, {})
-        parsed = json.loads(result)
-        assert "error" in parsed
+        with pytest.raises(ValueError, match="(?i)path.*entrypoint"):
+            pm(yaml_str)
 
-    def test_python_script_nonexistent_file_returns_error(self) -> None:
+    def test_python_script_nonexistent_file_returns_error(self, tmp_path: Path) -> None:
         from adapter.schemas import parse_manifest as pm
 
-        yaml_str = """
+        ghost = tmp_path / "ghost_tool.py"
+        yaml_str = f"""
 name: ghost_script
 description: "Script pointing at nonexistent file"
 version: "1.0"
 toolset: vizier-core
 execution:
   type: python_script
-  path: "/nonexistent/path/tool.py"
+  path: "{ghost}"
   entrypoint: run
   timeout: 5
-input: {}
+input: {{}}
 """
         config = pm(yaml_str)
         result = execute_tool(config, {})

@@ -1,11 +1,10 @@
 """pypdf PDF manipulation wrapper."""
 from __future__ import annotations
 
-import logging
-
+import structlog
 from pypdf import PdfReader, PdfWriter
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _OPERATIONS = {"merge", "extract", "rotate"}
 

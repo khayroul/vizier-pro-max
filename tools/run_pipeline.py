@@ -11,13 +11,13 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import logging
 from pathlib import Path
 from typing import Any
 
+import structlog
 import yaml
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 PIPELINES_DIR = Path(__file__).parent.parent / "pipelines"
 
@@ -71,6 +71,13 @@ def run_pipeline(args: dict[str, Any], **kw: Any) -> str:
         })
 
     script_path = PIPELINES_DIR / f"{pipeline_name}.py"
+
+    # Prevent path traversal
+    try:
+        script_path.resolve().relative_to(PIPELINES_DIR.resolve())
+    except ValueError:
+        return json.dumps({"error": f"Invalid pipeline name: {pipeline_name}"})
+
     if not script_path.is_file():
         return json.dumps({"error": f"Pipeline script not found: {script_path}"})
 
@@ -87,6 +94,20 @@ def run_pipeline(args: dict[str, Any], **kw: Any) -> str:
             return json.dumps({"error": f"Pipeline '{pipeline_name}' has no run()"})
 
         pipeline_args = args.get("args", {})
+
+        # Validate args against registry schema
+        registry_entry = registry[pipeline_name]
+        allowed_inputs = set(registry_entry.get("input", {}).keys())
+        if allowed_inputs:
+            unknown_keys = set(pipeline_args.keys()) - allowed_inputs
+            if unknown_keys:
+                return json.dumps({
+                    "error": (
+                        "Unknown pipeline args:"
+                        f" {sorted(unknown_keys)}"
+                    ),
+                })
+
         result = entrypoint(**pipeline_args)
 
         if isinstance(result, dict):

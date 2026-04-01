@@ -1,5 +1,5 @@
 name: matplotlib_chart
-description: "Generate charts — bar, line, pie, scatter, heatmap"
+description: "Generate charts — bar, line, pie, scatter"
 version: "1.0"
 toolset: vizier-research
 
@@ -12,7 +12,7 @@ input:
   chart_type:
     type: string
     required: true
-    description: "Chart type: bar, line, pie, scatter, heatmap"
+    description: "Chart type: bar, line, pie, scatter"
   data:
     type: object
     required: true

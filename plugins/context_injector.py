@@ -5,12 +5,13 @@ session startup and sets it in local contextvars.
 """
 from __future__ import annotations
 
-import logging
 from typing import Any
+
+import structlog
 
 from middleware.deliverable_context import set_context
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 def inject_from_task_context(context: dict[str, Any] | None) -> None:

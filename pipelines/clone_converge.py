@@ -10,13 +10,14 @@ Full convergence loop:
 """
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 from typing import Any
 
+import structlog
+
 from scripts.visual.calculate_delta import calculate_delta
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 def _call_llm_for_html(

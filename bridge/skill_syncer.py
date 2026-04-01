@@ -1,11 +1,12 @@
 """Bi-directional skill sync between repo and Hermes runtime."""
 from __future__ import annotations
 
-import logging
 import shutil
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+import structlog  # type: ignore[import-untyped]
+
+logger = structlog.get_logger(__name__)
 
 SKILL_FILENAME = "SKILL.md"
 
@@ -37,6 +38,11 @@ def sync_repo_to_hermes(
             continue
 
         target_dir = hermes_vizier_skills / skill_dir.name
+        if not target_dir.resolve().is_relative_to(hermes_vizier_skills.resolve()):
+            logger.warning(
+                "Path traversal detected, skipping skill: %s", skill_dir.name
+            )
+            continue
         target_file = target_dir / SKILL_FILENAME
 
         hermes_mtime = target_file.stat().st_mtime if target_file.is_file() else -1.0
@@ -79,6 +85,11 @@ def sync_hermes_to_repo(
             continue
 
         target_dir = repo_vizier_skills / skill_dir.name
+        if not target_dir.resolve().is_relative_to(repo_vizier_skills.resolve()):
+            logger.warning(
+                "Path traversal detected, skipping skill: %s", skill_dir.name
+            )
+            continue
         target_file = target_dir / SKILL_FILENAME
 
         if target_file.exists():

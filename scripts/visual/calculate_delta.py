@@ -11,15 +11,15 @@ Gracefully degrades if optional dependencies are unavailable.
 """
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+import structlog
 from PIL import Image
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 # Signal weights (must sum to 1.0)
 WEIGHTS: dict[str, float] = {

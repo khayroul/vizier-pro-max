@@ -8,14 +8,16 @@ Gate 2+: Layers 3-6 (visual QA, content quality, delivery, feedback)
 """
 from __future__ import annotations
 
-import logging
+import functools
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import structlog
+
 from scripts.visual.calculate_delta import calculate_delta
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _TYPE_MAP = {
     "string": str,
@@ -80,11 +82,20 @@ def validate_output(
 
     for field_name, field_spec in schema.items():
         is_required = field_spec.get("required", False)
+        expected_type_str = field_spec.get("type", "string")
 
         if field_name not in data:
             if is_required:
                 errors.append(f"Missing required output field: '{field_name}'")
             continue
+
+        value = data[field_name]
+        expected_type = _TYPE_MAP.get(expected_type_str, str)
+        if not isinstance(value, expected_type):
+            errors.append(
+                f"Output field '{field_name}' expected {expected_type_str}, "
+                f"got {type(value).__name__}"
+            )
 
     return ValidationResult(
         passed=len(errors) == 0,
@@ -105,10 +116,33 @@ def validate(
         case "output":
             return validate_output(data, schema)
         case "visual_qa":
+            target_raw = data.get("target")
+            rendered_raw = data.get("rendered")
+            if not target_raw or not isinstance(target_raw, str):
+                return ValidationResult(
+                    passed=False,
+                    errors=["'target' must be a non-empty string path"],
+                    layer="visual_qa",
+                )
+            if not rendered_raw or not isinstance(rendered_raw, str):
+                return ValidationResult(
+                    passed=False,
+                    errors=["'rendered' must be a non-empty string path"],
+                    layer="visual_qa",
+                )
+            threshold_raw = data.get("threshold", 0.80)
+            try:
+                threshold_val = float(threshold_raw)
+            except (TypeError, ValueError):
+                return ValidationResult(
+                    passed=False,
+                    errors=[f"'threshold' must be numeric, got {threshold_raw!r}"],
+                    layer="visual_qa",
+                )
             return validate_visual_qa(
-                target=Path(data.get("target", "")),
-                rendered=Path(data.get("rendered", "")),
-                threshold=float(data.get("threshold", 0.80)),
+                target=Path(target_raw),
+                rendered=Path(rendered_raw),
+                threshold=threshold_val,
             )
         case "content_quality":
             return validate_content_quality(
@@ -117,8 +151,16 @@ def validate(
                 expected_tone=data.get("expected_tone"),
             )
         case "delivery":
+            try:
+                status_val = int(data.get("status_code", 0))
+            except (ValueError, TypeError) as exc:
+                return ValidationResult(
+                    passed=False,
+                    errors=[f"Invalid status_code: {exc}"],
+                    layer="delivery",
+                )
             return validate_delivery(
-                status_code=int(data.get("status_code", 0)),
+                status_code=status_val,
                 channel=str(data.get("channel", "unknown")),
             )
         case _:
@@ -148,10 +190,12 @@ LAYERS: dict[int, str] = {
 # ---------------------------------------------------------------------------
 
 
-def _detect_language(text: str) -> str:
-    """Detect language using lingua-py. Falls back to 'unknown'.
+@functools.lru_cache(maxsize=1)
+def _get_language_detector() -> Any:
+    """Build and cache the lingua language detector.
 
-    Only detects English and Malay (the two expected client languages).
+    Returns:
+        Detector instance, or None if lingua-py is not installed.
     """
     try:
         from lingua import (  # type: ignore[import-untyped]
@@ -159,18 +203,34 @@ def _detect_language(text: str) -> str:
             LanguageDetectorBuilder,
         )
 
-        detector = LanguageDetectorBuilder.from_languages(
+        return LanguageDetectorBuilder.from_languages(
             Language.ENGLISH, Language.MALAY
         ).build()
-        detected = detector.detect_language_of(text)
-        if detected == Language.ENGLISH:
-            return "en"
-        if detected == Language.MALAY:
-            return "ms"
-        return "unknown"
     except ImportError:
         logger.warning("lingua-py not available, skipping language detection")
+        return None
+
+
+def _detect_language(text: str) -> str:
+    """Detect language using lingua-py. Falls back to 'unknown'.
+
+    Only detects English and Malay (the two expected client languages).
+    """
+    detector = _get_language_detector()
+    if detector is None:
         return "unknown"
+
+    try:
+        from lingua import Language  # type: ignore[import-untyped]
+    except ImportError:
+        return "unknown"
+
+    detected = detector.detect_language_of(text)
+    if detected == Language.ENGLISH:
+        return "en"
+    if detected == Language.MALAY:
+        return "ms"
+    return "unknown"
 
 
 def validate_visual_qa(

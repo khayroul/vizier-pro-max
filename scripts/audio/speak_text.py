@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 DEFAULT_VOICE = "en-US-AriaNeural"
 

@@ -102,8 +102,8 @@ class TestRun:
         state_file = tmp_path / "bridge-state.json"
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
-        mock_syncer.check_new_manifests.return_value = []
-        mock_syncer.check_new_pipelines.return_value = []
+        mock_syncer.check_new_manifests.return_value = ([], {})
+        mock_syncer.check_new_pipelines.return_value = ([], {})
 
         manifests_dir = tmp_path / "manifests"
         pipelines_dir = tmp_path / "pipelines"
@@ -124,8 +124,8 @@ class TestRun:
         state_file = tmp_path / "bridge-state.json"
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
-        mock_syncer.check_new_manifests.return_value = ["tool_a"]
-        mock_syncer.check_new_pipelines.return_value = []
+        mock_syncer.check_new_manifests.return_value = (["tool_a"], {})
+        mock_syncer.check_new_pipelines.return_value = ([], {})
 
         (tmp_path / "manifests").mkdir()
         (tmp_path / "pipelines").mkdir()
@@ -143,14 +143,14 @@ class TestRun:
         state_file = tmp_path / "bridge-state.json"
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
-        mock_syncer.check_new_manifests.return_value = []
-        mock_syncer.check_new_pipelines.return_value = []
+        mock_syncer.check_new_manifests.return_value = ([], {})
+        mock_syncer.check_new_pipelines.return_value = ([], {})
 
         (tmp_path / "manifests").mkdir()
         (tmp_path / "pipelines").mkdir()
 
         with patch("bridge.git_watcher.run") as mock_git_run:
-            mock_git_run.side_effect = RuntimeError("git exploded")
+            mock_git_run.side_effect = OSError("git exploded")
             # Should not raise
             run(repo_path=tmp_path)
 
@@ -163,8 +163,8 @@ class TestRun:
         state_file = tmp_path / "bridge-state.json"
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
-        mock_syncer.check_new_manifests.return_value = []
-        mock_syncer.check_new_pipelines.return_value = []
+        mock_syncer.check_new_manifests.return_value = ([], {})
+        mock_syncer.check_new_pipelines.return_value = ([], {})
 
         # Call run() without repo_path — should resolve from __file__ without error
         with patch("bridge.git_watcher.run"):
@@ -177,8 +177,8 @@ class TestRun:
         state_file = tmp_path / "bridge-state.json"
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
-        mock_syncer.check_new_manifests.return_value = []
-        mock_syncer.check_new_pipelines.return_value = []
+        mock_syncer.check_new_manifests.return_value = ([], {})
+        mock_syncer.check_new_pipelines.return_value = ([], {})
 
         # No skills/ subdir — skill_syncer.sync_* should not be called
         (tmp_path / "manifests").mkdir()

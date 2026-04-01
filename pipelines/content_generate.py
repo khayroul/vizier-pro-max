@@ -5,15 +5,15 @@ Gate 2+: Adds full RAG retrieval, LLM generation, quality scoring.
 """
 from __future__ import annotations
 
-import logging
 from typing import Any
 
 import httpx
+import structlog
 
 from middleware.quality_gate import validate_input
 from scripts.document.render_typst import render_to_pdf
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 _LLM_ENDPOINT = "http://localhost:11435/v1/chat/completions"
 _LLM_MODEL = "gpt-5.4-mini"
@@ -45,13 +45,21 @@ def _call_llm(brief: str, client_id: str | None = None) -> str | None:
             },
             timeout=30.0,
         )
-        if resp.status_code == 200:
-            return resp.json()["choices"][0]["message"]["content"]
-        logger.warning(
-            "LLM returned status %d, falling back to stub", resp.status_code
-        )
-        return None
-    except httpx.HTTPError as exc:
+        if resp.status_code != 200:
+            logger.warning(
+                "LLM returned status %d, falling back to stub", resp.status_code
+            )
+            return None
+
+        body = resp.json()
+        choices = body.get("choices") or []
+        if not choices:
+            raise ValueError("LLM returned no choices")
+        content = choices[0].get("message", {}).get("content", "")
+        if not content:
+            raise ValueError("LLM returned empty content")
+        return content
+    except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
         logger.warning("LLM unavailable (%s), falling back to stub", exc)
         return None
 
@@ -90,6 +98,9 @@ def run(
 
     if not brief.strip():
         return {"error": "Brief cannot be empty"}
+
+    # NOTE: RAG retrieval step deferred to Gate 2 (requires LightRAG integration).
+    # Gate 1 generates content from brief + client_id only.
 
     # Call LLM via Hermes proxy; fall back to stub if unavailable.
     content = _call_llm(brief, client_id) or f"[Generated content for: {brief[:100]}]"

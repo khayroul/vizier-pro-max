@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 import os
 from typing import Any
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 async def _async_send_message(chat_id: str, text: str, token: str) -> dict[str, Any]:

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import logging
+import os
 import shlex
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
@@ -19,9 +19,26 @@ from concurrent.futures import TimeoutError as FuturesTimeoutError
 from pathlib import Path
 from typing import Any
 
+import structlog
+
 from adapter.schemas import ManifestConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
+
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _get_allowed_roots() -> list[Path]:
+    """Return list of allowed roots for script path containment.
+
+    Defaults to the project root. The VIZIER_ALLOWED_ROOTS env var can add
+    additional trusted roots (colon-separated), used by tests with tmp dirs.
+    """
+    roots = [_PROJECT_ROOT]
+    extra = os.environ.get("VIZIER_ALLOWED_ROOTS", "")
+    if extra:
+        roots.extend(Path(p).resolve() for p in extra.split(":") if p)
+    return roots
 
 
 def execute_tool(manifest: ManifestConfig, args: dict[str, Any]) -> str:
@@ -72,7 +89,8 @@ def _execute_cli(manifest: ManifestConfig, args: dict[str, Any]) -> str:
         return json.dumps({"error": "CLI manifest missing 'command'"})
 
     try:
-        command = command_template.format(**args)
+        safe_args = {k: shlex.quote(str(v)) for k, v in args.items()}
+        command = command_template.format(**safe_args)
     except KeyError as exc:
         return json.dumps({"error": f"Missing arg for command template: {exc}"})
 
@@ -82,6 +100,7 @@ def _execute_cli(manifest: ManifestConfig, args: dict[str, Any]) -> str:
             capture_output=True,
             text=True,
             timeout=manifest.execution.timeout,
+            shell=False,
         )
     except subprocess.TimeoutExpired:
         return json.dumps({"error": f"timeout after {manifest.execution.timeout}s"})
@@ -113,7 +132,13 @@ def _execute_python_script(manifest: ManifestConfig, args: dict[str, Any]) -> st
     if script_path is None or entrypoint_name is None:
         return json.dumps({"error": "python_script needs 'path' and 'entrypoint'"})
 
+    allowed_roots = _get_allowed_roots()
     path = Path(script_path)
+    resolved_path = path.resolve()
+    if not any(resolved_path.is_relative_to(root) for root in allowed_roots):
+        return json.dumps(
+            {"error": f"Path escapes project root: {script_path}"}
+        )
     if not path.is_file():
         return json.dumps({"error": f"Script not found: {script_path}"})
 

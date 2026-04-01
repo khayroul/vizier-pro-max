@@ -1,13 +1,13 @@
 """WhatsApp Business API delivery via httpx."""
 from __future__ import annotations
 
-import logging
 import os
 from typing import Any
 
 import httpx
+import structlog
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 WHATSAPP_API_URL = "https://graph.facebook.com/v18.0"
 

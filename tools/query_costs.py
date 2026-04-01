@@ -2,14 +2,15 @@
 from __future__ import annotations
 
 import json
-import logging
 import sqlite3
 from pathlib import Path
 from typing import Any
 
+import structlog
+
 from middleware.cost_config import calculate_cost
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 DB_PATH = str(Path.home() / ".hermes" / "state.db")
 
@@ -25,19 +26,22 @@ def query_costs(args: dict[str, Any], **kw: Any) -> str:
     Returns:
         JSON string with query results or error dict.
     """
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        conn.row_factory = sqlite3.Row
+    limit = max(1, min(int(args.get("limit", 50)), 1000))
+    top_steps = max(1, min(int(args.get("top_steps", 10)), 1000))
 
-        if args.get("deliverable_id"):
-            return _per_deliverable(conn, args["deliverable_id"])
-        if args.get("client_id"):
-            return _per_client(conn, args["client_id"])
-        if args.get("distribution"):
-            return _model_distribution(conn)
-        if args.get("anomaly_history"):
-            return _anomaly_history(conn, args.get("limit", 50))
-        return _top_expensive_steps(conn, args.get("top_steps", 10))
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row
+
+            if args.get("deliverable_id"):
+                return _per_deliverable(conn, args["deliverable_id"])
+            if args.get("client_id"):
+                return _per_client(conn, args["client_id"])
+            if args.get("distribution"):
+                return _model_distribution(conn)
+            if args.get("anomaly_history"):
+                return _anomaly_history(conn, limit)
+            return _top_expensive_steps(conn, top_steps)
 
     except sqlite3.OperationalError as exc:
         return json.dumps({"error": f"Database error: {exc}"})
@@ -58,7 +62,6 @@ def _per_deliverable(conn: sqlite3.Connection, deliverable_id: str) -> str:
            FROM cost_ledger WHERE deliverable_id = ? ORDER BY timestamp""",
         [deliverable_id],
     ).fetchall()
-    conn.close()
     steps = [dict(row) for row in rows]
     total = sum(s["input_tokens"] + s["output_tokens"] for s in steps)
     total_cost = sum(
@@ -92,7 +95,6 @@ def _per_client(conn: sqlite3.Connection, client_id: str) -> str:
            GROUP BY deliverable_id ORDER BY MIN(timestamp) DESC""",
         [client_id],
     ).fetchall()
-    conn.close()
     return json.dumps({"client_id": client_id, "deliverables": [dict(r) for r in rows]})
 
 
@@ -110,7 +112,6 @@ def _model_distribution(conn: sqlite3.Connection) -> str:
                   COUNT(*) AS call_count
            FROM cost_ledger GROUP BY model""",
     ).fetchall()
-    conn.close()
     models = {
         row["model"]: {
             "input": row["total_in"],
@@ -133,15 +134,20 @@ def _anomaly_history(conn: sqlite3.Connection, limit: int) -> str:
         JSON string with anomalies list.
     """
     rows = conn.execute(
-        """SELECT deliverable_id, client_id, pipeline_name, reasons_json, trace_path, timestamp
-           FROM anomaly_log ORDER BY timestamp DESC LIMIT ?""",
+        """SELECT deliverable_id, client_id, pipeline_name,
+                  reasons_json, trace_path, timestamp
+           FROM anomaly_log
+           ORDER BY timestamp DESC LIMIT ?""",
         [limit],
     ).fetchall()
-    conn.close()
-    anomalies = [
-        {**dict(row), "reasons": json.loads(row["reasons_json"])}
-        for row in rows
-    ]
+    anomalies = []
+    for row in rows:
+        entry = dict(row)
+        try:
+            entry["reasons"] = json.loads(row["reasons_json"])
+        except (json.JSONDecodeError, TypeError):
+            entry["reasons"] = []
+        anomalies.append(entry)
     return json.dumps({"anomalies": anomalies})
 
 
@@ -162,7 +168,6 @@ def _top_expensive_steps(conn: sqlite3.Connection, limit: int) -> str:
            GROUP BY step_name ORDER BY total_tokens DESC LIMIT ?""",
         [limit],
     ).fetchall()
-    conn.close()
     return json.dumps({"top_steps": [dict(r) for r in rows]})
 
 
