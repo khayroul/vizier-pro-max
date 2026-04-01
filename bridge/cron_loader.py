@@ -35,3 +35,35 @@ def load_cron_configs(config_dir: Path) -> list[dict[str, Any]]:
             logger.warning("Failed to load cron config %s: %s", yaml_file, exc)
 
     return configs
+
+
+def register_jobs(
+    configs: list[dict[str, Any]],
+    scheduler: Any,  # Hermes scheduler instance (has add_job method)
+) -> int:
+    """Register cron configs with Hermes scheduler.
+
+    Args:
+        configs: Validated cron config dicts from load_cron_configs.
+        scheduler: Hermes scheduler instance (has add_job method).
+
+    Returns:
+        Number of successfully registered jobs.
+    """
+    registered = 0
+    for config in configs:
+        try:
+            scheduler.add_job(
+                job_id=config["id"],
+                schedule=config["schedule"],
+                prompt=config["prompt"],
+                toolsets=config.get("toolsets", []),
+                budget_cap=config.get("budget_cap"),
+            )
+            logger.info(
+                "Registered cron job: %s (%s)", config["id"], config["schedule"]
+            )
+            registered += 1
+        except Exception as exc:
+            logger.warning("Failed to register cron job %s: %s", config["id"], exc)
+    return registered
