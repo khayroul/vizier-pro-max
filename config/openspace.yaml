@@ -1,0 +1,5 @@
+# OpenSpace skill evolution configuration
+capture_threshold: 5        # Minimum chain occurrences before capture
+max_pipeline_drafts: 20     # Cap on _drafts/ directory
+pruner_stale_sessions: 10   # Sessions without use before archiving
+prompt_log_db: "state/prompt_log.db"  # Path to prompt logger SQLite
