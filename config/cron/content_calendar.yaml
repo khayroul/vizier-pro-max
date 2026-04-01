@@ -1,0 +1,9 @@
+id: content_calendar
+schedule: "0 8 * * 1-5"
+prompt: "Generate today's scheduled social media posts for all active clients. Check config/clients/ for active clients. Use content_generate pipeline for each post."
+toolsets:
+  - vizier-core
+  - vizier-content
+max_iterations: 30
+token_budget: 50000
+quality_threshold: 7

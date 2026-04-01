@@ -1,0 +1,9 @@
+id: quality_review
+schedule: "0 9 * * 1"
+prompt: "Review last week's output quality scores from prompt_logger. Flag any regressions below 7/10. Generate a summary report."
+toolsets:
+  - vizier-core
+  - vizier-research
+max_iterations: 20
+token_budget: 30000
+quality_threshold: 7

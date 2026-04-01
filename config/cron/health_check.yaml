@@ -1,0 +1,8 @@
+id: health_check
+schedule: "0 7 * * *"
+prompt: "Run system health check: count token usage from prompt_logger, check error rates, verify pipeline success rates. Report anomalies."
+toolsets:
+  - vizier-core
+max_iterations: 10
+token_budget: 10000
+quality_threshold: 5
