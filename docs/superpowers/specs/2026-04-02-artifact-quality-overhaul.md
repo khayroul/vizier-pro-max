@@ -130,7 +130,7 @@ Save today's artifacts to `tests/benchmarks/baseline/` for comparison.
 
 ### Fixes
 
-**Prompt rewrite**: System prompt specifies output structure — JSON with fields `title`, `body`, `hashtags`. Pipeline extracts proper title, separates hashtags, strips framing structurally.
+**Prompt rewrite**: System prompt specifies output structure — JSON with fields `title`, `body`, `hashtags`. Pipeline extracts proper title, separates hashtags, strips framing structurally. The prompt must also include content quality constraints: target audience, tone, word count range, and platform-specific rules (e.g. LinkedIn post conventions). Without this, the output will be well-packaged but generic.
 
 **Title from LLM output**: The LLM generates the title, or pipeline derives from first heading in body. Brief is an instruction, not a title.
 
@@ -263,8 +263,12 @@ One pytest test per pipeline in `tests/benchmarks/test_quality_regression.py`:
 
 These prevent future regressions.
 
+### Human Review
+
+After artifacts are produced, present them for human grading. Regression tests catch mechanical failures (chart Y-values != sequential integers, title != truncated brief). Human review catches quality failures that tests cannot — wrong chart type, unreadable labels, generic content, poor visual composition. Both are required before declaring a pipeline "fixed."
+
 ### Iteration
-If any pipeline still produces subpar output, file specific fixes for a follow-up session.
+If any pipeline still produces subpar output after human review, file specific fixes for a follow-up session.
 
 ---
 
@@ -295,7 +299,7 @@ If a session's changes regress another pipeline (e.g. output cleanup in Session 
 ## Dependencies
 
 - OpenAI API key in `.env` (already present)
-- OpenAI vision endpoint access (verify gpt-5.4-mini supports vision, else use gpt-5.4)
+- OpenAI vision endpoint via gpt-5.4-mini (confirmed: supports vision)
 - `pip install opencv-python-headless pixelmatch` (Session 1)
 - `pip install lingua-language-detector` (Session 1, for L4)
 - Tesseract CLI for pytesseract (check availability)
