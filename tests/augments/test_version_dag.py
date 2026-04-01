@@ -22,7 +22,7 @@ class TestVersionDAG:
             is_active=True,
             origin="CAPTURED",
             generation=0,
-            parent_ids=[],
+            parent_ids=(),
             change_summary="Initial capture",
         )
         dag.save(record)
@@ -39,7 +39,7 @@ class TestVersionDAG:
             is_active=True,
             origin="IMPORTED",
             generation=0,
-            parent_ids=[],
+            parent_ids=(),
             change_summary="Import",
         )
         dag.save(record)
@@ -57,7 +57,7 @@ class TestVersionDAG:
             is_active=True,
             origin="IMPORTED",
             generation=0,
-            parent_ids=[],
+            parent_ids=(),
             change_summary="Original",
         )
         dag.save(old)
@@ -69,7 +69,7 @@ class TestVersionDAG:
             is_active=True,
             origin="FIXED",
             generation=1,
-            parent_ids=["old__v0_111"],
+            parent_ids=("old__v0_111",),
             change_summary="Fixed bug",
         )
         dag.atomic_replace(new_record=new, old_skill_id="old__v0_111")
@@ -87,7 +87,7 @@ class TestVersionDAG:
                     is_active=(i != 1),  # deactivate middle one
                     origin="CAPTURED",
                     generation=0,
-                    parent_ids=[],
+                    parent_ids=(),
                     change_summary=f"Skill {i}",
                 )
             )
@@ -103,7 +103,7 @@ class TestVersionDAG:
                 is_active=False,
                 origin="IMPORTED",
                 generation=0,
-                parent_ids=[],
+                parent_ids=(),
                 change_summary="v0",
             )
         )
@@ -115,7 +115,7 @@ class TestVersionDAG:
                 is_active=True,
                 origin="FIXED",
                 generation=1,
-                parent_ids=["a__v0"],
+                parent_ids=("a__v0",),
                 change_summary="v1",
             )
         )

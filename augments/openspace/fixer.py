@@ -9,18 +9,66 @@ import logging
 import uuid
 from pathlib import Path
 
+import httpx
+
 from augments.openspace.version_dag import SkillRecord, VersionDAG
 
 logger = logging.getLogger(__name__)
+
+_LLM_ENDPOINT = "http://localhost:11435/v1/chat/completions"
+_LLM_MODEL = "gpt-5.4-mini"
 
 
 def _call_llm_for_fix(skill_content: str, error_context: str) -> str:
     """Call GPT-5.4-mini via Hermes to generate a fix.
 
-    In production, this calls the Hermes delegate_task or direct LLM API.
-    Mocked in tests.
+    Returns fixed SKILL.md content, or original with error comment on failure.
     """
-    raise NotImplementedError("LLM call not available in this context")
+    try:
+        resp = httpx.post(
+            _LLM_ENDPOINT,
+            json={
+                "model": _LLM_MODEL,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a skill repair engine. Given a broken SKILL.md "
+                            "and an error traceback, output a corrected SKILL.md. "
+                            "Preserve the original structure. Output ONLY valid markdown."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            f"SKILL.md:\n{skill_content}\n\n"
+                            f"ERROR:\n{error_context}"
+                        ),
+                    },
+                ],
+                "max_tokens": 2048,
+            },
+            timeout=30.0,
+        )
+        if resp.status_code != 200:
+            logger.warning("LLM returned status %d, returning original", resp.status_code)
+            return skill_content + "\n<!-- AUTO-FIX FAILED: LLM error -->\n"
+
+        body = resp.json()
+        choices = body.get("choices") or []
+        if not choices:
+            logger.warning("LLM returned no choices")
+            return skill_content + "\n<!-- AUTO-FIX FAILED: no choices -->\n"
+
+        content = choices[0].get("message", {}).get("content", "")
+        if not content.strip():
+            logger.warning("LLM returned empty content")
+            return skill_content + "\n<!-- AUTO-FIX FAILED: empty -->\n"
+
+        return content
+    except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
+        logger.warning("LLM unreachable for fix: %s", exc)
+        return skill_content + "\n<!-- AUTO-FIX FAILED: unreachable -->\n"
 
 
 def fix_skill(
@@ -73,7 +121,7 @@ def fix_skill(
         is_active=True,
         origin="FIXED",
         generation=new_gen,
-        parent_ids=[skill_id],
+        parent_ids=(skill_id,),
         change_summary=f"Fixed: {error_context[:100]}",
     )
 

@@ -80,7 +80,7 @@ class TestSearchSkills:
             is_active=True,
             origin="CAPTURED",
             generation=0,
-            parent_ids=[],
+            parent_ids=(),
             change_summary="Deploys stuff",
         ))
         srv._dag = dag
@@ -112,7 +112,7 @@ class TestFixSkill:
             is_active=True,
             origin="CAPTURED",
             generation=0,
-            parent_ids=[],
+            parent_ids=(),
             change_summary="It broke",
         ))
         srv._dag = dag
@@ -144,7 +144,7 @@ class TestGetLineage:
             is_active=True,
             origin="IMPORTED",
             generation=0,
-            parent_ids=[],
+            parent_ids=(),
             change_summary="Initial import",
         ))
         srv._dag = dag

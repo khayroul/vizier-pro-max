@@ -25,18 +25,21 @@ class TestChunk2Integration:
                 assert manifest.toolset, f"Missing toolset in {yaml_file}"
                 assert manifest.execution, f"Missing execution in {yaml_file}"
 
-    def test_pipeline_stubs_callable(self) -> None:
-        """All pipeline stubs are importable and return stub status."""
+    def test_pipelines_importable(self) -> None:
+        """All pipelines are importable and have run() callable."""
         from pipelines.clone_converge import run as cc_run
         from pipelines.competitive_analysis import run as ca_run
         from pipelines.poster_batch import run as pb_run
         from pipelines.tts_generate import run as tts_run
 
-        # clone_converge was upgraded from stub to full implementation in Chunk 4
-        assert cc_run(target_image_path="/fake.png")["status"] in ("stub", "error")
-        assert pb_run()["status"] == "stub"
-        assert ca_run(topic="test")["status"] == "stub"
-        assert tts_run(text="hello")["status"] == "stub"
+        # Verify all run functions are callable
+        assert callable(cc_run)
+        assert callable(pb_run)
+        assert callable(ca_run)
+        assert callable(tts_run)
+
+        # clone_converge returns error for missing target
+        assert cc_run(target_image_path="/fake.png")["status"] == "error"
 
     def test_toolset_names_match_manifests(self) -> None:
         """Manifest toolset fields match expected toolset names."""

@@ -47,13 +47,13 @@ class TestChunk4Integration:
         dag.save(SkillRecord(
             skill_id="s__v0", name="s", path=Path("/s"),
             is_active=True, origin="IMPORTED", generation=0,
-            parent_ids=[], change_summary="import",
+            parent_ids=(), change_summary="import",
         ))
         dag.atomic_replace(
             new_record=SkillRecord(
                 skill_id="s__v1", name="s", path=Path("/s_v1"),
                 is_active=True, origin="FIXED", generation=1,
-                parent_ids=["s__v0"], change_summary="fix",
+                parent_ids=("s__v0",), change_summary="fix",
             ),
             old_skill_id="s__v0",
         )

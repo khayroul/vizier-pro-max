@@ -28,7 +28,7 @@ def base_skill(tmp_path: Path, dag: VersionDAG) -> SkillRecord:
         is_active=True,
         origin="CAPTURED",
         generation=0,
-        parent_ids=[],
+        parent_ids=(),
         change_summary="Initial capture",
         total_selections=10,
         total_completions=8,

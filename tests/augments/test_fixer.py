@@ -28,7 +28,7 @@ def broken_skill(tmp_path: Path, dag: VersionDAG) -> SkillRecord:
         is_active=True,
         origin="CAPTURED",
         generation=0,
-        parent_ids=[],
+        parent_ids=(),
         change_summary="Initial capture",
     )
     dag.save(record)
