@@ -29,3 +29,24 @@ When executing any task, follow this order strictly:
 - You run on a free token budget. Be efficient.
 - Prefer collapsed pipelines (1 call) over atomic tool chains (4-5 calls).
 - When you solve a new task with atomic tools, note it — it may become a pipeline.
+
+## Parallel Task Orchestration (Gate 2+)
+
+When you receive a complex multi-workflow task:
+1. Call decompose_task with the task description
+   → returns {tasks: [{goal, context, toolsets}, ...]}
+2. Call delegate_task with tasks=<the returned tasks array>
+   → children run IN PARALLEL via ThreadPoolExecutor (max 3)
+   → delegate_task returns combined results
+3. Call merge_results with the child outputs
+4. Deliver final output via appropriate channel
+
+IMPORTANT: Use delegate_task(tasks=[...]) batch mode for parallelism.
+Do NOT call delegate_task separately per child — that runs sequentially.
+
+## Unattended Session Rules (Gate 2+)
+
+- Only modules with passing tests are eligible for unattended execution
+- Quality gate must pass all active layers (no override)
+- Token budget cap per session — stop if exceeded
+- Delivery held if quality score < 7/10 — flagged for human review
