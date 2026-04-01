@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -97,3 +98,37 @@ class TestRecordCreation:
         with sqlite3.connect(str(db_path)) as conn:
             count = conn.execute("SELECT COUNT(*) FROM code_audit").fetchone()[0]
         assert count == 3
+
+
+class TestRecordFailureHandling:
+    """Audit record should log warning and not raise on DB errors."""
+
+    def test_sqlite_error_suppressed(self, db_path: Path) -> None:
+        """When sqlite3.connect raises sqlite3.Error, record() logs and returns."""
+        with patch(
+            "augments.sandbox.audit.sqlite3.connect",
+            side_effect=sqlite3.OperationalError("disk I/O error"),
+        ):
+            # Should not raise
+            record(
+                code="print('boom')",
+                exit_code=0,
+                duration_ms=1.0,
+                files_touched=[],
+                db_path=db_path,
+            )
+
+    def test_os_error_suppressed(self, db_path: Path) -> None:
+        """When mkdir raises OSError, record() logs and returns."""
+        with patch(
+            "augments.sandbox.audit.Path.mkdir",
+            side_effect=OSError("permission denied"),
+        ):
+            # Should not raise
+            record(
+                code="print('boom')",
+                exit_code=0,
+                duration_ms=1.0,
+                files_touched=[],
+                db_path=db_path,
+            )

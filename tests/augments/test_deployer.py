@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from augments.distillation.deployer import DeploymentResult, deploy
+from augments.distillation.deployer import DeploymentResult, _load_yaml, deploy
 
 
 @pytest.fixture()
@@ -195,6 +195,30 @@ class TestImmutability:
 
         assert models_yaml.read_text() == original_models
         assert distillation_config.read_text() == original_config
+
+
+class TestLoadYamlEdgeCases:
+    """Test _load_yaml edge cases for full coverage."""
+
+    def test_missing_file_no_defaults_returns_empty(self, tmp_path: Path) -> None:
+        """Line 75: file missing, defaults is None -> returns {}."""
+        missing = tmp_path / "nonexistent.yaml"
+        result = _load_yaml(missing, defaults=None)
+        assert result == {}
+
+    def test_empty_yaml_file_with_defaults(self, tmp_path: Path) -> None:
+        """Line 79: file exists but empty YAML, defaults provided."""
+        empty_file = tmp_path / "empty.yaml"
+        empty_file.write_text("")
+        result = _load_yaml(empty_file, defaults={"key": "value"})
+        assert result == {"key": "value"}
+
+    def test_empty_yaml_file_no_defaults(self, tmp_path: Path) -> None:
+        """Line 79: file exists but empty YAML, no defaults."""
+        empty_file = tmp_path / "empty.yaml"
+        empty_file.write_text("")
+        result = _load_yaml(empty_file, defaults=None)
+        assert result == {}
 
 
 class TestMissingModelsYaml:

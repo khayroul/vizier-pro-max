@@ -149,6 +149,23 @@ class TestOpenFileCalls:
         result = check("f = open('../../secrets.txt', 'r')")
         assert not result.allowed
 
+    def test_open_no_args_blocked(self) -> None:
+        """open() with no arguments should be blocked."""
+        result = check("f = open()")
+        assert not result.allowed
+        assert any("no path" in p for p in result.blocked_patterns)
+
+    def test_open_dynamic_path_blocked(self) -> None:
+        """open() with a variable (non-literal) path should be blocked."""
+        result = check("path = 'foo.txt'\nf = open(path, 'r')")
+        assert not result.allowed
+        assert any("dynamic" in p for p in result.blocked_patterns)
+
+    def test_attribute_open_not_blocked(self) -> None:
+        """Method-style .open() calls (e.g. pathlib) should not be blocked."""
+        result = check("from pathlib import Path\np = Path('output/x.txt')\nfh = p.open('w')")
+        assert result.allowed
+
 
 class TestSyntaxErrors:
     """Unparseable code should be rejected."""

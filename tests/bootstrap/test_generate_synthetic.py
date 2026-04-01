@@ -7,10 +7,13 @@ from pathlib import Path
 
 import pytest
 
+from unittest.mock import patch
+
 from scripts.bootstrap.generate_synthetic_sessions import (
     TRAINING_SCHEMA,
     generate_synthetic_sessions,
     load_templates,
+    main,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -148,3 +151,31 @@ class TestGenerateSyntheticSessions:
     def test_training_schema_constant_matches(self) -> None:
         assert "session_id" in TRAINING_SCHEMA
         assert "synthetic" in TRAINING_SCHEMA
+
+
+class TestLoadTemplatesErrors:
+    """Tests for error paths in load_templates."""
+
+    def test_missing_config_raises_file_not_found(self, tmp_path: Path) -> None:
+        missing_path = tmp_path / "nonexistent.yaml"
+        with pytest.raises(FileNotFoundError, match="Config not found"):
+            load_templates(missing_path)
+
+
+class TestMain:
+    """Tests for the main() CLI entry point."""
+
+    def test_main_calls_generate(self, tmp_path: Path) -> None:
+        """main() delegates to generate_synthetic_sessions with default paths."""
+        with patch(
+            "scripts.bootstrap.generate_synthetic_sessions.generate_synthetic_sessions",
+            return_value=42,
+        ) as mock_gen:
+            main()
+            mock_gen.assert_called_once()
+            call_kwargs = mock_gen.call_args
+            assert call_kwargs[1]["seed"] == 42
+            assert str(call_kwargs[1]["config_path"]).endswith(
+                "config/bootstrap/synthetic_sessions.yaml"
+            )
+            assert str(call_kwargs[1]["db_path"]).endswith("data/prompt_log.db")

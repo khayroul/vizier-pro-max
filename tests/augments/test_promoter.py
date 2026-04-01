@@ -119,3 +119,64 @@ class TestTier2Promotion:
                 tier_decision=tier_2_decision, drafts_dir=tmp_path / "_drafts"
             )
         assert result.status == "rejected"
+
+    def test_tier_2_copies_directory_artifact(self, tmp_path: Path) -> None:
+        """Directory artifacts are copied via copytree (lines 92-95)."""
+        from augments.openspace.safety import SafetyResult
+
+        # Create a directory artifact (not a file)
+        artifact_dir = tmp_path / "tools" / "my_tool_dir"
+        artifact_dir.mkdir(parents=True)
+        (artifact_dir / "main.py").write_text("# tool code\n")
+        (artifact_dir / "config.yaml").write_text("key: value\n")
+
+        decision = TierDecision(
+            tier=2,
+            reasons=["directory artifact"],
+            artifact_paths=[artifact_dir],
+        )
+
+        drafts_dir = tmp_path / "_drafts"
+        with patch(
+            "augments.selfbuild.promoter.check_skill_safety",
+            return_value=SafetyResult(is_safe=True, reason="Passed"),
+        ):
+            result = promote(tier_decision=decision, drafts_dir=drafts_dir)
+
+        assert result.status == "held"
+        copied_dir = drafts_dir / "my_tool_dir"
+        assert copied_dir.is_dir()
+        assert (copied_dir / "main.py").read_text() == "# tool code\n"
+
+    def test_tier_2_overwrites_existing_directory_in_drafts(
+        self, tmp_path: Path
+    ) -> None:
+        """Existing directory in _drafts is removed before copytree (lines 93-94)."""
+        from augments.openspace.safety import SafetyResult
+
+        artifact_dir = tmp_path / "tools" / "my_tool_dir"
+        artifact_dir.mkdir(parents=True)
+        (artifact_dir / "new_file.py").write_text("# new\n")
+
+        # Pre-populate drafts with a stale copy
+        drafts_dir = tmp_path / "_drafts"
+        stale_dest = drafts_dir / "my_tool_dir"
+        stale_dest.mkdir(parents=True)
+        (stale_dest / "old_file.py").write_text("# old\n")
+
+        decision = TierDecision(
+            tier=2,
+            reasons=["directory artifact"],
+            artifact_paths=[artifact_dir],
+        )
+
+        with patch(
+            "augments.selfbuild.promoter.check_skill_safety",
+            return_value=SafetyResult(is_safe=True, reason="Passed"),
+        ):
+            result = promote(tier_decision=decision, drafts_dir=drafts_dir)
+
+        assert result.status == "held"
+        copied_dir = drafts_dir / "my_tool_dir"
+        assert (copied_dir / "new_file.py").exists()
+        assert not (copied_dir / "old_file.py").exists()

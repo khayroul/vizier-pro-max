@@ -12,6 +12,7 @@ from augments.distillation.collector import TrainingExample
 from augments.distillation.compiler import (
     CompilationResult,
     ToolsetClassifier,
+    _toolset_match_metric,
     compile_program,
     load_program,
 )
@@ -58,6 +59,36 @@ class TestToolsetClassifier:
     def test_module_is_dspy_module(self) -> None:
         classifier = ToolsetClassifier()
         assert isinstance(classifier, dspy.Module)
+
+    def test_forward_calls_predict(self) -> None:
+        classifier = ToolsetClassifier()
+        mock_predict = MagicMock()
+        mock_predict.return_value = dspy.Prediction(toolset_name="search_rag")
+        classifier.predict = mock_predict
+
+        result = classifier.forward(input_message="test input")
+
+        mock_predict.assert_called_once_with(input_message="test input")
+        assert result.toolset_name == "search_rag"
+
+
+class TestToolsetMatchMetric:
+    """Test the _toolset_match_metric function."""
+
+    def test_matching_toolset_names(self) -> None:
+        example = dspy.Example(toolset_name="search_rag")
+        prediction = dspy.Prediction(toolset_name="search_rag")
+        assert _toolset_match_metric(example, prediction) is True
+
+    def test_non_matching_toolset_names(self) -> None:
+        example = dspy.Example(toolset_name="search_rag")
+        prediction = dspy.Prediction(toolset_name="code_gen")
+        assert _toolset_match_metric(example, prediction) is False
+
+    def test_matching_with_whitespace(self) -> None:
+        example = dspy.Example(toolset_name="  search_rag  ")
+        prediction = dspy.Prediction(toolset_name="search_rag")
+        assert _toolset_match_metric(example, prediction) is True
 
 
 class TestCompilation:

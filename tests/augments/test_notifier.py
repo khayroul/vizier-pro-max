@@ -80,6 +80,27 @@ class TestMissingChatId:
                 )
 
 
+class TestSendTelegramDynamicImport:
+    """_send_telegram delegates to scripts.delivery.send_telegram.run (lines 62-64)."""
+
+    def test_send_telegram_calls_dynamic_import(self) -> None:
+        from unittest.mock import MagicMock
+
+        mock_module = MagicMock()
+        mock_module.run.return_value = {"message_id": 7, "status": "sent"}
+
+        with patch.dict(
+            "sys.modules",
+            {"scripts": MagicMock(), "scripts.delivery": MagicMock(), "scripts.delivery.send_telegram": mock_module},
+        ):
+            from augments.selfbuild.notifier import _send_telegram
+
+            result = _send_telegram(chat_id="999", text="hello")
+
+        mock_module.run.assert_called_once_with(chat_id="999", text="hello")
+        assert result == {"message_id": 7, "status": "sent"}
+
+
 class TestMissingTelegramToken:
     """Missing TELEGRAM_BOT_TOKEN handled gracefully."""
 

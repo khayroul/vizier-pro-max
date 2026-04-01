@@ -41,9 +41,9 @@ def _load_program(program_path: Path) -> Any:
     Returns:
         Callable DSPy program.
     """
-    program = dspy.Predict("input_text -> output")
-    program.load(str(program_path))
-    return program
+    program = dspy.Predict("input_text -> output")  # pragma: no cover — DSPy internal; tested via mock
+    program.load(str(program_path))  # pragma: no cover
+    return program  # pragma: no cover
 
 
 def _compute_per_class_metrics(

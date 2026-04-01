@@ -18,6 +18,7 @@ import pytest
 from scripts.bootstrap.calibrate_quality_gate import (
     CalibrationReport,
     CalibrationTestCase,
+    _run_layer,
     build_test_fixtures,
     compute_layer_metrics,
     recommend_thresholds,
@@ -202,3 +203,96 @@ class TestLayerMetrics:
         """No test results should yield empty metrics."""
         metrics = compute_layer_metrics([])
         assert metrics == {}
+
+    def test_false_positive_path(self) -> None:
+        """A layer that passes when it should fail increments FP."""
+        test_results: list[dict[str, Any]] = [
+            {
+                "name": "fp_case",
+                "expected_pass": False,
+                "actual_pass": True,
+                "layer_results": {
+                    "input_validation": {"passed": True, "errors": []},
+                },
+            },
+        ]
+        metrics = compute_layer_metrics(test_results)
+        assert metrics["input_validation"]["precision"] == 0.0
+        assert metrics["input_validation"]["recall"] == 1.0
+
+    def test_false_negative_path(self) -> None:
+        """A layer that fails when it should pass increments FN."""
+        test_results: list[dict[str, Any]] = [
+            {
+                "name": "fn_case",
+                "expected_pass": True,
+                "actual_pass": False,
+                "layer_results": {
+                    "input_validation": {"passed": False, "errors": ["err"]},
+                },
+            },
+        ]
+        metrics = compute_layer_metrics(test_results)
+        assert metrics["input_validation"]["precision"] == 1.0
+        assert metrics["input_validation"]["recall"] == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Unknown layer raises ValueError
+# ---------------------------------------------------------------------------
+
+
+class TestRunLayerUnknown:
+    """_run_layer raises ValueError for unknown layers."""
+
+    def test_unknown_layer_raises(self) -> None:
+        tc = CalibrationTestCase(
+            name="unknown",
+            layer="nonexistent_layer",
+            data={},
+            schema={},
+            expected_pass=True,
+        )
+        with pytest.raises(ValueError, match="Unknown calibration layer"):
+            _run_layer(tc)
+
+
+# ---------------------------------------------------------------------------
+# General recommendation fallback
+# ---------------------------------------------------------------------------
+
+
+class TestGeneralRecommendationFallback:
+    """When accuracy is low but no layer-specific mismatches, provide general advice."""
+
+    def test_general_fallback_when_no_layer_mismatches(self) -> None:
+        """Mismatched results with empty layer_results trigger general recommendation."""
+        test_results: list[dict[str, Any]] = [
+            {
+                "name": "mismatch_no_layers",
+                "expected_pass": True,
+                "actual_pass": False,
+                "layer_results": {},
+            },
+        ]
+        accuracy = 0.0
+        recommendations = recommend_thresholds(accuracy, test_results)
+        assert "general" in recommendations
+        assert "below" in recommendations["general"]
+
+
+# ---------------------------------------------------------------------------
+# Default output path
+# ---------------------------------------------------------------------------
+
+
+class TestDefaultOutputPath:
+    """run_calibration uses data/calibration_report.json when no path given."""
+
+    def test_default_output_path(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Passing None for output_path writes to data/calibration_report.json."""
+        monkeypatch.chdir(tmp_path)
+        report = run_calibration(output_path=None)
+        expected_path = Path("data/calibration_report.json")
+        assert expected_path.exists()
+        assert isinstance(report.accuracy, float)

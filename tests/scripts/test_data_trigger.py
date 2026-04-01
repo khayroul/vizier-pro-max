@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+import time
 from pathlib import Path
 from unittest.mock import patch
 
@@ -12,8 +13,10 @@ from scripts.triggers.data_trigger import (
     FileClassification,
     ProcessResult,
     ValidationResult,
+    _start_hermes_session,
     classify_file,
     detect_schema,
+    poll_uploads,
     process_file,
     validate_file,
 )
@@ -226,3 +229,181 @@ def test_process_file_moves_to_failed(
     failed_files = list(failed_dir.iterdir())
     assert len(failed_files) == 1
     assert "bad_file.txt" in failed_files[0].name
+
+
+# --- Line 140: unreachable "Unknown format" ---
+# This line is unreachable by design (guard after extension check).
+# Adding pragma: no cover in source is the correct approach.
+
+
+# --- Line 148: empty CSV content (non-zero file, whitespace only) ---
+
+
+def test_validate_csv_whitespace_only(tmp_path: Path) -> None:
+    """A CSV file with only whitespace is treated as empty."""
+    csv_file = tmp_path / "blank.csv"
+    csv_file.write_text("   \n  \n")
+    result = validate_file(csv_file)
+    assert result.valid is False
+    assert result.format == "csv"
+    assert result.error is not None
+    assert "empty" in result.error.lower()
+
+
+# --- Lines 152-153: csv.Error from binary garbage ---
+
+
+def test_validate_csv_sniff_error(tmp_path: Path) -> None:
+    """When csv.Sniffer raises csv.Error, validation fails gracefully."""
+    csv_file = tmp_path / "garbage.csv"
+    csv_file.write_text("some,data\n1,2\n")
+
+    with patch.object(
+        csv.Sniffer, "sniff", side_effect=csv.Error("Could not determine delimiter")
+    ):
+        result = validate_file(csv_file)
+
+    assert result.valid is False
+    assert result.format == "csv"
+    assert result.error is not None
+    assert "csv validation failed" in result.error.lower()
+
+
+# --- Lines 214-216: JSON dict-only data (not list) ---
+
+
+def test_detect_schema_json_dict(tmp_path: Path) -> None:
+    """JSON schema detection works for a top-level dict."""
+    json_file = tmp_path / "config.json"
+    json_file.write_text(json.dumps({"name": "Alice", "count": 42, "active": True}))
+    schema = detect_schema(json_file)
+    assert schema == {"name": "str", "count": "int", "active": "bool"}
+
+
+def test_detect_schema_json_scalar(tmp_path: Path) -> None:
+    """JSON schema detection returns empty for a scalar value."""
+    json_file = tmp_path / "scalar.json"
+    json_file.write_text(json.dumps("just a string"))
+    schema = detect_schema(json_file)
+    assert schema == {}
+
+
+# --- Line 238: xlsx schema stub warning ---
+
+
+def test_detect_schema_xlsx_logs_warning(tmp_path: Path) -> None:
+    """XLSX schema detection emits a warning log (covers line 238)."""
+    from scripts.triggers.data_trigger import _detect_schema_xlsx
+
+    xlsx_file = tmp_path / "data.xlsx"
+    xlsx_file.write_bytes(b"PK\x03\x04" + b"\x00" * 100)
+    # Call internal function directly to ensure the logger.warning line executes
+    schema = _detect_schema_xlsx(xlsx_file)
+    assert schema == {}
+
+
+# --- Line 238: _start_hermes_session body ---
+
+
+def test_start_hermes_session_runs(tmp_path: Path) -> None:
+    """Calling _start_hermes_session executes its logger.info body."""
+    dummy_file = tmp_path / "test.csv"
+    dummy_file.write_text("a,b\n1,2\n")
+    # Should not raise; just exercises the logger.info call
+    _start_hermes_session(
+        toolset="vizier-test",
+        pipeline=None,
+        file_path=dummy_file,
+        schema={"a": "string", "b": "string"},
+    )
+
+
+# --- Lines 314-317: exception in Hermes session start ---
+
+
+def test_process_file_hermes_failure(
+    uploads_dir: Path, rules_path: Path
+) -> None:
+    """When _start_hermes_session raises, file moves to _failed/."""
+    csv_file = uploads_dir / "posters_march.csv"
+    csv_file.write_text("name,age\nAlice,30\n")
+
+    with patch(
+        "scripts.triggers.data_trigger._start_hermes_session",
+        side_effect=RuntimeError("connection refused"),
+    ):
+        result = process_file(csv_file, uploads_dir, rules_path=rules_path)
+
+    assert result.status == "failed"
+    assert result.error is not None
+    assert "Hermes session failed" in result.error
+    assert "connection refused" in result.error
+    assert result.toolset == "vizier-visual"
+    assert result.schema == {"name": "string", "age": "string"}
+
+    failed_dir = uploads_dir / "_failed"
+    assert failed_dir.exists()
+    failed_files = list(failed_dir.iterdir())
+    assert len(failed_files) == 1
+
+
+# --- Lines 354-370: poll_uploads infinite loop ---
+
+
+def test_poll_uploads_processes_files_then_stops(
+    uploads_dir: Path, rules_path: Path
+) -> None:
+    """poll_uploads processes files and stops on KeyboardInterrupt."""
+    csv_file = uploads_dir / "posters_test.csv"
+    csv_file.write_text("title,color\nSpring,red\n")
+
+    call_count = 0
+
+    def sleep_then_interrupt(seconds: float) -> None:
+        nonlocal call_count
+        call_count += 1
+        raise KeyboardInterrupt
+
+    with (
+        patch("scripts.triggers.data_trigger._start_hermes_session"),
+        patch("scripts.triggers.data_trigger.time.sleep", side_effect=sleep_then_interrupt),
+    ):
+        poll_uploads(uploads_dir, interval=1.0, rules_path=rules_path)
+
+    assert call_count == 1
+    # File should have been processed and moved
+    assert not csv_file.exists()
+
+
+def test_poll_uploads_skips_meta_dirs(
+    uploads_dir: Path, rules_path: Path
+) -> None:
+    """poll_uploads skips _processed and _failed directories."""
+    processed_dir = uploads_dir / "_processed"
+    processed_dir.mkdir()
+    (processed_dir / "old.csv").write_text("a,b\n1,2\n")
+
+    failed_dir = uploads_dir / "_failed"
+    failed_dir.mkdir()
+    (failed_dir / "bad.csv").write_text("x,y\n")
+
+    def sleep_then_interrupt(seconds: float) -> None:
+        raise KeyboardInterrupt
+
+    with patch("scripts.triggers.data_trigger.time.sleep", side_effect=sleep_then_interrupt):
+        poll_uploads(uploads_dir, interval=1.0, rules_path=rules_path)
+
+    # Meta-dir files should remain untouched
+    assert (processed_dir / "old.csv").exists()
+    assert (failed_dir / "bad.csv").exists()
+
+
+def test_poll_uploads_nonexistent_dir(tmp_path: Path) -> None:
+    """poll_uploads handles a non-existent uploads directory gracefully."""
+    missing_dir = tmp_path / "does_not_exist"
+
+    def sleep_then_interrupt(seconds: float) -> None:
+        raise KeyboardInterrupt
+
+    with patch("scripts.triggers.data_trigger.time.sleep", side_effect=sleep_then_interrupt):
+        poll_uploads(missing_dir, interval=1.0)

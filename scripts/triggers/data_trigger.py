@@ -137,7 +137,7 @@ def validate_file(file_path: Path) -> ValidationResult:
         return _validate_xlsx(file_path)
 
     # Unreachable due to extension check, but satisfies type checker
-    return ValidationResult(valid=False, format=None, error="Unknown format")
+    return ValidationResult(valid=False, format=None, error="Unknown format")  # pragma: no cover
 
 
 def _validate_csv(file_path: Path) -> ValidationResult:

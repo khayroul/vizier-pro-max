@@ -197,5 +197,5 @@ def main() -> None:
     logger.info("generation_complete", rows=count)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

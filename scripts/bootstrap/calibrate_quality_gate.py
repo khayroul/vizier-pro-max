@@ -471,5 +471,5 @@ def run_calibration(
     return report
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     run_calibration()

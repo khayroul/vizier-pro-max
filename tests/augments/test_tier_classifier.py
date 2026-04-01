@@ -118,6 +118,25 @@ class TestClassifyDeliveryTool:
         assert any("delivery" in r.lower() for r in result.reasons)
 
 
+class TestReadManifestToolsetEdgeCases:
+    """Edge cases for _read_manifest_toolset."""
+
+    def test_oserror_returns_none(self, tmp_path: Path) -> None:
+        """OSError on file read returns None (lines 36-37)."""
+        from augments.selfbuild.tier_classifier import _read_manifest_toolset
+
+        nonexistent = tmp_path / "does_not_exist.yaml"
+        assert _read_manifest_toolset(nonexistent) is None
+
+    def test_no_toolset_key_returns_none(self, tmp_path: Path) -> None:
+        """Manifest without a toolset key returns None (line 44)."""
+        from augments.selfbuild.tier_classifier import _read_manifest_toolset
+
+        manifest = tmp_path / "no_toolset.yaml"
+        manifest.write_text("name: some_tool\ndescription: no toolset here\n")
+        assert _read_manifest_toolset(manifest) is None
+
+
 class TestClassifyConservativeDefault:
     """No manifest, no origin -> Tier 2 (conservative)."""
 
