@@ -9,5 +9,6 @@ VIZIER_WORKFLOW_TOOLSETS = frozenset({
     "vizier-audio",
     "vizier-delivery",
     "vizier-fallback",
-    # vizier-code and vizier-knowledge deferred to Gate 3
+    "vizier-code",
+    # vizier-knowledge deferred to Gate 3
 })

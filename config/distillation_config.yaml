@@ -1,0 +1,9 @@
+# Per-task routing map — updated by deployer.py
+tasks:
+  task_classification:
+    status: pending
+    min_examples: 200
+    accuracy_threshold: 0.90
+    consecutive_passes: 0
+    deployed_at: null
+    pipeline_version: null

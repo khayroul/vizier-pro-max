@@ -290,3 +290,98 @@ input: {{}}
         result = execute_tool(config, {})
         parsed = json.loads(result)
         assert parsed.get("result") == "hello string"
+
+
+class TestOutputCap:
+    """Tests for 1MB output cap on subprocess capture (spec Section 2.3)."""
+
+    TRUNCATION_MARKER = "[TRUNCATED: output exceeded 1MB limit]"
+    ONE_MB = 1_048_576
+
+    def test_cli_stdout_within_limit_passes_through(self) -> None:
+        """Output under 1MB should pass through unchanged."""
+        yaml_str = """
+name: small_output
+description: "Small output CLI"
+version: "1.0"
+toolset: vizier-core
+execution:
+  type: cli
+  command: "echo hello"
+  timeout: 5
+input: {}
+output:
+  stdout:
+    type: string
+"""
+        config = parse_manifest(yaml_str)
+        result = execute_tool(config, {})
+        parsed = json.loads(result)
+        assert parsed["stdout"] == "hello"
+        assert self.TRUNCATION_MARKER not in result
+
+    def test_cli_stdout_exceeding_limit_is_truncated(self) -> None:
+        """Stdout exceeding 1MB should be truncated with marker."""
+        # Generate 1.5MB of output via python one-liner
+        yaml_str = """
+name: big_output
+description: "Big output CLI"
+version: "1.0"
+toolset: vizier-core
+execution:
+  type: cli
+  command: "python3 -c \\"print('A' * 1572864)\\""
+  timeout: 10
+input: {}
+output:
+  stdout:
+    type: string
+"""
+        config = parse_manifest(yaml_str)
+        result = execute_tool(config, {})
+        parsed = json.loads(result)
+        stdout = parsed["stdout"]
+        assert len(stdout) <= self.ONE_MB + len(self.TRUNCATION_MARKER) + 1
+        assert stdout.endswith(self.TRUNCATION_MARKER)
+
+    def test_cli_stderr_exceeding_limit_is_truncated(self) -> None:
+        """Stderr exceeding 1MB should also be truncated."""
+        yaml_str = """
+name: big_stderr
+description: "Big stderr CLI"
+version: "1.0"
+toolset: vizier-core
+execution:
+  type: cli
+  command: "python3 -c \\"import sys; sys.stderr.write('B' * 1572864); sys.exit(1)\\""
+  timeout: 10
+input: {}
+"""
+        config = parse_manifest(yaml_str)
+        result = execute_tool(config, {})
+        parsed = json.loads(result)
+        stderr = parsed["stderr"]
+        assert len(stderr) <= self.ONE_MB + len(self.TRUNCATION_MARKER) + 1
+        assert stderr.endswith(self.TRUNCATION_MARKER)
+
+    def test_cli_output_exactly_at_limit_not_truncated(self) -> None:
+        """Output exactly at 1MB should not be truncated."""
+        yaml_str = """
+name: exact_output
+description: "Exact 1MB output CLI"
+version: "1.0"
+toolset: vizier-core
+execution:
+  type: cli
+  command: "python3 -c \\"print('C' * 1048575, end='')\\""
+  timeout: 10
+input: {}
+output:
+  stdout:
+    type: string
+"""
+        config = parse_manifest(yaml_str)
+        result = execute_tool(config, {})
+        parsed = json.loads(result)
+        # 1048575 bytes = just under 1MB (1048576), should not truncate
+        assert self.TRUNCATION_MARKER not in parsed["stdout"]

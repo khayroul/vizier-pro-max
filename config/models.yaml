@@ -1,0 +1,5 @@
+# Centralized model routing — extended by distillation deployer
+default_model: gpt-5.4-mini
+fallback_model: qwen3.5:9b
+offline_mode: false
+distilled_tasks: {}

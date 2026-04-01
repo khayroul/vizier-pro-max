@@ -27,6 +27,16 @@ logger = structlog.get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+_OUTPUT_CAP_BYTES = 1_048_576  # 1MB
+_TRUNCATION_MARKER = "[TRUNCATED: output exceeded 1MB limit]"
+
+
+def _cap_output(text: str) -> str:
+    """Truncate output string to 1MB, appending a marker if truncated."""
+    if len(text) <= _OUTPUT_CAP_BYTES:
+        return text
+    return text[:_OUTPUT_CAP_BYTES] + _TRUNCATION_MARKER
+
 
 def _get_allowed_roots() -> list[Path]:
     """Return list of allowed roots for script path containment.
@@ -105,15 +115,18 @@ def _execute_cli(manifest: ManifestConfig, args: dict[str, Any]) -> str:
     except subprocess.TimeoutExpired:
         return json.dumps({"error": f"timeout after {manifest.execution.timeout}s"})
 
+    stdout = _cap_output(result.stdout.strip())
+    stderr = _cap_output(result.stderr.strip())
+
     if result.returncode != 0:
         return json.dumps(
             {
                 "error": f"CLI exited with code {result.returncode}",
-                "stderr": result.stderr.strip(),
+                "stderr": stderr,
             }
         )
 
-    return json.dumps({"stdout": result.stdout.strip()})
+    return json.dumps({"stdout": stdout})
 
 
 def _execute_python_script(manifest: ManifestConfig, args: dict[str, Any]) -> str:

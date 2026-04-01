@@ -1,0 +1,29 @@
+name: aider_edit
+description: "Edit existing files using aider-style targeted changes"
+version: "1.0"
+toolset: vizier-code
+
+execution:
+  type: python_function
+  entrypoint: "scripts.code.aider_edit:run"
+  timeout: 30
+
+input:
+  file_path:
+    type: string
+    required: true
+    description: "Path to the file to edit"
+  instruction:
+    type: string
+    required: true
+    description: "Natural language instruction describing the edit"
+  context_files:
+    type: array
+    required: false
+    description: "Additional files to provide as context"
+
+output:
+  status:
+    type: string
+  diff:
+    type: string

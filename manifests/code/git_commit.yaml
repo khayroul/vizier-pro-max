@@ -1,0 +1,25 @@
+name: git_commit
+description: "Stage and commit changes with a conventional commit message"
+version: "1.0"
+toolset: vizier-code
+
+execution:
+  type: python_function
+  entrypoint: "scripts.code.git_commit:run"
+  timeout: 15
+
+input:
+  message:
+    type: string
+    required: true
+    description: "Commit message in conventional format (type: description)"
+  files:
+    type: array
+    required: false
+    description: "Specific files to stage; if empty, stages all changes"
+
+output:
+  status:
+    type: string
+  commit_hash:
+    type: string

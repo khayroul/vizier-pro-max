@@ -1,0 +1,99 @@
+# Synthetic session templates for DSPy training data bootstrap
+# Total target: 200+ rows (80 + 50 + 40 + 30 = 200)
+
+task_types:
+  task_classification:
+    count: 80
+    templates:
+      - input: "Classify this {domain} document as {category_a} or {category_b}"
+        toolset: "classifier"
+        pipeline: "classify_and_tag"
+      - input: "What type of {domain} task is: {action} the {artifact}"
+        toolset: "classifier"
+        pipeline: "classify_and_tag"
+      - input: "Determine if this {domain} request needs {category_a} or {category_b} handling"
+        toolset: "classifier"
+        pipeline: "classify_and_route"
+      - input: "Label the following {domain} input by intent: {action} {artifact}"
+        toolset: "classifier"
+        pipeline: "classify_and_tag"
+
+  template_selection:
+    count: 50
+    templates:
+      - input: "Select the best template for a {domain} {artifact}"
+        toolset: "template_selector"
+        pipeline: "select_and_render"
+      - input: "Which {domain} template fits this request: {action} a {artifact}"
+        toolset: "template_selector"
+        pipeline: "select_and_render"
+      - input: "Find a matching layout for {domain} {artifact} with {style} style"
+        toolset: "template_selector"
+        pipeline: "select_and_customize"
+
+  tool_routing:
+    count: 40
+    templates:
+      - input: "Route this {domain} task to the right tool: {action} {artifact}"
+        toolset: "router"
+        pipeline: "route_and_execute"
+      - input: "Which tool handles {action} for {domain} {artifact}?"
+        toolset: "router"
+        pipeline: "route_and_execute"
+      - input: "Dispatch {domain} {action} request to appropriate handler"
+        toolset: "router"
+        pipeline: "route_and_dispatch"
+
+  outline_generation:
+    count: 30
+    templates:
+      - input: "Generate an outline for a {domain} {artifact}"
+        toolset: "outliner"
+        pipeline: "outline_and_draft"
+      - input: "Create a structured plan for {action} a {domain} {artifact}"
+        toolset: "outliner"
+        pipeline: "outline_and_draft"
+      - input: "Draft the skeleton of a {domain} {artifact} with {style} tone"
+        toolset: "outliner"
+        pipeline: "outline_and_review"
+
+# Placeholder word lists for expansion
+placeholders:
+  domain:
+    - "marketing"
+    - "engineering"
+    - "finance"
+    - "legal"
+    - "product"
+    - "research"
+    - "design"
+    - "operations"
+  category_a:
+    - "urgent"
+    - "strategic"
+    - "tactical"
+    - "informational"
+  category_b:
+    - "routine"
+    - "operational"
+    - "analytical"
+    - "exploratory"
+  action:
+    - "create"
+    - "review"
+    - "update"
+    - "summarize"
+    - "analyze"
+    - "refactor"
+  artifact:
+    - "report"
+    - "proposal"
+    - "presentation"
+    - "dashboard"
+    - "specification"
+    - "brief"
+  style:
+    - "formal"
+    - "concise"
+    - "detailed"
+    - "executive"
