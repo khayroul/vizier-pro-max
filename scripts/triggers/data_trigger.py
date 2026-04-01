@@ -151,6 +151,8 @@ def _validate_csv(file_path: Path) -> ValidationResult:
         return ValidationResult(valid=True, format="csv", error=None)
     except csv.Error as exc:
         return ValidationResult(valid=False, format="csv", error=f"CSV validation failed: {exc}")
+    except (UnicodeDecodeError, ValueError) as exc:
+        return ValidationResult(valid=False, format="csv", error=f"CSV file is not valid UTF-8: {exc}")
 
 
 def _validate_json(file_path: Path) -> ValidationResult:

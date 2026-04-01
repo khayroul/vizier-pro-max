@@ -120,6 +120,13 @@ def _check_open_call(node: ast.Call, blocked: list[str]) -> None:
         if any(path_str.startswith(prefix) for prefix in _ALLOWED_OPEN_PREFIXES):
             return
         blocked.append(f"open({path_str!r}) -- only output/ and tmp/ allowed")
+    elif isinstance(first_arg, ast.JoinedStr) and first_arg.values:
+        # f-string: check if the literal prefix starts with an allowed path
+        first_part = first_arg.values[0]
+        if isinstance(first_part, ast.Constant) and isinstance(first_part.value, str):
+            if any(first_part.value.startswith(prefix) for prefix in _ALLOWED_OPEN_PREFIXES):
+                return
+        blocked.append("open() with dynamic f-string path -- only output/ and tmp/ allowed")
     else:
-        # Dynamic path — cannot verify at AST time, block conservatively
+        # Fully dynamic path — cannot verify at AST time, block conservatively
         blocked.append("open() with dynamic path -- only output/ and tmp/ allowed")

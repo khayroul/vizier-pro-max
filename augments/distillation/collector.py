@@ -17,7 +17,7 @@ import structlog
 log = structlog.get_logger(__name__)
 
 DEFAULT_DB_PATH = Path("data/prompt_log.db")
-MIN_EXAMPLES = 200
+MIN_EXAMPLES = 50
 TRAIN_RATIO = 0.8
 
 

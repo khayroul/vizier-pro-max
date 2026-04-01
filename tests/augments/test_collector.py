@@ -58,8 +58,8 @@ def populated_db(tmp_path: Path) -> Path:
             ),
         )
 
-    # 50 rows for TASK_TYPE_B (all synthetic)
-    for i in range(50):
+    # 10 rows for TASK_TYPE_B (all synthetic) — below MIN_EXAMPLES threshold
+    for i in range(10):
         conn.execute(
             "INSERT INTO training_sessions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
@@ -140,10 +140,10 @@ class TestFiltering:
 
 
 class TestInsufficientData:
-    """Test InsufficientDataError when < 200 rows."""
+    """Test InsufficientDataError when below MIN_EXAMPLES threshold."""
 
-    def test_raises_on_fewer_than_200(self, populated_db: Path) -> None:
-        with pytest.raises(InsufficientDataError, match="200"):
+    def test_raises_on_fewer_than_min(self, populated_db: Path) -> None:
+        with pytest.raises(InsufficientDataError, match="50"):
             collect(task_type=TASK_TYPE_B, db_path=populated_db)
 
     def test_raises_on_nonexistent_task_type(self, populated_db: Path) -> None:
@@ -159,10 +159,19 @@ class TestSyntheticFlag:
         assert result.total_count == 250  # All 250 rows
 
     def test_synthetic_excludable(self, populated_db: Path) -> None:
-        """Only 50 real rows for TASK_TYPE_A, so excluding synthetic raises error."""
+        """Only 50 real rows for TASK_TYPE_A — excluding synthetic still works (50 >= MIN)."""
+        result = collect(
+            task_type=TASK_TYPE_A,
+            db_path=populated_db,
+            include_synthetic=False,
+        )
+        assert result.total_count == 50  # Only the 50 non-synthetic rows
+
+    def test_excluding_synthetic_raises_when_insufficient(self, populated_db: Path) -> None:
+        """TASK_TYPE_B has only 10 synthetic rows, 0 real — excluding synthetic leaves 0."""
         with pytest.raises(InsufficientDataError):
             collect(
-                task_type=TASK_TYPE_A,
+                task_type=TASK_TYPE_B,
                 db_path=populated_db,
                 include_synthetic=False,
             )
