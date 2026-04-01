@@ -152,6 +152,36 @@ def test_detect_schema_json(tmp_path: Path) -> None:
 # --- process_file tests ---
 
 
+def test_classify_content_calendar(rules_path: Path) -> None:
+    """Content calendar prefix maps to vizier-content + content_generate."""
+    result = classify_file("content_calendar_april.csv", rules_path=rules_path)
+    assert result.toolset == "vizier-content"
+    assert result.pipeline == "content_generate"
+
+
+def test_classify_analysis(rules_path: Path) -> None:
+    """Analysis prefix maps to vizier-research + competitive_analysis."""
+    result = classify_file("analysis_q2.csv", rules_path=rules_path)
+    assert result.toolset == "vizier-research"
+    assert result.pipeline == "competitive_analysis"
+
+
+def test_detect_schema_xlsx(tmp_path: Path) -> None:
+    """XLSX schema detection returns empty dict (stub)."""
+    xlsx_file = tmp_path / "data.xlsx"
+    xlsx_file.write_bytes(b"PK\x03\x04" + b"\x00" * 100)
+    schema = detect_schema(xlsx_file)
+    assert schema == {}
+
+
+def test_detect_schema_unsupported(tmp_path: Path) -> None:
+    """Unsupported file type returns empty schema."""
+    txt_file = tmp_path / "data.txt"
+    txt_file.write_text("hello")
+    schema = detect_schema(txt_file)
+    assert schema == {}
+
+
 def test_process_file_moves_to_processed(
     uploads_dir: Path, rules_path: Path
 ) -> None:
