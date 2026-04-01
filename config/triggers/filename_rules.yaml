@@ -1,0 +1,18 @@
+# Filename prefix -> toolset + pipeline mapping
+rules:
+  - prefix: "posters_"
+    toolset: vizier-visual
+    pipeline: poster_batch
+  - prefix: "invoices_"
+    toolset: vizier-document
+    pipeline: null  # model decides
+  - prefix: "content_calendar_"
+    toolset: vizier-content
+    pipeline: content_generate
+  - prefix: "analysis_"
+    toolset: vizier-research
+    pipeline: competitive_analysis
+
+fallback:
+  toolset: vizier-fallback
+  pipeline: null
