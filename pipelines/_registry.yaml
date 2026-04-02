@@ -92,3 +92,62 @@ pipelines:
       voice: { type: string, required: false }
     output:
       output_path: { type: string }
+
+  - name: nonfiction_ebook_generate
+    description: "Long-form nonfiction ebook with report, charts, PDF, and EPUB exports"
+    input:
+      title: { type: string, required: true }
+      author: { type: string, required: true }
+      sections: { type: array, required: true }
+      charts: { type: array, required: false }
+      output_dir: { type: string, required: false }
+      subtitle: { type: string, required: false }
+      date: { type: string, required: false }
+      cover_path: { type: string, required: false }
+      brand: { type: object, required: false }
+      export_pdf: { type: boolean, required: false }
+      export_epub: { type: boolean, required: false }
+    output:
+      status: { type: string }
+      html_path: { type: string }
+      markdown_path: { type: string }
+      pdf_path: { type: string }
+      epub_path: { type: string }
+
+  - name: children_book_generate
+    description: "Illustrated storybook with spread-based HTML, PDF, and EPUB exports"
+    input:
+      title: { type: string, required: true }
+      author: { type: string, required: true }
+      spreads: { type: array, required: true }
+      output_dir: { type: string, required: false }
+      subtitle: { type: string, required: false }
+      date: { type: string, required: false }
+      cover_path: { type: string, required: false }
+      brand: { type: object, required: false }
+      export_pdf: { type: boolean, required: false }
+      export_epub: { type: boolean, required: false }
+    output:
+      status: { type: string }
+      html_path: { type: string }
+      pdf_path: { type: string }
+      epub_path: { type: string }
+
+  - name: novel_generate
+    description: "Novel manuscript pipeline with chapter packaging for HTML, PDF, and EPUB"
+    input:
+      title: { type: string, required: true }
+      author: { type: string, required: true }
+      chapters: { type: array, required: true }
+      output_dir: { type: string, required: false }
+      subtitle: { type: string, required: false }
+      date: { type: string, required: false }
+      cover_path: { type: string, required: false }
+      brand: { type: object, required: false }
+      export_pdf: { type: boolean, required: false }
+      export_epub: { type: boolean, required: false }
+    output:
+      status: { type: string }
+      html_path: { type: string }
+      pdf_path: { type: string }
+      epub_path: { type: string }
