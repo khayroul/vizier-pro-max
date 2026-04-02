@@ -216,7 +216,7 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
             )
             posters.append(result["file_path"])
 
-            poster_score = score_poster_batch(result["file_path"])
+            poster_score = score_poster_batch(Path(result["file_path"]))
             logger.info(
                 "Poster %d/%d rendered (score: %.1f): %s",
                 idx + 1,
@@ -227,7 +227,7 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
 
         # Record quality from last poster
         if posters:
-            final_score = score_poster_batch(posters[-1])
+            final_score = score_poster_batch(Path(posters[-1]))
             record_quality(did, final_score.score, final_score.passed)
 
         _check_and_export(did, client_id)

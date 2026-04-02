@@ -56,3 +56,43 @@ def test_analysis_uses_multiple_operations() -> None:
         )
         assert len(ops) >= 1
         assert any(op["operation"] == "groupby" for op in ops)
+
+
+def test_generate_search_urls_returns_urls() -> None:
+    from pipelines.competitive_analysis import _generate_search_urls
+    mock_response = json.dumps([
+        "https://www.yelp.com/search?find_desc=coffee&find_loc=Petaling+Jaya",
+        "https://www.tripadvisor.com/Restaurants-Petaling-Jaya-Coffee",
+    ])
+    with patch("pipelines.competitive_analysis.llm_chat", return_value=mock_response):
+        urls = _generate_search_urls("coffee shops in Petaling Jaya")
+    assert len(urls) >= 2
+    assert all(url.startswith("http") for url in urls)
+
+
+def test_extract_competitors_returns_structured() -> None:
+    from pipelines.competitive_analysis import _extract_competitors
+    mock_response = json.dumps([
+        {"name": "Cafe A", "pricing_range": "RM15", "strengths": "good price"},
+        {"name": "Cafe B", "pricing_range": "RM18", "strengths": "high rating"},
+        {"name": "Cafe C", "pricing_range": "RM12", "strengths": "location"},
+    ])
+    with patch("pipelines.competitive_analysis.llm_chat", return_value=mock_response):
+        competitors = _extract_competitors("coffee", ["some text"])
+    assert len(competitors) >= 3
+    assert all("name" in c for c in competitors)
+
+
+def test_fetch_and_extract_handles_all_failures() -> None:
+    from pipelines.competitive_analysis import _fetch_and_extract
+    with patch("pipelines.competitive_analysis._fetch_url", return_value=None):
+        results = _fetch_and_extract(["http://fail1.com", "http://fail2.com"])
+    assert results == []
+
+
+def test_pipeline_uses_quality_scorer() -> None:
+    """Pipeline source must reference score_competitive_analysis."""
+    import inspect
+    from pipelines import competitive_analysis
+    source = inspect.getsource(competitive_analysis)
+    assert "score_competitive_analysis" in source
