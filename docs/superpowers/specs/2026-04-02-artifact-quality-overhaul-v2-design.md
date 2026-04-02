@@ -223,7 +223,7 @@ Replace `tests/benchmarks/inputs/poster_template.html` and the production templa
   }
   .cta-button {
     display: inline-block;
-    background: #e94560; color: #fff;
+    background: {{ accent_color | default('#e94560') }}; color: #fff;
     padding: 14px 36px;
     border-radius: 8px;
     font-size: 16px; font-weight: 600;
@@ -278,10 +278,19 @@ Add optional `style_hint` column to poster CSV schema:
 
 If `style_hint` is missing, the LLM infers visual style from the headline.
 
+### Quality Gate Integration
+
+The current `poster_batch.py` has no `run_with_gates()` wrapper, no `start_deliverable()`, and no `record_quality()` calls — unlike all other pipelines. As part of this overhaul, integrate it with the existing quality gate middleware:
+
+- Add `_INPUT_SCHEMA` and `_OUTPUT_SCHEMA` dicts
+- Wrap core logic in `_pipeline_fn()` called by `run_with_gates()`
+- Add `start_deliverable()` / `clear_context()` lifecycle
+- Call the new `score_poster_batch()` scorer per poster
+
 ### Files Changed
 
-- `pipelines/poster_batch.py` — add image generation step, base64 injection, template redesign
-- `tests/benchmarks/inputs/poster_template.html` — replace with new centered layout
+- `pipelines/poster_batch.py` — rewrite: AI image generation, base64 injection, quality gate integration, new scoring
+- `tests/benchmarks/inputs/poster_template.html` — replace with new centered layout with background-image support
 - `scripts/visual/generate_image.py` — add `ensure_env()` call for standalone usage; pipeline passes `width=800, height=600` explicitly
 
 ### Quality Scoring
@@ -440,6 +449,11 @@ LLM call: "Convert this HTML into a Jinja2 template. Replace:
   Output ONLY the modified HTML."
   |
   v
+Validation: regex check for {{ headline }} and {{ body }}
+  -> If missing, retry once with reinforced prompt: "You MUST include {{ headline }}"
+  -> If still missing after retry, save unparameterized HTML (quality score penalized by -2)
+  |
+  v
 Parameterized template.html with {{ variables }}
 ```
 
@@ -462,7 +476,7 @@ logger.info(
 
 ### Files Changed
 
-- `pipelines/clone_converge.py` — add `min_iterations`, parameterization pass, delta logging
+- `pipelines/clone_converge.py` — add `min_iterations`, parameterization pass, delta logging, bump `_PIPELINE_VERSION` to "2.0"
 
 ### Quality Scoring
 
@@ -560,7 +574,8 @@ class QualityProperty:
     """A single measurable quality property."""
     name: str
     passed: bool
-    score_delta: float       # How much to add/subtract
+    pass_delta: float        # Added to score when passed
+    fail_delta: float        # Subtracted from score when failed (always positive)
     detail: str              # Human-readable explanation
 
 @dataclass(frozen=True)
@@ -603,10 +618,11 @@ record_quality(did, score.score, score.passed)
 All scorers use the same base algorithm:
 
 1. Start at 5.0
-2. For each property: add `score_delta` if passed, subtract `abs(score_delta)` if failed
-3. Pass/fail gate properties: if any gate fails, cap score at 4.0
-4. Clamp final score to [1.0, 10.0]
-5. `passed = score >= 7.0`
+2. For each property: add `pass_delta` if passed, subtract `fail_delta` if failed
+3. Properties with `fail_delta = 0` are bonuses — they reward quality but don't penalize absence
+4. Pass/fail gate properties: if any gate fails, cap score at 4.0
+5. Clamp final score to [1.0, 10.0]
+6. `passed = score >= 7.0`
 
 ### Files Changed
 
@@ -654,7 +670,10 @@ def ensure_env() -> None:
             if not line or line.startswith("#") or "=" not in line:
                 continue
             key, _, value = line.partition("=")
-            os.environ.setdefault(key.strip(), value.strip())
+            key = key.strip()
+            value = value.strip().strip("'\"")  # Match llm_client.py behavior
+            if key and key not in os.environ:
+                os.environ[key] = value
     _loaded = True
 ```
 
@@ -679,9 +698,10 @@ Each new/changed module gets corresponding tests:
 | Module | Test file | Key assertions |
 |--------|-----------|---------------|
 | `middleware/quality_scorer.py` | `tests/middleware/test_quality_scorer.py` | Each scorer returns correct score for known good/bad inputs |
-| `adapter/env_loader.py` | `tests/adapter/test_env_loader.py` | Loads .env, idempotent, does not overwrite existing vars |
+| `adapter/env_loader.py` | `tests/adapter/test_env_loader.py` | Loads .env, idempotent, does not overwrite existing vars, strips quotes |
 | Poster template | `tests/pipelines/test_poster_batch_quality.py` | Output is 800x600, > 50KB, not monochrome |
 | Typst styling | `tests/scripts/test_render_typst.py` | PDF has accent bar, title styled, > 5KB |
+| Content pipeline | `tests/pipelines/test_content_generate_quality.py` | Styled PDF renders, hashtags separated, structured response parsing |
 
 ### Integration Tests (VIZIER_BENCHMARK=1)
 
@@ -740,7 +760,22 @@ Update `tests/benchmarks/test_quality_regression.py` with revised assertions:
 
 ---
 
-## 10. Risk Register
+## 10. Deployment Strategy
+
+Changes ship per-pipeline behind the existing benchmark gate:
+
+1. Implement and test each pipeline independently
+2. Run `VIZIER_BENCHMARK=1 pytest tests/benchmarks/test_quality_regression.py -v` after each pipeline
+3. Pipeline passes benchmark → merge to master
+4. Pipeline fails benchmark → fix before merge
+
+No feature flags needed. The benchmark suite is the gate. Each pipeline is independent — a regression in `poster_batch` does not block shipping `content_generate`.
+
+**Rollback:** If a shipped pipeline degrades in production, `git revert` the pipeline-specific commit. Each pipeline is a single file change (plus scorer integration), so reverts are clean.
+
+---
+
+## 11. Risk Register
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|-----------|
