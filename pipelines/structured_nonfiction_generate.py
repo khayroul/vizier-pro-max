@@ -49,6 +49,13 @@ def poster_run(**kwargs: object) -> dict[str, object]:
     return _poster_run(**kwargs)
 
 
+def gamma_generate_run(**kwargs: object) -> dict[str, object]:
+    """Lazy Gamma wrapper to keep the import optional."""
+    from scripts.document.gamma_generate import run as _gamma_run
+
+    return _gamma_run(**kwargs)
+
+
 def _has_marketing_inputs(
     *,
     strategy: dict[str, object] | None,
@@ -627,6 +634,145 @@ def _render_document(
     return result
 
 
+def _build_gamma_input_text(
+    *,
+    metadata: Any,
+    rendered_documents: list[dict[str, Any]],
+) -> str:
+    """Build combined markdown input for Gamma from rendered documents."""
+    parts = [f"# {metadata.title}"]
+    if metadata.subtitle:
+        parts.extend(["", metadata.subtitle])
+
+    for document in rendered_documents:
+        markdown_path = Path(str(document["markdown_path"]))
+        markdown_text = markdown_path.read_text(encoding="utf-8").strip()
+        parts.extend(
+            [
+                "",
+                f"## {document['title']}",
+                "",
+                markdown_text,
+            ]
+        )
+
+    return "\n".join(part for part in parts if part is not None).strip()
+
+
+def _build_gamma_additional_instructions(
+    *,
+    profile: str,
+    gamma_format: str,
+    custom_instructions: str,
+) -> str:
+    """Build default Gamma instructions and append any custom guidance."""
+    if gamma_format == "presentation":
+        if profile in {"marketing_plan", "campaign_dossier", "creative_pack"}:
+            base = (
+                "Create a polished client-facing presentation deck. Keep each card concise, "
+                "commercially sharp, and premium in tone. Structure the deck for decision-makers "
+                "and cover executive summary, audience, offer, positioning, campaign angles, "
+                "channel plan, creative direction, and next steps."
+            )
+        else:
+            base = (
+                "Create a polished presentation deck that summarizes the source material clearly. "
+                "Use concise card titles, short body copy, and preserve important numbers, "
+                "recommendations, and action items."
+            )
+    else:
+        base = (
+            "Create a polished Gamma artifact from the source material. Preserve the core structure, "
+            "improve readability, and keep the tone professional."
+        )
+
+    extra = custom_instructions.strip()
+    if extra:
+        return f"{base}\n\nAdditional instructions:\n{extra}"
+    return base
+
+
+def _export_gamma_artifact(
+    *,
+    metadata: Any,
+    package: Any,
+    rendered_documents: list[dict[str, Any]],
+    output_dir: Path,
+    gamma_format: str,
+    gamma_text_mode: str,
+    gamma_export_as: str,
+    gamma_theme_id: str,
+    gamma_folder_ids: list[str] | None,
+    gamma_num_cards: int | None,
+    gamma_card_split: str,
+    gamma_card_dimensions: str,
+    gamma_image_source: str,
+    gamma_image_model: str,
+    gamma_image_style: str,
+    gamma_image_style_preset: str,
+    gamma_text_amount: str,
+    gamma_tone: str,
+    gamma_audience: str,
+    gamma_language: str,
+    gamma_additional_instructions: str,
+    gamma_template_id: str,
+    gamma_template_prompt: str,
+    gamma_header_footer: dict[str, Any] | None,
+    gamma_card_options: dict[str, Any] | None,
+    gamma_sharing_options: dict[str, Any] | None,
+    gamma_output_path: str,
+) -> dict[str, Any]:
+    """Export rendered documents to Gamma and return the generation details."""
+    input_text = _build_gamma_input_text(
+        metadata=metadata,
+        rendered_documents=rendered_documents,
+    )
+    output_path = gamma_output_path.strip()
+    if not output_path and gamma_export_as.strip():
+        output_path = str(
+            output_dir / f"{slugify(metadata.title)}-gamma.{gamma_export_as.strip()}"
+        )
+
+    effective_num_cards = gamma_num_cards
+    if effective_num_cards is None and gamma_format == "presentation":
+        effective_num_cards = 10 if package.profile in {
+            "marketing_plan",
+            "campaign_dossier",
+            "creative_pack",
+        } else 8
+
+    return gamma_generate_run(
+        input_text=input_text,
+        text_mode=gamma_text_mode,
+        format=gamma_format,
+        additional_instructions=_build_gamma_additional_instructions(
+            profile=package.profile,
+            gamma_format=gamma_format,
+            custom_instructions=gamma_additional_instructions,
+        ),
+        export_as=gamma_export_as,
+        theme_id=gamma_theme_id,
+        folder_ids=gamma_folder_ids,
+        num_cards=effective_num_cards,
+        card_split=gamma_card_split,
+        card_dimensions=gamma_card_dimensions,
+        image_source=gamma_image_source,
+        image_model=gamma_image_model,
+        image_style=gamma_image_style,
+        image_style_preset=gamma_image_style_preset,
+        text_amount=gamma_text_amount,
+        tone=gamma_tone,
+        audience=gamma_audience,
+        language=gamma_language,
+        template_gamma_id=gamma_template_id,
+        template_prompt=gamma_template_prompt,
+        header_footer=gamma_header_footer,
+        card_options=gamma_card_options,
+        sharing_options=gamma_sharing_options,
+        output_path=output_path,
+    )
+
+
 def run(
     *,
     title: str,
@@ -651,6 +797,30 @@ def run(
     generate_posters: bool = False,
     poster_defaults: dict[str, object] | None = None,
     export_operational_assets: bool = True,
+    export_gamma: bool = False,
+    gamma_format: str = "presentation",
+    gamma_text_mode: str = "condense",
+    gamma_export_as: str = "pdf",
+    gamma_theme_id: str = "",
+    gamma_folder_ids: list[str] | None = None,
+    gamma_num_cards: int | None = None,
+    gamma_card_split: str = "",
+    gamma_card_dimensions: str = "",
+    gamma_image_source: str = "noImages",
+    gamma_image_model: str = "",
+    gamma_image_style: str = "",
+    gamma_image_style_preset: str = "",
+    gamma_text_amount: str = "",
+    gamma_tone: str = "",
+    gamma_audience: str = "",
+    gamma_language: str = "",
+    gamma_additional_instructions: str = "",
+    gamma_template_id: str = "",
+    gamma_template_prompt: str = "",
+    gamma_header_footer: dict[str, Any] | None = None,
+    gamma_card_options: dict[str, Any] | None = None,
+    gamma_sharing_options: dict[str, Any] | None = None,
+    gamma_output_path: str = "",
 ) -> dict[str, Any]:
     """Generate one or more structured nonfiction documents."""
     if poster_defaults is not None and not isinstance(poster_defaults, dict):
@@ -718,6 +888,42 @@ def run(
         result["operational_bundle_dir"] = operational_assets["bundle_dir"]
         result["client_bundle_dir"] = operational_assets["client_bundle_dir"]
         result["internal_bundle_dir"] = operational_assets["internal_bundle_dir"]
+
+    gamma_generation: dict[str, Any] | None = None
+    if export_gamma:
+        gamma_generation = _export_gamma_artifact(
+            metadata=metadata,
+            package=package,
+            rendered_documents=rendered_documents,
+            output_dir=out_dir,
+            gamma_format=gamma_format,
+            gamma_text_mode=gamma_text_mode,
+            gamma_export_as=gamma_export_as,
+            gamma_theme_id=gamma_theme_id,
+            gamma_folder_ids=gamma_folder_ids,
+            gamma_num_cards=gamma_num_cards,
+            gamma_card_split=gamma_card_split,
+            gamma_card_dimensions=gamma_card_dimensions,
+            gamma_image_source=gamma_image_source,
+            gamma_image_model=gamma_image_model,
+            gamma_image_style=gamma_image_style,
+            gamma_image_style_preset=gamma_image_style_preset,
+            gamma_text_amount=gamma_text_amount,
+            gamma_tone=gamma_tone,
+            gamma_audience=gamma_audience,
+            gamma_language=gamma_language,
+            gamma_additional_instructions=gamma_additional_instructions,
+            gamma_template_id=gamma_template_id,
+            gamma_template_prompt=gamma_template_prompt,
+            gamma_header_footer=gamma_header_footer,
+            gamma_card_options=gamma_card_options,
+            gamma_sharing_options=gamma_sharing_options,
+            gamma_output_path=gamma_output_path,
+        )
+        result["gamma_generation"] = gamma_generation
+        result["gamma_url"] = gamma_generation.get("gamma_url", "")
+        if gamma_generation.get("file_path"):
+            result["gamma_file_path"] = gamma_generation["file_path"]
 
     if package.package_mode == "single_document":
         primary = rendered_documents[0]
@@ -815,6 +1021,20 @@ def run(
                 detail=(
                     "client bundle="
                     f"{operational_assets['client_bundle_dir']}"
+                ),
+            )
+        )
+    if export_gamma:
+        package_props.append(
+            QualityProperty(
+                name="gamma_export",
+                passed=bool(gamma_generation and gamma_generation.get("gamma_url")),
+                pass_delta=1.0,
+                fail_delta=1.0,
+                detail=(
+                    f"gamma_url={gamma_generation.get('gamma_url', '')}"
+                    if gamma_generation is not None
+                    else "gamma export not attempted"
                 ),
             )
         )

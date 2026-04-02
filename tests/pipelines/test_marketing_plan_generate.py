@@ -99,3 +99,29 @@ class TestMarketingPlanGenerate:
         assert kwargs["strategy"]["objective"] == "Need a marketing plan for premium kuih raya hampers."
         assert len(kwargs["campaign_angles"]) == 3
         assert kwargs["export_operational_assets"] is True
+
+    def test_passes_gamma_options_through(self, tmp_path: Path) -> None:
+        with patch("pipelines.marketing_plan_generate.llm_chat", return_value=None), patch(
+            "pipelines.marketing_plan_generate.run_structured_nonfiction",
+            return_value={"status": "completed", "title": "Gamma Ready"},
+        ) as mock_structured:
+            run(
+                brief="Build a campaign plan for a client roadshow.",
+                output_dir=str(tmp_path),
+                export_gamma=True,
+                gamma_export_as="pptx",
+                gamma_theme_id="theme_123",
+                gamma_folder_ids=["folder_abc"],
+                gamma_num_cards=12,
+                gamma_card_dimensions="16x9",
+                gamma_template_id="gamma_template_123",
+            )
+
+        kwargs = mock_structured.call_args.kwargs
+        assert kwargs["export_gamma"] is True
+        assert kwargs["gamma_export_as"] == "pptx"
+        assert kwargs["gamma_theme_id"] == "theme_123"
+        assert kwargs["gamma_folder_ids"] == ["folder_abc"]
+        assert kwargs["gamma_num_cards"] == 12
+        assert kwargs["gamma_card_dimensions"] == "16x9"
+        assert kwargs["gamma_template_id"] == "gamma_template_123"

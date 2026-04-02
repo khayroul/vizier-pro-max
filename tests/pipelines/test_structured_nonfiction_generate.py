@@ -41,6 +41,18 @@ def _fake_poster_run(**kwargs: object) -> dict[str, str]:
     return {"poster_path": output_path}
 
 
+def _fake_gamma_run(**kwargs: object) -> dict[str, str]:
+    output_path = str(kwargs["output_path"])
+    Path(output_path).write_bytes(b"%PDF-1.4")
+    return {
+        "generation_id": "gamma_123",
+        "status": "completed",
+        "gamma_url": "https://gamma.app/docs/gamma_123",
+        "export_url": "https://gamma.app/export/gamma_123.pdf",
+        "file_path": output_path,
+    }
+
+
 class TestStructuredNonfictionGenerate:
     def test_generates_single_document_exports_and_toc(self, tmp_path: Path) -> None:
         with (
@@ -291,6 +303,55 @@ class TestStructuredNonfictionGenerate:
             Path(asset["poster_path"]).exists()
             for asset in result["operational_assets"]["assets"]
         )
+        assert result["quality_report"]["passed"] is True
+
+    def test_exports_gamma_artifact_when_requested(self, tmp_path: Path) -> None:
+        with (
+            patch(
+                "pipelines.structured_nonfiction_generate.render_pdf",
+                side_effect=_fake_pdf_run,
+            ),
+            patch(
+                "pipelines.structured_nonfiction_generate.assemble_epub",
+                side_effect=_fake_epub_run,
+            ),
+            patch(
+                "pipelines.structured_nonfiction_generate.gamma_generate_run",
+                side_effect=_fake_gamma_run,
+            ) as gamma_mock,
+        ):
+            result = run(
+                title="Client Strategy Deck Source",
+                author="Vizier",
+                profile="proposal",
+                sections=[
+                    {"heading": "Executive Summary", "body": "Summary body"},
+                    {"heading": "Recommendations", "body": "Recommendation body"},
+                    {"heading": "Next Steps", "body": "Action body"},
+                ],
+                output_dir=str(tmp_path / "gamma"),
+                export_gamma=True,
+                gamma_export_as="pdf",
+                gamma_num_cards=9,
+                gamma_card_dimensions="16x9",
+                gamma_theme_id="theme_brand",
+                gamma_folder_ids=["folder_marketing"],
+                gamma_additional_instructions="Emphasize the rollout plan.",
+                gamma_template_id="gamma_template_123",
+            )
+
+        assert result["gamma_url"] == "https://gamma.app/docs/gamma_123"
+        assert Path(result["gamma_file_path"]).exists()
+        assert result["gamma_generation"]["generation_id"] == "gamma_123"
+        gamma_kwargs = gamma_mock.call_args.kwargs
+        assert gamma_kwargs["format"] == "presentation"
+        assert gamma_kwargs["text_mode"] == "condense"
+        assert gamma_kwargs["theme_id"] == "theme_brand"
+        assert gamma_kwargs["folder_ids"] == ["folder_marketing"]
+        assert gamma_kwargs["num_cards"] == 9
+        assert gamma_kwargs["card_dimensions"] == "16x9"
+        assert gamma_kwargs["template_gamma_id"] == "gamma_template_123"
+        assert "rollout plan" in gamma_kwargs["additional_instructions"]
         assert result["quality_report"]["passed"] is True
 
     def test_rejects_unknown_profile(self, tmp_path: Path) -> None:

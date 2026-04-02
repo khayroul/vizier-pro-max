@@ -118,6 +118,30 @@ pipelines:
       generate_posters: { type: boolean, required: false, description: "Generate missing poster assets for creative variants" }
       poster_defaults: { type: object, required: false, description: "Shared poster-generation defaults such as template_name, client_id, or style_reference" }
       export_operational_assets: { type: boolean, required: false, description: "Export per-variant poster folders with copy.json, notes.md, manifest.json, and captions.csv" }
+      export_gamma: { type: boolean, required: false, description: "Export the rendered package to Gamma as a presentation or document" }
+      gamma_format: { type: string, required: false, description: "Gamma output format: presentation, document, webpage, or social" }
+      gamma_text_mode: { type: string, required: false, description: "Gamma text mode: generate, condense, or preserve" }
+      gamma_export_as: { type: string, required: false, description: "Optional Gamma export format: pdf, pptx, or png" }
+      gamma_theme_id: { type: string, required: false, description: "Gamma theme ID to apply to the generated artifact" }
+      gamma_folder_ids: { type: array, required: false, description: "Gamma folder IDs for where the generated artifact should be stored" }
+      gamma_num_cards: { type: integer, required: false, description: "Requested number of cards/slides for Gamma presentation outputs" }
+      gamma_card_split: { type: string, required: false, description: "Gamma card split strategy: auto or inputTextBreaks" }
+      gamma_card_dimensions: { type: string, required: false, description: "Gamma card dimensions such as 16x9, 4x3, A4, letter, 1x1, or 9x16" }
+      gamma_image_source: { type: string, required: false, description: "Gamma image source: aiGenerated, webFreeToUseCommercially, or noImages" }
+      gamma_image_model: { type: string, required: false, description: "Gamma image model when using aiGenerated image source" }
+      gamma_image_style: { type: string, required: false, description: "Gamma free-text image style guidance when using aiGenerated images" }
+      gamma_image_style_preset: { type: string, required: false, description: "Gamma built-in image style preset such as photorealistic or illustration" }
+      gamma_text_amount: { type: string, required: false, description: "Gamma text density: brief, medium, detailed, or extensive" }
+      gamma_tone: { type: string, required: false, description: "Tone hint passed to Gamma textOptions" }
+      gamma_audience: { type: string, required: false, description: "Audience hint passed to Gamma textOptions" }
+      gamma_language: { type: string, required: false, description: "Output language passed to Gamma textOptions" }
+      gamma_additional_instructions: { type: string, required: false, description: "Extra instructions appended to Gamma generation guidance" }
+      gamma_template_id: { type: string, required: false, description: "Gamma template ID for from-template generation" }
+      gamma_template_prompt: { type: string, required: false, description: "Prompt used when remixing a Gamma template" }
+      gamma_header_footer: { type: object, required: false, description: "Gamma headerFooter object for per-card branding and labels" }
+      gamma_card_options: { type: object, required: false, description: "Additional Gamma cardOptions merged into the request" }
+      gamma_sharing_options: { type: object, required: false, description: "Gamma sharingOptions for workspace and external access" }
+      gamma_output_path: { type: string, required: false, description: "Local path for the downloaded Gamma export file" }
     output:
       status: { type: string }
       profile: { type: string }
@@ -126,6 +150,8 @@ pipelines:
       operational_bundle_dir: { type: string }
       client_bundle_dir: { type: string }
       internal_bundle_dir: { type: string }
+      gamma_url: { type: string }
+      gamma_file_path: { type: string }
 
   - name: marketing_plan_generate
     description: "Brief -> marketing strategy -> campaign angles -> creative pack -> client-ready asset bundle"
@@ -139,12 +165,82 @@ pipelines:
       generate_posters: { type: boolean, required: false }
       export_epub: { type: boolean, required: false }
       include_toc: { type: boolean, required: false }
+      export_gamma: { type: boolean, required: false }
+      gamma_format: { type: string, required: false }
+      gamma_text_mode: { type: string, required: false }
+      gamma_export_as: { type: string, required: false }
+      gamma_theme_id: { type: string, required: false }
+      gamma_folder_ids: { type: array, required: false }
+      gamma_num_cards: { type: integer, required: false }
+      gamma_card_split: { type: string, required: false }
+      gamma_card_dimensions: { type: string, required: false }
+      gamma_image_source: { type: string, required: false }
+      gamma_image_model: { type: string, required: false }
+      gamma_image_style: { type: string, required: false }
+      gamma_image_style_preset: { type: string, required: false }
+      gamma_text_amount: { type: string, required: false }
+      gamma_tone: { type: string, required: false }
+      gamma_audience: { type: string, required: false }
+      gamma_language: { type: string, required: false }
+      gamma_additional_instructions: { type: string, required: false }
+      gamma_template_id: { type: string, required: false }
+      gamma_template_prompt: { type: string, required: false }
+      gamma_header_footer: { type: object, required: false }
+      gamma_card_options: { type: object, required: false }
+      gamma_sharing_options: { type: object, required: false }
+      gamma_output_path: { type: string, required: false }
     output:
       status: { type: string }
       title: { type: string }
       source: { type: string }
       document_count: { type: integer }
       client_bundle_dir: { type: string }
+      gamma_url: { type: string }
+      gamma_file_path: { type: string }
+
+  - name: presentation_deck_generate
+    description: "Deck-native Gamma pipeline for client presentations from a brief or structured source content"
+    input:
+      title: { type: string, required: true }
+      author: { type: string, required: false }
+      brief: { type: string, required: false }
+      sections: { type: array, required: false }
+      charts: { type: array, required: false }
+      documents: { type: array, required: false }
+      subtitle: { type: string, required: false }
+      output_dir: { type: string, required: false }
+      profile: { type: string, required: false }
+      package_mode: { type: string, required: false }
+      include_toc: { type: boolean, required: false }
+      export_source_pdf: { type: boolean, required: false }
+      gamma_export_as: { type: string, required: false }
+      gamma_text_mode: { type: string, required: false }
+      gamma_theme_id: { type: string, required: false }
+      gamma_folder_ids: { type: array, required: false }
+      gamma_num_cards: { type: integer, required: false }
+      gamma_card_split: { type: string, required: false }
+      gamma_card_dimensions: { type: string, required: false }
+      gamma_image_source: { type: string, required: false }
+      gamma_image_model: { type: string, required: false }
+      gamma_image_style: { type: string, required: false }
+      gamma_image_style_preset: { type: string, required: false }
+      gamma_text_amount: { type: string, required: false }
+      gamma_tone: { type: string, required: false }
+      gamma_audience: { type: string, required: false }
+      gamma_language: { type: string, required: false }
+      gamma_additional_instructions: { type: string, required: false }
+      gamma_template_id: { type: string, required: false }
+      gamma_template_prompt: { type: string, required: false }
+      gamma_header_footer: { type: object, required: false }
+      gamma_card_options: { type: object, required: false }
+      gamma_sharing_options: { type: object, required: false }
+      gamma_output_path: { type: string, required: false }
+    output:
+      status: { type: string }
+      title: { type: string }
+      source_mode: { type: string }
+      gamma_url: { type: string }
+      gamma_file_path: { type: string }
 
   - name: nonfiction_ebook_generate
     description: "Compatibility alias for structured_nonfiction_generate with the ebook profile"
