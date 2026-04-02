@@ -117,10 +117,10 @@ Only `palettes.csv` and `fonts.csv` are bundled. The reasoning rules (161) and s
 Ported from UI UX Pro Max's `design_system.py`, simplified:
 
 - **Index:** Built once at plugin registration from CSV rows
-- **Fields searched:** name, description, mood, tags (concatenated)
 - **Ranking:** BM25 with k1=1.5, b=0.75 (standard values)
 - **Dependencies:** stdlib only (`csv`, `math`, `re`)
 - **Memory:** ~200KB for all data loaded — negligible
+- **Empty results:** If all BM25 scores are 0 (no term overlap), return the first 5 rows unsorted as a fallback. The agent always gets something to pick from.
 
 ```python
 class BM25Index:
@@ -130,11 +130,42 @@ class BM25Index:
 
 Each CSV row becomes a document. The `search()` method tokenizes the query, scores each document, and returns the top-k results with score attached.
 
+### Expected CSV Column Headers
+
+**palettes.csv** — fields searched: `name`, `mood`, `tags`
+| Column | Purpose | Example |
+|--------|---------|---------|
+| `name` | Palette name | "Sunset Warmth" |
+| `primary` | Primary accent hex | "#E07A5F" |
+| `secondary` | Secondary accent hex | "#F2CC8F" |
+| `accent` | Highlight/glow hex | "#81B29A" |
+| `background` | Background hex | "#3D405B" |
+| `text` | Text color hex | "#F4F1DE" |
+| `mood` | Mood/style keywords | "warm, inviting, artistic" |
+| `tags` | Category tags | "sunset, earthy, creative" |
+
+**fonts.csv** — fields searched: `name`, `mood`, `tags`
+| Column | Purpose | Example |
+|--------|---------|---------|
+| `name` | Pairing name | "Elegant Contrast" |
+| `heading_font` | Heading typeface | "Cormorant Garamond" |
+| `heading_weight` | Heading weight | "700" |
+| `body_font` | Body typeface | "Lato" |
+| `body_weight` | Body weight | "400" |
+| `letter_spacing_heading` | Heading spacing | "-0.5px" |
+| `letter_spacing_body` | Body spacing | "0px" |
+| `line_height_heading` | Heading line height | "1.1" |
+| `line_height_body` | Body line height | "1.6" |
+| `mood` | Mood/style keywords | "elegant, refined, sophisticated" |
+| `tags` | Category tags | "serif, luxury, editorial" |
+
+All fonts in `fonts.csv` must be available on Google Fonts. During data bundling, verify each font exists at `fonts.google.com`. System-only or paid fonts are excluded from the CSV.
+
 ## Pipeline Integration
 
 ### PosterRequest Changes
 
-Add two optional fields to the frozen dataclass:
+Add two new fields to the frozen dataclass:
 
 ```python
 @dataclass(frozen=True)
@@ -146,55 +177,88 @@ class PosterRequest:
     template_name: str = "social-post"
     image_mode: str = "openai"
     output_path: str = ""
-    palette: str = ""    # JSON string of palette dict
-    fonts: str = ""      # JSON string of fonts dict
+    palette: dict[str, str] | None = None
+    fonts: dict[str, str] | None = None
 ```
 
-Both are JSON strings (not dicts) to keep the dataclass simple and serializable. Parsed in the pipeline's `run()` function.
+Both are dicts (not JSON strings) for type safety. The tool handler deserializes the LLM's JSON objects before constructing the request. `None` is not a valid runtime state — the agent must always provide both — but `None` as default avoids breaking `run()` callers during migration. If `None` is passed, `run()` raises `ValueError("palette and fonts are required")`.
 
 ### poster_generate.py `run()` Changes
 
 After resolving the template:
 
-1. Parse `palette` and `fonts` JSON strings into dicts (empty string = no override = error, since always-dynamic)
-2. Build a `<style>` block with CSS custom properties from the palette/font values
-3. Build a Google Fonts `<link>` tag for the selected font pairing
-4. Inject both into the HTML before slot replacement
+1. Validate that `palette` and `fonts` are provided (raise `ValueError` if `None`)
+2. Validate palette hex values match `#[0-9a-fA-F]{3,8}` pattern
+3. Build a `<style>` block with CSS custom properties
+4. Build a Google Fonts `<link>` tag for the selected font pairing (includes CTA weight 600)
+5. Inject both into the HTML via `</head>` insertion (NOT slot replacement — avoids curly-brace conflicts with CSS)
+
+**CSS injection strategy:** Insert the `<style>` block and `<link>` tag immediately before the closing `</head>` tag using `html.replace('</head>', f'{design_css}\n{font_link}\n</head>')`. This avoids the `{{slot}}` regex which would corrupt CSS content containing curly braces.
 
 ```python
+_HEX_PATTERN = re.compile(r"^#[0-9a-fA-F]{3,8}$")
+
+
+def _validate_palette(palette: dict[str, str]) -> None:
+    """Validate all palette values are valid hex colors."""
+    for key in ("primary", "secondary", "accent", "background", "text"):
+        value = palette.get(key, "")
+        if not _HEX_PATTERN.match(value):
+            msg = f"Invalid hex color for palette.{key}: {value!r}"
+            raise ValueError(msg)
+
+
 def _build_design_css(palette: dict[str, str], fonts: dict[str, str]) -> str:
     """Build CSS custom properties block from palette and font selections."""
-    return f"""<style>
-:root {{
-  --color-accent: {palette['primary']};
-  --color-accent-end: {palette['secondary']};
-  --color-accent-glow: {palette['accent']};
-  --color-bg: {palette['background']};
-  --color-text: {palette['text']};
-  --font-heading: '{fonts['heading_font']}';
-  --font-body: '{fonts['body_font']}';
-  --font-weight-heading: {fonts['heading_weight']};
-  --font-weight-body: {fonts['body_weight']};
-  --letter-spacing-heading: {fonts['letter_spacing_heading']};
-  --letter-spacing-body: {fonts['letter_spacing_body']};
-  --line-height-heading: {fonts['line_height_heading']};
-  --line-height-body: {fonts['line_height_body']};
-}}
-</style>"""
+    return (
+        "<style>\n"
+        ":root {\n"
+        f"  --color-accent: {palette['primary']};\n"
+        f"  --color-accent-end: {palette['secondary']};\n"
+        f"  --color-accent-glow: {palette['accent']};\n"
+        f"  --color-bg: {palette['background']};\n"
+        f"  --color-text: {palette['text']};\n"
+        f"  --font-heading: '{fonts['heading_font']}';\n"
+        f"  --font-body: '{fonts['body_font']}';\n"
+        f"  --font-weight-heading: {fonts['heading_weight']};\n"
+        f"  --font-weight-body: {fonts['body_weight']};\n"
+        f"  --letter-spacing-heading: {fonts['letter_spacing_heading']};\n"
+        f"  --letter-spacing-body: {fonts['letter_spacing_body']};\n"
+        f"  --line-height-heading: {fonts['line_height_heading']};\n"
+        f"  --line-height-body: {fonts['line_height_body']};\n"
+        "}\n"
+        "</style>"
+    )
 
 
 def _build_font_link(fonts: dict[str, str]) -> str:
-    """Build Google Fonts <link> tag for the selected font pairing."""
+    """Build Google Fonts <link> tag for the selected font pairing.
+
+    Loads heading weight, body weight, AND weight 600 for CTA button text.
+    """
     heading = fonts['heading_font'].replace(' ', '+')
     body = fonts['body_font'].replace(' ', '+')
     hw = fonts['heading_weight']
     bw = fonts['body_weight']
+    # Always load 600 for CTA button, plus the specified weights
+    body_weights = sorted(set([bw, "600"]))
+    body_wght = ";".join(body_weights)
     return (
         f'<link href="https://fonts.googleapis.com/css2?'
         f'family={heading}:wght@{hw}&'
-        f'family={body}:wght@{bw}&display=swap" rel="stylesheet">'
+        f'family={body}:wght@{body_wght}&display=swap" rel="stylesheet">'
     )
+
+
+def _inject_design(html: str, palette: dict[str, str], fonts: dict[str, str]) -> str:
+    """Inject design CSS and font link into HTML before </head>."""
+    _validate_palette(palette)
+    design_css = _build_design_css(palette, fonts)
+    font_link = _build_font_link(fonts)
+    return html.replace("</head>", f"{design_css}\n{font_link}\n</head>")
 ```
+
+The `run()` function calls `_inject_design()` on the raw HTML **before** `_inject_slots()`, so the CSS content is never exposed to the `{{slot}}` regex.
 
 ### Template Changes (social-post.html)
 
@@ -210,25 +274,40 @@ Replace all hardcoded values with CSS custom properties:
 | `font-weight: 400` | `font-weight: var(--font-weight-body)` |
 | `line-height: 1.6` | `line-height: var(--line-height-body)` |
 | `#d4a853` / `#f0d48a` | `var(--color-accent)` / `var(--color-accent-end)` |
-| `rgba(212,168,83,0.4)` (glow) | Derived from `var(--color-accent-glow)` |
+| `rgba(212,168,83,0.4)` (glow) | `var(--color-accent-glow)` with opacity via `color-mix()` |
 | `color: #0a0a0f` (CTA text) | `color: var(--color-bg)` |
+| `rgba(10,10,15,...)` (overlay) | `var(--color-bg)` with matching opacity stops |
+| `background: #0a0a0f` (canvas) | `background: var(--color-bg)` |
 
-The hardcoded Google Fonts `<link>` tag is removed from the template. It's injected dynamically by the pipeline.
+**Overlay gradient fix (H2):** The `bg-overlay` gradient uses `var(--color-bg)` at each opacity stop instead of hardcoded `rgba(10,10,15,...)`. This ensures that light palettes get a light overlay (preserving readability by darkening/lightening toward the palette's background color):
 
-The reactor-slots meta tag updates to include the new design slots:
-```html
-<meta name="reactor-slots" content="headline,body,cta,image_url,design_css,font_link">
+```css
+.bg-overlay {
+  background: linear-gradient(
+    178deg,
+    color-mix(in srgb, var(--color-bg) 5%, transparent) 0%,
+    color-mix(in srgb, var(--color-bg) 12%, transparent) 25%,
+    color-mix(in srgb, var(--color-bg) 40%, transparent) 50%,
+    color-mix(in srgb, var(--color-bg) 78%, transparent) 70%,
+    color-mix(in srgb, var(--color-bg) 94%, transparent) 88%,
+    color-mix(in srgb, var(--color-bg) 97%, transparent) 100%
+  );
+}
 ```
 
-### poster_tool.py Schema Changes
+The hardcoded Google Fonts `<link>` tag is removed from the template. It's injected dynamically by the pipeline via `_inject_design()`.
 
-Add `palette` and `fonts` to the tool schema:
+The reactor-slots meta tag is **unchanged** — design injection uses `</head>` insertion, not slot replacement.
+
+### poster_tool.py Changes
+
+**Schema:** Add `palette` and `fonts` to `GENERATE_POSTER_SCHEMA`:
 
 ```json
 {
   "palette": {
     "type": "object",
-    "description": "Color palette from search_palettes result. Must include: primary, secondary, accent, background, text.",
+    "description": "Color palette from search_palettes result. Pass only the color fields (primary, secondary, accent, background, text) — drop name, mood, and score.",
     "properties": {
       "primary": { "type": "string" },
       "secondary": { "type": "string" },
@@ -240,7 +319,7 @@ Add `palette` and `fonts` to the tool schema:
   },
   "fonts": {
     "type": "object",
-    "description": "Font pairing from search_fonts result. Must include heading/body font names, weights, spacing, and line heights.",
+    "description": "Font pairing from search_fonts result. Pass only the font fields — drop name, mood, and score.",
     "properties": {
       "heading_font": { "type": "string" },
       "heading_weight": { "type": "string" },
@@ -258,7 +337,41 @@ Add `palette` and `fonts` to the tool schema:
 }
 ```
 
-Both `palette` and `fonts` become required fields on `generate_poster` (since always-dynamic).
+Both `palette` and `fonts` are required fields on `generate_poster`.
+
+**Handler:** The `_handle_generate_poster` function must extract and pass the new fields:
+
+```python
+def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
+    from pipelines.poster_generate import run
+
+    headline = str(args.get("headline", ""))
+    body = str(args.get("body", ""))
+    if not headline or not body:
+        return json.dumps({"error": "headline and body are required"})
+
+    palette = args.get("palette")
+    fonts = args.get("fonts")
+    if not palette or not fonts:
+        return json.dumps({"error": "palette and fonts are required"})
+
+    try:
+        result = run(
+            headline=headline,
+            body=body,
+            cta=str(args.get("cta", "Learn More")),
+            image_prompt=str(args.get("image_prompt", "")),
+            template_name=str(args.get("template_name", "social-post")),
+            image_mode=str(args.get("image_mode", "openai")),
+            output_path=str(args.get("output_path", "")),
+            palette=palette,
+            fonts=fonts,
+        )
+        return json.dumps(result, default=str)
+    except Exception as exc:
+        logger.exception("generate_poster failed")
+        return json.dumps({"error": str(exc)})
+```
 
 ## Agent Workflow
 
@@ -282,16 +395,17 @@ Agent:
 
 ## System Prompt Update
 
-Update `config/hermes.yaml` to instruct the agent to use the design tools:
+Replace the existing `system_prompt_extra` in `config/hermes.yaml` with the merged version (YAML does not merge duplicate keys — last one wins):
 
 ```yaml
 system_prompt_extra: |
   When asked to create a poster, flyer, banner, or social media graphic:
   - FIRST call search_palettes with mood/content keywords to find a color palette.
   - THEN call search_fonts with style keywords to find a font pairing.
-  - Pick the best match from each result set.
+  - Pick the best match from each result set (drop name, mood, score — pass only color/font fields).
   - THEN call generate_poster with the selected palette and fonts.
   - NEVER use execute_code with PIL/Pillow.
+  - After generating, send the poster_path file to the user.
 ```
 
 ## Files Changed
@@ -314,6 +428,11 @@ system_prompt_extra: |
 | `tests/plugins/test_design_intelligence.py` | BM25 search returns relevant results, correct JSON shape, top-k limit |
 | `tests/pipelines/test_poster_generate.py` | Updated tests for CSS var injection, font link injection, palette/fonts required |
 | `tests/plugins/test_poster_tool.py` | Schema validation with palette/fonts, handler passes them through |
+
+## Known Constraints
+
+- **Playwright font loading:** The pipeline renders with `wait_until="networkidle"`, which waits for Google Fonts to load before screenshotting. If the network is unavailable, fonts fall back to the generic `serif`/`sans-serif` specified in the template CSS. This is acceptable — the poster still renders, just with system fonts.
+- **`color-mix()` support:** The `color-mix(in srgb, ...)` CSS function used in the overlay gradient requires Chromium 111+. Playwright bundles its own Chromium (currently 120+), so this is not a concern for rendering. It would only matter if the template were opened in an older browser, which is not a use case.
 
 ## Out of Scope
 
