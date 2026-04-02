@@ -9,7 +9,16 @@ import pytest
 
 from middleware.deliverable_context import clear_context, start_deliverable
 
-MIGRATION_PATH = Path(__file__).parent.parent.parent / "migrations" / "001_cost_ledger.sql"
+MIGRATIONS_DIR = Path(__file__).parent.parent.parent / "migrations"
+
+
+def _combined_migration_sql() -> str:
+    parts: list[str] = []
+    for migration_path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        sql = migration_path.read_text()
+        sql = sql.replace("ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", "")
+        parts.append(sql)
+    return "\n".join(parts)
 
 
 @pytest.fixture()
@@ -25,10 +34,7 @@ def db_path(tmp_path: Path) -> Path:
             deliverable_id TEXT
         )
     """)
-    sql = MIGRATION_PATH.read_text().replace(
-        "ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", ""
-    )
-    conn.executescript(sql)
+    conn.executescript(_combined_migration_sql())
     conn.commit()
     conn.close()
     return path
@@ -63,6 +69,27 @@ class TestPreLLMCallHook:
         assert row["client_id"] == "client_1"
         assert row["step_name"] == "copy_draft"
         assert row["pipeline_name"] == "content_generate"
+        assert row["status"] == "started"
+
+    def test_records_provider_source_and_modality(self, db_path: Path) -> None:
+        from middleware.cost_ledger import pre_llm_call
+
+        did = start_deliverable(client_id="client_1")
+        pre_llm_call(
+            messages=[{"role": "user", "content": "hello"}],
+            model="gpt-5.4-mini",
+            provider_name="openai",
+            source="pipeline",
+            modality="vision",
+        )
+        conn = sqlite3.connect(str(db_path))
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM cost_ledger WHERE deliverable_id = ?", [did]).fetchone()
+        conn.close()
+        assert row is not None
+        assert row["provider_name"] == "openai"
+        assert row["source"] == "pipeline"
+        assert row["modality"] == "vision"
 
     def test_works_without_deliverable_context(self, db_path: Path) -> None:
         from middleware.cost_ledger import pre_llm_call
@@ -99,6 +126,32 @@ class TestPostLLMCallHook:
         assert row["output_tokens"] == 20
         assert row["response_text"] == "hello back"
         assert row["latency_ms"] >= 0
+        assert row["status"] == "succeeded"
+
+    def test_records_failed_attempt_reason(self, db_path: Path) -> None:
+        from middleware.cost_ledger import post_llm_call, pre_llm_call
+
+        did = start_deliverable()
+        pre_llm_call(
+            messages=[{"role": "user", "content": "hi"}],
+            model="gpt-5.4-mini",
+            provider_name="openai",
+            source="pipeline",
+            modality="chat",
+        )
+        post_llm_call(
+            response=None,
+            usage={},
+            status="failed",
+            failure_reason="http_status:429",
+        )
+        conn = sqlite3.connect(str(db_path))
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM cost_ledger WHERE deliverable_id = ?", [did]).fetchone()
+        conn.close()
+        assert row is not None
+        assert row["status"] == "failed"
+        assert row["failure_reason"] == "http_status:429"
 
 
 class TestPreLLMCallContextVar:

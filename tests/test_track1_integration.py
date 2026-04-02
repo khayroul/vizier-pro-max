@@ -13,7 +13,16 @@ import pytest
 
 from middleware.deliverable_context import clear_context, start_deliverable
 
-MIGRATION_PATH = Path(__file__).parent.parent / "migrations" / "001_cost_ledger.sql"
+MIGRATIONS_DIR = Path(__file__).parent.parent / "migrations"
+
+
+def _combined_migration_sql() -> str:
+    parts: list[str] = []
+    for migration_path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        sql = migration_path.read_text()
+        sql = sql.replace("ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", "")
+        parts.append(sql)
+    return "\n".join(parts)
 
 
 @pytest.fixture()
@@ -29,10 +38,7 @@ def db_path(tmp_path: Path) -> Path:
             deliverable_id TEXT
         )
     """)
-    sql = MIGRATION_PATH.read_text().replace(
-        "ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", ""
-    )
-    conn.executescript(sql)
+    conn.executescript(_combined_migration_sql())
     conn.commit()
     conn.close()
     return path

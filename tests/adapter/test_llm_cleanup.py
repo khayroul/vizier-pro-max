@@ -77,3 +77,5 @@ def test_chat_accepts_vision_format_messages() -> None:
         }
         result = chat(messages=vision_messages, max_tokens=100)
         assert result == "A test image"
+        _, kwargs = mock_post.call_args
+        assert kwargs["headers"]["x-vizier-modality"] == "vision"

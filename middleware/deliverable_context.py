@@ -68,6 +68,44 @@ def set_pipeline_step(
     _pipeline_version.set(pipeline_version)
 
 
+def build_gateway_headers(
+    *,
+    source: str,
+    modality: str,
+    session_id: str | None = None,
+    default_pipeline_name: str | None = None,
+    default_pipeline_version: str | None = None,
+    default_step_name: str | None = None,
+) -> dict[str, str]:
+    """Build standard Vizier gateway headers from the current context."""
+    headers = {
+        "x-vizier-source": source,
+        "x-vizier-modality": modality,
+    }
+
+    if session_id:
+        headers["x-vizier-session-id"] = session_id
+
+    deliverable_id = get_deliverable_id()
+    client_id = get_client_id()
+    pipeline_name = get_pipeline_name() or default_pipeline_name
+    pipeline_version = get_pipeline_version() or default_pipeline_version
+    step_name = get_step_name() or default_step_name
+
+    if deliverable_id:
+        headers["x-vizier-deliverable-id"] = deliverable_id
+    if client_id:
+        headers["x-vizier-client-id"] = client_id
+    if pipeline_name:
+        headers["x-vizier-pipeline-name"] = pipeline_name
+    if pipeline_version:
+        headers["x-vizier-pipeline-version"] = pipeline_version
+    if step_name:
+        headers["x-vizier-step-name"] = step_name
+
+    return headers
+
+
 def get_deliverable_id() -> str | None:
     """Return the current deliverable_id, or None if not set."""
     return _deliverable_id.get()

@@ -72,7 +72,10 @@ def check_anomalies(
 
         cost_rows = conn.execute(
             """SELECT SUM(input_tokens + output_tokens) AS total_tokens, pipeline_name
-               FROM cost_ledger WHERE deliverable_id = ? GROUP BY pipeline_name""",
+               FROM cost_ledger
+               WHERE deliverable_id = ?
+                 AND (status IS NULL OR status = 'succeeded')
+               GROUP BY pipeline_name""",
             [deliverable_id],
         ).fetchall()
 
@@ -110,8 +113,10 @@ def export_trace(deliverable_id: str) -> str:
         conn.row_factory = sqlite3.Row
 
         rows = conn.execute(
-            """SELECT model, pipeline_name, step_name, input_tokens, output_tokens,
-                      prompt_text, response_text, latency_ms, timestamp
+            """SELECT model, provider_name, source, modality, status,
+                      failure_reason, pipeline_name, step_name,
+                      input_tokens, output_tokens, prompt_text,
+                      response_text, latency_ms, timestamp
                FROM cost_ledger WHERE deliverable_id = ? ORDER BY timestamp""",
             [deliverable_id],
         ).fetchall()

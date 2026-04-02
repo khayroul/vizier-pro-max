@@ -6,7 +6,14 @@ from pathlib import Path
 
 import pytest
 
-MIGRATION_PATH = Path(__file__).parent.parent.parent / "migrations" / "001_cost_ledger.sql"
+MIGRATIONS_DIR = Path(__file__).parent.parent.parent / "migrations"
+
+
+def _combined_migration_sql() -> str:
+    parts: list[str] = []
+    for migration_path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        parts.append(migration_path.read_text())
+    return "\n".join(parts)
 
 
 @pytest.fixture()
@@ -32,7 +39,7 @@ def db_with_prompt_log(tmp_path: Path) -> Path:
 
 
 def _apply_migration(db_path: Path) -> None:
-    sql = MIGRATION_PATH.read_text()
+    sql = _combined_migration_sql()
     conn = sqlite3.connect(str(db_path))
     conn.executescript(sql)
     conn.commit()
@@ -41,7 +48,8 @@ def _apply_migration(db_path: Path) -> None:
 
 class TestSchemaMigration:
     def test_migration_file_exists(self) -> None:
-        assert MIGRATION_PATH.exists()
+        assert (MIGRATIONS_DIR / "001_cost_ledger.sql").exists()
+        assert (MIGRATIONS_DIR / "002_llm_metering_metadata.sql").exists()
 
     def test_creates_cost_ledger_table(self, db_with_prompt_log: Path) -> None:
         _apply_migration(db_with_prompt_log)
@@ -57,6 +65,8 @@ class TestSchemaMigration:
         conn.close()
         assert "pipeline_name" in columns
         assert "step_name" in columns
+        assert "provider_name" in columns
+        assert "status" in columns
 
     def test_creates_anomaly_log_table(self, db_with_prompt_log: Path) -> None:
         _apply_migration(db_with_prompt_log)

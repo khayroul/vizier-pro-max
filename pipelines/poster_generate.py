@@ -15,12 +15,17 @@ import base64
 import json
 import logging
 import mimetypes
+import os
 import re
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+import httpx
+
+from adapter.env_loader import ensure_env
 from adapter.llm_client import chat as llm_chat
+from middleware.deliverable_context import build_gateway_headers
 from pipelines.poster_brief import as_payload as creative_brief_payload
 from pipelines.poster_brief import normalize_poster_brief
 
@@ -330,36 +335,52 @@ def _extract_reference_brand_css(reference_image_path: str) -> dict[str, str]:
 
 
 def _generate_hero_openai(prompt: str, output_path: str) -> str:
-    """Generate hero image via OpenAI gpt-image-1."""
-    import openai
+    """Generate hero image via the local Vizier gateway."""
+    ensure_env()
+    gateway_base_url = os.environ.get(
+        "VIZIER_GATEWAY_BASE_URL",
+        "http://127.0.0.1:11436/v1",
+    ).rstrip("/")
 
-    client = openai.OpenAI(max_retries=3)
-
-    logger.info("Generating hero image via OpenAI: %s", prompt[:80])
-    response = client.images.generate(
-        model="gpt-image-1",
-        prompt=prompt,
-        size="1024x1024",
-        quality="medium",
-        n=1,
+    logger.info("Generating hero image via Vizier gateway: %s", prompt[:80])
+    response = httpx.post(
+        f"{gateway_base_url}/images/generations",
+        headers=build_gateway_headers(
+            source="pipeline",
+            modality="image_generation",
+            default_pipeline_name="poster_generate",
+            default_pipeline_version="1.0",
+            default_step_name="hero_generate",
+        ),
+        json={
+            "model": "gpt-image-1",
+            "prompt": prompt,
+            "size": "1024x1024",
+            "quality": "medium",
+            "n": 1,
+        },
+        timeout=90.0,
     )
+    if response.status_code != 200:
+        msg = f"Vizier gateway image generation failed with status {response.status_code}: {response.text}"
+        raise RuntimeError(msg)
 
-    if not response.data:
-        msg = "OpenAI returned no image data"
+    response_body = response.json()
+    image_data = response_body.get("data") or []
+    if not image_data:
+        msg = "Vizier gateway returned no image data"
         raise ValueError(msg)
 
-    image_item = response.data[0]
-    raw_b64 = image_item.b64_json
+    image_item = image_data[0]
+    raw_b64 = image_item.get("b64_json") if isinstance(image_item, dict) else None
     if raw_b64:
         image_bytes = base64.b64decode(raw_b64)
-    elif image_item.url:
-        import httpx
-
-        resp = httpx.get(image_item.url, timeout=30)
+    elif isinstance(image_item, dict) and image_item.get("url"):
+        resp = httpx.get(str(image_item["url"]), timeout=30.0)
         resp.raise_for_status()
         image_bytes = resp.content
     else:
-        msg = "OpenAI returned no image data (no b64_json or url)"
+        msg = "Vizier gateway returned no image data (no b64_json or url)"
         raise ValueError(msg)
 
     out = Path(output_path)

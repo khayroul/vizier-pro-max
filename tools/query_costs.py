@@ -59,7 +59,8 @@ def _per_deliverable(conn: sqlite3.Connection, deliverable_id: str) -> str:
         JSON string with steps, total_tokens, and total_cost.
     """
     rows = conn.execute(
-        """SELECT step_name, model, input_tokens, output_tokens, latency_ms
+        """SELECT step_name, model, provider_name, source, modality, status,
+                  failure_reason, input_tokens, output_tokens, latency_ms
            FROM cost_ledger WHERE deliverable_id = ? ORDER BY timestamp""",
         [deliverable_id],
     ).fetchall()
@@ -69,10 +70,19 @@ def _per_deliverable(conn: sqlite3.Connection, deliverable_id: str) -> str:
         calculate_cost(s["model"], s["input_tokens"], s["output_tokens"])
         for s in steps
     )
+    attempts_by_status: dict[str, int] = {}
+    provider_counts: dict[str, int] = {}
+    for step in steps:
+        status = str(step.get("status") or "unknown")
+        attempts_by_status[status] = attempts_by_status.get(status, 0) + 1
+        provider = str(step.get("provider_name") or "unknown")
+        provider_counts[provider] = provider_counts.get(provider, 0) + 1
     return json.dumps(
         {
             "deliverable_id": deliverable_id,
             "steps": steps,
+            "attempts_by_status": attempts_by_status,
+            "providers": provider_counts,
             "total_tokens": total,
             "total_cost": total_cost,
         }
@@ -109,19 +119,38 @@ def _model_distribution(conn: sqlite3.Connection) -> str:
         JSON string with models dict.
     """
     rows = conn.execute(
-        """SELECT model, SUM(input_tokens) AS total_in, SUM(output_tokens) AS total_out,
+        """SELECT model,
+                  provider_name,
+                  status,
+                  SUM(input_tokens) AS total_in,
+                  SUM(output_tokens) AS total_out,
                   COUNT(*) AS call_count
-           FROM cost_ledger GROUP BY model""",
+           FROM cost_ledger
+           GROUP BY model, provider_name, status""",
     ).fetchall()
-    models = {
-        row["model"]: {
-            "input": row["total_in"],
-            "output": row["total_out"],
-            "calls": row["call_count"],
-        }
-        for row in rows
-    }
-    return json.dumps({"models": models})
+    models: dict[str, dict[str, int]] = {}
+    providers: dict[str, dict[str, int]] = {}
+    for row in rows:
+        model = str(row["model"])
+        provider = str(row["provider_name"] or "unknown")
+        status = str(row["status"] or "unknown")
+
+        model_entry = models.setdefault(model, {"input": 0, "output": 0, "calls": 0})
+        model_entry["input"] += int(row["total_in"] or 0)
+        model_entry["output"] += int(row["total_out"] or 0)
+        model_entry["calls"] += int(row["call_count"] or 0)
+
+        provider_entry = providers.setdefault(
+            provider,
+            {"input": 0, "output": 0, "calls": 0, "failed_calls": 0},
+        )
+        provider_entry["input"] += int(row["total_in"] or 0)
+        provider_entry["output"] += int(row["total_out"] or 0)
+        provider_entry["calls"] += int(row["call_count"] or 0)
+        if status == "failed":
+            provider_entry["failed_calls"] += int(row["call_count"] or 0)
+
+    return json.dumps({"models": models, "providers": providers})
 
 
 def _anomaly_history(conn: sqlite3.Connection, limit: int) -> str:

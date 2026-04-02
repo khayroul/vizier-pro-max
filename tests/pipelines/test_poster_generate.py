@@ -1,6 +1,7 @@
 """Tests for poster_generate pipeline — two-layer AI background + Playwright."""
 from __future__ import annotations
 
+import base64
 import json
 import re
 from pathlib import Path
@@ -8,12 +9,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from middleware.deliverable_context import clear_context, set_context
 from pipelines.poster_generate import (
     PosterRequest,
     PosterResult,
     TemplateConfig,
     _build_design_css,
     _build_font_link,
+    _generate_hero_openai,
     _inject_brand_css,
     _inject_design,
     _inject_slots,
@@ -24,6 +27,28 @@ from pipelines.poster_generate import (
     list_templates,
     run,
 )
+
+
+class _GatewayResponse:
+    def __init__(
+        self,
+        status_code: int,
+        body: dict[str, object],
+        *,
+        text: str | None = None,
+        content: bytes | None = None,
+    ) -> None:
+        self.status_code = status_code
+        self._body = body
+        self.text = text if text is not None else json.dumps(body)
+        self.content = content if content is not None else self.text.encode("utf-8")
+
+    def json(self) -> dict[str, object]:
+        return self._body
+
+    def raise_for_status(self) -> None:
+        if self.status_code >= 400:
+            raise RuntimeError(f"HTTP {self.status_code}")
 
 
 # ---------------------------------------------------------------------------
@@ -321,6 +346,72 @@ class TestInjectBrandCss:
         assert "--bg-color: #111111;" in result
         assert "--accent-color: #abcdef;" in result
         assert result.index("<style>") < result.index("</head>")
+
+
+# ---------------------------------------------------------------------------
+# Gateway-backed hero generation
+# ---------------------------------------------------------------------------
+
+
+class TestGenerateHeroOpenAi:
+    def test_routes_image_generation_through_gateway(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+    ) -> None:
+        requests: list[dict[str, object]] = []
+        output_path = tmp_path / "hero.png"
+
+        def _fake_post(url: str, **kwargs: object) -> _GatewayResponse:
+            requests.append({"url": url, **kwargs})
+            return _GatewayResponse(
+                200,
+                {"data": [{"b64_json": base64.b64encode(b"gateway-image").decode("ascii")}]},
+            )
+
+        monkeypatch.setattr("pipelines.poster_generate.httpx.post", _fake_post)
+        monkeypatch.setenv("VIZIER_GATEWAY_BASE_URL", "http://127.0.0.1:11436/v1")
+
+        set_context("deliverable-123", "client-abc")
+        try:
+            hero_path = _generate_hero_openai("coffee poster hero", str(output_path))
+        finally:
+            clear_context()
+
+        assert hero_path == str(output_path)
+        assert output_path.read_bytes() == b"gateway-image"
+        assert len(requests) == 1
+        assert requests[0]["url"] == "http://127.0.0.1:11436/v1/images/generations"
+        assert requests[0]["json"] == {
+            "model": "gpt-image-1",
+            "prompt": "coffee poster hero",
+            "size": "1024x1024",
+            "quality": "medium",
+            "n": 1,
+        }
+        headers = requests[0]["headers"]
+        assert isinstance(headers, dict)
+        assert headers["x-vizier-source"] == "pipeline"
+        assert headers["x-vizier-modality"] == "image_generation"
+        assert headers["x-vizier-deliverable-id"] == "deliverable-123"
+        assert headers["x-vizier-client-id"] == "client-abc"
+        assert headers["x-vizier-pipeline-name"] == "poster_generate"
+        assert headers["x-vizier-pipeline-version"] == "1.0"
+        assert headers["x-vizier-step-name"] == "hero_generate"
+
+    def test_raises_when_gateway_fails(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+    ) -> None:
+        def _fake_post(url: str, **kwargs: object) -> _GatewayResponse:
+            return _GatewayResponse(502, {"error": "bad gateway"}, text='{"error":"bad gateway"}')
+
+        monkeypatch.setattr("pipelines.poster_generate.httpx.post", _fake_post)
+        monkeypatch.setenv("VIZIER_GATEWAY_BASE_URL", "http://127.0.0.1:11436/v1")
+
+        with pytest.raises(RuntimeError, match="Vizier gateway image generation failed"):
+            _generate_hero_openai("coffee poster hero", str(tmp_path / "hero.png"))
 
 
 # ---------------------------------------------------------------------------

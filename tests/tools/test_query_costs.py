@@ -8,7 +8,16 @@ from pathlib import Path
 
 import pytest
 
-MIGRATION_PATH = Path(__file__).parent.parent.parent / "migrations" / "001_cost_ledger.sql"
+MIGRATIONS_DIR = Path(__file__).parent.parent.parent / "migrations"
+
+
+def _combined_migration_sql() -> str:
+    parts: list[str] = []
+    for migration_path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        sql = migration_path.read_text()
+        sql = sql.replace("ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", "")
+        parts.append(sql)
+    return "\n".join(parts)
 
 
 @pytest.fixture()
@@ -24,21 +33,18 @@ def db_with_costs(tmp_path: Path) -> Path:
             deliverable_id TEXT
         )
     """)
-    sql = MIGRATION_PATH.read_text().replace(
-        "ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", ""
-    )
-    conn.executescript(sql)
+    conn.executescript(_combined_migration_sql())
 
     now = time.time()
     conn.executemany(
         """INSERT INTO cost_ledger
-           (deliverable_id, client_id, model, pipeline_name, step_name,
-            input_tokens, output_tokens, timestamp)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+           (deliverable_id, client_id, model, provider_name, source, modality,
+            status, pipeline_name, step_name, input_tokens, output_tokens, timestamp)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         [
-            ("d1", "client_a", "gpt-5.4-mini", "content_generate", "draft", 100, 50, now),
-            ("d1", "client_a", "gpt-5.4-mini", "content_generate", "format", 20, 10, now),
-            ("d2", "client_b", "qwen3.5:9b", "content_generate", "draft", 200, 100, now),
+            ("d1", "client_a", "gpt-5.4-mini", "openai", "pipeline", "chat", "succeeded", "content_generate", "draft", 100, 50, now),
+            ("d1", "client_a", "gpt-5.4-mini", "openai", "pipeline", "chat", "failed", "content_generate", "format", 20, 10, now),
+            ("d2", "client_b", "qwen3.5:9b", "ollama", "pipeline", "chat", "succeeded", "content_generate", "draft", 200, 100, now),
         ],
     )
     conn.execute(
@@ -61,6 +67,8 @@ class TestQueryCosts:
         result = json.loads(query_costs({"deliverable_id": "d1"}))
         assert len(result["steps"]) == 2
         assert result["total_tokens"] == 180
+        assert result["providers"]["openai"] == 2
+        assert result["attempts_by_status"]["failed"] == 1
 
     def test_per_client(self) -> None:
         from tools.query_costs import query_costs
@@ -72,6 +80,7 @@ class TestQueryCosts:
         result = json.loads(query_costs({"distribution": True}))
         assert "gpt-5.4-mini" in result["models"]
         assert "qwen3.5:9b" in result["models"]
+        assert result["providers"]["openai"]["failed_calls"] == 1
 
     def test_anomaly_history(self) -> None:
         from tools.query_costs import query_costs

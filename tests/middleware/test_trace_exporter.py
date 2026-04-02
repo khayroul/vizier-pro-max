@@ -11,7 +11,16 @@ import pytest
 
 from middleware.deliverable_context import clear_context
 
-MIGRATION_PATH = Path(__file__).parent.parent.parent / "migrations" / "001_cost_ledger.sql"
+MIGRATIONS_DIR = Path(__file__).parent.parent.parent / "migrations"
+
+
+def _combined_migration_sql() -> str:
+    parts: list[str] = []
+    for migration_path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        sql = migration_path.read_text()
+        sql = sql.replace("ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", "")
+        parts.append(sql)
+    return "\n".join(parts)
 
 
 @pytest.fixture()
@@ -27,10 +36,7 @@ def db_path(tmp_path: Path) -> Path:
             deliverable_id TEXT
         )
     """)
-    sql = MIGRATION_PATH.read_text().replace(
-        "ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT;", ""
-    )
-    conn.executescript(sql)
+    conn.executescript(_combined_migration_sql())
     conn.commit()
     conn.close()
     return path
@@ -58,16 +64,21 @@ def _insert_cost(db_path: Path, deliverable_id: str, **overrides: object) -> Non
         "step_name": "draft", "model": "gpt-5.4-mini",
         "input_tokens": 100, "output_tokens": 50,
         "prompt_text": '{"role":"user"}', "response_text": "resp",
+        "provider_name": "openai", "source": "pipeline",
+        "modality": "chat", "status": "succeeded", "failure_reason": None,
     }
     defaults.update(overrides)  # type: ignore[arg-type]
     conn = sqlite3.connect(str(db_path))
     conn.execute(
         """INSERT INTO cost_ledger
            (deliverable_id, client_id, pipeline_name, step_name, model,
+            provider_name, source, modality, status, failure_reason,
             input_tokens, output_tokens, prompt_text, response_text, timestamp)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         [deliverable_id, defaults["client_id"], defaults["pipeline_name"],
-         defaults["step_name"], defaults["model"], defaults["input_tokens"],
+         defaults["step_name"], defaults["model"], defaults["provider_name"],
+         defaults["source"], defaults["modality"], defaults["status"],
+         defaults["failure_reason"], defaults["input_tokens"],
          defaults["output_tokens"], defaults["prompt_text"],
          defaults["response_text"], time.time()],
     )
@@ -133,6 +144,8 @@ class TestExportTrace:
         assert len(data["steps"]) > 0
         assert "model" in data["steps"][0]
         assert "prompt_text" in data["steps"][0]
+        assert data["steps"][0]["provider_name"] == "openai"
+        assert data["steps"][0]["status"] == "succeeded"
 
 
 class TestLogAnomaly:

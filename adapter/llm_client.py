@@ -1,34 +1,28 @@
-"""Shared LLM client — OpenAI direct, Ollama fallback.
+"""Shared LLM client — gateway-backed, no direct provider bypass.
 
-All pipeline/augment LLM calls go through this module.
-Tries OpenAI API first (OPENAI_API_KEY required).
-Falls back to Qwen 3.5 9B via local Ollama if OpenAI fails.
-Returns None if both are unavailable.
-
-Cost tracking: fires middleware.cost_ledger pre/post hooks around each
-provider attempt so all pipeline LLM calls are captured in the ledger.
+All pipeline and augment LLM calls go through the local Vizier-owned
+OpenAI-compatible gateway. Provider routing and usage metering happen at the
+gateway boundary, not inside this client.
 """
 from __future__ import annotations
 
 import os
 import re
-from typing import Any
 
 import httpx
 import structlog
 
 from adapter.env_loader import ensure_env
+from middleware.deliverable_context import (
+    build_gateway_headers,
+)
 
 logger = structlog.get_logger(__name__)
 
-# Auto-load .env from project root so API keys are always available
+# Auto-load .env from project root so gateway config is available
 ensure_env()
 
-_OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-_OPENAI_MODEL = os.environ.get("VIZIER_LLM_MODEL", "gpt-5.4-mini")
-
-_OLLAMA_ENDPOINT = "http://localhost:11434/api/chat"
-_OLLAMA_MODEL = os.environ.get("VIZIER_FALLBACK_MODEL", "qwen3.5:9b")
+_DEFAULT_MODEL = os.environ.get("VIZIER_LLM_MODEL", "gpt-5.4-mini")
 
 
 _PREAMBLE_PATTERNS = [
@@ -80,6 +74,31 @@ def _strip_llm_preamble(text: str) -> str:
     return result.strip()
 
 
+def _infer_modality(messages: list[dict[str, str | list]]) -> str:
+    """Infer whether this chat request is text-only or vision-enabled."""
+    for message in messages:
+        content = message.get("content")
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "image_url":
+                return "vision"
+    return "chat"
+
+
+def _gateway_headers(messages: list[dict[str, str | list]]) -> dict[str, str]:
+    """Build gateway request headers from current Vizier context."""
+    return build_gateway_headers(
+        source="pipeline",
+        modality=_infer_modality(messages),
+    )
+
+
+def _gateway_chat_endpoint() -> str:
+    base_url = os.environ.get("VIZIER_GATEWAY_BASE_URL", "http://127.0.0.1:11436/v1").rstrip("/")
+    return f"{base_url}/chat/completions"
+
+
 def chat(
     *,
     messages: list[dict[str, str | list]],
@@ -87,10 +106,7 @@ def chat(
     timeout: float = 30.0,
     strip_preamble: bool = False,
 ) -> str | None:
-    """Send a chat completion request with OpenAI -> Ollama fallback.
-
-    Fires cost_ledger pre/post lifecycle hooks for each provider attempt
-    so all LLM calls are captured in the deliverable cost ledger.
+    """Send a chat completion request via the local Vizier gateway.
 
     Args:
         messages: OpenAI-format message list (role + content dicts).
@@ -98,133 +114,43 @@ def chat(
         timeout: Request timeout in seconds.
 
     Returns:
-        Response content string, or None if both providers fail.
+        Response content string, or None if the gateway call fails.
     """
-    # Try OpenAI first
-    result = _try_openai(messages, max_tokens, timeout)
-    if result is not None:
-        return _strip_llm_preamble(result) if strip_preamble else result
-
-    # Fallback to Ollama
-    result = _try_ollama(messages, timeout)
-    if result is not None:
-        return _strip_llm_preamble(result) if strip_preamble else result
-
-    logger.warning("All LLM providers unavailable")
-    return None
-
-
-def _fire_pre(messages: list[dict[str, str | list]], model: str) -> None:
-    """Fire cost_ledger pre_llm_call hook. Non-fatal if ledger unavailable."""
-    try:
-        from middleware.cost_ledger import pre_llm_call  # type: ignore[import-untyped]
-        pre_llm_call(messages=messages, model=model)
-    except Exception as exc:  # noqa: BLE001
-        logger.debug("cost_ledger pre_llm_call skipped: %s", exc)
-
-
-def _fire_post(response: str | None, usage: dict[str, int]) -> None:
-    """Fire cost_ledger post_llm_call hook. Non-fatal if ledger unavailable."""
-    try:
-        from middleware.cost_ledger import post_llm_call  # type: ignore[import-untyped]
-        post_llm_call(response=response, usage=usage)
-    except Exception as exc:  # noqa: BLE001
-        logger.debug("cost_ledger post_llm_call skipped: %s", exc)
-
-
-def _try_openai(
-    messages: list[dict[str, str | list]],
-    max_tokens: int,
-    timeout: float,
-) -> str | None:
-    """Try OpenAI API. Fires cost_ledger hooks around the call."""
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if not api_key:
-        logger.debug("OPENAI_API_KEY not set, skipping OpenAI")
-        return None
-
-    _fire_pre(messages, _OPENAI_MODEL)
     try:
         resp = httpx.post(
-            _OPENAI_ENDPOINT,
-            headers={"Authorization": f"Bearer {api_key}"},
+            _gateway_chat_endpoint(),
+            headers=_gateway_headers(messages),
             json={
-                "model": _OPENAI_MODEL,
-                "messages": messages,
-                "max_completion_tokens": max_tokens,
-            },
-            timeout=timeout,
-        )
-        if resp.status_code != 200:
-            logger.warning("OpenAI returned status %d", resp.status_code)
-            _fire_post(None, {})
-            return None
-
-        body = resp.json()
-        choices = body.get("choices") or []
-        if not choices:
-            logger.warning("OpenAI returned no choices")
-            _fire_post(None, {})
-            return None
-
-        content = choices[0].get("message", {}).get("content", "")
-        if not content.strip():
-            logger.warning("OpenAI returned empty content")
-            _fire_post(None, {})
-            return None
-
-        raw_usage: dict[str, Any] = body.get("usage") or {}
-        usage: dict[str, int] = {
-            "prompt_tokens": int(raw_usage.get("prompt_tokens", 0)),
-            "completion_tokens": int(raw_usage.get("completion_tokens", 0)),
-        }
-        _fire_post(content, usage)
-        logger.debug("LLM response via OpenAI (%s)", _OPENAI_MODEL)
-        return content
-    except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
-        logger.warning("OpenAI unreachable: %s", exc)
-        _fire_post(None, {})
-        return None
-
-
-def _try_ollama(
-    messages: list[dict[str, str | list]],
-    timeout: float,
-) -> str | None:
-    """Try local Ollama (Qwen 3.5 9B). Fires cost_ledger hooks around the call."""
-    _fire_pre(messages, _OLLAMA_MODEL)
-    try:
-        resp = httpx.post(
-            _OLLAMA_ENDPOINT,
-            json={
-                "model": _OLLAMA_MODEL,
+                "model": _DEFAULT_MODEL,
                 "messages": messages,
                 "stream": False,
-                "options": {"num_ctx": 4096},
-                "think": False,  # Disable Qwen thinking mode for faster responses
+                "max_completion_tokens": max_tokens,
             },
-            timeout=max(timeout, 120.0),  # Ollama can be slower, especially on first query
+            timeout=max(timeout, 120.0),
         )
-        if resp.status_code != 200:
-            logger.warning("Ollama returned status %d", resp.status_code)
-            _fire_post(None, {})
-            return None
-
-        body = resp.json()
-        content = body.get("message", {}).get("content", "")
-        if not content.strip():
-            logger.warning("Ollama returned empty content")
-            _fire_post(None, {})
-            return None
-
-        usage: dict[str, int] = {
-            "prompt_tokens": int(body.get("prompt_eval_count", 0)),
-            "completion_tokens": int(body.get("eval_count", 0)),
-        }
-        _fire_post(content, usage)
-        logger.debug("LLM response via Ollama (%s)", _OLLAMA_MODEL)
-        return content
     except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
-        logger.warning("Ollama unreachable: %s", exc)
-        _fire_post(None, {})
+        logger.warning("Vizier inference gateway unreachable: %s", exc)
         return None
+
+    if resp.status_code != 200:
+        logger.warning("Vizier inference gateway returned status %d", resp.status_code)
+        return None
+
+    try:
+        body = resp.json()
+    except ValueError as exc:
+        logger.warning("Vizier inference gateway returned invalid JSON: %s", exc)
+        return None
+
+    choices = body.get("choices") or []
+    if not choices:
+        logger.warning("Vizier inference gateway returned no choices")
+        return None
+
+    content = choices[0].get("message", {}).get("content", "")
+    if not content.strip():
+        logger.warning("Vizier inference gateway returned empty content")
+        return None
+
+    logger.debug("LLM response via Vizier inference gateway (%s)", _DEFAULT_MODEL)
+    return _strip_llm_preamble(content) if strip_preamble else content

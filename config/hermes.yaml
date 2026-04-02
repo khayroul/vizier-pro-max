@@ -2,12 +2,12 @@
 model:
   provider: "custom"
   default: "gpt-5.4-mini"
-  base_url: "https://api.openai.com/v1"
+  base_url: "http://127.0.0.1:11436/v1"
 
 fallback_model:
   provider: "custom"
   model: "gpt-5.4-mini"
-  base_url: "https://api.openai.com/v1"
+  base_url: "http://127.0.0.1:11436/v1"
 
 agent:
   max_turns: 90
