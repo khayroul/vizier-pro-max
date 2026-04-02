@@ -61,7 +61,9 @@ def _compute_per_class_metrics(
     Returns:
         Dict mapping class name to dict of precision, recall, f1.
     """
-    all_classes = sorted(set(expected) | set(predicted))
+    all_classes = sorted(
+        cls for cls in set(expected) | set(predicted) if cls is not None
+    )
 
     true_positives: dict[str, int] = defaultdict(int)
     false_positives: dict[str, int] = defaultdict(int)
