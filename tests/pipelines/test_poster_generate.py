@@ -1,6 +1,7 @@
 """Tests for poster_generate pipeline — two-layer AI background + Playwright."""
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -181,7 +182,8 @@ class TestDataclasses:
 
     def test_poster_request_defaults(self) -> None:
         req = PosterRequest(headline="Test", body="Body")
-        assert req.cta == "Learn More"
+        assert req.cta == ""
+        assert req.brief == ""
         assert req.template_name == ""
         assert req.image_mode == ""
         assert req.brand_name == ""
@@ -512,6 +514,69 @@ class TestRunPipeline:
 
     @patch("pipelines.poster_generate._screenshot")
     @patch("pipelines.poster_generate._generate_hero")
+    @patch("pipelines.poster_brief.llm_chat")
+    def test_freeform_brief_is_normalized_before_rendering(
+        self,
+        mock_llm: MagicMock,
+        mock_hero: MagicMock,
+        mock_screenshot: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """A raw brief can drive copy, template, and image direction."""
+        alternate_template = next(
+            template.name
+            for template in list_templates()
+            if template.name != "social-post"
+        )
+        mock_llm.return_value = json.dumps(
+            {
+                "campaign_angle": "New Year upgrade momentum",
+                "audience": "Apple customers ready for a desktop refresh",
+                "visual_direction": "Premium minimal launch poster with a large centered hero",
+                "hero_focus": "Mac mini M4 floating in soft studio light",
+                "headline": "New year. New power.",
+                "body": "Meet Mac mini with M4.",
+                "cta": "Learn more",
+                "image_prompt": (
+                    "Compact aluminum desktop computer on a soft gradient background, "
+                    "premium studio lighting, hero-forward composition, no text, no logos"
+                ),
+                "template_name": alternate_template,
+                "avoid": ["tiny unreadable copy", "muddy dark gradients"],
+            }
+        )
+
+        hero_file = tmp_path / "hero.png"
+        hero_file.write_bytes(b"\x89PNG" + b"\x00" * 50)
+
+        def fake_hero(prompt: str, output_path: str, mode: str) -> str:
+            assert "premium studio lighting" in prompt
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(output_path).write_bytes(hero_file.read_bytes())
+            return output_path
+
+        mock_hero.side_effect = fake_hero
+        mock_screenshot.return_value = None
+
+        result = run(
+            brief="I want a New Year Apple-style poster to sell the new Mac mini M4.",
+            output_path=str(tmp_path / "poster.png"),
+            palette=SAMPLE_PALETTE,
+            fonts=SAMPLE_FONTS,
+        )
+
+        assert result["template_used"] == alternate_template
+        assert result["creative_brief"]["campaign_angle"] == "New Year upgrade momentum"
+        assert result["creative_brief"]["headline"] == "New year. New power."
+        assert result["creative_brief"]["cta"] == "Learn more"
+
+        call_args = mock_screenshot.call_args
+        html_arg = call_args[1]["html"] if "html" in call_args[1] else call_args[0][0]
+        assert "New year. New power." in html_arg
+        assert "Meet Mac mini with M4." in html_arg
+
+    @patch("pipelines.poster_generate._screenshot")
+    @patch("pipelines.poster_generate._generate_hero")
     def test_auto_prompt_from_headline_body(
         self, mock_hero: MagicMock, mock_screenshot: MagicMock, tmp_path: Path
     ) -> None:
@@ -622,10 +687,42 @@ class TestPluginRegistration:
         """Schema exposes client-aware poster theming fields."""
         from plugins.poster_tool import GENERATE_POSTER_SCHEMA
 
-        assert GENERATE_POSTER_SCHEMA["required"] == ["headline", "body"]
+        assert "brief" in GENERATE_POSTER_SCHEMA["properties"]
+        assert {"required": ["brief"]} in GENERATE_POSTER_SCHEMA["anyOf"]
+        assert {"required": ["headline", "body"]} in GENERATE_POSTER_SCHEMA["anyOf"]
         assert "client_id" in GENERATE_POSTER_SCHEMA["properties"]
         assert "style_reference" in GENERATE_POSTER_SCHEMA["properties"]
         assert "reference_image_path" in GENERATE_POSTER_SCHEMA["properties"]
         assert "brand_name" in GENERATE_POSTER_SCHEMA["properties"]
         assert "logo_mark" in GENERATE_POSTER_SCHEMA["properties"]
         assert "brand_css" in GENERATE_POSTER_SCHEMA["properties"]
+
+    @patch("pipelines.poster_generate.run")
+    def test_handler_accepts_freeform_brief(
+        self,
+        mock_run: MagicMock,
+    ) -> None:
+        """generate_poster accepts a raw brief without requiring structured copy."""
+        from plugins.poster_tool import _handle_generate_poster
+
+        mock_run.return_value = {
+            "poster_path": "/tmp/poster.png",
+            "creative_brief": {"headline": "New year. New power."},
+        }
+
+        payload = json.loads(
+            _handle_generate_poster(
+                {
+                    "brief": "Apple New Year Mac mini M4 poster",
+                    "palette": SAMPLE_PALETTE,
+                    "fonts": SAMPLE_FONTS,
+                },
+                None,
+            )
+        )
+
+        assert payload["poster_path"] == "/tmp/poster.png"
+        assert payload["creative_brief"]["headline"] == "New year. New power."
+        assert mock_run.call_args.kwargs["brief"] == "Apple New Year Mac mini M4 poster"
+        assert mock_run.call_args.kwargs["headline"] == ""
+        assert mock_run.call_args.kwargs["body"] == ""

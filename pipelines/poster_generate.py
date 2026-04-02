@@ -21,6 +21,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from adapter.llm_client import chat as llm_chat
+from pipelines.poster_brief import as_payload as creative_brief_payload
+from pipelines.poster_brief import normalize_poster_brief
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +58,8 @@ class PosterRequest:
 
     headline: str
     body: str
-    cta: str = "Learn More"
+    cta: str = ""
+    brief: str = ""
     image_prompt: str = ""
     template_name: str = ""
     image_mode: str = ""
@@ -530,9 +533,10 @@ def _render_poster(
 
 def run(
     *,
-    headline: str,
-    body: str,
-    cta: str = "Learn More",
+    headline: str = "",
+    body: str = "",
+    cta: str = "",
+    brief: str = "",
     image_prompt: str = "",
     template_name: str = "",
     image_mode: str = "",
@@ -545,13 +549,15 @@ def run(
     reference_image_path: str = "",
     palette: dict[str, str] | None = None,
     fonts: dict[str, str] | None = None,
-) -> dict[str, str | int]:
+) -> dict[str, Any]:
     """Generate a two-layer poster: AI background + HTML text overlay.
 
     Args:
         headline: Poster headline text (max ~8 words recommended).
         body: Poster body text (max ~220 chars recommended).
         cta: Call-to-action button text.
+        brief: Optional freeform poster brief. When present, Vizier
+            normalizes it into cleaner headline/body/CTA/image direction.
         image_prompt: Prompt for AI background generation. If empty,
             a default prompt is built from headline + body.
         template_name: HTML template to use. Falls back to client default or
@@ -582,6 +588,9 @@ def run(
 
     if (palette is None) != (fonts is None):
         msg = "palette and fonts must be provided together"
+        raise ValueError(msg)
+    if not brief.strip() and (not headline.strip() or not body.strip()):
+        msg = "headline and body are required unless brief is provided"
         raise ValueError(msg)
 
     client = None
@@ -668,6 +677,28 @@ def run(
         msg = "palette/fonts or brand_css/client_id are required"
         raise ValueError(msg)
 
+    available_templates = [template.name for template in list_templates()]
+    creative_brief = normalize_poster_brief(
+        brief=brief,
+        headline=headline,
+        body=body,
+        cta=cta,
+        image_prompt=image_prompt,
+        brand_name=effective_brand_name,
+        style_hint=". ".join(
+            part for part in (reference_image_hint, style_reference_hint, client_style_hint) if part
+        ),
+        available_templates=available_templates,
+    )
+
+    effective_headline = creative_brief.headline or headline
+    effective_body = creative_brief.body or body
+    effective_cta = creative_brief.cta or cta
+    effective_image_prompt = image_prompt.strip() or creative_brief.image_prompt
+    if not template_name and not effective_style_reference and not effective_reference_image_path:
+        if creative_brief.template_name:
+            effective_template_name = creative_brief.template_name
+
     # Resolve template
     template = _resolve_template(effective_template_name)
 
@@ -686,24 +717,35 @@ def run(
             reference_image_hint,
             style_reference_hint,
             client_style_hint,
+            creative_brief.campaign_angle,
+            creative_brief.visual_direction,
+            creative_brief.hero_focus,
         )
         if part
     ]
     prompt_prefix = ". ".join(prompt_prefix_parts)
     if prompt_prefix:
         prompt_prefix += ". "
-    avoid_parts = [part for part in (reference_image_avoid, style_reference_avoid) if part]
+    avoid_parts = [
+        part
+        for part in (
+            reference_image_avoid,
+            style_reference_avoid,
+            "; ".join(creative_brief.avoid),
+        )
+        if part
+    ]
     avoid_sentence = f"Avoid {'; '.join(avoid_parts)}. " if avoid_parts else ""
     reference_sentence = (
         "Use the provided reference image as inspiration only, not an exact copy. "
         if effective_reference_image_path
         else ""
     )
-    effective_prompt = image_prompt or (
+    effective_prompt = effective_image_prompt or (
         f"{prompt_prefix}"
         f"{reference_sentence}"
         f"Create a premium visual background for a poster about: "
-        f"{headline}. {body}. "
+        f"{effective_headline}. {effective_body}. "
         "No text, no logos, no letters, clean composition, "
         "vibrant colors, social-media ready lighting, high quality. "
         f"{avoid_sentence}"
@@ -713,9 +755,9 @@ def run(
     # Layer 2: Render template with text + hero as background
     image_uri = _to_data_uri(Path(hero_file))
     content = {
-        "headline": headline,
-        "body": body,
-        "cta": cta,
+        "headline": effective_headline,
+        "body": effective_body,
+        "cta": effective_cta,
         "image_url": image_uri,
         "brand_name": effective_brand_name,
         "logo_mark": effective_logo_mark,
@@ -742,4 +784,6 @@ def run(
         brand_name=effective_brand_name,
         logo_mark=effective_logo_mark,
     )
-    return {k: v for k, v in asdict(result).items()}
+    payload: dict[str, Any] = {k: v for k, v in asdict(result).items()}
+    payload["creative_brief"] = creative_brief_payload(creative_brief)
+    return payload

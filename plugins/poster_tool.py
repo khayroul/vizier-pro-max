@@ -16,16 +16,31 @@ GENERATE_POSTER_SCHEMA = {
     "properties": {
         "headline": {
             "type": "string",
-            "description": "Poster headline text (max ~8 words)",
+            "description": (
+                "Poster headline text (max ~8 words). Optional when `brief` is supplied."
+            ),
         },
         "body": {
             "type": "string",
-            "description": "Poster body/description text (max ~220 chars)",
+            "description": (
+                "Poster body/description text (max ~220 chars). Optional when `brief` is supplied."
+            ),
+        },
+        "brief": {
+            "type": "string",
+            "description": (
+                "Freeform creative brief for the poster. Use this when the user gives a natural-language "
+                "request rather than already-structured headline/body copy. The system will normalize it "
+                "into a tighter creative brief before rendering."
+            ),
         },
         "cta": {
             "type": "string",
-            "description": "Call-to-action button text (default: Learn More)",
-            "default": "Learn More",
+            "description": (
+                "Call-to-action button text. Leave empty to let the poster brief normalizer "
+                "choose a tighter CTA and fall back to Learn More if needed."
+            ),
+            "default": "",
         },
         "image_prompt": {
             "type": "string",
@@ -128,7 +143,10 @@ GENERATE_POSTER_SCHEMA = {
             ],
         },
     },
-    "required": ["headline", "body"],
+    "anyOf": [
+        {"required": ["brief"]},
+        {"required": ["headline", "body"]},
+    ],
 }
 
 
@@ -138,8 +156,15 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
 
     headline = str(args.get("headline", ""))
     body = str(args.get("body", ""))
-    if not headline or not body:
-        return json.dumps({"error": "headline and body are required"})
+    brief = str(args.get("brief", ""))
+    if not brief.strip() and (not headline.strip() or not body.strip()):
+        return json.dumps(
+            {
+                "error": (
+                    "headline and body are required unless brief is provided"
+                )
+            }
+        )
 
     palette = args.get("palette")
     fonts = args.get("fonts")
@@ -147,7 +172,8 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
         result = run(
             headline=headline,
             body=body,
-            cta=str(args.get("cta", "Learn More")),
+            brief=brief,
+            cta=str(args.get("cta", "")),
             image_prompt=str(args.get("image_prompt", "")),
             template_name=str(args.get("template_name", "")),
             image_mode=str(args.get("image_mode", "")),
@@ -177,6 +203,8 @@ def register(ctx: Any) -> None:
         check_fn=lambda: True,
         description=(
             "Generate a poster with AI background image + HTML text overlay. "
+            "Accepts either a raw creative brief or explicit headline/body copy, and "
+            "normalizes freeform briefs into tighter poster-ready direction before rendering. "
             "ALWAYS use this for poster/flyer/banner requests instead of execute_code."
         ),
     )

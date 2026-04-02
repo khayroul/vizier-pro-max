@@ -80,3 +80,4 @@ def test_register_adds_vizier_turn_context_hook() -> None:
 
     assert any("marketing_plan_generate" in context for context in contexts)
     assert any("MEDIA:/absolute/path" in context for context in contexts)
+    assert any("raw brief or explicit headline/body copy" in context for context in contexts)
