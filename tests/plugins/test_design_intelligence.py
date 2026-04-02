@@ -227,6 +227,31 @@ class TestPluginRegistration:
             "search_quarto_layouts": "vizier-document",
         }
 
+    def test_visual_reference_tools_are_hidden_in_telegram_assistant_mode(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Telegram assistant mode should gate visual reference tools until work mode is active."""
+        from plugins.design_intelligence import register
+        from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
+
+        monkeypatch.setenv("MESSAGING_CWD", "/Users/Executor/vizier-pro-max")
+        monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+        clear_telegram_mode()
+
+        ctx = MagicMock()
+        register(ctx)
+
+        ui_styles_call = next(
+            call[1]
+            for call in ctx.register_tool.call_args_list
+            if call[1]["name"] == "search_ui_styles"
+        )
+        assert ui_styles_call["check_fn"]() is False
+
+        set_telegram_mode(platform="telegram", mode="vizier_work")
+        assert ui_styles_call["check_fn"]() is True
+
     def test_tool_schemas_have_query_param(self) -> None:
         """Both tool schemas require a 'query' parameter."""
         from plugins.design_intelligence import register

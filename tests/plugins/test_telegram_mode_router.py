@@ -1,10 +1,21 @@
 """Tests for Telegram mode routing."""
 from __future__ import annotations
 
+import pytest
+
 from plugins.telegram_mode_router import (
     build_telegram_mode_context,
     classify_telegram_mode,
 )
+from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode, telegram_mode_allows
+
+
+@pytest.fixture(autouse=True)
+def _clear_mode_state(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("VIZIER_TELEGRAM_FRONT_DOOR", raising=False)
+    monkeypatch.delenv("MESSAGING_CWD", raising=False)
+    monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    clear_telegram_mode()
 
 
 def test_explicit_assist_override_wins() -> None:
@@ -64,6 +75,16 @@ def test_context_is_empty_off_telegram() -> None:
     assert context == ""
 
 
+def test_context_is_empty_when_platform_is_missing() -> None:
+    context = build_telegram_mode_context(
+        user_message="Make a poster",
+        conversation_history=[],
+        platform="",
+    )
+
+    assert context == ""
+
+
 def test_context_mentions_mode_and_overrides() -> None:
     context = build_telegram_mode_context(
         user_message="Remind me to reply to Ahmad tomorrow morning.",
@@ -73,3 +94,52 @@ def test_context_mentions_mode_and_overrides() -> None:
 
     assert "Current mode: assistant" in context
     assert "/assist, /work, or /ops" in context
+
+
+def test_old_sticky_override_expires_after_short_window() -> None:
+    decision = classify_telegram_mode(
+        user_message="Do the next one too.",
+        conversation_history=[
+            {"role": "user", "content": "/work"},
+            {"role": "assistant", "content": "Ready for Vizier work mode."},
+            {"role": "user", "content": "Thanks"},
+            {"role": "user", "content": "What do you think?"},
+            {"role": "user", "content": "Maybe later"},
+        ],
+        platform="telegram",
+    )
+
+    assert decision.mode == "assistant"
+    assert decision.source == "default"
+
+
+def test_work_mode_context_mentions_switch_toolset() -> None:
+    context = build_telegram_mode_context(
+        user_message="/work Make a poster for our launch",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    assert "Current mode: vizier_work" in context
+    assert "first call switch_toolset" in context
+
+
+def test_front_door_defaults_to_assistant_gating_until_mode_is_set(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("MESSAGING_CWD", "/Users/Executor/vizier-pro-max")
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+
+    assert telegram_mode_allows("assistant") is True
+    assert telegram_mode_allows("vizier_work") is False
+
+
+def test_work_mode_gating_opens_vizier_tools(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("MESSAGING_CWD", "/Users/Executor/vizier-pro-max")
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+    set_telegram_mode(platform="telegram", mode="vizier_work")
+
+    assert telegram_mode_allows("vizier_work") is True
+    assert telegram_mode_allows("operator") is False

@@ -5,6 +5,8 @@ import re
 from dataclasses import dataclass
 from typing import Any, Iterable
 
+from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
+
 
 _MODE_ALIASES = {
     "/assist": "assistant",
@@ -74,6 +76,8 @@ _ASSISTANT_PATTERNS = (
     r"\bbuy\b",
 )
 
+_STICKY_LOOKBACK_USER_MESSAGES = 3
+
 
 @dataclass(frozen=True)
 class TelegramModeDecision:
@@ -141,7 +145,7 @@ def classify_telegram_mode(
     platform: str = "",
 ) -> TelegramModeDecision:
     """Classify the turn into assistant, Vizier work, or operator mode."""
-    if platform and platform.lower() != "telegram":
+    if platform.lower() != "telegram":
         return TelegramModeDecision(
             mode="assistant",
             source="non_telegram",
@@ -180,7 +184,8 @@ def classify_telegram_mode(
             reason="The turn looks like a personal-assistant request.",
         )
 
-    for prior_message in reversed(_extract_user_messages(conversation_history or [])):
+    recent_user_messages = _extract_user_messages(conversation_history or [])
+    for prior_message in reversed(recent_user_messages[-_STICKY_LOOKBACK_USER_MESSAGES:]):
         prior_explicit = _explicit_mode(prior_message)
         if prior_explicit:
             return TelegramModeDecision(
@@ -204,13 +209,17 @@ def build_telegram_mode_context(
     **_: Any,
 ) -> str:
     """Return mode-specific guidance for Telegram sessions."""
+    normalized_platform = platform.strip().lower()
+    if normalized_platform != "telegram":
+        clear_telegram_mode()
+        return ""
+
     decision = classify_telegram_mode(
         user_message=user_message,
         conversation_history=conversation_history,
-        platform=platform,
+        platform=normalized_platform,
     )
-    if platform and platform.lower() != "telegram":
-        return ""
+    set_telegram_mode(platform=normalized_platform, mode=decision.mode)
 
     shared = (
         "Telegram front door mode routing is active.\n"
@@ -223,19 +232,21 @@ def build_telegram_mode_context(
         return (
             f"{shared}"
             "- Behave as a personal assistant first: help with planning, drafting replies, reminders, and everyday questions.\n"
-            "- Do not jump into Vizier deliverable generation or repo maintenance unless the user clearly asks for it.\n"
+            "- Vizier workflow tools are intentionally hidden in this mode; do not jump into deliverable generation or repo maintenance unless the user clearly asks for it.\n"
             "- If the request is truly ambiguous between personal help and deliverable work, ask one short clarification.\n"
         )
     if decision.mode == "vizier_work":
         return (
             f"{shared}"
             "- Treat this as Vizier client or deliverable work.\n"
+            "- If Vizier workflow tools are not currently visible, first call switch_toolset to the closest workflow toolset: vizier-visual for posters/graphics, vizier-document for reports/proposals, vizier-content for plans/content packages, or vizier-research when the task is mainly research.\n"
             "- Use Vizier tools, reference corpora, and artifact-specific brief normalization when relevant.\n"
             "- Prefer deliverable-ready outputs over generic chatty assistance.\n"
         )
     return (
         f"{shared}"
         "- Treat this as operator mode for repo work, debugging, tests, pipeline changes, and maintenance.\n"
+        "- Keep Vizier workflow toolsets off unless they are truly needed; use switch_toolset intentionally when a repo task needs a specific Vizier workflow surface.\n"
         "- Prefer codebase inspection, targeted tests, and implementation details over client-facing deliverables.\n"
         "- Do not treat engineering instructions as marketing or personal-assistant requests.\n"
     )

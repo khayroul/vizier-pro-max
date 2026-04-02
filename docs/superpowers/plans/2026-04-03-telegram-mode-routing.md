@@ -37,7 +37,10 @@ It chooses a mode in this order:
 ## Boundaries
 
 - This routing layer injects mode-specific guidance.
-- It does not yet hard-hide tools by mode.
+- It also gates key Vizier tools by mode for the Telegram front door:
+  - `assistant` starts with Vizier workflow tools hidden
+  - `vizier_work` can intentionally open the right workflow surface with `switch_toolset`
+  - `operator` keeps repo-oriented guidance active without automatically exposing marketing-style tools
 - It reduces confusion by steering Hermes before tool choice and generation planning.
 - Artifact-specific brief normalization should only trigger after the turn is in `vizier_work`.
 
@@ -45,4 +48,4 @@ It chooses a mode in this order:
 
 Recommended next step:
 
-- add mode-scoped tool exposure or tool-preference rules so `assistant` mode deprioritizes Vizier workflow tools even more strongly.
+- extend mode-scoped gating beyond the current Vizier plugin tools if we want even tighter separation between personal-assistant and operator behaviors.

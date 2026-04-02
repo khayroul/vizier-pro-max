@@ -788,6 +788,28 @@ class TestPluginRegistration:
         assert "logo_mark" in GENERATE_POSTER_SCHEMA["properties"]
         assert "brand_css" in GENERATE_POSTER_SCHEMA["properties"]
 
+    def test_generate_poster_is_hidden_in_telegram_assistant_mode(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Telegram assistant mode should hide generate_poster until work mode is active."""
+        from plugins.poster_tool import register
+        from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
+
+        monkeypatch.setenv("MESSAGING_CWD", "/Users/Executor/vizier-pro-max")
+        monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+        clear_telegram_mode()
+
+        ctx = MagicMock()
+        register(ctx)
+
+        call_kwargs = ctx.register_tool.call_args[1]
+        assert call_kwargs["name"] == "generate_poster"
+        assert call_kwargs["check_fn"]() is False
+
+        set_telegram_mode(platform="telegram", mode="vizier_work")
+        assert call_kwargs["check_fn"]() is True
+
     @patch("pipelines.poster_generate.run")
     def test_handler_accepts_freeform_brief(
         self,
