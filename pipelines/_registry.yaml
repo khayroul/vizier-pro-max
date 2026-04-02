@@ -93,8 +93,42 @@ pipelines:
     output:
       output_path: { type: string }
 
+  - name: structured_nonfiction_generate
+    description: "Structured nonfiction family for reports, plans, ebooks, and bundled strategy documents"
+    input:
+      title: { type: string, required: true }
+      author: { type: string, required: true }
+      sections: { type: array, required: false }
+      charts: { type: array, required: false }
+      output_dir: { type: string, required: false }
+      subtitle: { type: string, required: false }
+      date: { type: string, required: false }
+      cover_path: { type: string, required: false }
+      brand: { type: object, required: false }
+      export_pdf: { type: boolean, required: false }
+      export_epub: { type: boolean, required: false }
+      profile: { type: string, required: false }
+      package_mode: { type: string, required: false }
+      include_toc: { type: boolean, required: false }
+      documents: { type: array, required: false }
+      strategy: { type: object, required: false, description: "Structured strategy brief for marketing-plan style profiles" }
+      campaign_angles: { type: array, required: false, description: "Campaign angles with promise, proof, channels, and optional scores" }
+      creative_variants: { type: array, required: false, description: "Creative executions per angle with headlines, copy, CTA, and optional poster assets" }
+      content_calendar: { type: array, required: false, description: "Optional marketing calendar rows for strategy docs" }
+      generate_posters: { type: boolean, required: false, description: "Generate missing poster assets for creative variants" }
+      poster_defaults: { type: object, required: false, description: "Shared poster-generation defaults such as template_name, client_id, or style_reference" }
+      export_operational_assets: { type: boolean, required: false, description: "Export per-variant poster folders with copy.json, notes.md, manifest.json, and captions.csv" }
+    output:
+      status: { type: string }
+      profile: { type: string }
+      package_mode: { type: string }
+      document_count: { type: integer }
+      operational_bundle_dir: { type: string }
+      client_bundle_dir: { type: string }
+      internal_bundle_dir: { type: string }
+
   - name: nonfiction_ebook_generate
-    description: "Long-form nonfiction ebook with report, charts, PDF, and EPUB exports"
+    description: "Compatibility alias for structured_nonfiction_generate with the ebook profile"
     input:
       title: { type: string, required: true }
       author: { type: string, required: true }

@@ -9,16 +9,23 @@ from typing import Any
 
 from middleware.quality_scorer import QualityProperty, compute_score
 from pipelines.longform.models import (
+    CampaignAngle,
     ChartSpec,
+    ContentCalendarEntry,
+    CreativeVariant,
     LongformChapter,
     LongformMetadata,
     LongformSection,
     LongformSpread,
+    MarketingPlanStrategy,
+    StructuredNonfictionDocument,
+    StructuredNonfictionPackage,
 )
 
 _ROOT = Path(__file__).resolve().parents[2]
 _DOC_TEMPLATES = _ROOT / "templates" / "documents"
 _NEWLINES_RE = re.compile(r"\n{2,}")
+_SLUG_RE = re.compile(r"[^a-z0-9]+")
 
 _DEFAULT_BRAND = {
     "primary_color": "#1A1A2E",
@@ -27,6 +34,27 @@ _DEFAULT_BRAND = {
     "headline_font": "Georgia, 'Times New Roman', serif",
     "body_font": "system-ui, -apple-system, sans-serif",
 }
+
+_STRUCTURED_NONFICTION_PROFILES = frozenset({
+    "ebook",
+    "marketing_plan",
+    "campaign_dossier",
+    "creative_pack",
+    "content_calendar",
+    "technical_report",
+    "business_report",
+    "proposal",
+    "research_brief",
+    "whitepaper",
+    "playbook",
+    "training_manual",
+    "illustrated_encyclopedia",
+    "case_study",
+    "audit_report",
+})
+
+_PACKAGE_MODES = frozenset({"single_document", "document_bundle"})
+_MARKETING_PROFILES = frozenset({"marketing_plan", "campaign_dossier", "creative_pack"})
 
 
 def build_metadata(
@@ -62,6 +90,675 @@ def build_metadata(
         cover_path=cover_path.strip(),
         brand=merged_brand,
     )
+
+
+def slugify(value: str) -> str:
+    """Convert text into a filesystem-safe slug."""
+    collapsed = _SLUG_RE.sub("-", value.strip().lower()).strip("-")
+    return collapsed or "document"
+
+
+def build_structured_nonfiction_package(
+    *,
+    profile: str = "ebook",
+    package_mode: str = "single_document",
+    include_toc: bool = True,
+) -> StructuredNonfictionPackage:
+    """Validate structured-nonfiction family options."""
+    normalized_profile = profile.strip().lower() or "ebook"
+    if normalized_profile not in _STRUCTURED_NONFICTION_PROFILES:
+        msg = (
+            f"Unsupported structured_nonfiction profile: {profile!r}. "
+            f"Valid: {sorted(_STRUCTURED_NONFICTION_PROFILES)}"
+        )
+        raise ValueError(msg)
+
+    normalized_mode = package_mode.strip().lower() or "single_document"
+    if normalized_mode not in _PACKAGE_MODES:
+        msg = (
+            f"Unsupported package_mode: {package_mode!r}. "
+            f"Valid: {sorted(_PACKAGE_MODES)}"
+        )
+        raise ValueError(msg)
+
+    return StructuredNonfictionPackage(
+        profile=normalized_profile,
+        package_mode=normalized_mode,
+        include_toc=include_toc,
+    )
+
+
+def uses_marketing_workflow(profile: str) -> bool:
+    """Return whether a profile should use the campaign-aware marketing builder."""
+    return profile in _MARKETING_PROFILES
+
+
+def _normalize_string_list(
+    value: object,
+    *,
+    field_name: str,
+) -> tuple[str, ...]:
+    """Normalize a list-like value into a tuple of strings."""
+    if value in (None, ""):
+        return ()
+
+    if isinstance(value, str):
+        return tuple(part.strip() for part in value.split(",") if part.strip())
+
+    if not isinstance(value, (list, tuple)):
+        msg = f"{field_name} must be a list of strings or a comma-separated string"
+        raise ValueError(msg)
+
+    items = [str(item).strip() for item in value if str(item).strip()]
+    return tuple(items)
+
+
+def _normalize_optional_score(
+    value: object,
+    *,
+    field_name: str,
+) -> float | None:
+    """Normalize an optional numeric score."""
+    if value in (None, ""):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError) as exc:
+        msg = f"{field_name} must be numeric when provided"
+        raise ValueError(msg) from exc
+
+
+def normalize_marketing_strategy(
+    strategy: dict[str, object] | None,
+) -> MarketingPlanStrategy:
+    """Normalize a marketing strategy object."""
+    if strategy is None:
+        return MarketingPlanStrategy()
+    if not isinstance(strategy, dict):
+        msg = "strategy must be an object"
+        raise ValueError(msg)
+
+    return MarketingPlanStrategy(
+        objective=str(strategy.get("objective", "")).strip(),
+        audience=str(strategy.get("audience", "")).strip(),
+        offer=str(strategy.get("offer", "")).strip(),
+        positioning=str(strategy.get("positioning", "")).strip(),
+        key_message=str(
+            strategy.get("key_message", strategy.get("message_house", ""))
+        ).strip(),
+        market_context=str(strategy.get("market_context", "")).strip(),
+        budget=str(strategy.get("budget", "")).strip(),
+        timeline=str(strategy.get("timeline", "")).strip(),
+        primary_cta=str(
+            strategy.get("primary_cta", strategy.get("cta", ""))
+        ).strip(),
+        channels=_normalize_string_list(
+            strategy.get("channels"),
+            field_name="strategy.channels",
+        ),
+        kpis=_normalize_string_list(
+            strategy.get("kpis"),
+            field_name="strategy.kpis",
+        ),
+        constraints=_normalize_string_list(
+            strategy.get("constraints"),
+            field_name="strategy.constraints",
+        ),
+        recommended_actions=_normalize_string_list(
+            strategy.get("recommended_actions"),
+            field_name="strategy.recommended_actions",
+        ),
+    )
+
+
+def normalize_campaign_angles(
+    items: list[dict[str, object]] | None,
+) -> list[CampaignAngle]:
+    """Normalize campaign-angle inputs."""
+    if not items:
+        return []
+
+    angles: list[CampaignAngle] = []
+    for idx, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            msg = f"campaign_angles[{idx}] must be an object"
+            raise ValueError(msg)
+        name = str(
+            item.get("name", item.get("angle", item.get("title", "")))
+        ).strip()
+        if not name:
+            msg = f"campaign_angles[{idx}] name is required"
+            raise ValueError(msg)
+        angles.append(
+            CampaignAngle(
+                name=name,
+                audience_segment=str(item.get("audience_segment", "")).strip(),
+                pain_point=str(item.get("pain_point", "")).strip(),
+                promise=str(item.get("promise", "")).strip(),
+                proof=str(item.get("proof", "")).strip(),
+                message=str(item.get("message", "")).strip(),
+                offer=str(item.get("offer", "")).strip(),
+                cta=str(item.get("cta", "")).strip(),
+                channels=_normalize_string_list(
+                    item.get("channels"),
+                    field_name=f"campaign_angles[{idx}].channels",
+                ),
+                visual_direction=str(item.get("visual_direction", "")).strip(),
+                headline=str(item.get("headline", "")).strip(),
+                body=str(item.get("body", "")).strip(),
+                notes=str(item.get("notes", "")).strip(),
+                score=_normalize_optional_score(
+                    item.get("score"),
+                    field_name=f"campaign_angles[{idx}].score",
+                ),
+            )
+        )
+    return angles
+
+
+def normalize_creative_variants(
+    items: list[dict[str, object]] | None,
+    *,
+    angles: list[CampaignAngle],
+    strategy: MarketingPlanStrategy,
+) -> list[CreativeVariant]:
+    """Normalize or synthesize creative variants from campaign angles."""
+    if not items:
+        return [
+            CreativeVariant(
+                angle_name=angle.name,
+                channel=(
+                    angle.channels[0]
+                    if angle.channels
+                    else (strategy.channels[0] if strategy.channels else "")
+                ),
+                headline=angle.headline or angle.name,
+                body=angle.body
+                or " ".join(
+                    part.strip()
+                    for part in (
+                        angle.promise,
+                        angle.proof,
+                        angle.message,
+                    )
+                    if part.strip()
+                ),
+                cta=angle.cta or strategy.primary_cta or "Learn more",
+                image_prompt=angle.visual_direction,
+                notes=angle.notes,
+                score=angle.score,
+            )
+            for angle in angles
+        ]
+
+    variants: list[CreativeVariant] = []
+    for idx, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            msg = f"creative_variants[{idx}] must be an object"
+            raise ValueError(msg)
+        angle_name = str(
+            item.get("angle_name", item.get("angle", ""))
+        ).strip()
+        if not angle_name:
+            msg = f"creative_variants[{idx}] angle_name is required"
+            raise ValueError(msg)
+        variants.append(
+            CreativeVariant(
+                angle_name=angle_name,
+                channel=str(item.get("channel", "")).strip(),
+                headline=str(item.get("headline", "")).strip(),
+                body=str(item.get("body", "")).strip(),
+                cta=str(item.get("cta", "")).strip(),
+                image_prompt=str(item.get("image_prompt", "")).strip(),
+                poster_path=str(item.get("poster_path", "")).strip(),
+                notes=str(item.get("notes", "")).strip(),
+                score=_normalize_optional_score(
+                    item.get("score"),
+                    field_name=f"creative_variants[{idx}].score",
+                ),
+            )
+        )
+    return variants
+
+
+def normalize_content_calendar_entries(
+    items: list[dict[str, object]] | None,
+) -> list[ContentCalendarEntry]:
+    """Normalize content-calendar rows."""
+    if not items:
+        return []
+
+    entries: list[ContentCalendarEntry] = []
+    for idx, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            msg = f"content_calendar[{idx}] must be an object"
+            raise ValueError(msg)
+        period = str(item.get("period", item.get("week", ""))).strip()
+        if not period:
+            msg = f"content_calendar[{idx}] period is required"
+            raise ValueError(msg)
+        entries.append(
+            ContentCalendarEntry(
+                period=period,
+                channel=str(item.get("channel", "")).strip(),
+                deliverable=str(item.get("deliverable", "")).strip(),
+                theme=str(item.get("theme", "")).strip(),
+                cta=str(item.get("cta", "")).strip(),
+                notes=str(item.get("notes", "")).strip(),
+            )
+        )
+    return entries
+
+
+def _join_paragraphs(parts: list[str]) -> str:
+    """Join text parts into paragraph-separated prose."""
+    return "\n\n".join(part.strip() for part in parts if part.strip())
+
+
+def _format_labelled(label: str, value: str) -> str:
+    """Format a single labelled sentence when a value exists."""
+    if not value.strip():
+        return ""
+    return f"{label}: {value.strip()}"
+
+
+def _format_labelled_list(label: str, items: tuple[str, ...]) -> str:
+    """Format a labelled sentence for a tuple of values."""
+    if not items:
+        return ""
+    return f"{label}: {', '.join(items)}"
+
+
+def _build_strategy_sections(
+    *,
+    strategy: MarketingPlanStrategy,
+    campaign_angles: list[CampaignAngle],
+    content_calendar: list[ContentCalendarEntry],
+    extra_sections: tuple[LongformSection, ...],
+) -> list[LongformSection]:
+    """Build strategy-first sections for a marketing plan."""
+    summary_callout = _join_paragraphs(
+        [
+            _format_labelled("Objective", strategy.objective),
+            _format_labelled_list("Channels", strategy.channels),
+            _format_labelled("Primary CTA", strategy.primary_cta),
+        ]
+    )
+    strategy_sections = [
+        LongformSection(
+            heading="Executive Summary",
+            body=_join_paragraphs(
+                [
+                    _format_labelled("Objective", strategy.objective),
+                    _format_labelled("Audience", strategy.audience),
+                    _format_labelled("Offer", strategy.offer),
+                    _format_labelled("Positioning", strategy.positioning),
+                    _format_labelled("Key Message", strategy.key_message),
+                ]
+            )
+            or "Campaign strategy summary pending.",
+            callout=summary_callout,
+        ),
+        LongformSection(
+            heading="Audience and Market Context",
+            body=_join_paragraphs(
+                [
+                    _format_labelled("Audience", strategy.audience),
+                    _format_labelled("Market Context", strategy.market_context),
+                    _format_labelled_list("Constraints", strategy.constraints),
+                ]
+            )
+            or "Audience and market context were not supplied.",
+        ),
+        LongformSection(
+            heading="Messaging and Positioning",
+            body=_join_paragraphs(
+                [
+                    _format_labelled("Positioning", strategy.positioning),
+                    _format_labelled("Offer", strategy.offer),
+                    _format_labelled("Key Message", strategy.key_message),
+                ]
+            )
+            or "Messaging direction was not supplied.",
+        ),
+    ]
+
+    if campaign_angles:
+        angle_paragraphs = []
+        for angle in campaign_angles:
+            score_text = (
+                f" Score: {angle.score:.1f}."
+                if angle.score is not None
+                else ""
+            )
+            angle_paragraphs.append(
+                _join_paragraphs(
+                    [
+                        f"{angle.name}: {angle.promise or angle.message or 'Angle summary pending.'}{score_text}",
+                        _format_labelled("Audience Segment", angle.audience_segment),
+                        _format_labelled("Pain Point", angle.pain_point),
+                        _format_labelled("Proof", angle.proof),
+                        _format_labelled_list("Channels", angle.channels),
+                    ]
+                )
+            )
+        strategy_sections.append(
+            LongformSection(
+                heading="Campaign Angles",
+                body=_join_paragraphs(angle_paragraphs),
+            )
+        )
+
+    strategy_sections.append(
+        LongformSection(
+            heading="Channel Plan and KPIs",
+            body=_join_paragraphs(
+                [
+                    _format_labelled_list("Channels", strategy.channels),
+                    _format_labelled_list("KPIs", strategy.kpis),
+                    _format_labelled("Timeline", strategy.timeline),
+                    _format_labelled("Budget", strategy.budget),
+                    _format_labelled_list(
+                        "Recommended Actions",
+                        strategy.recommended_actions,
+                    ),
+                ]
+            )
+            or "Channel plan and KPI detail were not supplied.",
+        )
+    )
+
+    if content_calendar:
+        strategy_sections.append(
+            LongformSection(
+                heading="Content Calendar Snapshot",
+                body=_join_paragraphs(
+                    [
+                        _join_paragraphs(
+                            [
+                                _format_labelled("Period", entry.period),
+                                _format_labelled("Channel", entry.channel),
+                                _format_labelled("Theme", entry.theme),
+                                _format_labelled(
+                                    "Deliverable",
+                                    entry.deliverable,
+                                ),
+                                _format_labelled("CTA", entry.cta),
+                                _format_labelled("Notes", entry.notes),
+                            ]
+                        )
+                        for entry in content_calendar
+                    ]
+                ),
+            )
+        )
+
+    strategy_sections.extend(extra_sections)
+    return strategy_sections
+
+
+def _build_creative_sections(
+    *,
+    strategy: MarketingPlanStrategy,
+    campaign_angles: list[CampaignAngle],
+    creative_variants: list[CreativeVariant],
+) -> list[LongformSection]:
+    """Build creative-pack sections grouped by campaign angle."""
+    variant_lookup: dict[str, list[CreativeVariant]] = {}
+    for variant in creative_variants:
+        variant_lookup.setdefault(variant.angle_name, []).append(variant)
+
+    angle_lookup = {angle.name: angle for angle in campaign_angles}
+    section_order = list(angle_lookup)
+    for angle_name in variant_lookup:
+        if angle_name not in angle_lookup:
+            section_order.append(angle_name)
+
+    creative_sections = [
+        LongformSection(
+            heading="Creative Direction",
+            body=_join_paragraphs(
+                [
+                    _format_labelled_list("Channels", strategy.channels),
+                    _format_labelled("Primary CTA", strategy.primary_cta),
+                    _format_labelled(
+                        "Creative Objective",
+                        strategy.objective,
+                    ),
+                ]
+            )
+            or "Creative direction pending.",
+        )
+    ]
+
+    for angle_name in section_order:
+        angle = angle_lookup.get(angle_name)
+        variants = variant_lookup.get(angle_name, [])
+        image_path = next(
+            (
+                variant.poster_path
+                for variant in variants
+                if variant.poster_path.strip()
+            ),
+            "",
+        )
+        variant_paragraphs = []
+        for idx, variant in enumerate(variants, start=1):
+            score_text = (
+                f" Score: {variant.score:.1f}."
+                if variant.score is not None
+                else ""
+            )
+            variant_paragraphs.append(
+                _join_paragraphs(
+                    [
+                        f"Variant {idx}: {variant.headline or 'Headline pending.'}{score_text}",
+                        _format_labelled("Channel", variant.channel),
+                        _format_labelled("Body Copy", variant.body),
+                        _format_labelled("CTA", variant.cta),
+                        _format_labelled("Image Prompt", variant.image_prompt),
+                        _format_labelled("Notes", variant.notes),
+                    ]
+                )
+            )
+
+        creative_sections.append(
+            LongformSection(
+                heading=angle_name,
+                body=_join_paragraphs(
+                    [
+                        _format_labelled(
+                            "Audience Segment",
+                            angle.audience_segment if angle else "",
+                        ),
+                        _format_labelled(
+                            "Pain Point",
+                            angle.pain_point if angle else "",
+                        ),
+                        _format_labelled(
+                            "Promise",
+                            angle.promise if angle else "",
+                        ),
+                        _format_labelled(
+                            "Proof",
+                            angle.proof if angle else "",
+                        ),
+                        _format_labelled(
+                            "Message",
+                            angle.message if angle else "",
+                        ),
+                        _format_labelled(
+                            "Offer",
+                            angle.offer if angle else "",
+                        ),
+                        _format_labelled_list(
+                            "Channels",
+                            angle.channels if angle else (),
+                        ),
+                        _format_labelled(
+                            "Visual Direction",
+                            angle.visual_direction if angle else "",
+                        ),
+                        _format_labelled(
+                            "Notes",
+                            angle.notes if angle else "",
+                        ),
+                        _join_paragraphs(variant_paragraphs),
+                    ]
+                )
+                or "Creative execution detail pending.",
+                callout=(
+                    angle.cta if angle and angle.cta else strategy.primary_cta
+                ),
+                image_path=image_path,
+            )
+        )
+
+    creative_sections.append(
+        LongformSection(
+            heading="Production Notes",
+            body=_join_paragraphs(
+                [
+                    _format_labelled(
+                        "Poster Count",
+                        str(
+                            sum(
+                                1
+                                for variant in creative_variants
+                                if variant.poster_path.strip()
+                            )
+                        ),
+                    ),
+                    _format_labelled(
+                        "Variant Count",
+                        str(len(creative_variants)),
+                    ),
+                    _format_labelled_list("Channels", strategy.channels),
+                    _format_labelled("Primary CTA", strategy.primary_cta),
+                ]
+            )
+            or "Production notes pending.",
+        )
+    )
+    return creative_sections
+
+
+def _build_angle_score_charts(
+    campaign_angles: list[CampaignAngle],
+) -> tuple[ChartSpec, ...]:
+    """Create a simple angle-score chart when scores are available."""
+    scored_angles = [angle for angle in campaign_angles if angle.score is not None]
+    if not scored_angles:
+        return ()
+
+    return (
+        ChartSpec(
+            section_heading="Campaign Angles",
+            chart_type="bar",
+            data={
+                "labels": [angle.name for angle in scored_angles],
+                "values": [angle.score for angle in scored_angles],
+            },
+            title="Campaign Angle Prioritization",
+            caption="Relative score assigned to each campaign angle.",
+        ),
+    )
+
+
+def build_marketing_plan_documents(
+    *,
+    title: str,
+    subtitle: str,
+    package: StructuredNonfictionPackage,
+    strategy: MarketingPlanStrategy,
+    campaign_angles: list[CampaignAngle],
+    creative_variants: list[CreativeVariant],
+    content_calendar: list[ContentCalendarEntry],
+    extra_sections: tuple[LongformSection, ...],
+    extra_charts: tuple[ChartSpec, ...],
+) -> tuple[list[StructuredNonfictionDocument], dict[str, object]]:
+    """Build combined or bundled marketing-plan documents from structured inputs."""
+    if package.profile == "creative_pack" and package.package_mode != "single_document":
+        msg = "creative_pack profile only supports package_mode='single_document'"
+        raise ValueError(msg)
+    if package.package_mode == "document_bundle" and not (
+        campaign_angles or creative_variants
+    ):
+        msg = (
+            "campaign_angles or creative_variants are required when "
+            "package_mode='document_bundle' for marketing profiles"
+        )
+        raise ValueError(msg)
+
+    strategy_sections = _build_strategy_sections(
+        strategy=strategy,
+        campaign_angles=campaign_angles,
+        content_calendar=content_calendar,
+        extra_sections=extra_sections,
+    )
+    creative_sections = _build_creative_sections(
+        strategy=strategy,
+        campaign_angles=campaign_angles,
+        creative_variants=creative_variants,
+    )
+    auto_charts = _build_angle_score_charts(campaign_angles)
+
+    if package.profile == "creative_pack":
+        documents = [
+            StructuredNonfictionDocument(
+                title=title.strip(),
+                subtitle=subtitle.strip(),
+                slug=slugify(title),
+                sections=tuple(creative_sections),
+                charts=extra_charts,
+            )
+        ]
+    elif package.package_mode == "document_bundle":
+        documents = [
+            StructuredNonfictionDocument(
+                title=f"{title.strip()} Strategy Plan",
+                subtitle=subtitle.strip(),
+                slug=slugify(f"{title} strategy plan"),
+                sections=tuple(strategy_sections),
+                charts=tuple(auto_charts + extra_charts),
+            ),
+            StructuredNonfictionDocument(
+                title=f"{title.strip()} Creative Pack",
+                subtitle=subtitle.strip(),
+                slug=slugify(f"{title} creative pack"),
+                sections=tuple(creative_sections),
+                charts=(),
+            ),
+        ]
+    else:
+        documents = [
+            StructuredNonfictionDocument(
+                title=title.strip(),
+                subtitle=subtitle.strip(),
+                slug=slugify(title),
+                sections=tuple(strategy_sections + creative_sections),
+                charts=tuple(auto_charts + extra_charts),
+            )
+        ]
+
+    summary = {
+        "campaign_angle_count": len(campaign_angles),
+        "creative_variant_count": len(creative_variants),
+        "poster_count": sum(
+            1
+            for variant in creative_variants
+            if variant.poster_path.strip()
+        ),
+        "content_calendar_entry_count": len(content_calendar),
+        "document_titles": [document.title for document in documents],
+        "angle_names": [angle.name for angle in campaign_angles],
+        "poster_paths": [
+            variant.poster_path
+            for variant in creative_variants
+            if variant.poster_path.strip()
+        ],
+    }
+    return documents, summary
 
 
 def normalize_sections(items: list[dict[str, object]]) -> list[LongformSection]:
@@ -118,6 +815,62 @@ def normalize_chart_specs(items: list[dict[str, object]]) -> list[ChartSpec]:
             )
         )
     return charts
+
+
+def normalize_structured_nonfiction_documents(
+    *,
+    title: str,
+    subtitle: str,
+    sections: list[dict[str, object]] | None,
+    charts: list[dict[str, object]] | None,
+    documents: list[dict[str, object]] | None,
+    package: StructuredNonfictionPackage,
+) -> list[StructuredNonfictionDocument]:
+    """Normalize one or many structured nonfiction documents."""
+    if package.package_mode == "single_document":
+        if documents:
+            msg = "documents cannot be provided when package_mode='single_document'"
+            raise ValueError(msg)
+        normalized_sections = tuple(normalize_sections(sections or []))
+        normalized_charts = tuple(normalize_chart_specs(charts or []))
+        return [
+            StructuredNonfictionDocument(
+                title=title.strip(),
+                subtitle=subtitle.strip(),
+                slug=slugify(title),
+                sections=normalized_sections,
+                charts=normalized_charts,
+            )
+        ]
+
+    if not documents:
+        msg = "documents is required when package_mode='document_bundle'"
+        raise ValueError(msg)
+
+    normalized_documents: list[StructuredNonfictionDocument] = []
+    for idx, document in enumerate(documents, start=1):
+        if not isinstance(document, dict):
+            msg = f"document bundle entry {idx} must be an object"
+            raise ValueError(msg)
+        doc_title = str(document.get("title", "")).strip() or f"{title} Part {idx}"
+        doc_subtitle = str(document.get("subtitle", "")).strip()
+        doc_sections = tuple(
+            normalize_sections(document.get("sections", []))  # type: ignore[arg-type]
+        )
+        doc_charts = tuple(
+            normalize_chart_specs(document.get("charts", []))  # type: ignore[arg-type]
+        )
+        doc_slug = str(document.get("slug", "")).strip() or slugify(doc_title)
+        normalized_documents.append(
+            StructuredNonfictionDocument(
+                title=doc_title,
+                subtitle=doc_subtitle,
+                slug=doc_slug,
+                sections=doc_sections,
+                charts=doc_charts,
+            )
+        )
+    return normalized_documents
 
 
 def normalize_chapters(items: list[dict[str, object]]) -> list[LongformChapter]:
@@ -291,6 +1044,8 @@ def render_nonfiction_html(
     metadata: LongformMetadata,
     sections: list[LongformSection],
     charts_by_section: dict[str, list[dict[str, str]]],
+    *,
+    include_toc: bool = True,
 ) -> str:
     """Render nonfiction sections through the report template."""
     body_parts: list[str] = []
@@ -301,9 +1056,13 @@ def render_nonfiction_html(
         else "<p>Summary unavailable.</p>"
     )
 
+    toc_html = ""
     for section in sections:
+        anchor = slugify(section.heading)
         level_tag = f"h{max(2, min(section.level + 1, 4))}"
-        section_html = [f"<{level_tag}>{html.escape(section.heading)}</{level_tag}>"]
+        section_html = [
+            f"<{level_tag} id='{anchor}'>{html.escape(section.heading)}</{level_tag}>"
+        ]
         section_html.append(render_markdown_paragraphs(section.body))
         if section.callout:
             section_html.append(
@@ -326,6 +1085,22 @@ def render_nonfiction_html(
                 "</figure>"
             )
         body_parts.append("".join(section_html))
+    if include_toc:
+        toc_items = "".join(
+            (
+                f"<li style='margin:0 0 10px {max(section.level - 1, 0) * 18}px;'>"
+                f"<a href='#{slugify(section.heading)}'>{html.escape(section.heading)}</a>"
+                "</li>"
+            )
+            for section in sections
+        )
+        toc_html = (
+            "<nav class='toc' style='page-break-after:always;padding:16px 0 32px;'>"
+            "<p class='section-label'>Contents</p>"
+            "<h2>Table of Contents</h2>"
+            f"<ol style='margin:16px 0 0 20px;line-height:1.6;'>{toc_items}</ol>"
+            "</nav>"
+        )
 
     return _fill_template(
         "report.html",
@@ -336,7 +1111,7 @@ def render_nonfiction_html(
             "date": html.escape(metadata.date),
             "footer": "Generated by Vizier",
             "executive_summary": executive_summary,
-            "body": "".join(body_parts),
+            "body": toc_html + "".join(body_parts),
             **metadata.brand,
         },
     )
