@@ -98,6 +98,24 @@ That means raw sessions, transcripts, or traces are never treated as approved po
 
 All packets in this program must use these contract shapes. Exact field types may be implemented as dataclasses, `TypedDict`, Pydantic models, or another typed representation, but the contract meanings are fixed.
 
+### 4.0 Shared representation rules
+
+The canonical Python surface for these contracts lives in `augments/observational/types.py`.
+
+Shared rules:
+
+- ordered reference fields serialize as lists of strings and may be represented as immutable tuples in Python
+- every `status` or `outcome` field is a lowercase closed enum; unknown values are invalid
+- downstream records may attach optional `provenance` with the same shape:
+  - `event_ids`
+  - `observation_ids`
+  - `decision_packet_ids`
+  - `promotion_decision_ids`
+  - `trace_refs`
+  - `metadata`
+- `candidate_path` is repo-relative and must stay inside `state/candidates/<artifact-family>/`
+- `BuildCaptureEvent.trace_refs` is the canonical home for event trace pointers; `BuildCaptureEvent.provenance.trace_refs` is invalid
+
 ### 4.1 `BuildCaptureEvent`
 
 Represents one externally or internally observed builder/runtime event.
@@ -142,6 +160,7 @@ Optional fields:
 - `labels`
 - `trace_refs`
 - `metadata`
+- `provenance`
 
 ### 4.2 `DecisionPacket`
 
@@ -149,7 +168,7 @@ Normalized handoff between capture, observational memory, evolution, and selfbui
 
 Required fields:
 
-- `packet_id`
+- `decision_packet_id`
 - `source_event_ids`
 - `problem`
 - `proposed_change`
@@ -167,6 +186,7 @@ Optional fields:
 - `risk_tier`
 - `confidence`
 - `notes`
+- `provenance`
 
 ### 4.3 `Observation`
 
@@ -199,6 +219,7 @@ Optional fields:
 - `applies_to`
 - `tags`
 - `superseded_by`
+- `provenance`
 
 ### 4.4 `CandidateArtifact`
 
@@ -270,11 +291,14 @@ state/
 ├── build_capture/
 │   ├── events.jsonl
 │   └── index.sqlite
+├── decision_packets/
+│   └── packets.sqlite
 ├── observational/
 │   ├── episodes.sqlite
 │   ├── observations.sqlite
 │   └── reflections.sqlite
 ├── candidates/
+│   ├── registry.sqlite
 │   ├── skills/
 │   ├── prompts/
 │   ├── templates/
@@ -293,9 +317,12 @@ state/
 Rules:
 
 - Source code is not the candidate scratchpad.
+- `DecisionPacket` records persist in `state/decision_packets/packets.sqlite`.
 - Generated artifacts land in `state/candidates/` first.
+- `CandidateArtifact` records persist in `state/candidates/registry.sqlite` even when the materialized candidate files are absent or later superseded.
 - `MEMORY.md` may remain, but it is a rendered view, not the canonical observational ledger.
 - Promotion records are append-only.
+- The shared helper surface in `augments/observational/store.py` creates directories only; append-first ledger files appear when later packets write them.
 
 ---
 
