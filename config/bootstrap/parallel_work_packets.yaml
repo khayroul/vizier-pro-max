@@ -1,0 +1,374 @@
+program:
+  id: v6_2_parallel_impl
+  slug: v6-2
+  name: Vizier v6.2 Parallel Implementation Program
+  spec_path: docs/superpowers/specs/2026-04-02-v6_2-implementation-spec.md
+  plan_path: docs/superpowers/plans/2026-04-02-v6_2-parallel-implementation.md
+  worktree_root: .worktrees/v6_2
+  branch_prefix: codex/v6-2
+  default_base_ref: master
+  session_dir: .codex-session
+  session_note_file: WORK_ORDER.md
+  session_prompt_file: PROMPT.txt
+  packet_order:
+    - contracts-ledger
+    - bridge-capture
+    - observational-memory
+    - selfbuild-gate
+    - openspace-candidate-flow
+    - distillation-governance
+    - quality-ci
+    - clone-designspec
+
+packets:
+  - id: contracts-ledger
+    slug: contracts-ledger
+    title: Core Contracts and State Roots
+    wave: wave0
+    tranche: tranche-1
+    priority: 0
+    summary: Freeze the shared data contracts and state layout that every later packet consumes.
+    depends_on: []
+    owned_paths:
+      - augments/observational/types.py
+      - augments/observational/store.py
+      - tests/augments/test_observational_types.py
+      - tests/augments/test_observational_store.py
+      - docs/superpowers/specs/2026-04-02-v6_2-implementation-spec.md
+    read_paths:
+      - bridge/
+      - augments/
+      - config/distillation_config.yaml
+      - pipelines/clone_converge.py
+    outputs:
+      - Shared schemas for BuildCaptureEvent, DecisionPacket, Observation, CandidateArtifact, PromotionDecision
+      - Canonical state directory layout under state/
+      - Serialization and validation helpers reusable by later packets
+    acceptance:
+      - Introduce one canonical type surface for all architecture packets
+      - Define status fields and provenance fields consistently
+      - Document and test the state directory layout
+      - Do not implement bridge logic, promotion logic, or clone logic in this packet
+    do_not_touch:
+      - bridge/*
+      - augments/selfbuild/*
+      - augments/openspace/*
+      - augments/distillation/*
+      - pipelines/clone_converge.py
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/augments/test_observational_types.py tests/augments/test_observational_store.py -q
+    launch_prompt: |
+      Implement the shared contract and storage foundation for the Vizier v6.2 architecture. Stay strictly inside the owned paths. Create reusable typed contracts and storage helpers only; do not wire bridge capture, promotion, distillation, or clone behavior yet.
+
+  - id: bridge-capture
+    slug: bridge-capture
+    title: Bridge Capture Ledger
+    wave: wave1
+    tranche: tranche-1
+    priority: 1
+    summary: Capture external-builder and runtime activity as structured evidence packets without making policy decisions.
+    depends_on:
+      - contracts-ledger
+    owned_paths:
+      - bridge/build_capture.py
+      - bridge/session_capture.py
+      - bridge/watcher.py
+      - plugins/prompt_logger.py
+      - tests/bridge/test_build_capture.py
+      - tests/bridge/test_session_capture.py
+      - tests/bridge/test_watcher.py
+    read_paths:
+      - augments/observational/types.py
+      - bridge/git_watcher.py
+      - bridge/skill_syncer.py
+      - scripts/bridge/sync_hermes_sessions.py
+      - hermes-agent/hermes_cli/plugins.py
+    outputs:
+      - Append-only build capture ledger for external and internal activity
+      - Structured capture for task, command, artifact, verification, and outcome events
+      - Watcher integration that emits evidence packets without promoting anything
+    acceptance:
+      - Bridge events must serialize into the contracts package without ad hoc dict shapes
+      - External build capture and runtime capture must both map to the same event schema
+      - Watcher remains deterministic and side-effect-light
+      - No promotion logic and no observational inference in this packet
+    do_not_touch:
+      - augments/observational/*
+      - augments/selfbuild/*
+      - augments/openspace/*
+      - augments/distillation/*
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/bridge/test_build_capture.py tests/bridge/test_session_capture.py tests/bridge/test_watcher.py -q
+    launch_prompt: |
+      Implement the bridge capture ledger and watcher integration for Vizier v6.2. Only capture evidence and emit structured packets. Do not add reflection, promotion, or candidate mutation logic.
+
+  - id: observational-memory
+    slug: observational-memory
+    title: Observational Memory Ledger
+    wave: wave1
+    tranche: tranche-1
+    priority: 2
+    summary: Turn captured episodes into observations, reflections, and promoted lessons with provenance and supersession tracking.
+    depends_on:
+      - contracts-ledger
+      - bridge-capture
+    owned_paths:
+      - augments/observational/__init__.py
+      - augments/observational/ledger.py
+      - augments/observational/extractor.py
+      - augments/observational/reflector.py
+      - augments/observational/compiler.py
+      - augments/dreamskill/consolidator.py
+      - tests/augments/test_observational_ledger.py
+      - tests/augments/test_observational_extractor.py
+      - tests/augments/test_observational_reflector.py
+      - tests/augments/test_consolidator.py
+    read_paths:
+      - bridge/build_capture.py
+      - augments/observational/types.py
+      - augments/dreamskill/signals.py
+      - hermes-agent/hermes_state.py
+    outputs:
+      - Episode, observation, reflection, and promoted-lesson storage
+      - Reflection rules that preserve provenance and confidence
+      - Dreamskill consolidation rewritten to target structured observational memory first
+    acceptance:
+      - Observations are derived from captured evidence, not raw free-form text alone
+      - Reflections must carry confidence, supporting evidence, and supersession references
+      - MEMORY.md can remain a derived human-readable artifact, not the canonical store
+      - No candidate promotion and no direct writes into production skills in this packet
+    do_not_touch:
+      - bridge/*
+      - augments/selfbuild/*
+      - augments/openspace/*
+      - augments/distillation/*
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/augments/test_observational_ledger.py tests/augments/test_observational_extractor.py tests/augments/test_observational_reflector.py tests/augments/test_consolidator.py -q
+    launch_prompt: |
+      Implement the structured observational memory layer for Vizier v6.2. Convert evidence packets into observations and reflections with provenance, confidence, and supersession. MEMORY.md should become a derived artifact, not the source of truth.
+
+  - id: selfbuild-gate
+    slug: selfbuild-gate
+    title: Selfbuild Promotion Gate
+    wave: wave1
+    tranche: tranche-1
+    priority: 3
+    summary: Replace permissive promotion behavior with a single replay-and-benchmark gate for all candidate artifacts.
+    depends_on:
+      - contracts-ledger
+      - observational-memory
+    owned_paths:
+      - augments/selfbuild/gate.py
+      - augments/selfbuild/replay.py
+      - augments/selfbuild/benchmarks.py
+      - augments/selfbuild/promoter.py
+      - tests/augments/test_gate.py
+      - tests/augments/test_replay.py
+      - tests/augments/test_promoter.py
+      - tests/test_integration_selfbuild.py
+    read_paths:
+      - augments/observational/*
+      - augments/openspace/*
+      - config/distillation_config.yaml
+      - tests/benchmarks/
+    outputs:
+      - One decision point for promote, hold, reject, archive
+      - Replay and benchmark interfaces for candidate artifacts
+      - Promotion record with reasons and evidence
+    acceptance:
+      - No candidate can be promoted on safety-only success
+      - Promotion requires replay results and explicit decision records
+      - Gate logic must support skills, prompts, templates, and distillation artifacts
+      - Existing promoter behavior must become fail-closed
+    do_not_touch:
+      - bridge/*
+      - augments/openspace/*
+      - augments/distillation/*
+      - pipelines/clone_converge.py
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/augments/test_gate.py tests/augments/test_replay.py tests/augments/test_promoter.py tests/test_integration_selfbuild.py -q
+    launch_prompt: |
+      Implement the selfbuild promotion gate for Vizier v6.2. Replace permissive promotion with replay, benchmark, and explicit decision records. Keep all writes fail-closed and candidate-only unless promotion succeeds.
+
+  - id: openspace-candidate-flow
+    slug: openspace-candidate-flow
+    title: OpenSpace Candidate-Only Flow
+    wave: wave1
+    tranche: tranche-1
+    priority: 4
+    summary: Refactor OpenSpace so it only emits candidate artifacts and lineage metadata, never direct production mutations.
+    depends_on:
+      - contracts-ledger
+      - selfbuild-gate
+    owned_paths:
+      - augments/openspace/capturer.py
+      - augments/openspace/generator.py
+      - augments/openspace/fixer.py
+      - augments/openspace/deriver.py
+      - augments/openspace/version_dag.py
+      - tests/augments/test_capturer.py
+      - tests/augments/test_generator.py
+      - tests/augments/test_fixer.py
+      - tests/augments/test_deriver.py
+      - tests/augments/test_version_dag.py
+    read_paths:
+      - augments/observational/*
+      - augments/selfbuild/*
+      - config/openspace.yaml
+    outputs:
+      - Candidate-only outputs under state/candidates
+      - Version lineage metadata keyed by candidate IDs
+      - OpenSpace handoff into selfbuild instead of direct promotion
+    acceptance:
+      - No direct writes into active pipelines, manifests, or skills
+      - Candidate metadata must include provenance and intended target
+      - Existing lineage tracking must survive candidate-only refactor
+    do_not_touch:
+      - bridge/*
+      - augments/selfbuild/*
+      - augments/distillation/*
+      - pipelines/clone_converge.py
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/augments/test_capturer.py tests/augments/test_generator.py tests/augments/test_fixer.py tests/augments/test_deriver.py tests/augments/test_version_dag.py -q
+    launch_prompt: |
+      Refactor OpenSpace so it becomes a candidate generator only. Preserve lineage tracking, but stop all direct writes into active skills, pipelines, or manifests. Everything should hand off into selfbuild for a decision.
+
+  - id: distillation-governance
+    slug: distillation-governance
+    title: Distillation Governance
+    wave: wave1
+    tranche: tranche-1
+    priority: 5
+    summary: Restrict distillation inputs to approved traces and route deployment through selfbuild rather than raw accuracy thresholds.
+    depends_on:
+      - contracts-ledger
+      - selfbuild-gate
+    owned_paths:
+      - augments/distillation/collector.py
+      - augments/distillation/compiler.py
+      - augments/distillation/evaluator.py
+      - augments/distillation/deployer.py
+      - config/distillation_config.yaml
+      - tests/augments/test_collector.py
+      - tests/augments/test_compiler.py
+      - tests/augments/test_evaluator.py
+      - tests/augments/test_deployer.py
+      - tests/test_integration_distillation.py
+    read_paths:
+      - augments/observational/*
+      - augments/selfbuild/*
+      - hermes-agent/agent/trajectory.py
+      - hermes-agent/batch_runner.py
+    outputs:
+      - Approved-trace-only distillation pipeline
+      - Deployment requests routed through selfbuild decisions
+      - Distillation metadata with provenance and eval references
+    acceptance:
+      - Collector excludes degraded and unapproved traces
+      - Deployer refuses direct deployment without selfbuild approval
+      - Evaluator compares candidate versus incumbent on frozen evals
+    do_not_touch:
+      - bridge/*
+      - augments/openspace/*
+      - pipelines/clone_converge.py
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/augments/test_collector.py tests/augments/test_compiler.py tests/augments/test_evaluator.py tests/augments/test_deployer.py tests/test_integration_distillation.py -q
+    launch_prompt: |
+      Implement distillation governance for Vizier v6.2. Restrict inputs to approved traces and route deployment through selfbuild. Do not allow raw threshold-based deployment anymore.
+
+  - id: quality-ci
+    slug: quality-ci
+    title: Quality Gates and CI Scaffolding
+    wave: wave2
+    tranche: tranche-2
+    priority: 6
+    summary: Harden first-party lint, type, test, and benchmark routing so the architecture can improve safely over time.
+    depends_on:
+      - contracts-ledger
+      - bridge-capture
+      - observational-memory
+      - selfbuild-gate
+      - openspace-candidate-flow
+      - distillation-governance
+    owned_paths:
+      - pyproject.toml
+      - tests/conftest.py
+      - tests/benchmarks/test_quality_regression.py
+      - tests/test_integration_selfbuild.py
+      - docs/superpowers/plans/2026-04-02-v6_2-parallel-implementation.md
+      - .github/workflows/quality.yml
+    read_paths:
+      - tests/
+      - config/bootstrap/parallel_work_packets.yaml
+      - scripts/bootstrap/parallel_sessions.py
+    outputs:
+      - First-party lint/type exclusions and markers
+      - Offline default pytest routing
+      - CI workflow for doctor, lint, types, and offline tests
+    acceptance:
+      - Default CI excludes live and benchmark suites unless explicitly requested
+      - First-party-only lint/type scope is encoded in config
+      - Documentation matches actual CI commands
+    do_not_touch:
+      - bridge/*
+      - augments/observational/*
+      - augments/selfbuild/*
+      - augments/openspace/*
+      - augments/distillation/*
+      - pipelines/clone_converge.py
+    verification_commands:
+      - python3 -m pytest tests/bootstrap/test_parallel_sessions.py tests/benchmarks/test_quality_regression.py -q
+      - python3 -m scripts.bootstrap.doctor
+    launch_prompt: |
+      Implement the quality and CI scaffolding packet for Vizier v6.2. Scope checks to first-party code, make offline tests the default, and keep the docs aligned with the actual commands and workflow behavior.
+
+  - id: clone-designspec
+    slug: clone-designspec
+    title: Clone DesignSpec and Benchmarks
+    wave: wave2
+    tranche: tranche-4
+    priority: 7
+    summary: Rebuild cloning around a structured DesignSpec, deterministic parameterization, and benchmarked editable slots.
+    depends_on:
+      - contracts-ledger
+      - selfbuild-gate
+      - quality-ci
+    owned_paths:
+      - pipelines/clone_converge.py
+      - pipelines/design_spec.py
+      - scripts/visual/process_image.py
+      - scripts/visual/parameterize_template.py
+      - tests/pipelines/test_clone_converge_quality.py
+      - tests/pipelines/test_clone_converge_full.py
+      - tests/benchmarks/inputs/target_design.png
+      - tests/templates/test_template_inventory.py
+    read_paths:
+      - templates/visual/
+      - scripts/visual/calculate_delta.py
+      - augments/selfbuild/*
+      - tests/benchmarks/
+    outputs:
+      - Structured DesignSpec intermediate
+      - Deterministic editable slot extraction and parameterization
+      - Clone benchmark scaffolding aligned with selfbuild and quality gates
+    acceptance:
+      - clone_converge outputs design_spec_path, preview_path, score_breakdown, editable_slots
+      - Parameterization is deterministic where possible
+      - Benchmark hooks exist for held-out template evaluation
+    do_not_touch:
+      - bridge/*
+      - augments/observational/*
+      - augments/selfbuild/*
+      - augments/openspace/*
+      - augments/distillation/*
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/pipelines/test_clone_converge_quality.py tests/templates/test_template_inventory.py -q
+    launch_prompt: |
+      Rebuild Vizier cloning around a structured DesignSpec and deterministic editable slots. Keep the work inside the owned clone and visual paths, and align outputs with selfbuild and benchmark consumption.
