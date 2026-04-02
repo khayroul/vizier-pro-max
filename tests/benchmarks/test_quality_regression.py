@@ -58,6 +58,13 @@ class TestContentGenerateRegression:
             assert pdf.stat().st_size > 100
             assert pdf.read_bytes()[:4] == b"%PDF"
 
+    def test_content_pdf_is_styled(self, pdf_result: dict) -> None:
+        """Styled PDF should be > 5KB (accent bars + formatting make it larger)."""
+        if "pdf_path" in pdf_result:
+            pdf = Path(pdf_result["pdf_path"])
+            assert pdf.exists()
+            assert pdf.stat().st_size > 5000, "Styled PDF should be > 5KB"
+
 
 class TestCompetitiveAnalysisRegression:
     """competitive_analysis: Chart Y != sequential ints, narrative has numbers."""
@@ -84,6 +91,16 @@ class TestCompetitiveAnalysisRegression:
     def test_narrative_contains_numbers(self, analysis_result: dict) -> None:
         report = analysis_result.get("report", "")
         assert re.search(r"\d+\.?\d*%?", report), "Report must cite specific numbers"
+
+    def test_competitive_analysis_has_competitors(self, analysis_result: dict) -> None:
+        """Report must name >= 3 distinct entities."""
+        report = analysis_result.get("report", "")
+        names = set(re.findall(r"[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*", report))
+        # Filter section headers
+        headers = {"Executive", "Summary", "Key", "Findings", "Recommendations",
+                    "Competitor", "Profiles", "Opportunities", "Market"}
+        competitor_names = {n for n in names if n.split()[0] not in headers and len(n) > 3}
+        assert len(competitor_names) >= 3, f"Expected >= 3 competitor names, got {competitor_names}"
 
 
 class TestCloneConvergeRegression:
@@ -115,9 +132,16 @@ class TestCloneConvergeRegression:
 
         assert callable(_build_vision_messages)
 
+    def test_clone_converge_has_placeholders(self, converge_result: dict) -> None:
+        """Template must contain {{ headline }} Jinja2 placeholder."""
+        if "template_path" in converge_result:
+            content = Path(converge_result["template_path"]).read_text()
+            has_placeholder = "{{ headline }}" in content or "{{headline}}" in content
+            assert has_placeholder, "Template should contain {{ headline }} placeholder"
+
 
 class TestPosterBatchRegression:
-    """poster_batch: PNG dimensions == 800x600, no excess whitespace."""
+    """poster_batch: PNG dimensions == 800x600, visual content present."""
 
     def test_poster_dimensions(self) -> None:
         from pipelines.poster_batch import run
@@ -141,11 +165,31 @@ class TestPosterBatchRegression:
             assert img.width == 800, f"Expected 800px width, got {img.width}"
             assert img.height == 600, f"Expected 600px height, got {img.height}"
 
+    def test_poster_has_visual_content(self) -> None:
+        """Poster file size > 50KB (has real visual content, not empty space)."""
+        from pipelines.poster_batch import run
+
+        tmpl = _BENCHMARK_DIR / "poster_template.html"
+        data = _BENCHMARK_DIR / "poster_data.csv"
+        if not tmpl.exists() or not data.exists():
+            pytest.skip("Poster benchmark inputs not available")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run(
+                template_path=str(tmpl),
+                data_path=str(data),
+                output_dir=tmpdir,
+            )
+            if result["count"] >= 1:
+                first_poster = Path(result["posters"][0])
+                assert first_poster.stat().st_size > 50_000, "Poster should be > 50KB"
+
 
 class TestTTSGenerateRegression:
     """tts_generate: MP3 duration > 0, file size proportional to text."""
 
-    def test_mp3_valid_and_proportional(self) -> None:
+    def test_tts_produces_audio(self) -> None:
+        """MP3 exists, valid header, > minimum size."""
         from pipelines.tts_generate import run
 
         text = (_BENCHMARK_DIR / "tts_text.txt").read_text().strip()
@@ -158,6 +202,12 @@ class TestTTSGenerateRegression:
             assert mp3.exists()
             size = mp3.stat().st_size
             assert size > 1000, f"MP3 too small: {size} bytes"
+
+            # Valid MP3 header
+            header = mp3.read_bytes()[:3]
+            has_id3 = header == b"ID3"
+            has_sync = len(header) >= 2 and header[0] == 0xFF and (header[1] & 0xE0) == 0xE0
+            assert has_id3 or has_sync, "MP3 must have valid ID3 or sync header"
 
             min_size = len(text) * 50
             assert size > min_size, f"MP3 ({size}B) too small for {len(text)} chars"
