@@ -1,42 +1,20 @@
-"""Tests for dream-skill consolidator -- 4-phase memory consolidation."""
+"""Tests for dream-skill consolidation via structured observational memory."""
 from __future__ import annotations
 
-import sqlite3
 import time
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
 from augments.dreamskill.consolidator import consolidate
+from bridge.build_capture import capture_external_build_event
 
 
 @pytest.fixture()
 def mock_log_db(tmp_path: Path) -> Path:
-    """Create a mock prompt_log database."""
+    """Compatibility fixture for consolidate(db_path=...)."""
     db_path = tmp_path / "prompt_log.db"
-    conn = sqlite3.connect(str(db_path))
-    conn.execute("""
-        CREATE TABLE prompt_log (
-            id INTEGER PRIMARY KEY, session_id TEXT,
-            timestamp TEXT, tool_name TEXT, tool_args TEXT, result TEXT
-        )
-    """)
-    entries = [
-        ("s1", "2026-04-01", "chat", "{}",
-         "No, use light theme not dark."),
-        ("s2", "2026-04-02", "chat", "{}",
-         "I prefer 1080x1080 for Instagram."),
-    ]
-    insert_sql = (
-        "INSERT INTO prompt_log"
-        " (session_id, timestamp, tool_name, tool_args, result)"
-        " VALUES (?, ?, ?, ?, ?)"
-    )
-    for entry in entries:
-        conn.execute(insert_sql, entry)
-    conn.commit()
-    conn.close()
+    db_path.write_text("", encoding="utf-8")
     return db_path
 
 
@@ -56,53 +34,74 @@ class TestConsolidator:
     def test_consolidate_with_qwen_mock(
         self, mock_log_db: Path, memory_dir: Path, tmp_path: Path
     ) -> None:
-        """Consolidator calls Qwen and updates MEMORY.md."""
-        qwen_response = (
-            "- [2026-04-01] Use light theme, not dark."
-            " (Updated 2026-04-01, previously: dark theme) (confidence: high)\n"
-            "- [2026-04-02] Instagram posts use 1080x1080. (confidence: high)\n"
+        """Consolidator derives MEMORY.md from structured evidence."""
+        state_root = tmp_path / "state"
+        capture_external_build_event(
+            source="codex",
+            task_id="task-1",
+            event_type="verification_run",
+            summary="Ran bridge packet verification",
+            status="ok",
+            timestamp="2026-04-02T12:00:00+00:00",
+            state_root=state_root,
+            verifications=("python3 -m pytest tests/bridge -q",),
+            files_touched=("bridge/watcher.py",),
         )
-
-        mock_resp = MagicMock()
-        mock_resp.status_code = 200
-        mock_resp.json.return_value = {"response": qwen_response}
-
-        target = "augments.dreamskill.consolidator.httpx.post"
-        with patch(target, return_value=mock_resp):
-            result = consolidate(
-                db_path=mock_log_db,
-                memory_dir=memory_dir,
-            )
-
-        assert result["status"] == "consolidated"
-        memory_content = (memory_dir / "MEMORY.md").read_text()
-        assert "light theme" in memory_content
-
-    def test_consolidate_falls_back_on_ollama_error(
-        self, mock_log_db: Path, memory_dir: Path
-    ) -> None:
-        """Falls back to rule-based when Ollama is unreachable."""
-        with patch(
-            "augments.dreamskill.consolidator.httpx.post",
-            side_effect=ConnectionError("Connection refused"),
-        ):
-            result = consolidate(
-                db_path=mock_log_db,
-                memory_dir=memory_dir,
-            )
-
-        assert result["status"] in ("consolidated", "fallback")
-        # MEMORY.md should still be updated (rule-based)
-        assert (memory_dir / "MEMORY.md").exists()
-
-    def test_consolidate_skips_if_recent(
-        self, mock_log_db: Path, memory_dir: Path
-    ) -> None:
-        """Skips if .last-dream is recent (<24h)."""
-        (memory_dir / ".last-dream").write_text(str(time.time()))
+        capture_external_build_event(
+            source="vizier",
+            task_id="task-2",
+            event_type="failure_seen",
+            summary="Runtime capture failed on malformed JSON",
+            status="error",
+            timestamp="2026-04-02T12:05:00+00:00",
+            state_root=state_root,
+            files_touched=("plugins/prompt_logger.py",),
+        )
 
         result = consolidate(
             db_path=mock_log_db,
             memory_dir=memory_dir,
+            state_root=state_root,
+        )
+
+        assert result["status"] == "consolidated"
+        memory_content = (memory_dir / "MEMORY.md").read_text()
+        assert "Retain workflow" in memory_content
+        assert "failure mode" in memory_content.lower()
+        assert "dark theme" not in memory_content
+
+    def test_consolidate_falls_back_on_ollama_error(
+        self, mock_log_db: Path, memory_dir: Path, tmp_path: Path
+    ) -> None:
+        """Skips when there is no captured evidence to derive from."""
+        result = consolidate(
+            db_path=mock_log_db,
+            memory_dir=memory_dir,
+            state_root=tmp_path / "state",
+        )
+
+        assert result["status"] == "skipped"
+        assert result["reason"] == "No captured evidence found"
+
+    def test_consolidate_skips_if_recent(
+        self, mock_log_db: Path, memory_dir: Path, tmp_path: Path
+    ) -> None:
+        """Skips if .last-dream is recent (<24h)."""
+        (memory_dir / ".last-dream").write_text(str(time.time()))
+        capture_external_build_event(
+            source="codex",
+            task_id="task-1",
+            event_type="verification_run",
+            summary="Ran bridge packet verification",
+            status="ok",
+            timestamp="2026-04-02T12:00:00+00:00",
+            state_root=tmp_path / "state",
+            verifications=("python3 -m pytest tests/bridge -q",),
+        )
+
+        result = consolidate(
+            db_path=mock_log_db,
+            memory_dir=memory_dir,
+            state_root=tmp_path / "state",
         )
         assert result["status"] == "skipped"
