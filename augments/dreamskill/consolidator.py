@@ -1,52 +1,18 @@
-"""4-phase memory consolidation: DECIDE -> GATHER -> CONSOLIDATE -> PRUNE.
-
-Uses Qwen 3.5 9B via Ollama for smart consolidation.
-Falls back to rule-based merging if Ollama is unreachable.
-"""
+"""Structured observational-memory consolidation for derived MEMORY.md."""
 from __future__ import annotations
 
-import json
 import logging
 import time
 from pathlib import Path
-from typing import Any
 
-import httpx
-
-from augments.dreamskill.signals import extract_signals
+from augments.observational.compiler import write_memory_markdown
+from augments.observational.extractor import sync_build_capture_to_ledger
+from augments.observational.ledger import ObservationalLedger
+from augments.observational.reflector import reflect_observations
 
 logger = logging.getLogger(__name__)
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "qwen3.5:9b"
 CONSOLIDATION_COOLDOWN = 86400  # 24 hours in seconds
-MAX_MEMORY_LINES = 200
-
-_CONSOLIDATION_PROMPT = """\
-System: You are a memory consolidation engine.
-You receive new signals from recent agent sessions
-and the current MEMORY.md content.
-Your job: merge new signals into memory, resolve contradictions, and
-compress verbose observations. Output ONLY valid markdown.
-
-Rules:
-- When a new signal contradicts an existing entry, the newer one wins.
-  Mark the old entry as superseded: "(Updated YYYY-MM-DD, previously: X)"
-- Compress verbose observations into single-line facts
-- Detect implicit patterns: if 3+ signals suggest a preference not
-  explicitly stated, add it with confidence: medium
-- Never invent facts not supported by the signals
-- Output max 50 lines of consolidated entries
-
-Input format:
-EXISTING MEMORY:
-{memory_content}
-
-NEW SIGNALS:
-{signals_json}
-
-Output format (markdown list):
-- [YYYY-MM-DD] Fact. (source: session, confidence: high|medium)"""
 
 
 def _phase_decide(memory_dir: Path) -> bool:
@@ -62,116 +28,52 @@ def _phase_decide(memory_dir: Path) -> bool:
     return True
 
 
-def _phase_gather(db_path: Path) -> list[dict[str, Any]]:
-    """Phase 2: Gather signals from structlog traces."""
-    return extract_signals(db_path=db_path)
-
-
-def _phase_consolidate_qwen(
-    signals: list[dict[str, Any]],
-    memory_content: str,
-) -> str | None:
-    """Phase 3: Call Qwen via Ollama for smart consolidation."""
-    prompt = _CONSOLIDATION_PROMPT.format(
-        memory_content=memory_content,
-        signals_json=json.dumps(signals, indent=2),
-    )
-    try:
-        resp = httpx.post(
-            OLLAMA_URL,
-            json={
-                "model": OLLAMA_MODEL,
-                "prompt": prompt,
-                "stream": False,
-                "options": {"num_predict": 4096},
-            },
-            timeout=60.0,
-        )
-        if resp.status_code == 200:
-            result = resp.json().get("response", "")
-            # Validate: must contain markdown list items (at least 1 line starting with "- [")
-            stripped = result.strip()
-            if stripped.startswith("-") and "- [" in stripped:
-                return result
-            logger.warning("Qwen returned non-list output, falling back to rule-based")
-            return None
-        logger.warning("Ollama returned status %d", resp.status_code)
-        return None
-    except (httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
-        logger.warning("Ollama unreachable, falling back to rule-based: %s", exc)
-        return None
-
-
-def _phase_consolidate_fallback(
-    signals: list[dict[str, Any]],
-    memory_content: str,
-) -> str:
-    """Rule-based fallback consolidation (original dream-skill behavior)."""
-    existing_lines = [
-        line
-        for line in memory_content.strip().splitlines()
-        if line.strip()
-    ]
-    new_lines: list[str] = []
-    for signal in signals:
-        date = signal["date"]
-        fact = signal["fact"]
-        conf = signal["confidence"]
-        line = f"- [{date}] {fact} (confidence: {conf})"
-        new_lines.append(line)
-
-    # Simple dedup: skip if fact already exists
-    combined = existing_lines[:]
-    existing_text = " ".join(existing_lines).lower()
-    for line in new_lines:
-        # Extract the fact portion for comparison
-        fact_part = line.split("]", 1)[-1].strip() if "]" in line else line
-        if fact_part.lower()[:50] not in existing_text:
-            combined.append(line)
-
-    return "\n".join(combined[:MAX_MEMORY_LINES]) + "\n"
-
-
 def _phase_prune(memory_dir: Path, consolidated: str) -> None:
-    """Phase 4: Write consolidated memory and update timestamp."""
+    """Write derived memory and update the cooldown timestamp."""
     memory_file = memory_dir / "MEMORY.md"
-    memory_file.write_text(consolidated)
+    memory_file.write_text(consolidated, encoding="utf-8")
 
-    # Update timestamp
     last_dream = memory_dir / ".last-dream"
-    last_dream.write_text(str(time.time()))
+    last_dream.write_text(str(time.time()), encoding="utf-8")
 
 
 def consolidate(
     *,
     db_path: Path,
     memory_dir: Path,
+    state_root: Path | None = None,
 ) -> dict[str, str]:
-    """Run the 4-phase consolidation cycle."""
-    # Phase 1: DECIDE
+    """Consolidate structured observational memory into derived MEMORY.md."""
+
     if not _phase_decide(memory_dir):
         return {"status": "skipped", "reason": "Too recent"}
 
-    # Phase 2: GATHER
-    signals = _phase_gather(db_path)
-    if not signals:
-        return {"status": "skipped", "reason": "No signals found"}
+    resolved_state_root = state_root or (db_path.parent / "state")
+    ledger = ObservationalLedger(state_root=resolved_state_root)
+    episodes, _observations = sync_build_capture_to_ledger(
+        ledger=ledger,
+        state_root=resolved_state_root,
+    )
+    if not episodes:
+        return {"status": "skipped", "reason": "No captured evidence found"}
 
-    # Read existing memory
-    memory_file = memory_dir / "MEMORY.md"
-    memory_content = memory_file.read_text() if memory_file.exists() else ""
+    active_observations = ledger.list_observations(status="active")
+    if not active_observations:
+        return {"status": "skipped", "reason": "No observations derived"}
 
-    # Phase 3: CONSOLIDATE
-    qwen_result = _phase_consolidate_qwen(signals, memory_content)
-    if qwen_result is not None:
-        consolidated = qwen_result
-        status = "consolidated"
-    else:
-        consolidated = _phase_consolidate_fallback(signals, memory_content)
-        status = "fallback"
+    reflected = reflect_observations(
+        active_observations,
+        existing_reflections=ledger.list_reflections(),
+    )
+    for reflection in reflected:
+        ledger.save_reflection(reflection)
 
-    # Phase 4: PRUNE
+    consolidated = write_memory_markdown(
+        memory_path=memory_dir / "MEMORY.md",
+        observations=ledger.list_observations(status="active"),
+        reflections=ledger.list_reflections(status="active"),
+    )
     _phase_prune(memory_dir, consolidated)
 
-    logger.info("Memory consolidation complete: %s", status)
-    return {"status": status}
+    logger.info("Memory consolidation complete: consolidated")
+    return {"status": "consolidated"}
