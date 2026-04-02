@@ -246,6 +246,10 @@ def register(ctx: Any) -> None:
         lambda: _register_repo_plugin(ctx, "plugins.switch_toolset"),
     )
     _safe_register(
+        "telegram mode router hook",
+        lambda: _register_repo_plugin(ctx, "plugins.telegram_mode_router"),
+    )
+    _safe_register(
         "deerflow orchestration tools",
         lambda: _register_repo_plugin(ctx, "plugins.deerflow_orchestration"),
     )
