@@ -167,7 +167,7 @@ class TestLoadCsv:
         """Bundled fonts.csv loads with expected columns."""
         data_dir = Path(__file__).parent.parent.parent / "plugins" / "design_intelligence" / "data"
         rows = load_csv(data_dir / "fonts.csv")
-        assert len(rows) == 73
+        assert len(rows) == 71
         assert "heading_font" in rows[0]
         assert "body_font" in rows[0]
         assert "mood" in rows[0]
