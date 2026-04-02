@@ -68,7 +68,7 @@ class TestPosterBatch:
         assert mock_ss.call_count == 2
 
     def test_missing_template_raises(self, tmp_path: Path) -> None:
-        """Missing template raises FileNotFoundError."""
+        """Missing template: run_with_gates returns error dict with FileNotFoundError."""
         csv_file = tmp_path / "data.csv"
         csv_file.write_text("a,b\n1,2\n")
 
@@ -76,11 +76,13 @@ class TestPosterBatch:
             patch("pipelines.poster_batch.start_deliverable", return_value="did"),
             patch("pipelines.poster_batch.clear_context"),
         ):
-            with pytest.raises(FileNotFoundError, match="Template not found"):
-                run(template_path="/nonexistent.html", data_path=str(csv_file))
+            result = run(template_path="/nonexistent.html", data_path=str(csv_file))
+
+        assert "error" in result
+        assert "Template not found" in result["error"]
 
     def test_missing_data_raises(self, tmp_path: Path) -> None:
-        """Missing data file raises FileNotFoundError."""
+        """Missing data file: run_with_gates returns error dict with FileNotFoundError."""
         tmpl = tmp_path / "template.html"
         tmpl.write_text("<p>test</p>")
 
@@ -88,8 +90,10 @@ class TestPosterBatch:
             patch("pipelines.poster_batch.start_deliverable", return_value="did"),
             patch("pipelines.poster_batch.clear_context"),
         ):
-            with pytest.raises(FileNotFoundError, match="Data file not found"):
-                run(template_path=str(tmpl), data_path="/nonexistent.csv")
+            result = run(template_path=str(tmpl), data_path="/nonexistent.csv")
+
+        assert "error" in result
+        assert "Data file not found" in result["error"]
 
     def test_no_template_path_raises(self) -> None:
         """No template_path raises ValueError."""
