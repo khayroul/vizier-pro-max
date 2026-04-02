@@ -14,10 +14,13 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import mimetypes
 import re
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from adapter.llm_client import chat as llm_chat
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +66,7 @@ class PosterRequest:
     brand_css: dict[str, str] | None = None
     client_id: str = ""
     style_reference: str = ""
+    reference_image_path: str = ""
     palette: dict[str, str] | None = None
     fonts: dict[str, str] | None = None
 
@@ -79,6 +83,15 @@ class PosterResult:
     image_mode: str
     brand_name: str = ""
     logo_mark: str = ""
+
+
+@dataclass(frozen=True)
+class ReferenceStyleGuidance:
+    """Structured style guidance extracted from a sample poster/image."""
+
+    style_hint: str = ""
+    avoid_hint: str = ""
+    template_name: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -128,6 +141,184 @@ def list_templates() -> list[TemplateConfig]:
         _parse_template(html_file)
         for html_file in sorted(_TEMPLATES_DIR.glob("*.html"))
     ]
+
+
+def _encode_image_as_data_uri(image_path: str) -> str:
+    """Read an image file and return a base64 data URI."""
+    path = Path(image_path)
+    raw = path.read_bytes()
+    encoded = base64.b64encode(raw).decode("ascii")
+    mime_type = mimetypes.guess_type(path.name)[0] or "image/png"
+    return f"data:{mime_type};base64,{encoded}"
+
+
+def _extract_json_object(text: str) -> dict[str, object] | None:
+    """Parse a JSON object from model output, tolerating fenced code blocks."""
+    candidate = text.strip()
+    if candidate.startswith("```"):
+        candidate = re.sub(r"^```(?:json)?\s*", "", candidate)
+        candidate = re.sub(r"\s*```$", "", candidate)
+    try:
+        parsed = json.loads(candidate)
+    except json.JSONDecodeError:
+        match = re.search(r"\{.*\}", candidate, re.DOTALL)
+        if match is None:
+            return None
+        try:
+            parsed = json.loads(match.group(0))
+        except json.JSONDecodeError:
+            return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _analyze_reference_image(
+    reference_image_path: str,
+    available_templates: list[str],
+) -> ReferenceStyleGuidance:
+    """Use a vision-capable LLM to summarize a reference poster/image."""
+    result = llm_chat(
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You analyze design reference images for poster generation. "
+                    "Return ONLY valid JSON with keys "
+                    '{"style_hint":"...","avoid_hint":"...","template_name":"..."}. '
+                    "style_hint should be a short art-direction summary. "
+                    "avoid_hint should list what not to imitate. "
+                    "template_name must be one of the provided template names or an empty string."
+                ),
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": (
+                            "Study this reference image and summarize the reusable visual direction "
+                            "for a new poster without copying exact text, logo, or trade dress. "
+                            f"Available template names: {', '.join(available_templates)}"
+                        ),
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": _encode_image_as_data_uri(reference_image_path),
+                            "detail": "high",
+                        },
+                    },
+                ],
+            },
+        ],
+        max_tokens=300,
+        timeout=45.0,
+        strip_preamble=True,
+    )
+    if not result:
+        return ReferenceStyleGuidance()
+
+    payload = _extract_json_object(result)
+    if payload is None:
+        return ReferenceStyleGuidance()
+
+    template_name = str(payload.get("template_name", "")).strip()
+    if template_name and template_name not in available_templates:
+        template_name = ""
+
+    return ReferenceStyleGuidance(
+        style_hint=str(payload.get("style_hint", "")).strip(),
+        avoid_hint=str(payload.get("avoid_hint", "")).strip(),
+        template_name=template_name,
+    )
+
+
+def _rgb_to_hex(rgb: tuple[int, int, int]) -> str:
+    """Convert an RGB tuple to a hex color string."""
+    return "#{:02X}{:02X}{:02X}".format(*rgb)
+
+
+def _relative_luminance(rgb: tuple[int, int, int]) -> float:
+    """Approximate luminance from RGB values."""
+    red, green, blue = rgb
+    return (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255.0
+
+
+def _saturation(rgb: tuple[int, int, int]) -> float:
+    """Approximate saturation from RGB values."""
+    red, green, blue = [channel / 255.0 for channel in rgb]
+    return max(red, green, blue) - min(red, green, blue)
+
+
+def _extract_reference_brand_css(reference_image_path: str) -> dict[str, str]:
+    """Derive CSS variables from the dominant colors of a reference image."""
+    from PIL import Image
+
+    image = Image.open(reference_image_path).convert("RGB")
+    image.thumbnail((96, 96))
+    quantized = image.quantize(colors=5)
+    palette = quantized.getpalette() or []
+    color_counts = quantized.getcolors() or []
+
+    if not color_counts:
+        return {
+            "--bg-color": "#111111",
+            "--accent-color": "#D1A054",
+            "--font-headline": "Georgia",
+            "--font-body": "Inter",
+            "--font-headline-weight": "700",
+            "--font-body-weight": "400",
+            "--text-color": "#ffffff",
+            "--text-muted": "rgba(255, 255, 255, 0.72)",
+            "--color-accent": "#D1A054",
+            "--color-accent-end": "#F5F5F5",
+            "--color-accent-glow": "#D1A054",
+            "--color-bg": "#111111",
+            "--color-text": "#ffffff",
+            "--font-heading": "Georgia",
+            "--font-weight-heading": "700",
+            "--font-weight-body": "400",
+            "--letter-spacing-heading": "-0.02em",
+            "--letter-spacing-body": "0em",
+            "--line-height-heading": "1.1",
+            "--line-height-body": "1.5",
+        }
+
+    swatches: list[tuple[int, tuple[int, int, int]]] = []
+    for count, index in color_counts:
+        rgb = tuple(palette[index * 3:index * 3 + 3])
+        if len(rgb) == 3:
+            swatches.append((count, rgb))  # type: ignore[arg-type]
+
+    dominant_rgb = max(swatches, key=lambda item: item[0])[1]
+    darkest_rgb = min(swatches, key=lambda item: _relative_luminance(item[1]))[1]
+    lightest_rgb = max(swatches, key=lambda item: _relative_luminance(item[1]))[1]
+    accent_rgb = max(swatches, key=lambda item: (_saturation(item[1]), item[0]))[1]
+
+    background_rgb = darkest_rgb if _relative_luminance(darkest_rgb) < 0.55 else dominant_rgb
+    text_hex = "#ffffff" if _relative_luminance(background_rgb) < 0.55 else "#111111"
+
+    return {
+        "--bg-color": _rgb_to_hex(background_rgb),
+        "--accent-color": _rgb_to_hex(accent_rgb),
+        "--font-headline": "Georgia",
+        "--font-body": "Inter",
+        "--font-headline-weight": "700",
+        "--font-body-weight": "400",
+        "--text-color": text_hex,
+        "--text-muted": "rgba(255, 255, 255, 0.72)" if text_hex == "#ffffff" else "rgba(17, 17, 17, 0.72)",
+        "--color-accent": _rgb_to_hex(accent_rgb),
+        "--color-accent-end": _rgb_to_hex(lightest_rgb),
+        "--color-accent-glow": _rgb_to_hex(accent_rgb),
+        "--color-bg": _rgb_to_hex(background_rgb),
+        "--color-text": text_hex,
+        "--font-heading": "Georgia",
+        "--font-weight-heading": "700",
+        "--font-weight-body": "400",
+        "--letter-spacing-heading": "-0.02em",
+        "--letter-spacing-body": "0em",
+        "--line-height-heading": "1.1",
+        "--line-height-body": "1.5",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -351,6 +542,7 @@ def run(
     brand_css: dict[str, str] | None = None,
     client_id: str = "",
     style_reference: str = "",
+    reference_image_path: str = "",
     palette: dict[str, str] | None = None,
     fonts: dict[str, str] | None = None,
 ) -> dict[str, str | int]:
@@ -375,6 +567,8 @@ def run(
         client_id: Optional client configuration ID for auto-theming.
         style_reference: Optional shared style preset such as ``"zus-coffee"``
             or ``"aesop"`` used to steer mood, template, and theming.
+        reference_image_path: Optional local path to a sample poster/image used
+            as direct visual inspiration.
         palette: Color palette dict with primary, secondary, accent,
             background, text hex values.
         fonts: Font pairing dict with heading_font, body_font, weights,
@@ -400,6 +594,9 @@ def run(
     style_reference_hint = ""
     style_reference_avoid = ""
     effective_style_reference = style_reference.strip()
+    effective_reference_image_path = reference_image_path.strip()
+    reference_image_hint = ""
+    reference_image_avoid = ""
 
     if client_id:
         from config.client_loader import brand_to_css_vars, load_client
@@ -435,7 +632,32 @@ def run(
         if effective_brand_css is None:
             effective_brand_css = style_reference_to_css_vars(style_ref)
 
-    if client is not None and not template_name and not style_reference.strip():
+    if effective_reference_image_path:
+        reference_path = Path(effective_reference_image_path)
+        if not reference_path.exists():
+            msg = f"Reference image not found: {effective_reference_image_path}"
+            raise FileNotFoundError(msg)
+
+        available_templates = [template.name for template in list_templates()]
+        reference_guidance = _analyze_reference_image(
+            effective_reference_image_path,
+            available_templates,
+        )
+        reference_image_hint = reference_guidance.style_hint
+        reference_image_avoid = reference_guidance.avoid_hint
+        if not template_name and reference_guidance.template_name:
+            effective_template_name = reference_guidance.template_name
+        if brand_css is None and palette is None and fonts is None:
+            effective_brand_css = _extract_reference_brand_css(
+                effective_reference_image_path
+            )
+
+    if (
+        client is not None
+        and not template_name
+        and not style_reference.strip()
+        and not effective_reference_image_path
+    ):
         effective_template_name = client.defaults.template_name
 
     if not effective_template_name:
@@ -459,16 +681,27 @@ def run(
 
     # Layer 1: Generate AI background
     prompt_prefix_parts = [
-        part for part in (style_reference_hint, client_style_hint) if part
+        part
+        for part in (
+            reference_image_hint,
+            style_reference_hint,
+            client_style_hint,
+        )
+        if part
     ]
     prompt_prefix = ". ".join(prompt_prefix_parts)
     if prompt_prefix:
         prompt_prefix += ". "
-    avoid_sentence = (
-        f"Avoid {style_reference_avoid}. " if style_reference_avoid else ""
+    avoid_parts = [part for part in (reference_image_avoid, style_reference_avoid) if part]
+    avoid_sentence = f"Avoid {'; '.join(avoid_parts)}. " if avoid_parts else ""
+    reference_sentence = (
+        "Use the provided reference image as inspiration only, not an exact copy. "
+        if effective_reference_image_path
+        else ""
     )
     effective_prompt = image_prompt or (
         f"{prompt_prefix}"
+        f"{reference_sentence}"
         f"Create a premium visual background for a poster about: "
         f"{headline}. {body}. "
         "No text, no logos, no letters, clean composition, "

@@ -34,6 +34,8 @@ def _handle_generate_poster(args: dict[str, object]) -> str:
         logo_mark=str(args.get("logo_mark", "")),
         brand_css=args.get("brand_css") if isinstance(args.get("brand_css"), dict) else None,
         client_id=str(args.get("client_id", "")),
+        style_reference=str(args.get("style_reference", "")),
+        reference_image_path=str(args.get("reference_image_path", "")),
         palette=args.get("palette") if isinstance(args.get("palette"), dict) else None,
         fonts=args.get("fonts") if isinstance(args.get("fonts"), dict) else None,
     )
@@ -108,6 +110,16 @@ def register_generate_poster_tool() -> None:
                 "client_id": {
                     "type": "string",
                     "description": "Client configuration ID for auto-theming (optional)",
+                    "default": "",
+                },
+                "style_reference": {
+                    "type": "string",
+                    "description": "Optional shared style preset such as zus-coffee, starbucks, boh-tea, aesop, or nike.",
+                    "default": "",
+                },
+                "reference_image_path": {
+                    "type": "string",
+                    "description": "Optional local file path to a sample poster/image for visual reference.",
                     "default": "",
                 },
                 "palette": {

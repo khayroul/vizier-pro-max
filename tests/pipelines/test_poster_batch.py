@@ -150,6 +150,36 @@ class TestPosterBatch:
         mock_start.assert_called_once_with(client_id="client-abc")
         mock_generate.assert_called_once()
 
+    def test_reference_image_path_forwarded_in_client_batch(self, tmp_path: Path) -> None:
+        """client_id batch mode forwards reference_image_path from CSV rows."""
+        reference = tmp_path / "sample-reference.png"
+        reference.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 20)
+        csv_file = tmp_path / "data.csv"
+        csv_file.write_text(
+            f"headline,body,reference_image_path\nTest,Body copy,{reference}\n"
+        )
+
+        with (
+            patch("pipelines.poster_batch.clear_context"),
+            patch("pipelines.poster_batch.start_deliverable", return_value="did"),
+            patch("pipelines.poster_batch.record_quality"),
+            patch("pipelines.poster_batch.check_anomalies", return_value={"is_anomaly": False, "reasons": []}),
+            patch("pipelines.poster_generate.run", return_value={"poster_path": str(tmp_path / "poster.png")}) as mock_generate,
+            patch("pipelines.poster_batch.score_poster_batch") as mock_score,
+        ):
+            fake_score = MagicMock()
+            fake_score.score = 8.0
+            fake_score.passed = True
+            mock_score.return_value = fake_score
+
+            run(
+                data_path=str(csv_file),
+                output_dir=str(tmp_path / "out"),
+                client_id="client-abc",
+            )
+
+        assert mock_generate.call_args.kwargs["reference_image_path"] == str(reference)
+
     def test_client_id_mode_does_not_require_template_path(self, tmp_path: Path) -> None:
         """client_id batch mode can run without a legacy template path."""
         csv_file = tmp_path / "data.csv"

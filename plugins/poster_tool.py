@@ -80,6 +80,15 @@ GENERATE_POSTER_SCHEMA = {
             ),
             "default": "",
         },
+        "reference_image_path": {
+            "type": "string",
+            "description": (
+                "Optional local file path to a sample poster/image. "
+                "Use this when the user provides a reference visual and you "
+                "want the system to follow its mood, palette, and composition."
+            ),
+            "default": "",
+        },
         "palette": {
             "type": "object",
             "description": (
@@ -148,6 +157,7 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
             brand_css=args.get("brand_css") if isinstance(args.get("brand_css"), dict) else None,
             client_id=str(args.get("client_id", "")),
             style_reference=str(args.get("style_reference", "")),
+            reference_image_path=str(args.get("reference_image_path", "")),
             palette=palette,
             fonts=fonts,
         )

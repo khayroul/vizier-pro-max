@@ -26,6 +26,8 @@ system_prompt_extra: |
   - THEN call search_fonts with style keywords to find a font pairing.
   - Pick the best match from each result set (drop name, mood, score — pass only color/font fields).
   - If the user mentions a famous brand or asks for a specific branding feel, pass a matching `style_reference` into `generate_poster`.
+  - If the user provides a sample poster/image or a local image path, pass it into `generate_poster` as `reference_image_path`.
+  - Prefer `reference_image_path` over generic style guessing when a concrete sample visual is available.
   - Available shared style references include: aesop, apple, muji, nike, starbucks, zus-coffee, boh-tea, petronas, farm-fresh, the-duck-group.
   - For F&B or beverage clients, prefer zus-coffee, starbucks, boh-tea, or farm-fresh over generic tech minimalism unless the user explicitly asks for Apple-like styling.
   - THEN call generate_poster with the selected palette/fonts and any relevant style_reference.

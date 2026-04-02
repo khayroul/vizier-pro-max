@@ -225,6 +225,7 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
                     cta=_csv_string(row, "cta", "Learn More"),
                     image_prompt=_csv_string(row, "image_prompt") or _csv_string(row, "style_hint"),
                     style_reference=_csv_string(row, "style_reference"),
+                    reference_image_path=_csv_string(row, "reference_image_path"),
                     template_name=_csv_string(row, "template_name"),
                     image_mode=_csv_string(row, "image_mode"),
                     output_path=poster_path,

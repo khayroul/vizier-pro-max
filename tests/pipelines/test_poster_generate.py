@@ -189,6 +189,7 @@ class TestDataclasses:
         assert req.brand_css is None
         assert req.client_id == ""
         assert req.style_reference == ""
+        assert req.reference_image_path == ""
         assert req.palette is None
         assert req.fonts is None
 
@@ -432,6 +433,83 @@ class TestRunPipeline:
                 style_reference="unknown-style",
             )
 
+    @patch("pipelines.poster_generate._extract_reference_brand_css")
+    @patch("pipelines.poster_generate._analyze_reference_image")
+    @patch("pipelines.poster_generate._screenshot")
+    @patch("pipelines.poster_generate._generate_hero")
+    def test_reference_image_path_applies_visual_guidance(
+        self,
+        mock_hero: MagicMock,
+        mock_screenshot: MagicMock,
+        mock_analyze_reference: MagicMock,
+        mock_extract_reference_css: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """reference_image_path can drive prompt, template, and theming."""
+        reference = tmp_path / "reference.png"
+        reference.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 20)
+
+        hero_file = tmp_path / "hero.png"
+        hero_file.write_bytes(b"\x89PNG" + b"\x00" * 50)
+
+        mock_analyze_reference.return_value.style_hint = "warm premium cafe editorial"
+        mock_analyze_reference.return_value.avoid_hint = "copying logos or dense layouts"
+        mock_analyze_reference.return_value.template_name = "floating-card-square"
+        mock_extract_reference_css.return_value = {
+            "--bg-color": "#112233",
+            "--accent-color": "#DDAA55",
+            "--font-headline": "Georgia",
+            "--font-body": "Inter",
+            "--font-headline-weight": "700",
+            "--font-body-weight": "400",
+            "--text-color": "#ffffff",
+            "--text-muted": "rgba(255, 255, 255, 0.72)",
+            "--color-accent": "#DDAA55",
+            "--color-accent-end": "#EEE2CC",
+            "--color-accent-glow": "#DDAA55",
+            "--color-bg": "#112233",
+            "--color-text": "#ffffff",
+            "--font-heading": "Georgia",
+            "--font-weight-heading": "700",
+            "--font-weight-body": "400",
+            "--letter-spacing-heading": "-0.02em",
+            "--letter-spacing-body": "0em",
+            "--line-height-heading": "1.1",
+            "--line-height-body": "1.5",
+        }
+
+        def fake_hero(prompt: str, output_path: str, mode: str) -> str:
+            assert "warm premium cafe editorial" in prompt
+            assert "Use the provided reference image as inspiration only" in prompt
+            assert "copying logos or dense layouts" in prompt
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(output_path).write_bytes(hero_file.read_bytes())
+            return output_path
+
+        mock_hero.side_effect = fake_hero
+        mock_screenshot.return_value = None
+
+        result = run(
+            headline="Weekend Brunch",
+            body="Fresh flavors and good coffee",
+            reference_image_path=str(reference),
+            output_path=str(tmp_path / "poster.png"),
+        )
+
+        assert result["template_used"] == "floating-card-square"
+        html_arg = mock_screenshot.call_args[1]["html"] if "html" in mock_screenshot.call_args[1] else mock_screenshot.call_args[0][0]
+        assert "--bg-color: #112233;" in html_arg
+        assert "--accent-color: #DDAA55;" in html_arg
+
+    def test_missing_reference_image_raises(self) -> None:
+        """Unknown reference image path should fail clearly."""
+        with pytest.raises(FileNotFoundError, match="Reference image not found"):
+            run(
+                headline="Test",
+                body="Body",
+                reference_image_path="/tmp/does-not-exist-reference.png",
+            )
+
     @patch("pipelines.poster_generate._screenshot")
     @patch("pipelines.poster_generate._generate_hero")
     def test_auto_prompt_from_headline_body(
@@ -547,6 +625,7 @@ class TestPluginRegistration:
         assert GENERATE_POSTER_SCHEMA["required"] == ["headline", "body"]
         assert "client_id" in GENERATE_POSTER_SCHEMA["properties"]
         assert "style_reference" in GENERATE_POSTER_SCHEMA["properties"]
+        assert "reference_image_path" in GENERATE_POSTER_SCHEMA["properties"]
         assert "brand_name" in GENERATE_POSTER_SCHEMA["properties"]
         assert "logo_mark" in GENERATE_POSTER_SCHEMA["properties"]
         assert "brand_css" in GENERATE_POSTER_SCHEMA["properties"]
