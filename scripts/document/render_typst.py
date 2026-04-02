@@ -38,16 +38,20 @@ def render_to_pdf(
     content: str,
     output_path: str | None = None,
     title: str = "Document",
+    accent_color: str = "2563eb",
+    hashtags: list[str] | None = None,
 ) -> dict[str, str]:
     """Render text content into a PDF via Typst.
 
-    Creates a temporary .typ file with basic formatting, compiles it
+    Creates a temporary .typ file with branded formatting, compiles it
     with the typst CLI, and returns the output path.
 
     Args:
         content: Text content to render (plain text or Typst markup).
         output_path: Where to write the PDF. If None, writes to output/ dir.
         title: Document title for the header.
+        accent_color: Hex color for accent bars and title (without #).
+        hashtags: Optional list of hashtags to append at document end.
 
     Returns:
         Dict with ``pdf_path`` on success, or ``error`` on failure.
@@ -71,7 +75,7 @@ def render_to_pdf(
         return {"error": f"Output path escapes allowed directory: {output_path}"}
 
     # Write Typst source to temp file
-    typst_source = _wrap_content_as_typst(content, title)
+    typst_source = _wrap_content_as_typst(content, title, accent_color, hashtags)
 
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=".typ", delete=False, encoding="utf-8"
@@ -140,26 +144,54 @@ def _markdown_to_typst(content: str) -> str:
     return "\n".join(lines)
 
 
-def _wrap_content_as_typst(content: str, title: str) -> str:
-    """Wrap plain text content in minimal Typst formatting.
+def _wrap_content_as_typst(
+    content: str,
+    title: str,
+    accent_color: str = "2563eb",
+    hashtags: list[str] | None = None,
+) -> str:
+    """Wrap content in branded Typst formatting with accent bars.
 
     Args:
-        content: The text body.
-        title: Document title.
+        content: The text body (markdown supported).
+        title: Document title displayed as large heading.
+        accent_color: Hex color for accent bars and title text (without #).
+        hashtags: Optional list of hashtags to render at document end.
 
     Returns:
         Typst markup string ready for compilation.
     """
     typst_content = _markdown_to_typst(content)
-    return f"""#set page(margin: (top: 2.5cm, bottom: 2cm, left: 2cm, right: 2cm))
-#set text(size: 11pt)
-#set par(justify: true)
+    hashtag_block = ""
+    if hashtags:
+        escaped = " ".join(f"\\#{tag.lstrip('#')}" for tag in hashtags)
+        hashtag_block = (
+            f'\n#v(1.5em)\n#text(size: 10pt, fill: luma(120))[{escaped}]\n'
+        )
 
-#align(center)[
-  #text(size: 18pt, weight: "bold")[{title}]
-]
+    return f"""#set page(
+  paper: "a5",
+  flipped: true,
+  margin: (top: 2.5cm, bottom: 2cm, left: 2cm, right: 2cm),
+)
+#set text(size: 12pt)
+#set par(justify: true, leading: 1.4em, spacing: 1.2em)
 
-#v(1em)
+#rect(width: 100%, height: 6pt, fill: rgb("{accent_color}"))
+
+#v(0.8em)
+
+#text(size: 22pt, weight: "bold", fill: rgb("{accent_color}"))[{title}]
+
+#v(0.3em)
+
+#line(length: 40%, stroke: 0.5pt + luma(180))
+
+#v(0.8em)
 
 {typst_content}
+{hashtag_block}
+#v(1fr)
+
+#rect(width: 100%, height: 6pt, fill: rgb("{accent_color}"))
 """

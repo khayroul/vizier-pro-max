@@ -224,7 +224,7 @@ def score_poster_batch(poster_path: Path) -> QualityScore:
 def score_content_generate(
     content: str,
     title: str,
-    pdf_path: Path,
+    pdf_path: str | Path | None = None,
     hashtags: list[str] | None = None,
 ) -> QualityScore:
     """Score a content generation output.
@@ -232,7 +232,7 @@ def score_content_generate(
     Args:
         content: The generated text content.
         title: The title of the generated piece.
-        pdf_path: Path to the rendered PDF file.
+        pdf_path: Path to the rendered PDF file, or None if not rendered.
         hashtags: Optional list of hashtags included.
 
     Returns:
@@ -265,19 +265,20 @@ def score_content_generate(
         )
     )
 
-    # PDF renders: exists and > 5KB
-    pdf_p = Path(pdf_path)
-    pdf_ok = pdf_p.exists() and pdf_p.stat().st_size > 5_000
-    properties.append(
-        QualityProperty(
-            name="pdf_renders",
-            passed=pdf_ok,
-            pass_delta=1.0,
-            fail_delta=2.0,
-            detail=f"PDF exists={pdf_p.exists()}, "
-            f"size={pdf_p.stat().st_size if pdf_p.exists() else 0}",
+    # PDF renders: exists and > 5KB (skipped if no path given)
+    if pdf_path is not None:
+        pdf_p = Path(pdf_path)
+        pdf_ok = pdf_p.exists() and pdf_p.stat().st_size > 5_000
+        properties.append(
+            QualityProperty(
+                name="pdf_renders",
+                passed=pdf_ok,
+                pass_delta=1.0,
+                fail_delta=2.0,
+                detail=f"PDF exists={pdf_p.exists()}, "
+                f"size={pdf_p.stat().st_size if pdf_p.exists() else 0}",
+            )
         )
-    )
 
     # Has hashtags >= 3 (bonus, no penalty)
     tag_count = len(hashtags) if hashtags else 0

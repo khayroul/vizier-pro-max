@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import dataclass
 from typing import Any
 
 import structlog
@@ -31,6 +32,40 @@ from middleware.trace_exporter import (
 from scripts.document.render_typst import render_to_pdf
 
 logger = structlog.get_logger(__name__)
+
+
+@dataclass(frozen=True)
+class ContentResponse:
+    """Structured fields from LLM content generation response."""
+
+    title: str
+    body: str
+    hashtags: list[str]
+
+
+def _extract_structured_response(response: str) -> ContentResponse:
+    """Parse LLM JSON response into structured fields. Single parse.
+
+    Args:
+        response: Raw LLM response text (JSON or plain text).
+
+    Returns:
+        ContentResponse with title, body, and hashtags extracted.
+    """
+    try:
+        data = json.loads(response)
+        if isinstance(data, dict):
+            return ContentResponse(
+                title=str(data.get("title", "")),
+                body=str(data.get("body", "")),
+                hashtags=[str(t) for t in data.get("hashtags", []) if t],
+            )
+    except (json.JSONDecodeError, ValueError):
+        pass
+    # Fallback: extract from plain text
+    title = _extract_title_from_response(response)
+    return ContentResponse(title=title, body=response, hashtags=[])
+
 
 _PIPELINE_NAME = "content_generate"
 _PIPELINE_VERSION = "2.0"
@@ -155,8 +190,9 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
         raw_content = f"[Generated content for: {brief[:100]}]"
         is_stub = True
 
-    # Extract structured fields from the response
-    content = _extract_body_from_response(raw_content)
+    # Extract structured fields from the response (single parse)
+    parsed = _extract_structured_response(raw_content)
+    content = parsed.body
 
     result: dict[str, Any] = {
         "content": content,
@@ -170,8 +206,12 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
     # PDF rendering — typst compile
     if output_format == "pdf":
         set_pipeline_step("pdf_render", _PIPELINE_NAME, _PIPELINE_VERSION)
-        title = _extract_title_from_response(raw_content)
-        pdf_result = render_to_pdf(content=content, title=title)
+        pdf_result = render_to_pdf(
+            content=content,
+            title=parsed.title,
+            accent_color="2563eb",
+            hashtags=parsed.hashtags if parsed.hashtags else None,
+        )
 
         if "error" in pdf_result:
             logger.warning("PDF rendering failed: %s", pdf_result["error"])
@@ -180,11 +220,18 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
             result["pdf_path"] = pdf_result["pdf_path"]
             logger.info("PDF rendered: %s", pdf_result["pdf_path"])
 
-    # Record quality: stub content falls below threshold so it gets reviewed.
+    # Record quality via property-based scorer.
+    from middleware.quality_scorer import score_content_generate  # noqa: PLC0415
+
     did = get_deliverable_id()
-    quality_score = 6.5 if is_stub else 8.0
     if did:
-        record_quality(did, quality_score, not is_stub)
+        score = score_content_generate(
+            content=content,
+            title=parsed.title,
+            pdf_path=result.get("pdf_path"),
+            hashtags=parsed.hashtags,
+        )
+        record_quality(did, score.score, score.passed)
 
     return result
 

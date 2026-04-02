@@ -110,65 +110,64 @@ def validate(
     layer: str = "input",
 ) -> ValidationResult:
     """Convenience function — route to the appropriate validation layer."""
-    match layer:
-        case "input":
-            return validate_input(data, schema)
-        case "output":
-            return validate_output(data, schema)
-        case "visual_qa":
-            target_raw = data.get("target")
-            rendered_raw = data.get("rendered")
-            if not target_raw or not isinstance(target_raw, str):
-                return ValidationResult(
-                    passed=False,
-                    errors=["'target' must be a non-empty string path"],
-                    layer="visual_qa",
-                )
-            if not rendered_raw or not isinstance(rendered_raw, str):
-                return ValidationResult(
-                    passed=False,
-                    errors=["'rendered' must be a non-empty string path"],
-                    layer="visual_qa",
-                )
-            threshold_raw = data.get("threshold", 0.80)
-            try:
-                threshold_val = float(threshold_raw)
-            except (TypeError, ValueError):
-                return ValidationResult(
-                    passed=False,
-                    errors=[f"'threshold' must be numeric, got {threshold_raw!r}"],
-                    layer="visual_qa",
-                )
-            return validate_visual_qa(
-                target=Path(target_raw),
-                rendered=Path(rendered_raw),
-                threshold=threshold_val,
-            )
-        case "content_quality":
-            return validate_content_quality(
-                content=str(data.get("content", "")),
-                expected_languages=data.get("expected_languages"),
-                expected_tone=data.get("expected_tone"),
-            )
-        case "delivery":
-            try:
-                status_val = int(data.get("status_code", 0))
-            except (ValueError, TypeError) as exc:
-                return ValidationResult(
-                    passed=False,
-                    errors=[f"Invalid status_code: {exc}"],
-                    layer="delivery",
-                )
-            return validate_delivery(
-                status_code=status_val,
-                channel=str(data.get("channel", "unknown")),
-            )
-        case _:
+    if layer == "input":
+        return validate_input(data, schema)
+    elif layer == "output":
+        return validate_output(data, schema)
+    elif layer == "visual_qa":
+        target_raw = data.get("target")
+        rendered_raw = data.get("rendered")
+        if not target_raw or not isinstance(target_raw, str):
             return ValidationResult(
                 passed=False,
-                errors=[f"Unknown validation layer: {layer}"],
-                layer=layer,
+                errors=["'target' must be a non-empty string path"],
+                layer="visual_qa",
             )
+        if not rendered_raw or not isinstance(rendered_raw, str):
+            return ValidationResult(
+                passed=False,
+                errors=["'rendered' must be a non-empty string path"],
+                layer="visual_qa",
+            )
+        threshold_raw = data.get("threshold", 0.80)
+        try:
+            threshold_val = float(threshold_raw)
+        except (TypeError, ValueError):
+            return ValidationResult(
+                passed=False,
+                errors=[f"'threshold' must be numeric, got {threshold_raw!r}"],
+                layer="visual_qa",
+            )
+        return validate_visual_qa(
+            target=Path(target_raw),
+            rendered=Path(rendered_raw),
+            threshold=threshold_val,
+        )
+    elif layer == "content_quality":
+        return validate_content_quality(
+            content=str(data.get("content", "")),
+            expected_languages=data.get("expected_languages"),
+            expected_tone=data.get("expected_tone"),
+        )
+    elif layer == "delivery":
+        try:
+            status_val = int(data.get("status_code", 0))
+        except (ValueError, TypeError) as exc:
+            return ValidationResult(
+                passed=False,
+                errors=[f"Invalid status_code: {exc}"],
+                layer="delivery",
+            )
+        return validate_delivery(
+            status_code=status_val,
+            channel=str(data.get("channel", "unknown")),
+        )
+    else:
+        return ValidationResult(
+            passed=False,
+            errors=[f"Unknown validation layer: {layer}"],
+            layer=layer,
+        )
 
 
 # ---------------------------------------------------------------------------

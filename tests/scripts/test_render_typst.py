@@ -50,3 +50,34 @@ class TestWrapContentAsTypst:
     def test_sets_page_margin(self) -> None:
         output = _wrap_content_as_typst("Content", "Title")
         assert "margin:" in output
+
+    def test_includes_accent_bar(self) -> None:
+        output = _wrap_content_as_typst("Body", "Title", accent_color="2563eb")
+        assert 'fill: rgb("2563eb")' in output
+
+    def test_includes_hashtags(self) -> None:
+        output = _wrap_content_as_typst("Body", "Title", hashtags=["#AI", "#Tech"])
+        assert "AI" in output
+        assert "Tech" in output
+        assert "luma(120)" in output
+
+    def test_a5_landscape(self) -> None:
+        output = _wrap_content_as_typst("Body", "Title")
+        assert 'paper: "a5"' in output
+        assert "flipped: true" in output
+
+
+class TestRenderStyledPdf:
+    def test_render_styled_pdf_larger_than_plain(self, tmp_path: Path) -> None:
+        if shutil.which("typst") is None:
+            pytest.skip("typst CLI not installed")
+        styled = str(tmp_path / "styled.pdf")
+        result = render_to_pdf(
+            content="Test content " * 20,
+            output_path=styled,
+            title="Styled Doc",
+            accent_color="2563eb",
+            hashtags=["#one", "#two", "#three"],
+        )
+        assert "pdf_path" in result
+        assert Path(result["pdf_path"]).stat().st_size > 5000

@@ -98,3 +98,38 @@ def test_run_returns_quality_report() -> None:
         )
         assert "quality_report" in result
         assert result["quality_report"]["L1"]["passed"] is True
+
+
+def test_extract_structured_response_parses_json() -> None:
+    """_extract_structured_response must parse JSON into ContentResponse."""
+    from pipelines.content_generate import _extract_structured_response, ContentResponse
+
+    raw = json.dumps({
+        "title": "Test Title",
+        "body": "Test body content",
+        "hashtags": ["#one", "#two", "#three"],
+    })
+    result = _extract_structured_response(raw)
+    assert isinstance(result, ContentResponse)
+    assert result.title == "Test Title"
+    assert result.body == "Test body content"
+    assert result.hashtags == ["#one", "#two", "#three"]
+
+
+def test_extract_structured_response_fallback() -> None:
+    """_extract_structured_response must fall back gracefully for plain text."""
+    from pipelines.content_generate import _extract_structured_response
+
+    result = _extract_structured_response("Just plain text content.")
+    assert result.body == "Just plain text content."
+    assert len(result.title) > 0
+
+
+def test_render_to_pdf_accepts_accent_and_hashtags() -> None:
+    """render_to_pdf signature must include accent_color and hashtags params."""
+    import inspect
+    from scripts.document.render_typst import render_to_pdf
+
+    sig = inspect.signature(render_to_pdf)
+    assert "accent_color" in sig.parameters
+    assert "hashtags" in sig.parameters
