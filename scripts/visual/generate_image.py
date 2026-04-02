@@ -8,6 +8,8 @@ from pathlib import Path
 import httpx
 import structlog
 
+from adapter.env_loader import ensure_env
+
 logger = structlog.get_logger(__name__)
 
 FAL_API_URL = "https://fal.run"
@@ -38,6 +40,7 @@ def run(
         RuntimeError: If FAL_KEY environment variable is not set.
         httpx.HTTPStatusError: If the API request fails.
     """
+    ensure_env()
     api_key = os.environ.get("FAL_KEY")
     if not api_key:
         msg = "FAL_KEY environment variable required for image generation"

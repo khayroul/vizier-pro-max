@@ -12,27 +12,17 @@ from __future__ import annotations
 
 import os
 import re
-from pathlib import Path
 from typing import Any
 
 import httpx
 import structlog
 
+from adapter.env_loader import ensure_env
+
 logger = structlog.get_logger(__name__)
 
 # Auto-load .env from project root so API keys are always available
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_ENV_FILE = _PROJECT_ROOT / ".env"
-if _ENV_FILE.exists():
-    for line in _ENV_FILE.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, _, value = line.partition("=")
-        key = key.strip()
-        value = value.strip().strip("'\"")
-        if key and key not in os.environ:
-            os.environ[key] = value
+ensure_env()
 
 _OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 _OPENAI_MODEL = os.environ.get("VIZIER_LLM_MODEL", "gpt-5.4-mini")
