@@ -296,7 +296,7 @@ def score_content_generate(
 
 
 def score_clone_converge(
-    template_path: Path,
+    template_path: str | Path,
     composite_score: float,
     iterations: int,
 ) -> QualityScore:

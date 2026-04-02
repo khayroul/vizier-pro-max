@@ -333,6 +333,7 @@ def run(
 
         best_score = 0.0
         best_html = ""
+        iteration = 0
         delta_feedback: str | None = None
         previous_html: str | None = None
         rendered_image_path: str | None = None
