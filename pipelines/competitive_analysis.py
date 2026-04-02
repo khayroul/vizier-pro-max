@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pandas as pd
 import structlog
 
@@ -16,12 +18,14 @@ from middleware.deliverable_context import (
     start_deliverable,
 )
 from middleware.pipeline_runner import run_with_gates
+from middleware.quality_scorer import score_competitive_analysis
 from middleware.trace_exporter import (
     check_anomalies,
     export_trace,
     log_anomaly,
     notify_anomaly,
 )
+from scripts.content.fetch_url import fetch as httpx_fetch
 from scripts.research.analyze_data import run as analyze_run
 from scripts.research.render_chart import run as chart_run
 
@@ -195,6 +199,116 @@ def _generate_narrative(topic: str, data_summary: str) -> str:
     return result or f"## {topic}\n\nData summary:\n```\n{data_summary}\n```\n"
 
 
+def _generate_search_urls(topic: str) -> list[str]:
+    """Generate 3-5 URLs for competitor research via LLM.
+
+    Args:
+        topic: The topic to research competitors for.
+
+    Returns:
+        List of URL strings, filtered to http/https only.
+    """
+    set_pipeline_step("search_url_generation", _PIPELINE_NAME, _PIPELINE_VERSION)
+    prompt = (
+        f'Given the topic "{topic}", generate 3-5 URLs that would contain '
+        "competitor information. Target structured data sources like Google Maps "
+        "business listings, Yelp pages, industry directories, or social media "
+        "business profiles. Return ONLY a JSON array of URL strings.\n"
+        "Do NOT return generic search engine result pages.\n"
+        "Focus on: pricing, location, reviews, unique selling points."
+    )
+    raw = llm_chat(
+        messages=[
+            {"role": "system", "content": "You output only valid JSON arrays of URL strings."},
+            {"role": "user", "content": prompt},
+        ],
+        max_tokens=512,
+        strip_preamble=True,
+    )
+    if raw is None:
+        return []
+    try:
+        urls = json.loads(raw)
+        if isinstance(urls, list):
+            return [str(u) for u in urls if isinstance(u, str) and u.startswith("http")]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return []
+
+
+def _fetch_url(url: str) -> str | None:
+    """Fetch a URL via httpx_fetch, returning body text or None.
+
+    Args:
+        url: The URL to fetch.
+
+    Returns:
+        Body text string on success, None on failure.
+    """
+    try:
+        result = httpx_fetch(url)
+        if result.get("status_code") == 200:
+            return str(result.get("body", ""))
+    except (ValueError, httpx.HTTPError, httpx.TimeoutException, ConnectionError, OSError) as exc:
+        logger.warning("Fetch failed for %s: %s", url, exc)
+    return None
+
+
+def _fetch_and_extract(urls: list[str]) -> list[str]:
+    """Fetch URLs and return list of successful page texts.
+
+    Args:
+        urls: List of URLs to fetch.
+
+    Returns:
+        List of non-empty body text strings from successful fetches.
+    """
+    texts: list[str] = []
+    for url in urls:
+        text = _fetch_url(url)
+        if text:
+            texts.append(text)
+    return texts
+
+
+def _extract_competitors(topic: str, page_texts: list[str]) -> list[dict[str, str]]:
+    """Extract structured competitor data from fetched page texts.
+
+    Args:
+        topic: The research topic.
+        page_texts: List of fetched page body texts to extract from.
+
+    Returns:
+        List of competitor dicts, each containing at least a 'name' key.
+    """
+    set_pipeline_step("competitor_extraction", _PIPELINE_NAME, _PIPELINE_VERSION)
+    combined = "\n\n---\n\n".join(page_texts[:5])
+    prompt = (
+        f"From the following web page content about '{topic}', extract competitor information.\n"
+        "Return a JSON array of objects with these keys:\n"
+        "name, location, pricing_range, strengths, weaknesses, differentiator\n"
+        "Extract at least 3 competitors. Return ONLY valid JSON.\n\n"
+        f"Content:\n{combined[:8000]}"
+    )
+    raw = llm_chat(
+        messages=[
+            {"role": "system", "content": "You output only valid JSON arrays."},
+            {"role": "user", "content": prompt},
+        ],
+        max_tokens=1024,
+        strip_preamble=True,
+    )
+    if raw is None:
+        return []
+    try:
+        competitors = json.loads(raw)
+        if isinstance(competitors, list):
+            return [c for c in competitors if isinstance(c, dict) and "name" in c]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return []
+
+
 def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
     """Core pipeline logic for competitive analysis.
 
@@ -298,9 +412,87 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
                 except (ValueError, KeyError) as exc:
                     logger.warning("Chart generation failed: %s", exc)
 
+        else:
+            # WEB RESEARCH FLOW
+            set_pipeline_step("web_research", _PIPELINE_NAME, _PIPELINE_VERSION)
+
+            # Step 1: Generate search URLs
+            urls = _generate_search_urls(topic)
+
+            # Step 2: Fetch URLs
+            page_texts = _fetch_and_extract(urls)
+
+            if len(page_texts) >= 2:
+                # Step 3: Extract competitors
+                competitors = _extract_competitors(topic, page_texts)
+
+                if competitors:
+                    data_summary = json.dumps(competitors, indent=2)
+
+                    # Build chart from competitor pricing
+                    pricing_data: dict[str, float] = {}
+                    for comp in competitors:
+                        name = comp.get("name", "Unknown")
+                        price_str = comp.get("pricing_range", "")
+                        # Try to extract a number from the pricing string
+                        price_match = re.search(r"(\d+(?:\.\d+)?)", price_str)
+                        if price_match:
+                            pricing_data[name] = float(price_match.group(1))
+
+                    if pricing_data:
+                        chart_data = _build_chart_data(
+                            {"pricing": pricing_data},
+                            f"{topic[:40]}: Pricing Comparison",
+                        )
+                        if chart_data["labels"]:
+                            chart_output = str(out / "pricing_chart.png")
+                            try:
+                                chart_result = chart_run(
+                                    chart_type="bar",
+                                    data={
+                                        "labels": chart_data["labels"],
+                                        "values": chart_data["values"],
+                                    },
+                                    output_path=chart_output,
+                                    title=chart_data["title"],
+                                )
+                                chart_paths.append(chart_result["file_path"])
+                            except (ValueError, KeyError) as exc:
+                                logger.warning("Chart generation failed: %s", exc)
+                else:
+                    data_summary = "No competitor data extracted."
+            else:
+                # Fallback: LLM-only analysis
+                logger.warning("Web research insufficient (< 2 fetches), using LLM-only fallback")
+                data_summary = "Based on general knowledge — web research was unavailable."
+
         # Generate narrative via LLM
-        report = _generate_narrative(topic, data_summary or "No data provided.")
-        is_stub = report.startswith(f"## {topic}")
+        if not data_path:
+            # Web research narrative prompt
+            set_pipeline_step("narrative_generation", _PIPELINE_NAME, _PIPELINE_VERSION)
+            report = llm_chat(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a competitive intelligence analyst. Structure your report with:\n"
+                            "## Executive Summary\n(Market positioning overview)\n"
+                            "## Competitor Profiles\n(1 paragraph each, citing specific data)\n"
+                            "## Opportunities and Recommendations\n"
+                            "IMPORTANT: Cite specific names, prices, and differentiators."
+                        ),
+                    },
+                    {"role": "user", "content": f"Topic: {topic}\n\nCompetitor data:\n{data_summary}"},
+                ],
+                max_tokens=1024,
+                strip_preamble=True,
+            )
+            if report is None:
+                report = f"## {topic}\n\nCompetitor data:\n```\n{data_summary}\n```\n"
+            is_stub = report.startswith(f"## {topic}")
+        else:
+            report = _generate_narrative(topic, data_summary or "No data provided.")
+            is_stub = report.startswith(f"## {topic}")
 
         # Write report
         report_path = out / "report.md"
@@ -309,8 +501,8 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
             report_content += f"\n\n![Analysis Chart]({cp})\n"
         report_path.write_text(report_content, encoding="utf-8")
 
-        quality_score = 6.5 if is_stub else 8.0
-        record_quality(did, quality_score, not is_stub)
+        score = score_competitive_analysis(report, [Path(p) for p in chart_paths])
+        record_quality(did, score.score, score.passed)
         _check_and_export(did, client_id)
 
         result: dict[str, Any] = {
