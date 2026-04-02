@@ -92,6 +92,39 @@ The critical design rule is:
 
 That means raw sessions, transcripts, or traces are never treated as approved policy on their own.
 
+### 3.4 Prompt memory assembly
+
+The observational ledger is the canonical promoted-memory store. Prompt assembly is a separate, budgeted derived view over that store.
+
+Rules:
+
+- omission from prompt context is not forgetting
+- the canonical episode, observation, and reflection ledgers stay wider than the prompt-memory surface
+- `MEMORY.md` may remain human-readable and derived, but prompt injection should use a compact memory pack rather than the full canonical store
+- memory ranking should prefer:
+  - pinned or explicit user-declared durable memory
+  - core personal-assistant memory such as identity, preferences, relationships, and long-term goals
+  - direct relevance to the current task, project, person, or workflow
+  - promoted lessons and high-support reflections
+  - recency last, not first
+
+Recommended memory classes for derived retrieval and ranking:
+
+- `core_identity`
+- `user_preference`
+- `relationship`
+- `long_term_goal`
+- `project_context`
+- `workflow_lesson`
+- `historical`
+- `ephemeral`
+
+The design target is:
+
+**wide durable memory, narrow prompt memory**
+
+That means pruning and archival may affect derived views such as `MEMORY.md` or a prompt-memory pack, but they must not silently delete canonical observational records just because those records are not currently prompt-worthy.
+
 ---
 
 ## 4. Core Contracts

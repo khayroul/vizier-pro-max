@@ -19,6 +19,7 @@ program:
     - distillation-governance
     - quality-ci
     - clone-designspec
+    - memory-retrieval-budgeting
 
 packets:
   - id: contracts-ledger
@@ -372,3 +373,49 @@ packets:
       - python3 -m pytest tests/pipelines/test_clone_converge_quality.py tests/templates/test_template_inventory.py -q
     launch_prompt: |
       Rebuild Vizier cloning around a structured DesignSpec and deterministic editable slots. Keep the work inside the owned clone and visual paths, and align outputs with selfbuild and benchmark consumption.
+
+  - id: memory-retrieval-budgeting
+    slug: memory-retrieval-budgeting
+    title: Memory Retrieval and Budgeting
+    wave: wave3
+    tranche: tranche-5
+    priority: 8
+    summary: Add a budgeted prompt-memory retrieval layer that preserves wide canonical memory for personal-assistant behavior.
+    depends_on:
+      - observational-memory
+    owned_paths:
+      - augments/observational/retrieval.py
+      - augments/observational/compiler.py
+      - augments/observational/ledger.py
+      - augments/dreamskill/consolidator.py
+      - augments/dreamskill/pruner.py
+      - tests/augments/test_observational_retrieval.py
+      - tests/augments/test_observational_compiler.py
+      - tests/augments/test_observational_ledger.py
+      - tests/augments/test_consolidator.py
+      - docs/superpowers/plans/2026-04-03-memory-retrieval-budgeting-follow-on.md
+    read_paths:
+      - augments/observational/types.py
+      - docs/superpowers/specs/2026-04-02-v6_2-implementation-spec.md
+      - hermes-agent/website/docs/user-guide/features/memory.md
+    outputs:
+      - Budgeted prompt-memory pack derived from the observational ledger
+      - Ranking and retrieval over pinned, classed, and context-relevant memories
+      - Derived MEMORY rendering and pruning that preserve canonical memory
+    acceptance:
+      - Canonical observational ledgers remain the source of truth; omission from prompt context is not forgetting
+      - Prompt-memory ranking prefers pinned and durable personal-assistant memory over ephemeral operational memory
+      - Derived memory views avoid duplicate promoted-lesson and reflection output where a single summary suffices
+      - Budgeting and archival affect derived views only, not canonical ledger tables
+      - Tests cover ranking, pinning, budgeting, and archival behavior
+    do_not_touch:
+      - bridge/*
+      - augments/selfbuild/*
+      - augments/openspace/*
+      - augments/distillation/*
+      - pipelines/clone_converge.py
+      - pyproject.toml
+    verification_commands:
+      - python3 -m pytest tests/augments/test_observational_ledger.py tests/augments/test_observational_compiler.py tests/augments/test_observational_retrieval.py tests/augments/test_consolidator.py -q
+    launch_prompt: |
+      Implement the follow-on memory retrieval and budgeting packet for Vizier v6.2. Keep the canonical observational ledger wide and durable, but make prompt-facing memory narrow, budgeted, and relevance-ranked. Do not treat omission from prompt context as forgetting, and do not add selfbuild or bridge logic here. Reference addendum: /Users/Executor/vizier-pro-max/docs/superpowers/plans/2026-04-03-memory-retrieval-budgeting-follow-on.md
