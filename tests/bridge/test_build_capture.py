@@ -49,6 +49,44 @@ def test_append_event_is_idempotent_for_same_event_id(tmp_path: Path) -> None:
     assert read_events(state_root=tmp_path / "state") == [event]
 
 
+def test_auto_derived_event_ids_remain_unique_for_repeated_observations(tmp_path: Path) -> None:
+    event_a = make_event(
+        source="human",
+        context_type="external_build",
+        task_id="bridge-watcher.manifests",
+        event_type="artifact_created",
+        summary="Detected 1 new or updated manifest",
+        status="ok",
+        timestamp="2026-04-02T12:00:00+00:00",
+    )
+    event_b = make_event(
+        source="human",
+        context_type="external_build",
+        task_id="bridge-watcher.manifests",
+        event_type="artifact_created",
+        summary="Detected 1 new or updated manifest",
+        status="ok",
+        timestamp="2026-04-02T12:05:00+00:00",
+    )
+    event_c = make_event(
+        source="human",
+        context_type="external_build",
+        task_id="bridge-watcher.manifests",
+        event_type="artifact_created",
+        summary="Detected 1 new or updated manifest",
+        status="degraded",
+        timestamp="2026-04-02T12:05:00+00:00",
+    )
+
+    assert event_a.event_id != event_b.event_id
+    assert event_b.event_id != event_c.event_id
+
+    assert append_event(event_a, state_root=tmp_path / "state") is True
+    assert append_event(event_b, state_root=tmp_path / "state") is True
+    assert append_event(event_c, state_root=tmp_path / "state") is True
+    assert read_events(state_root=tmp_path / "state") == [event_a, event_b, event_c]
+
+
 def test_capture_external_build_event_persists_external_schema(tmp_path: Path) -> None:
     event = capture_external_build_event(
         source="human",

@@ -78,6 +78,8 @@ def make_event(
             task_id,
             event_type,
             summary,
+            status,
+            timestamp,
             parent_task_id,
             list(files_touched),
             list(commands),
