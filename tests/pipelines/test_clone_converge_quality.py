@@ -64,3 +64,28 @@ def test_delta_feedback_is_natural_language() -> None:
     guidance = _delta_to_guidance(delta)
     assert any(word in guidance.lower() for word in ["color", "layout", "text", "structure", "match"])
     assert "SSIM:" not in guidance
+
+
+def test_run_signature_has_min_iterations() -> None:
+    """run() must expose min_iterations with default of 2."""
+    import inspect
+
+    from pipelines.clone_converge import run
+
+    sig = inspect.signature(run)
+    assert "min_iterations" in sig.parameters
+    assert sig.parameters["min_iterations"].default == 2
+
+
+def test_parameterize_template_exists() -> None:
+    """_parameterize_template function exists."""
+    from pipelines.clone_converge import _parameterize_template
+
+    assert callable(_parameterize_template)
+
+
+def test_pipeline_version_is_2() -> None:
+    """Pipeline version must be updated to 2.0."""
+    from pipelines.clone_converge import _PIPELINE_VERSION
+
+    assert _PIPELINE_VERSION == "2.0"

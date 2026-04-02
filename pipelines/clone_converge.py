@@ -36,7 +36,7 @@ from scripts.visual.screenshot_html import run as screenshot_run
 logger = structlog.get_logger(__name__)
 
 _PIPELINE_NAME = "clone_converge"
-_PIPELINE_VERSION = "1.0"
+_PIPELINE_VERSION = "2.0"
 
 
 def _encode_image_as_data_uri(image_path: str) -> str:
@@ -242,17 +242,82 @@ def _render_html_to_png(html: str, output_path: Path) -> Path:
     return Path(result["file_path"])
 
 
+def _parameterize_template(html: str) -> str:
+    """Run LLM call to convert static HTML into a Jinja2 template.
+
+    Args:
+        html: The static HTML string to parameterize.
+
+    Returns:
+        HTML with Jinja2 placeholders inserted, or the original HTML on failure.
+    """
+    set_pipeline_step("parameterize", _PIPELINE_NAME, _PIPELINE_VERSION)
+    prompt = (
+        "Convert this HTML into a Jinja2 template. Replace:\n"
+        "- The main heading text with {{ headline }}\n"
+        "- Body/description text with {{ body }}\n"
+        "- Call-to-action text with {{ cta }}\n"
+        "Keep ALL CSS, layout, and structure exactly the same.\n"
+        "Output ONLY the modified HTML."
+    )
+    result = llm_chat(
+        messages=[
+            {"role": "system", "content": "You output only valid HTML with Jinja2 placeholders."},
+            {"role": "user", "content": f"{prompt}\n\n```html\n{html}\n```"},
+        ],
+        max_tokens=4096,
+        strip_preamble=True,
+    )
+    if result and "{{ headline }}" in result and "{{ body }}" in result:
+        return result
+
+    # Retry once with reinforced prompt
+    logger.warning("Parameterization missing placeholders, retrying")
+    retry_result = llm_chat(
+        messages=[
+            {
+                "role": "system",
+                "content": "You output only valid HTML. You MUST include {{ headline }} and {{ body }} placeholders.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"{prompt}\n\nYou MUST include {{{{ headline }}}} and {{{{ body }}}} placeholders."
+                    f"\n\n```html\n{html}\n```"
+                ),
+            },
+        ],
+        max_tokens=4096,
+        strip_preamble=True,
+    )
+    if retry_result and "{{ headline }}" in retry_result:
+        return retry_result
+
+    logger.warning("Parameterization failed after retry, using original HTML")
+    return html
+
+
 def run(
     *,
     target_image_path: str,
     output_dir: str = "output/templates",
     max_iterations: int = 5,
+    min_iterations: int = 2,
     threshold: float = 0.80,
     client_id: str | None = None,
 ) -> dict[str, Any]:
     """Clone a visual design into a reusable Jinja2 template.
 
-    Returns dict with status, score, iterations, and template_path.
+    Args:
+        target_image_path: Path to the reference design image.
+        output_dir: Directory for rendered PNGs and the final template.
+        max_iterations: Maximum number of refinement loops.
+        min_iterations: Minimum iterations before convergence is allowed.
+        threshold: Composite score threshold to consider convergence successful.
+        client_id: Optional client identifier for cost-ledger attribution.
+
+    Returns:
+        Dict with status, score, iterations, template_path, and deliverable_id.
     """
     did = start_deliverable(client_id=client_id)
 
@@ -299,41 +364,45 @@ def run(
                 score,
                 threshold,
             )
+            logger.info(
+                "Delta components",
+                iteration=iteration,
+                ssim=delta.ssim_score,
+                color_delta_e=delta.color_delta_e,
+                pixel_diff_pct=delta.pixel_diff_pct,
+                layout_score=delta.layout_score,
+                text_match_pct=delta.text_match_pct,
+                composite=delta.composite_score,
+            )
 
             if score > best_score:
                 best_score = score
                 best_html = html
 
-            # Step 5: Check convergence
-            if score >= threshold:
+            # Step 5: Check convergence (min_iterations must be reached first)
+            if score >= threshold and iteration >= min_iterations:
                 logger.info("Converged at iteration %d with score %.3f", iteration, score)
-                template_path = out / "template.html"
-                template_path.write_text(best_html)
-                quality_score = min(10.0, 7.0 + best_score * 3.0)
-                record_quality(did, quality_score, True)
-                _check_and_export(did, client_id)
-                return {
-                    "status": "converged",
-                    "score": best_score,
-                    "iterations": iteration,
-                    "template_path": str(template_path),
-                    "deliverable_id": did,
-                }
+                break
 
             # Build natural-language feedback for next iteration
             delta_feedback = _delta_to_guidance(delta)
 
-        # Max iterations reached — record quality based on best score achieved.
+        # Shared post-loop path: parameterize, save, score, and return.
+        from middleware.quality_scorer import score_clone_converge  # noqa: PLC0415
+
+        parameterized = _parameterize_template(best_html)
         template_path = out / "template.html"
-        template_path.write_text(best_html)
-        quality_score = min(10.0, 7.0 + best_score * 3.0)
-        passed = best_score >= threshold
-        record_quality(did, quality_score, passed)
+        template_path.write_text(parameterized)
+
+        quality = score_clone_converge(str(template_path), best_score, iteration)
+        record_quality(did, quality.score, quality.passed)
         _check_and_export(did, client_id)
+
+        converged = best_score >= threshold and iteration >= min_iterations
         return {
-            "status": "max_iterations",
+            "status": "converged" if converged else "max_iterations",
             "score": best_score,
-            "iterations": max_iterations,
+            "iterations": iteration,
             "template_path": str(template_path),
             "deliverable_id": did,
         }
