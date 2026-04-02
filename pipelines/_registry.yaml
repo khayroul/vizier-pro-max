@@ -127,6 +127,25 @@ pipelines:
       client_bundle_dir: { type: string }
       internal_bundle_dir: { type: string }
 
+  - name: marketing_plan_generate
+    description: "Brief -> marketing strategy -> campaign angles -> creative pack -> client-ready asset bundle"
+    input:
+      brief: { type: string, required: true }
+      title: { type: string, required: false }
+      author: { type: string, required: false }
+      client_id: { type: string, required: false }
+      output_dir: { type: string, required: false }
+      package_mode: { type: string, required: false }
+      generate_posters: { type: boolean, required: false }
+      export_epub: { type: boolean, required: false }
+      include_toc: { type: boolean, required: false }
+    output:
+      status: { type: string }
+      title: { type: string }
+      source: { type: string }
+      document_count: { type: integer }
+      client_bundle_dir: { type: string }
+
   - name: nonfiction_ebook_generate
     description: "Compatibility alias for structured_nonfiction_generate with the ebook profile"
     input:

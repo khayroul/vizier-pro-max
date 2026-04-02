@@ -7,7 +7,11 @@ from typing import Any
 
 import structlog
 
+from adapter.env_loader import ensure_env
+
 logger = structlog.get_logger(__name__)
+
+ensure_env()
 
 
 async def _async_send_message(chat_id: str, text: str, token: str) -> dict[str, Any]:
