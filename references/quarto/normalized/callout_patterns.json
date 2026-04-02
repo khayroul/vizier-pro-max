@@ -1,0 +1,117 @@
+{
+  "dataset_id": "callout_patterns",
+  "source_family": "quarto",
+  "description": "Callout renderer tiers and appearance modes derived from Quarto HTML architecture docs.",
+  "generated_from": [
+    "references/quarto/raw/llm-docs/callout-styling-html.md"
+  ],
+  "record_count": 6,
+  "items": [
+    {
+      "id": "bootstrap-html",
+      "renderer_tier": "bootstrap-html",
+      "formats": [
+        "html"
+      ],
+      "appearance_modes": [
+        "default",
+        "simple",
+        "minimal"
+      ],
+      "features": [
+        "collapsible",
+        "theme-aware",
+        "dark-mode-aware"
+      ],
+      "structure_notes": "Header and body containers with icon and title regions."
+    },
+    {
+      "id": "revealjs-html",
+      "renderer_tier": "revealjs-html",
+      "formats": [
+        "revealjs"
+      ],
+      "appearance_modes": [
+        "default",
+        "simple",
+        "minimal"
+      ],
+      "features": [
+        "slide-aware scaling",
+        "dark-background adaptation"
+      ],
+      "structure_notes": "Flatter structure optimized for slide reading instead of collapsible chrome."
+    },
+    {
+      "id": "standalone-html",
+      "renderer_tier": "standalone-html",
+      "formats": [
+        "epub",
+        "gfm",
+        "plain-html"
+      ],
+      "appearance_modes": [
+        "default",
+        "simple",
+        "minimal"
+      ],
+      "features": [
+        "inline-css",
+        "fixed-colors",
+        "no-framework-dependency"
+      ],
+      "structure_notes": "Standalone HTML callouts trade theming depth for portability."
+    },
+    {
+      "id": "appearance-default",
+      "renderer_tier": "appearance",
+      "formats": [
+        "html",
+        "revealjs",
+        "epub"
+      ],
+      "appearance_modes": [
+        "default"
+      ],
+      "features": [
+        "colored-header",
+        "full-border-treatment"
+      ],
+      "structure_notes": "Best when the callout should stand out as a named block."
+    },
+    {
+      "id": "appearance-simple",
+      "renderer_tier": "appearance",
+      "formats": [
+        "html",
+        "revealjs",
+        "epub"
+      ],
+      "appearance_modes": [
+        "simple"
+      ],
+      "features": [
+        "left-border",
+        "lighter-visual-weight"
+      ],
+      "structure_notes": "Best when the content should remain lightweight and low-distraction."
+    },
+    {
+      "id": "appearance-minimal",
+      "renderer_tier": "appearance",
+      "formats": [
+        "html",
+        "revealjs",
+        "epub"
+      ],
+      "appearance_modes": [
+        "minimal"
+      ],
+      "features": [
+        "simple-style",
+        "icon-suppressed"
+      ],
+      "structure_notes": "Useful for understated notes where iconography would add clutter."
+    }
+  ]
+}

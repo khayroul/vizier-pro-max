@@ -1,0 +1,65 @@
+{
+  "dataset_id": "longform_structure_patterns",
+  "source_family": "quarto",
+  "description": "Long-form formatting and template patterns derived from Quarto Typst and formatting docs.",
+  "generated_from": [
+    "references/quarto/raw/llm-docs/pandoc-quarto-typst-templates.md",
+    "references/quarto/raw/src/resources/schema/document-formatting.yml",
+    "references/quarto/raw/src/resources/schema/document-typst.yml"
+  ],
+  "record_count": 4,
+  "items": [
+    {
+      "id": "typst-modular-template",
+      "pattern": "typst-modular-template",
+      "outputs": [
+        "typst",
+        "pdf"
+      ],
+      "modules": [
+        "definitions.typ",
+        "typst-template.typ",
+        "page.typ",
+        "typst-show.typ",
+        "notes.typ",
+        "biblio.typ"
+      ],
+      "notes": "Quarto splits Pandoc typst templates into reusable partials so long-form documents can layer typography, notes, and bibliography cleanly.",
+      "source_note": "references/quarto/raw/llm-docs/pandoc-quarto-typst-templates.md"
+    },
+    {
+      "id": "epub-split-level",
+      "pattern": "epub-split-level",
+      "outputs": [
+        "epub",
+        "chunkedhtml"
+      ],
+      "schema_summary": "number",
+      "default": 1,
+      "notes": "Specify the heading level at which to split the EPUB into separate chapter files.",
+      "source_note": "references/quarto/raw/src/resources/schema/document-formatting.yml"
+    },
+    {
+      "id": "typst-theorem-appearance",
+      "pattern": "typst-theorem-appearance",
+      "outputs": [
+        "typst"
+      ],
+      "schema_summary": "enum(simple, fancy, clouds, rainbow)",
+      "default": "simple",
+      "notes": "Visual style for theorem environments in Typst output.",
+      "source_note": "references/quarto/raw/src/resources/schema/document-typst.yml"
+    },
+    {
+      "id": "typst-margin-geometry",
+      "pattern": "typst-margin-geometry",
+      "outputs": [
+        "typst"
+      ],
+      "schema_summary": "object(inner, outer, clearance)",
+      "default": null,
+      "notes": "Advanced geometry settings for Typst margin layout.",
+      "source_note": "references/quarto/raw/src/resources/schema/document-typst.yml"
+    }
+  ]
+}

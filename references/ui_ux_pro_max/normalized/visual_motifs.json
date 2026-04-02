@@ -1,0 +1,5271 @@
+{
+  "dataset_id": "visual_motifs",
+  "source_family": "ui_ux_pro_max",
+  "description": "Visual motif and implementation heuristics derived from UI UX Pro Max styles.",
+  "generated_from": [
+    "references/ui_ux_pro_max/raw/styles.csv"
+  ],
+  "record_count": 84,
+  "items": [
+    {
+      "id": "minimalism-swiss-style",
+      "style_name": "Minimalism & Swiss Style",
+      "primary_colors": [
+        "Monochromatic",
+        "Black #000000",
+        "White #FFFFFF"
+      ],
+      "secondary_colors": [
+        "Neutral (Beige #F5F1E8",
+        "Grey #808080",
+        "Taupe #B38B6D)",
+        "Primary accent"
+      ],
+      "effects_animations": [
+        "Subtle hover (200-250ms)",
+        "smooth transitions",
+        "sharp shadows if any",
+        "clear type hierarchy",
+        "fast loading"
+      ],
+      "ai_prompt_keywords": [
+        "Design a minimalist landing page. Use: white space",
+        "geometric layouts",
+        "sans-serif fonts",
+        "high contrast",
+        "grid-based structure",
+        "essential elements only. Avoid shadows and gradients. Focus on clarity and functionality."
+      ],
+      "css_keywords": [
+        "display: grid",
+        "gap: 2rem",
+        "font-family: sans-serif",
+        "color: #000 or #FFF",
+        "max-width: 1200px",
+        "clean borders",
+        "no box-shadow unless necessary"
+      ],
+      "implementation_checklist": [
+        "Grid-based layout 12-16 columns",
+        "Typography hierarchy clear",
+        "No unnecessary decorations",
+        "WCAG AAA contrast verified",
+        "Mobile responsive grid"
+      ],
+      "design_system_variables": [
+        "--spacing: 2rem",
+        "--border-radius: 0px",
+        "--font-weight: 400-700",
+        "--shadow: none",
+        "--accent-color: single primary only"
+      ]
+    },
+    {
+      "id": "neumorphism",
+      "style_name": "Neumorphism",
+      "primary_colors": [
+        "Light pastels: Soft Blue #C8E0F4",
+        "Soft Pink #F5E0E8",
+        "Soft Grey #E8E8E8"
+      ],
+      "secondary_colors": [
+        "Tints/shades (±30%)",
+        "gradient subtlety",
+        "color harmony"
+      ],
+      "effects_animations": [
+        "Soft box-shadow (multiple: -5px -5px 15px",
+        "5px 5px 15px)",
+        "smooth press (150ms)",
+        "inner subtle shadow"
+      ],
+      "ai_prompt_keywords": [
+        "Create a neumorphic UI with soft 3D effects. Use light pastels",
+        "rounded corners (12-16px)",
+        "subtle soft shadows (multiple layers)",
+        "no hard lines",
+        "monochromatic color scheme with light/dark variations. Embossed/debossed effect on interactive elements."
+      ],
+      "css_keywords": [
+        "border-radius: 12-16px",
+        "box-shadow: -5px -5px 15px rgba(0",
+        "0",
+        "0",
+        "0.1)",
+        "5px 5px 15px rgba(255",
+        "255",
+        "255",
+        "0.8)",
+        "background: linear-gradient(145deg",
+        "color1",
+        "color2)",
+        "transform: scale on press"
+      ],
+      "implementation_checklist": [
+        "Rounded corners 12-16px consistent",
+        "Multiple shadow layers (2-3)",
+        "Pastel color verified",
+        "Monochromatic palette checked",
+        "Press animation smooth 150ms"
+      ],
+      "design_system_variables": [
+        "--border-radius: 14px",
+        "--shadow-soft-1: -5px -5px 15px",
+        "--shadow-soft-2: 5px 5px 15px",
+        "--color-light: #F5F5F5",
+        "--color-primary: single pastel"
+      ]
+    },
+    {
+      "id": "glassmorphism",
+      "style_name": "Glassmorphism",
+      "primary_colors": [
+        "Translucent white: rgba(255",
+        "255",
+        "255",
+        "0.1-0.3)"
+      ],
+      "secondary_colors": [
+        "Vibrant: Electric Blue #0080FF",
+        "Neon Purple #8B00FF",
+        "Vivid Pink #FF1493",
+        "Teal #20B2AA"
+      ],
+      "effects_animations": [
+        "Backdrop blur (10-20px)",
+        "subtle border (1px solid rgba white 0.2)",
+        "light reflection",
+        "Z-depth"
+      ],
+      "ai_prompt_keywords": [
+        "Design a glassmorphic interface with frosted glass effect. Use backdrop blur (10-20px)",
+        "translucent overlays (rgba 10-30% opacity)",
+        "vibrant background colors",
+        "subtle borders",
+        "light source reflection",
+        "layered depth. Perfect for modern overlays and cards."
+      ],
+      "css_keywords": [
+        "backdrop-filter: blur(15px)",
+        "background: rgba(255",
+        "255",
+        "255",
+        "0.15)",
+        "border: 1px solid rgba(255",
+        "255",
+        "255",
+        "0.2)",
+        "-webkit-backdrop-filter: blur(15px)",
+        "z-index layering for depth"
+      ],
+      "implementation_checklist": [
+        "Backdrop-filter blur 10-20px",
+        "Translucent white 15-30% opacity",
+        "Subtle border 1px light",
+        "Vibrant background verified",
+        "Text contrast 4.5:1 checked"
+      ],
+      "design_system_variables": [
+        "--blur-amount: 15px",
+        "--glass-opacity: 0.15",
+        "--border-color: rgba(255",
+        "255",
+        "255",
+        "0.2)",
+        "--background: vibrant color",
+        "--text-color: light/dark based on BG"
+      ]
+    },
+    {
+      "id": "brutalism",
+      "style_name": "Brutalism",
+      "primary_colors": [
+        "Primary: Red #FF0000",
+        "Blue #0000FF",
+        "Yellow #FFFF00",
+        "Black #000000",
+        "White #FFFFFF"
+      ],
+      "secondary_colors": [
+        "Limited: Neon Green #00FF00",
+        "Hot Pink #FF00FF",
+        "minimal secondary"
+      ],
+      "effects_animations": [
+        "No smooth transitions (instant)",
+        "sharp corners (0px)",
+        "bold typography (700+)",
+        "visible grid",
+        "large blocks"
+      ],
+      "ai_prompt_keywords": [
+        "Create a brutalist design with raw",
+        "unpolished",
+        "stark aesthetic. Use pure primary colors (red",
+        "blue",
+        "yellow)",
+        "black & white",
+        "no smooth transitions (instant)",
+        "sharp corners",
+        "bold large typography",
+        "visible grid lines",
+        "default system fonts",
+        "intentional 'broken' design elements."
+      ],
+      "css_keywords": [
+        "border-radius: 0px",
+        "transition: none or 0s",
+        "font-family: system-ui or monospace",
+        "font-weight: 700+",
+        "border: visible 2-4px",
+        "colors: #FF0000",
+        "#0000FF",
+        "#FFFF00",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "implementation_checklist": [
+        "No border-radius (0px)",
+        "No transitions (instant)",
+        "Bold typography (700+)",
+        "Pure primary colors used",
+        "Visible grid/borders",
+        "Asymmetric layout intentional"
+      ],
+      "design_system_variables": [
+        "--border-radius: 0px",
+        "--transition-duration: 0s",
+        "--font-weight: 700-900",
+        "--colors: primary only",
+        "--border-style: visible",
+        "--grid-visible: true"
+      ]
+    },
+    {
+      "id": "3d-hyperrealism",
+      "style_name": "3D & Hyperrealism",
+      "primary_colors": [
+        "Deep Navy #001F3F",
+        "Forest Green #228B22",
+        "Burgundy #800020",
+        "Gold #FFD700",
+        "Silver #C0C0C0"
+      ],
+      "secondary_colors": [
+        "Complex gradients (5-10 stops)",
+        "realistic lighting",
+        "shadow variations (20-40% darker)"
+      ],
+      "effects_animations": [
+        "WebGL/Three.js 3D",
+        "realistic shadows (layers)",
+        "physics lighting",
+        "parallax (3-5 layers)",
+        "smooth 3D (300-400ms)"
+      ],
+      "ai_prompt_keywords": [
+        "Build an immersive 3D interface using realistic textures",
+        "3D models (Three.js/Babylon.js)",
+        "complex shadows",
+        "realistic lighting",
+        "parallax scrolling (3-5 layers)",
+        "physics-based motion. Include skeuomorphic elements with tactile detail."
+      ],
+      "css_keywords": [
+        "transform: translate3d",
+        "perspective: 1000px",
+        "WebGL canvas",
+        "Three.js/Babylon.js library",
+        "box-shadow: complex multi-layer",
+        "background: complex gradients",
+        "filter: drop-shadow()"
+      ],
+      "implementation_checklist": [
+        "WebGL/Three.js integrated",
+        "3D models loaded",
+        "Parallax 3-5 layers",
+        "Realistic lighting verified",
+        "Complex shadows rendered",
+        "Physics animation smooth 300-400ms"
+      ],
+      "design_system_variables": [
+        "--perspective: 1000px",
+        "--parallax-layers: 5",
+        "--lighting-intensity: realistic",
+        "--shadow-depth: 20-40%",
+        "--animation-duration: 300-400ms"
+      ]
+    },
+    {
+      "id": "vibrant-block-based",
+      "style_name": "Vibrant & Block-based",
+      "primary_colors": [
+        "Neon Green #39FF14",
+        "Electric Purple #BF00FF",
+        "Vivid Pink #FF1493",
+        "Bright Cyan #00FFFF",
+        "Sunburst #FFAA00"
+      ],
+      "secondary_colors": [
+        "Complementary: Orange #FF7F00",
+        "Shocking Pink #FF006E",
+        "Lime #CCFF00",
+        "triadic schemes"
+      ],
+      "effects_animations": [
+        "Large sections (48px+ gaps)",
+        "animated patterns",
+        "bold hover (color shift)",
+        "scroll-snap",
+        "large type (32px+)",
+        "200-300ms"
+      ],
+      "ai_prompt_keywords": [
+        "Design an energetic",
+        "vibrant interface with bold block layouts",
+        "geometric shapes",
+        "high color contrast",
+        "large typography (32px+)",
+        "animated background patterns",
+        "duotone effects. Perfect for startups and youth-focused apps. Use 4-6 contrasting colors from complementary/triadic schemes."
+      ],
+      "css_keywords": [
+        "display: flex/grid with large gaps (48px+)",
+        "font-size: 32px+",
+        "background: animated patterns (CSS)",
+        "color: neon/vibrant colors",
+        "animation: continuous pattern movement"
+      ],
+      "implementation_checklist": [
+        "Block layout with 48px+ gaps",
+        "Large typography 32px+",
+        "4-6 vibrant colors max",
+        "Animated patterns active",
+        "Scroll-snap enabled",
+        "High contrast verified (7:1+)"
+      ],
+      "design_system_variables": [
+        "--block-gap: 48px",
+        "--typography-size: 32px+",
+        "--color-palette: 4-6 vibrant colors",
+        "--animation: continuous pattern",
+        "--contrast-ratio: 7:1+"
+      ]
+    },
+    {
+      "id": "dark-mode-oled",
+      "style_name": "Dark Mode (OLED)",
+      "primary_colors": [
+        "Deep Black #000000",
+        "Dark Grey #121212",
+        "Midnight Blue #0A0E27"
+      ],
+      "secondary_colors": [
+        "Vibrant accents: Neon Green #39FF14",
+        "Electric Blue #0080FF",
+        "Gold #FFD700",
+        "Plasma Purple #BF00FF"
+      ],
+      "effects_animations": [
+        "Minimal glow (text-shadow: 0 0 10px)",
+        "dark-to-light transitions",
+        "low white emission",
+        "high readability",
+        "visible focus"
+      ],
+      "ai_prompt_keywords": [
+        "Create an OLED-optimized dark interface with deep black (#000000)",
+        "dark grey (#121212)",
+        "midnight blue accents. Use minimal glow effects",
+        "vibrant neon accents (green",
+        "blue",
+        "gold",
+        "purple)",
+        "high contrast text. Optimize for eye comfort and OLED power saving."
+      ],
+      "css_keywords": [
+        "background: #000000 or #121212",
+        "color: #FFFFFF or #E0E0E0",
+        "text-shadow: 0 0 10px neon-color (sparingly)",
+        "filter: brightness(0.8) if needed",
+        "color-scheme: dark"
+      ],
+      "implementation_checklist": [
+        "Deep black #000000 or #121212",
+        "Vibrant neon accents used",
+        "Text contrast 7:1+",
+        "Minimal glow effects",
+        "OLED power optimization",
+        "No white (#FFFFFF) background"
+      ],
+      "design_system_variables": [
+        "--bg-black: #000000",
+        "--bg-dark-grey: #121212",
+        "--text-primary: #FFFFFF",
+        "--accent-neon: neon colors",
+        "--glow-effect: minimal",
+        "--oled-optimized: true"
+      ]
+    },
+    {
+      "id": "accessible-ethical",
+      "style_name": "Accessible & Ethical",
+      "primary_colors": [
+        "WCAG AA/AAA (4.5:1 min)",
+        "simple primary",
+        "clear secondary",
+        "high luminosity (7:1+)"
+      ],
+      "secondary_colors": [
+        "Symbol-based colors (not color-only)",
+        "supporting patterns",
+        "inclusive combinations"
+      ],
+      "effects_animations": [
+        "Clear focus rings (3-4px)",
+        "ARIA labels",
+        "skip links",
+        "responsive design",
+        "reduced motion",
+        "44x44px touch targets"
+      ],
+      "ai_prompt_keywords": [
+        "Design with WCAG AAA compliance. Include: high contrast (7:1+)",
+        "large text (16px+)",
+        "keyboard navigation",
+        "screen reader compatibility",
+        "focus states visible (3-4px ring)",
+        "semantic HTML",
+        "ARIA labels",
+        "skip links",
+        "reduced motion support (prefers-reduced-motion)",
+        "44x44px touch targets."
+      ],
+      "css_keywords": [
+        "color-contrast: 7:1+",
+        "font-size: 16px+",
+        "outline: 3-4px on :focus-visible",
+        "aria-label",
+        "role attributes",
+        "@media (prefers-reduced-motion)",
+        "touch-target: 44x44px",
+        "cursor: pointer"
+      ],
+      "implementation_checklist": [
+        "WCAG AAA verified",
+        "7:1+ contrast checked",
+        "Keyboard navigation tested",
+        "Screen reader tested",
+        "Focus visible 3-4px",
+        "Semantic HTML used",
+        "Touch targets 44x44px"
+      ],
+      "design_system_variables": [
+        "--contrast-ratio: 7:1",
+        "--font-size-min: 16px",
+        "--focus-ring: 3-4px",
+        "--touch-target: 44x44px",
+        "--wcag-level: AAA",
+        "--keyboard-accessible: true",
+        "--sr-tested: true"
+      ]
+    },
+    {
+      "id": "claymorphism",
+      "style_name": "Claymorphism",
+      "primary_colors": [
+        "Pastel: Soft Peach #FDBCB4",
+        "Baby Blue #ADD8E6",
+        "Mint #98FF98",
+        "Lilac #E6E6FA",
+        "light BG"
+      ],
+      "secondary_colors": [
+        "Soft gradients (pastel-to-pastel)",
+        "light/dark variations (20-30%)",
+        "gradient subtle"
+      ],
+      "effects_animations": [
+        "Inner+outer shadows (subtle",
+        "no hard lines)",
+        "soft press (200ms ease-out)",
+        "fluffy elements",
+        "smooth transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design a playful",
+        "toy-like interface with soft 3D",
+        "chunky elements",
+        "bubbly aesthetic",
+        "rounded edges (16-24px)",
+        "thick borders (3-4px)",
+        "double shadows (inner + outer)",
+        "pastel colors",
+        "smooth animations. Perfect for children's apps and creative tools."
+      ],
+      "css_keywords": [
+        "border-radius: 16-24px",
+        "border: 3-4px solid",
+        "box-shadow: inset -2px -2px 8px",
+        "4px 4px 8px",
+        "background: pastel-gradient",
+        "animation: soft bounce (cubic-bezier 0.34",
+        "1.56)"
+      ],
+      "implementation_checklist": [
+        "Border-radius 16-24px",
+        "Thick borders 3-4px",
+        "Double shadows (inner+outer)",
+        "Pastel colors used",
+        "Soft bounce animations",
+        "Playful interactions"
+      ],
+      "design_system_variables": [
+        "--border-radius: 20px",
+        "--border-width: 3-4px",
+        "--shadow-inner: inset -2px -2px 8px",
+        "--shadow-outer: 4px 4px 8px",
+        "--color-palette: pastels",
+        "--animation: bounce"
+      ]
+    },
+    {
+      "id": "aurora-ui",
+      "style_name": "Aurora UI",
+      "primary_colors": [
+        "Complementary: Blue-Orange",
+        "Purple-Yellow",
+        "Electric Blue #0080FF",
+        "Magenta #FF1493",
+        "Cyan #00FFFF"
+      ],
+      "secondary_colors": [
+        "Smooth transitions (Blue→Purple→Pink→Teal)",
+        "iridescent effects",
+        "blend modes (screen",
+        "multiply)"
+      ],
+      "effects_animations": [
+        "Large flowing CSS/SVG gradients",
+        "subtle 8-12s animations",
+        "depth via color layering",
+        "smooth morph"
+      ],
+      "ai_prompt_keywords": [
+        "Create a vibrant gradient interface inspired by Northern Lights with mesh gradients",
+        "smooth color blends",
+        "flowing animations. Use complementary color pairs (blue-orange",
+        "purple-yellow)",
+        "flowing background gradients",
+        "subtle continuous animations (8-12s loops)",
+        "iridescent effects."
+      ],
+      "css_keywords": [
+        "background: conic-gradient or radial-gradient with multiple stops",
+        "animation: @keyframes gradient (8-12s)",
+        "background-size: 200% 200%",
+        "filter: saturate(1.2)",
+        "blend-mode: screen or multiply"
+      ],
+      "implementation_checklist": [
+        "Mesh/flowing gradients applied",
+        "8-12s animation loop",
+        "Complementary colors used",
+        "Smooth color transitions",
+        "Iridescent effect subtle",
+        "Text contrast verified"
+      ],
+      "design_system_variables": [
+        "--gradient-colors: complementary pairs",
+        "--animation-duration: 8-12s",
+        "--blend-mode: screen",
+        "--color-saturation: 1.2",
+        "--effect: iridescent",
+        "--loop-smooth: true"
+      ]
+    },
+    {
+      "id": "retro-futurism",
+      "style_name": "Retro-Futurism",
+      "primary_colors": [
+        "Neon Blue #0080FF",
+        "Hot Pink #FF006E",
+        "Cyan #00FFFF",
+        "Deep Black #1A1A2E",
+        "Purple #5D34D0"
+      ],
+      "secondary_colors": [
+        "Metallic Silver #C0C0C0",
+        "Gold #FFD700",
+        "duotone",
+        "80s Pink #FF10F0",
+        "neon accents"
+      ],
+      "effects_animations": [
+        "CRT scanlines (::before overlay)",
+        "neon glow (text-shadow+box-shadow)",
+        "glitch effects (skew/offset keyframes)"
+      ],
+      "ai_prompt_keywords": [
+        "Build a retro-futuristic (cyberpunk/vaporwave) interface with neon colors (blue",
+        "pink",
+        "cyan)",
+        "deep black background",
+        "80s aesthetic",
+        "CRT scanlines",
+        "glitch effects",
+        "neon glow text/borders",
+        "monospace fonts",
+        "geometric patterns. Use neon text-shadow and animated glitch effects."
+      ],
+      "css_keywords": [
+        "color: neon colors (#0080FF",
+        "#FF006E",
+        "#00FFFF)",
+        "text-shadow: 0 0 10px neon",
+        "background: #000 or #1A1A2E",
+        "font-family: monospace",
+        "animation: glitch (skew+offset)",
+        "filter: hue-rotate"
+      ],
+      "implementation_checklist": [
+        "Neon colors used",
+        "CRT scanlines effect",
+        "Glitch animations active",
+        "Monospace font",
+        "Deep black background",
+        "Glow effects applied",
+        "80s patterns present"
+      ],
+      "design_system_variables": [
+        "--neon-colors: #0080FF #FF006E #00FFFF",
+        "--background: #000000",
+        "--font-family: monospace",
+        "--effect: glitch+glow",
+        "--scanline-opacity: 0.3",
+        "--crt-effect: true"
+      ]
+    },
+    {
+      "id": "flat-design",
+      "style_name": "Flat Design",
+      "primary_colors": [
+        "Solid bright: Red",
+        "Orange",
+        "Blue",
+        "Green",
+        "limited palette (4-6 max)"
+      ],
+      "secondary_colors": [
+        "Complementary colors",
+        "muted secondaries",
+        "high saturation",
+        "clean accents"
+      ],
+      "effects_animations": [
+        "No gradients/shadows",
+        "simple hover (color/opacity shift)",
+        "fast loading",
+        "clean transitions (150-200ms ease)",
+        "minimal icons"
+      ],
+      "ai_prompt_keywords": [
+        "Create a flat",
+        "2D interface with bold colors",
+        "no shadows/gradients",
+        "clean lines",
+        "simple geometric shapes",
+        "icon-heavy",
+        "typography-focused",
+        "minimal ornamentation. Use 4-6 solid",
+        "bright colors in a limited palette with high saturation."
+      ],
+      "css_keywords": [
+        "box-shadow: none",
+        "background: solid color",
+        "border-radius: 0-4px",
+        "color: solid (no gradients)",
+        "fill: solid",
+        "stroke: 1-2px",
+        "font: bold sans-serif",
+        "icons: simplified SVG"
+      ],
+      "implementation_checklist": [
+        "No shadows/gradients",
+        "4-6 solid colors max",
+        "Clean lines consistent",
+        "Simple shapes used",
+        "Icon-heavy layout",
+        "High saturation colors",
+        "Fast loading verified"
+      ],
+      "design_system_variables": [
+        "--shadow: none",
+        "--color-palette: 4-6 solid",
+        "--border-radius: 2px",
+        "--gradient: none",
+        "--icons: simplified SVG",
+        "--animation: minimal 150-200ms"
+      ]
+    },
+    {
+      "id": "skeuomorphism",
+      "style_name": "Skeuomorphism",
+      "primary_colors": [
+        "Rich realistic: wood",
+        "leather",
+        "metal colors",
+        "detailed gradients (8-12 stops)",
+        "metallic effects"
+      ],
+      "secondary_colors": [
+        "Realistic lighting gradients",
+        "shadow variations (30-50% darker)",
+        "texture overlays",
+        "material colors"
+      ],
+      "effects_animations": [
+        "Realistic shadows (layers)",
+        "depth (perspective)",
+        "texture details (noise",
+        "grain)",
+        "realistic animations (300-500ms)"
+      ],
+      "ai_prompt_keywords": [
+        "Design a realistic",
+        "textured interface with 3D depth",
+        "real-world metaphors (leather",
+        "wood",
+        "metal)",
+        "complex gradients (8-12 stops)",
+        "realistic shadows",
+        "grain/texture overlays",
+        "tactile press animations. Perfect for premium/luxury products."
+      ],
+      "css_keywords": [
+        "background: complex gradient (8-12 stops)",
+        "box-shadow: realistic multi-layer",
+        "background-image: texture overlay (noise",
+        "grain)",
+        "filter: drop-shadow",
+        "transform: scale on press (300-500ms)"
+      ],
+      "implementation_checklist": [
+        "Realistic textures applied",
+        "Complex gradients 8-12 stops",
+        "Multi-layer shadows",
+        "Texture overlays present",
+        "Tactile animations smooth",
+        "Depth effect pronounced"
+      ],
+      "design_system_variables": [
+        "--gradient-stops: 8-12",
+        "--texture-overlay: noise+grain",
+        "--shadow-layers: 3+",
+        "--animation-duration: 300-500ms",
+        "--depth-effect: pronounced",
+        "--tactile: true"
+      ]
+    },
+    {
+      "id": "liquid-glass",
+      "style_name": "Liquid Glass",
+      "primary_colors": [
+        "Vibrant iridescent (rainbow spectrum)",
+        "translucent base with opacity shifts",
+        "gradient fluidity"
+      ],
+      "secondary_colors": [
+        "Chromatic aberration (Red-Cyan)",
+        "iridescent oil-spill",
+        "fluid gradient blends",
+        "holographic effects"
+      ],
+      "effects_animations": [
+        "Morphing elements (SVG/CSS)",
+        "fluid animations (400-600ms curves)",
+        "dynamic blur (backdrop-filter)",
+        "color transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Create a premium liquid glass effect with morphing shapes",
+        "flowing animations",
+        "chromatic aberration",
+        "iridescent gradients",
+        "smooth 400-600ms transitions. Use SVG morphing for shape changes",
+        "dynamic blur",
+        "smooth color transitions creating a fluid",
+        "premium feel."
+      ],
+      "css_keywords": [
+        "animation: morphing SVG paths (400-600ms)",
+        "backdrop-filter: blur + saturate",
+        "filter: hue-rotate + brightness",
+        "blend-mode: screen",
+        "background: iridescent gradient"
+      ],
+      "implementation_checklist": [
+        "Morphing animations 400-600ms",
+        "Chromatic aberration applied",
+        "Dynamic blur active",
+        "Iridescent gradients",
+        "Smooth color transitions",
+        "Premium feel achieved"
+      ],
+      "design_system_variables": [
+        "--morph-duration: 400-600ms",
+        "--blur-amount: 15px",
+        "--chromatic-aberration: true",
+        "--iridescent: true",
+        "--blend-mode: screen",
+        "--smooth-transitions: true"
+      ]
+    },
+    {
+      "id": "motion-driven",
+      "style_name": "Motion-Driven",
+      "primary_colors": [
+        "Bold colors emphasize movement",
+        "high contrast animated",
+        "dynamic gradients",
+        "accent action colors"
+      ],
+      "secondary_colors": [
+        "Transitional states",
+        "success (Green #22C55E)",
+        "error (Red #EF4444)",
+        "neutral feedback"
+      ],
+      "effects_animations": [
+        "Scroll anim (Intersection Observer)",
+        "hover (300-400ms)",
+        "entrance",
+        "parallax (3-5 layers)",
+        "page transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Build an animation-heavy interface with scroll-triggered animations",
+        "microinteractions",
+        "parallax scrolling (3-5 layers)",
+        "smooth transitions (300-400ms)",
+        "entrance animations",
+        "page transitions. Use Intersection Observer for scroll effects",
+        "transform for performance",
+        "GPU acceleration."
+      ],
+      "css_keywords": [
+        "animation: @keyframes scroll-reveal",
+        "transform: translateY/X",
+        "Intersection Observer API",
+        "will-change: transform",
+        "scroll-behavior: smooth",
+        "animation-duration: 300-400ms"
+      ],
+      "implementation_checklist": [
+        "Scroll animations active",
+        "Parallax 3-5 layers",
+        "Entrance animations smooth",
+        "Page transitions fluid",
+        "GPU accelerated",
+        "Prefers-reduced-motion respected"
+      ],
+      "design_system_variables": [
+        "--animation-duration: 300-400ms",
+        "--parallax-layers: 5",
+        "--scroll-behavior: smooth",
+        "--gpu-accelerated: true",
+        "--entrance-animation: true",
+        "--page-transition: smooth"
+      ]
+    },
+    {
+      "id": "micro-interactions",
+      "style_name": "Micro-interactions",
+      "primary_colors": [
+        "Subtle color shifts (10-20%)",
+        "feedback: Green #22C55E",
+        "Red #EF4444",
+        "Amber #F59E0B"
+      ],
+      "secondary_colors": [
+        "Accent feedback",
+        "neutral supporting",
+        "clear action indicators"
+      ],
+      "effects_animations": [
+        "Small hover (50-100ms)",
+        "loading spinners",
+        "success/error state anim",
+        "gesture-triggered (swipe/pinch)",
+        "haptic"
+      ],
+      "ai_prompt_keywords": [
+        "Design with delightful micro-interactions: small 50-100ms animations",
+        "gesture-based responses",
+        "tactile feedback",
+        "loading spinners",
+        "success/error states",
+        "subtle hover effects",
+        "haptic feedback triggers for mobile. Focus on responsive",
+        "contextual interactions."
+      ],
+      "css_keywords": [
+        "animation: short 50-100ms",
+        "transition: hover states",
+        "@media (hover: hover) for desktop",
+        ":active for press",
+        "haptic-feedback CSS/API",
+        "loading animation smooth loop"
+      ],
+      "implementation_checklist": [
+        "Micro-animations 50-100ms",
+        "Gesture-responsive",
+        "Tactile feedback visual/haptic",
+        "Loading spinners smooth",
+        "Success/error states clear",
+        "Hover effects subtle"
+      ],
+      "design_system_variables": [
+        "--micro-animation-duration: 50-100ms",
+        "--gesture-responsive: true",
+        "--haptic-feedback: true",
+        "--loading-animation: smooth",
+        "--state-feedback: success+error"
+      ]
+    },
+    {
+      "id": "inclusive-design",
+      "style_name": "Inclusive Design",
+      "primary_colors": [
+        "WCAG AAA (7:1+ contrast)",
+        "avoid red-green only",
+        "symbol-based indicators",
+        "high contrast primary"
+      ],
+      "secondary_colors": [
+        "Supporting patterns (stripes",
+        "dots",
+        "hatch)",
+        "symbols",
+        "combinations",
+        "clear non-color indicators"
+      ],
+      "effects_animations": [
+        "Haptic feedback (vibration)",
+        "voice guidance",
+        "focus indicators (4px+ ring)",
+        "motion options",
+        "alt content",
+        "semantic"
+      ],
+      "ai_prompt_keywords": [
+        "Design for universal accessibility: high contrast (7:1+)",
+        "large text (16px+)",
+        "keyboard-only navigation",
+        "screen reader optimization",
+        "WCAG AAA compliance",
+        "symbol-based color indicators (not color-only)",
+        "haptic feedback",
+        "voice interaction support",
+        "reduced motion options."
+      ],
+      "css_keywords": [
+        "aria-* attributes complete",
+        "role attributes semantic",
+        "focus-visible: 3-4px ring",
+        "color-contrast: 7:1+",
+        "@media (prefers-reduced-motion)",
+        "alt text on all images",
+        "form labels properly associated"
+      ],
+      "implementation_checklist": [
+        "WCAG AAA verified",
+        "7:1+ contrast all text",
+        "Keyboard accessible (Tab/Enter)",
+        "Screen reader tested",
+        "Focus visible 3-4px",
+        "No color-only indicators",
+        "Haptic fallback"
+      ],
+      "design_system_variables": [
+        "--contrast-ratio: 7:1",
+        "--font-size: 16px+",
+        "--keyboard-accessible: true",
+        "--sr-compatible: true",
+        "--wcag-level: AAA",
+        "--color-symbols: true",
+        "--haptic: enabled"
+      ]
+    },
+    {
+      "id": "zero-interface",
+      "style_name": "Zero Interface",
+      "primary_colors": [
+        "Neutral backgrounds: Soft white #FAFAFA",
+        "light grey #F0F0F0",
+        "warm off-white #F5F1E8"
+      ],
+      "secondary_colors": [
+        "Subtle feedback: light green",
+        "light red",
+        "minimal UI elements",
+        "soft accents"
+      ],
+      "effects_animations": [
+        "Voice recognition UI",
+        "gesture detection",
+        "AI predictions (smooth reveal)",
+        "progressive disclosure",
+        "smart suggestions"
+      ],
+      "ai_prompt_keywords": [
+        "Create a voice-first",
+        "gesture-based",
+        "AI-driven interface with minimal visible UI",
+        "progressive disclosure",
+        "voice recognition UI",
+        "gesture detection",
+        "AI predictions",
+        "smart suggestions",
+        "context-aware actions. Hide controls until needed."
+      ],
+      "css_keywords": [
+        "voice-commands: Web Speech API",
+        "gesture-detection: touch events",
+        "AI-predictions: hidden by default (reveal on hover)",
+        "progressive-disclosure: show on demand",
+        "minimal UI visible"
+      ],
+      "implementation_checklist": [
+        "Voice commands responsive",
+        "Gesture detection active",
+        "AI predictions hidden/revealed",
+        "Progressive disclosure working",
+        "Minimal visible UI",
+        "Smart suggestions contextual"
+      ],
+      "design_system_variables": [
+        "--voice-ui: enabled",
+        "--gesture-detection: active",
+        "--ai-predictions: smart",
+        "--progressive-disclosure: true",
+        "--visible-ui: minimal",
+        "--context-aware: true"
+      ]
+    },
+    {
+      "id": "soft-ui-evolution",
+      "style_name": "Soft UI Evolution",
+      "primary_colors": [
+        "Improved contrast pastels: Soft Blue #87CEEB",
+        "Soft Pink #FFB6C1",
+        "Soft Green #90EE90",
+        "better hierarchy"
+      ],
+      "secondary_colors": [
+        "Better combinations",
+        "accessible secondary",
+        "supporting with improved contrast",
+        "modern accents"
+      ],
+      "effects_animations": [
+        "Improved shadows (softer than flat",
+        "clearer than neumorphism)",
+        "modern (200-300ms)",
+        "focus visible",
+        "WCAG AA/AAA"
+      ],
+      "ai_prompt_keywords": [
+        "Design evolved neumorphism with improved contrast (WCAG AA+)",
+        "modern aesthetics",
+        "subtle depth",
+        "accessibility focus. Use soft shadows (softer than flat but clearer than pure neumorphism)",
+        "better color hierarchy",
+        "improved focus states",
+        "modern 200-300ms animations."
+      ],
+      "css_keywords": [
+        "box-shadow: softer multi-layer (0 2px 4px)",
+        "background: improved contrast pastels",
+        "border-radius: 8-12px",
+        "animation: 200-300ms smooth",
+        "outline: 2-3px on focus",
+        "contrast: 4.5:1+"
+      ],
+      "implementation_checklist": [
+        "Improved contrast AA/AAA",
+        "Soft shadows modern",
+        "Border-radius 8-12px",
+        "Animations 200-300ms",
+        "Focus states visible",
+        "Color hierarchy clear"
+      ],
+      "design_system_variables": [
+        "--shadow-soft: modern blend",
+        "--border-radius: 10px",
+        "--animation-duration: 200-300ms",
+        "--contrast-ratio: 4.5:1+",
+        "--color-hierarchy: improved",
+        "--wcag-level: AA+"
+      ]
+    },
+    {
+      "id": "hero-centric-design",
+      "style_name": "Hero-Centric Design",
+      "primary_colors": [
+        "Brand primary color",
+        "white/light backgrounds for contrast",
+        "accent color for CTA"
+      ],
+      "secondary_colors": [
+        "Supporting colors for secondary CTAs",
+        "accent highlights",
+        "trust elements (testimonials",
+        "logos)"
+      ],
+      "effects_animations": [
+        "Smooth scroll reveal",
+        "fade-in animations on hero",
+        "subtle background parallax",
+        "CTA glow/pulse effect"
+      ],
+      "ai_prompt_keywords": [
+        "Design a hero-centric landing page. Use: full-width hero section",
+        "compelling headline (60-80 chars)",
+        "high-contrast CTA button",
+        "product screenshot or video",
+        "value proposition above fold",
+        "gradient or image background",
+        "clear visual hierarchy."
+      ],
+      "css_keywords": [
+        "min-height: 100vh",
+        "display: flex",
+        "align-items: center",
+        "background: linear-gradient or image",
+        "text-shadow for readability",
+        "max-width: 800px for text",
+        "button with hover scale (1.05)"
+      ],
+      "implementation_checklist": [
+        "Hero section full viewport height",
+        "Headline visible above fold",
+        "CTA button high contrast",
+        "Background image optimized (WebP)",
+        "Text readable on background",
+        "Mobile responsive layout"
+      ],
+      "design_system_variables": [
+        "--hero-min-height: 100vh",
+        "--headline-size: clamp(2rem",
+        "5vw",
+        "4rem)",
+        "--cta-padding: 1rem 2rem",
+        "--overlay-opacity: 0.5",
+        "--text-shadow: 0 2px 4px rgba(0",
+        "0",
+        "0",
+        "0.3)"
+      ]
+    },
+    {
+      "id": "conversion-optimized",
+      "style_name": "Conversion-Optimized",
+      "primary_colors": [
+        "Primary brand color",
+        "high-contrast white/light backgrounds",
+        "warning/urgency colors for time-limited offers"
+      ],
+      "secondary_colors": [
+        "Secondary CTA color (muted)",
+        "trust element colors (testimonial highlights)",
+        "accent for key benefits"
+      ],
+      "effects_animations": [
+        "Hover states on CTA (color shift",
+        "slight scale)",
+        "form field focus animations",
+        "loading spinner",
+        "success feedback"
+      ],
+      "ai_prompt_keywords": [
+        "Design a conversion-optimized landing page. Use: single primary CTA",
+        "minimal distractions",
+        "trust badges",
+        "urgency elements (limited time)",
+        "social proof (testimonials)",
+        "clear value proposition",
+        "form above fold",
+        "progress indicators."
+      ],
+      "css_keywords": [
+        "form with focus states",
+        "input:focus ring",
+        "button: primary color high contrast",
+        "position: sticky for CTA",
+        "max-width: 600px for form",
+        "loading spinner",
+        "success/error states"
+      ],
+      "implementation_checklist": [
+        "Single primary CTA visible",
+        "Form fields minimal (3-5)",
+        "Trust badges present",
+        "Social proof above fold",
+        "Mobile form optimized",
+        "Loading states implemented",
+        "A/B test ready"
+      ],
+      "design_system_variables": [
+        "--cta-color: high contrast primary",
+        "--form-max-width: 600px",
+        "--input-height: 48px",
+        "--focus-ring: 3px solid accent",
+        "--success-color: #22C55E",
+        "--error-color: #EF4444"
+      ]
+    },
+    {
+      "id": "feature-rich-showcase",
+      "style_name": "Feature-Rich Showcase",
+      "primary_colors": [
+        "Primary brand",
+        "bright secondary colors for feature cards",
+        "contrasting accent for CTAs"
+      ],
+      "secondary_colors": [
+        "Supporting colors for: benefits (green)",
+        "problems (red/orange)",
+        "features (blue/purple)",
+        "social proof (neutral)"
+      ],
+      "effects_animations": [
+        "Card hover effects (lift/scale)",
+        "icon animations on scroll",
+        "feature toggle animations",
+        "smooth section transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design a feature showcase landing page. Use: grid layout for features (3-4 columns)",
+        "feature cards with icons",
+        "benefit-focused copy",
+        "alternating sections",
+        "comparison tables",
+        "interactive demos",
+        "problem-solution pairs."
+      ],
+      "css_keywords": [
+        "display: grid",
+        "grid-template-columns: repeat(auto-fit",
+        "minmax(280px",
+        "1fr))",
+        "gap: 2rem",
+        "card hover effects (translateY -4px)",
+        "icon containers",
+        "alternating background colors"
+      ],
+      "implementation_checklist": [
+        "Feature grid responsive",
+        "Icons consistent style",
+        "Card hover effects smooth",
+        "Alternating sections contrast",
+        "Benefits clearly stated",
+        "Mobile stacks properly"
+      ],
+      "design_system_variables": [
+        "--card-padding: 2rem",
+        "--card-radius: 12px",
+        "--icon-size: 48px",
+        "--grid-gap: 2rem",
+        "--section-padding: 4rem 0",
+        "--hover-transform: translateY(-4px)"
+      ]
+    },
+    {
+      "id": "minimal-direct",
+      "style_name": "Minimal & Direct",
+      "primary_colors": [
+        "Monochromatic primary",
+        "white background",
+        "single accent color for CTA",
+        "black/dark grey text"
+      ],
+      "secondary_colors": [
+        "Minimal secondary colors",
+        "reserved for critical CTAs only",
+        "neutral supporting elements"
+      ],
+      "effects_animations": [
+        "Very subtle hover effects",
+        "minimal animations",
+        "fast page load (no heavy animations)",
+        "smooth scroll"
+      ],
+      "ai_prompt_keywords": [
+        "Design a minimal direct landing page. Use: single column layout",
+        "maximum white space",
+        "essential content only",
+        "one CTA",
+        "clean typography",
+        "no decorative elements",
+        "fast loading",
+        "direct messaging."
+      ],
+      "css_keywords": [
+        "max-width: 680px",
+        "margin: 0 auto",
+        "padding: 4rem 2rem",
+        "font-size: 18-20px",
+        "line-height: 1.6",
+        "minimal animations",
+        "no box-shadow",
+        "clean borders only"
+      ],
+      "implementation_checklist": [
+        "Single column centered",
+        "White space generous",
+        "One primary CTA only",
+        "No decorative images",
+        "Page weight < 500KB",
+        "Load time < 2s"
+      ],
+      "design_system_variables": [
+        "--content-max-width: 680px",
+        "--spacing-large: 4rem",
+        "--font-size-body: 18px",
+        "--line-height: 1.6",
+        "--color-text: #1a1a1a",
+        "--color-bg: #ffffff"
+      ]
+    },
+    {
+      "id": "social-proof-focused",
+      "style_name": "Social Proof-Focused",
+      "primary_colors": [
+        "Primary brand",
+        "trust colors (blue)",
+        "success/growth colors (green)",
+        "neutral backgrounds"
+      ],
+      "secondary_colors": [
+        "Testimonial highlight colors",
+        "logo grid backgrounds (light grey)",
+        "badge/achievement colors"
+      ],
+      "effects_animations": [
+        "Testimonial carousel animations",
+        "logo grid fade-in",
+        "stat counter animations (number count-up)",
+        "review star ratings"
+      ],
+      "ai_prompt_keywords": [
+        "Design a social proof landing page. Use: testimonials with photos",
+        "client logos grid",
+        "case study cards",
+        "review ratings (stars)",
+        "user count metrics",
+        "success stories",
+        "trust indicators",
+        "before/after comparisons."
+      ],
+      "css_keywords": [
+        "testimonial cards with avatar",
+        "logo grid (grayscale filter)",
+        "star rating SVGs",
+        "counter animations (count-up)",
+        "blockquote styling",
+        "carousel for testimonials",
+        "metric cards"
+      ],
+      "implementation_checklist": [
+        "Testimonials with real photos",
+        "Logo grid 6-12 logos",
+        "Star ratings accessible",
+        "Metrics animated on scroll",
+        "Case studies linked",
+        "Mobile carousel works"
+      ],
+      "design_system_variables": [
+        "--avatar-size: 64px",
+        "--logo-height: 40px",
+        "--star-color: #FBBF24",
+        "--metric-font-size: 3rem",
+        "--testimonial-bg: #F9FAFB",
+        "--blockquote-border: 4px solid accent"
+      ]
+    },
+    {
+      "id": "interactive-product-demo",
+      "style_name": "Interactive Product Demo",
+      "primary_colors": [
+        "Primary brand",
+        "interface colors matching product",
+        "demo highlight colors for interactive elements"
+      ],
+      "secondary_colors": [
+        "Product UI colors",
+        "tutorial step colors (numbered progression)",
+        "hover state indicators"
+      ],
+      "effects_animations": [
+        "Product animation playback",
+        "step progression animations",
+        "hover reveal effects",
+        "smooth zoom on interaction"
+      ],
+      "ai_prompt_keywords": [
+        "Design an interactive demo landing page. Use: embedded product mockup",
+        "video walkthrough",
+        "step-by-step guide",
+        "hover-to-reveal features",
+        "live demo button",
+        "screenshot carousel",
+        "feature highlights on interaction."
+      ],
+      "css_keywords": [
+        "video element with controls",
+        "position: relative for overlays",
+        "hover reveal (opacity transition)",
+        "step indicators",
+        "modal for full demo",
+        "screenshot lightbox",
+        "play button overlay"
+      ],
+      "implementation_checklist": [
+        "Demo video loads fast",
+        "Fallback for no-JS",
+        "Step indicators clear",
+        "Hover states obvious",
+        "Mobile touch friendly",
+        "Demo CTA prominent"
+      ],
+      "design_system_variables": [
+        "--video-aspect-ratio: 16/9",
+        "--overlay-bg: rgba(0",
+        "0",
+        "0",
+        "0.7)",
+        "--step-indicator-size: 32px",
+        "--play-button-size: 80px",
+        "--transition-duration: 300ms"
+      ]
+    },
+    {
+      "id": "trust-authority",
+      "style_name": "Trust & Authority",
+      "primary_colors": [
+        "Professional colors (blue/grey)",
+        "trust colors",
+        "certification badge colors (gold/silver accents)"
+      ],
+      "secondary_colors": [
+        "Certificate highlight colors",
+        "metric showcase colors",
+        "comparison highlight (success green)"
+      ],
+      "effects_animations": [
+        "Badge hover effects",
+        "metric pulse animations",
+        "certificate carousel",
+        "smooth stat reveal"
+      ],
+      "ai_prompt_keywords": [
+        "Design a trust-focused landing page. Use: certification badges",
+        "security indicators",
+        "expert credentials",
+        "industry awards",
+        "case study metrics",
+        "compliance logos (GDPR",
+        "SOC2)",
+        "guarantee badges",
+        "professional photography."
+      ],
+      "css_keywords": [
+        "badge grid layout",
+        "shield icons",
+        "lock icons for security",
+        "certificate styling",
+        "metric cards with icons",
+        "professional color scheme (blue/grey)",
+        "subtle shadows for depth"
+      ],
+      "implementation_checklist": [
+        "Security badges visible",
+        "Certifications verified",
+        "Metrics with sources",
+        "Professional imagery",
+        "Guarantee clearly stated",
+        "Contact info accessible"
+      ],
+      "design_system_variables": [
+        "--badge-height: 48px",
+        "--trust-color: #1E40AF",
+        "--security-green: #059669",
+        "--card-shadow: 0 4px 6px rgba(0",
+        "0",
+        "0",
+        "0.1)",
+        "--metric-highlight: #F59E0B"
+      ]
+    },
+    {
+      "id": "storytelling-driven",
+      "style_name": "Storytelling-Driven",
+      "primary_colors": [
+        "Brand primary",
+        "warm/emotional colors",
+        "varied accent colors per story section",
+        "high visual variety"
+      ],
+      "secondary_colors": [
+        "Story section color coding",
+        "emotional state colors (calm",
+        "excitement",
+        "success)",
+        "transitional gradients"
+      ],
+      "effects_animations": [
+        "Section-to-section animations",
+        "scroll-triggered reveals",
+        "character/icon animations",
+        "morphing transitions",
+        "parallax narrative"
+      ],
+      "ai_prompt_keywords": [
+        "Design a storytelling landing page. Use: narrative flow sections",
+        "scroll-triggered reveals",
+        "chapter-like structure",
+        "emotional imagery",
+        "brand journey visualization",
+        "founder story",
+        "mission statement",
+        "timeline progression."
+      ],
+      "css_keywords": [
+        "scroll-snap sections",
+        "Intersection Observer for reveals",
+        "parallax backgrounds",
+        "section transitions",
+        "timeline CSS",
+        "narrative typography (varied sizes)",
+        "image-text alternating"
+      ],
+      "implementation_checklist": [
+        "Story flows naturally",
+        "Scroll reveals smooth",
+        "Sections timed well",
+        "Emotional hooks present",
+        "Mobile story readable",
+        "Skip option available"
+      ],
+      "design_system_variables": [
+        "--section-min-height: 100vh",
+        "--reveal-duration: 600ms",
+        "--narrative-font: serif",
+        "--chapter-spacing: 8rem",
+        "--timeline-color: accent",
+        "--parallax-speed: 0.5"
+      ]
+    },
+    {
+      "id": "data-dense-dashboard",
+      "style_name": "Data-Dense Dashboard",
+      "primary_colors": [
+        "Neutral primary (light grey/white #F5F5F5)",
+        "data colors (blue/green/red)",
+        "dark text #333333"
+      ],
+      "secondary_colors": [
+        "Chart colors: success (green #22C55E)",
+        "warning (amber #F59E0B)",
+        "alert (red #EF4444)",
+        "neutral (grey)"
+      ],
+      "effects_animations": [
+        "Hover tooltips",
+        "chart zoom on click",
+        "row highlighting on hover",
+        "smooth filter animations",
+        "data loading spinners"
+      ],
+      "ai_prompt_keywords": [
+        "Design a data-dense dashboard. Use: multiple chart widgets",
+        "KPI cards row",
+        "data tables with sorting",
+        "minimal padding (8-12px)",
+        "efficient grid layout",
+        "filter sidebar",
+        "dense but readable typography",
+        "maximum information density."
+      ],
+      "css_keywords": [
+        "display: grid",
+        "grid-template-columns: repeat(12",
+        "1fr)",
+        "gap: 8px",
+        "padding: 12px",
+        "font-size: 12-14px",
+        "overflow: auto for tables",
+        "compact card design",
+        "sticky headers"
+      ],
+      "implementation_checklist": [
+        "Grid layout 12 columns",
+        "KPI cards responsive",
+        "Tables sortable",
+        "Filters functional",
+        "Loading states for data",
+        "Export functionality"
+      ],
+      "design_system_variables": [
+        "--grid-gap: 8px",
+        "--card-padding: 12px",
+        "--font-size-small: 12px",
+        "--table-row-height: 36px",
+        "--sidebar-width: 240px",
+        "--header-height: 56px"
+      ]
+    },
+    {
+      "id": "heat-map-heatmap-style",
+      "style_name": "Heat Map & Heatmap Style",
+      "primary_colors": [
+        "Gradient scale: Cool (blue #0080FF) to hot (red #FF0000)",
+        "neutral middle (white/yellow)"
+      ],
+      "secondary_colors": [
+        "Support gradients: Light (cool blue) to dark (warm red)",
+        "divergent for positive/negative data",
+        "monochromatic options"
+      ],
+      "effects_animations": [
+        "Color gradient transitions on data change",
+        "cell highlighting on hover",
+        "tooltip reveal on click",
+        "smooth color animation"
+      ],
+      "ai_prompt_keywords": [
+        "Design a heatmap visualization. Use: color gradient scale (cool to hot)",
+        "cell-based grid",
+        "intensity legend",
+        "hover tooltips",
+        "geographic or matrix layout",
+        "divergent color scheme for +/- values",
+        "accessible color alternatives."
+      ],
+      "css_keywords": [
+        "display: grid",
+        "background: linear-gradient for legend",
+        "cell hover states",
+        "tooltip positioning",
+        "color scale (blue→white→red)",
+        "SVG for geographic",
+        "canvas for large datasets"
+      ],
+      "implementation_checklist": [
+        "Color scale clear",
+        "Legend visible",
+        "Tooltips informative",
+        "Colorblind alternatives",
+        "Zoom/pan for geo",
+        "Performance for large data"
+      ],
+      "design_system_variables": [
+        "--heatmap-cool: #0080FF",
+        "--heatmap-neutral: #FFFFFF",
+        "--heatmap-hot: #FF0000",
+        "--cell-size: 24px",
+        "--legend-width: 200px",
+        "--tooltip-bg: rgba(0",
+        "0",
+        "0",
+        "0.9)"
+      ]
+    },
+    {
+      "id": "executive-dashboard",
+      "style_name": "Executive Dashboard",
+      "primary_colors": [
+        "Brand colors",
+        "professional palette (blue/grey/white)",
+        "accent for KPIs",
+        "red for alerts/concerns"
+      ],
+      "secondary_colors": [
+        "KPI highlight colors: positive (green)",
+        "negative (red)",
+        "neutral (grey)",
+        "trend arrow colors"
+      ],
+      "effects_animations": [
+        "KPI value animations (count-up)",
+        "trend arrow direction animations",
+        "metric card hover lift",
+        "alert pulse effect"
+      ],
+      "ai_prompt_keywords": [
+        "Design an executive dashboard. Use: large KPI cards (4-6 max)",
+        "trend sparklines",
+        "high-level summary only",
+        "clean layout with white space",
+        "traffic light indicators (red/yellow/green)",
+        "at-a-glance insights",
+        "minimal detail."
+      ],
+      "css_keywords": [
+        "display: flex for KPI row",
+        "large font-size (24-48px) for metrics",
+        "sparkline SVG inline",
+        "status indicators (border-left color)",
+        "card shadows for hierarchy",
+        "responsive breakpoints"
+      ],
+      "implementation_checklist": [
+        "KPIs 4-6 maximum",
+        "Trends visible",
+        "Status colors clear",
+        "One-page view",
+        "Mobile simplified",
+        "Print-friendly layout"
+      ],
+      "design_system_variables": [
+        "--kpi-font-size: 48px",
+        "--sparkline-height: 32px",
+        "--status-green: #22C55E",
+        "--status-yellow: #F59E0B",
+        "--status-red: #EF4444",
+        "--card-min-width: 280px"
+      ]
+    },
+    {
+      "id": "real-time-monitoring",
+      "style_name": "Real-Time Monitoring",
+      "primary_colors": [
+        "Alert colors: critical (red #FF0000)",
+        "warning (orange #FFA500)",
+        "normal (green #22C55E)",
+        "updating (blue animation)"
+      ],
+      "secondary_colors": [
+        "Status indicator colors",
+        "chart line colors varying by metric",
+        "streaming data highlight colors"
+      ],
+      "effects_animations": [
+        "Real-time chart animations",
+        "alert pulse/glow",
+        "status indicator blink animation",
+        "smooth data stream updates",
+        "loading effect"
+      ],
+      "ai_prompt_keywords": [
+        "Design a real-time monitoring dashboard. Use: live status indicators (pulsing)",
+        "streaming charts",
+        "alert notifications",
+        "connection status",
+        "auto-refresh indicators",
+        "critical alerts prominent",
+        "system health overview."
+      ],
+      "css_keywords": [
+        "animation: pulse for live",
+        "WebSocket for streaming",
+        "position: fixed for alerts",
+        "status-dot with animation",
+        "chart real-time updates",
+        "notification toast",
+        "connection indicator"
+      ],
+      "implementation_checklist": [
+        "Live updates working",
+        "Alert sounds optional",
+        "Connection status shown",
+        "Auto-refresh indicated",
+        "Critical alerts prominent",
+        "Offline fallback"
+      ],
+      "design_system_variables": [
+        "--pulse-animation: pulse 2s infinite",
+        "--alert-z-index: 1000",
+        "--live-indicator: #22C55E",
+        "--critical-color: #DC2626",
+        "--update-interval: 5s",
+        "--toast-duration: 5s"
+      ]
+    },
+    {
+      "id": "drill-down-analytics",
+      "style_name": "Drill-Down Analytics",
+      "primary_colors": [
+        "Primary brand",
+        "breadcrumb colors",
+        "drill-level indicator colors",
+        "hierarchy depth colors"
+      ],
+      "secondary_colors": [
+        "Drill-down path indicator colors",
+        "level-specific colors",
+        "highlight colors for selected level",
+        "transition colors"
+      ],
+      "effects_animations": [
+        "Drill-down expand animations",
+        "breadcrumb click transitions",
+        "smooth detail reveal",
+        "level change smooth",
+        "data reload animation"
+      ],
+      "ai_prompt_keywords": [
+        "Design a drill-down analytics dashboard. Use: breadcrumb navigation",
+        "expandable sections",
+        "summary-to-detail flow",
+        "back button prominent",
+        "level indicators",
+        "context preservation",
+        "hierarchical data display."
+      ],
+      "css_keywords": [
+        "breadcrumb nav with separators",
+        "details/summary for expand",
+        "transition for drill animation",
+        "position: sticky breadcrumb",
+        "nested grid layouts",
+        "smooth scroll to detail"
+      ],
+      "implementation_checklist": [
+        "Breadcrumbs clear",
+        "Back navigation easy",
+        "Expand animation smooth",
+        "Context preserved",
+        "Mobile drill works",
+        "Deep links supported"
+      ],
+      "design_system_variables": [
+        "--breadcrumb-separator: /",
+        "--expand-duration: 300ms",
+        "--level-indent: 24px",
+        "--back-button-size: 40px",
+        "--context-bar-height: 48px",
+        "--drill-transition: 300ms ease"
+      ]
+    },
+    {
+      "id": "comparative-analysis-dashboard",
+      "style_name": "Comparative Analysis Dashboard",
+      "primary_colors": [
+        "Comparison colors: primary (blue)",
+        "comparison (orange/purple)",
+        "delta indicator (green/red)"
+      ],
+      "secondary_colors": [
+        "Winning metric color (green)",
+        "losing metric color (red)",
+        "neutral comparison (grey)",
+        "benchmark colors"
+      ],
+      "effects_animations": [
+        "Comparison bar animations (grow to value)",
+        "delta indicator animations (direction arrows)",
+        "highlight on compare"
+      ],
+      "ai_prompt_keywords": [
+        "Design a comparison dashboard. Use: side-by-side metrics",
+        "period selectors (vs last month)",
+        "delta indicators (+/-)",
+        "benchmark lines",
+        "A/B comparison tables",
+        "winning/losing highlights",
+        "percentage change badges."
+      ],
+      "css_keywords": [
+        "display: flex for side-by-side",
+        "gap for comparison spacing",
+        "color coding (green up",
+        "red down)",
+        "arrow indicators",
+        "diff highlighting",
+        "comparison table zebra striping"
+      ],
+      "implementation_checklist": [
+        "Period selector works",
+        "Deltas calculated",
+        "Colors meaningful",
+        "Benchmarks shown",
+        "Mobile stacks properly",
+        "Export comparison"
+      ],
+      "design_system_variables": [
+        "--positive-color: #22C55E",
+        "--negative-color: #EF4444",
+        "--neutral-color: #6B7280",
+        "--comparison-gap: 2rem",
+        "--arrow-size: 16px",
+        "--badge-padding: 4px 8px"
+      ]
+    },
+    {
+      "id": "predictive-analytics",
+      "style_name": "Predictive Analytics",
+      "primary_colors": [
+        "Forecast line color (distinct from actual)",
+        "confidence interval shading",
+        "anomaly highlight (red alert)",
+        "trend colors"
+      ],
+      "secondary_colors": [
+        "High confidence (dark color)",
+        "low confidence (light color)",
+        "anomaly colors (red/orange)",
+        "normal trend (green/blue)"
+      ],
+      "effects_animations": [
+        "Forecast line animation on draw",
+        "confidence band fade-in",
+        "anomaly pulse alert",
+        "smoothing function animations"
+      ],
+      "ai_prompt_keywords": [
+        "Design a predictive analytics dashboard. Use: forecast lines (dashed)",
+        "confidence intervals (shaded bands)",
+        "trend projections",
+        "anomaly highlights",
+        "scenario toggles",
+        "AI insight cards",
+        "probability indicators."
+      ],
+      "css_keywords": [
+        "stroke-dasharray for forecast lines",
+        "fill-opacity for confidence bands",
+        "anomaly markers (circles)",
+        "tooltip for predictions",
+        "toggle switches for scenarios",
+        "gradient for probability"
+      ],
+      "implementation_checklist": [
+        "Forecast line distinct",
+        "Confidence bands visible",
+        "Anomalies highlighted",
+        "Scenarios switchable",
+        "Predictions dated",
+        "Accuracy shown"
+      ],
+      "design_system_variables": [
+        "--forecast-dash: 5 5",
+        "--confidence-opacity: 0.2",
+        "--anomaly-color: #F59E0B",
+        "--prediction-color: #8B5CF6",
+        "--scenario-toggle-width: 48px",
+        "--ai-accent: #6366F1"
+      ]
+    },
+    {
+      "id": "user-behavior-analytics",
+      "style_name": "User Behavior Analytics",
+      "primary_colors": [
+        "Funnel stage colors: high engagement (green)",
+        "drop-off (red)",
+        "conversion (blue)",
+        "user flow arrows (grey)"
+      ],
+      "secondary_colors": [
+        "Stage completion colors (success)",
+        "abandonment colors (warning)",
+        "engagement levels (gradient)",
+        "cohort colors"
+      ],
+      "effects_animations": [
+        "Funnel animation (fill-down)",
+        "flow diagram animations (connection draw)",
+        "conversion pulse",
+        "engagement bar fill"
+      ],
+      "ai_prompt_keywords": [
+        "Design a user behavior analytics dashboard. Use: funnel visualization",
+        "user flow diagrams (Sankey)",
+        "conversion metrics",
+        "engagement heatmaps",
+        "cohort tables",
+        "retention curves",
+        "session replay indicators."
+      ],
+      "css_keywords": [
+        "SVG funnel with gradients",
+        "Sankey diagram library",
+        "percentage labels",
+        "cohort grid cells",
+        "retention chart (line/area)",
+        "click heatmap overlay",
+        "session timeline"
+      ],
+      "implementation_checklist": [
+        "Funnel stages clear",
+        "Flow diagram readable",
+        "Conversions calculated",
+        "Cohorts comparable",
+        "Retention trends visible",
+        "Privacy compliant"
+      ],
+      "design_system_variables": [
+        "--funnel-width: 100%",
+        "--stage-colors: gradient",
+        "--flow-opacity: 0.6",
+        "--cohort-cell-size: 40px",
+        "--retention-line-color: #3B82F6",
+        "--engagement-scale: 5 levels"
+      ]
+    },
+    {
+      "id": "financial-dashboard",
+      "style_name": "Financial Dashboard",
+      "primary_colors": [
+        "Financial colors: profit (green #22C55E)",
+        "loss (red #EF4444)",
+        "neutral (grey)",
+        "trust (dark blue #003366)"
+      ],
+      "secondary_colors": [
+        "Revenue highlight (green)",
+        "expenses (red)",
+        "budget variance (orange/red)",
+        "balance (grey)",
+        "accuracy (blue)"
+      ],
+      "effects_animations": [
+        "Number animations (count-up)",
+        "trend direction indicators",
+        "percentage change animations",
+        "profit/loss color transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design a financial dashboard. Use: revenue/expense charts",
+        "profit margins",
+        "budget vs actual",
+        "cash flow waterfall",
+        "financial ratios",
+        "audit trail table",
+        "currency formatting",
+        "period comparisons."
+      ],
+      "css_keywords": [
+        "number formatting (Intl.NumberFormat)",
+        "waterfall chart (positive/negative bars)",
+        "variance coloring",
+        "table with totals row",
+        "sparkline for trends",
+        "sticky column headers"
+      ],
+      "implementation_checklist": [
+        "Currency formatted",
+        "Decimals consistent",
+        "P&L clear",
+        "Budget variance shown",
+        "Audit trail complete",
+        "Export to Excel"
+      ],
+      "design_system_variables": [
+        "--currency-symbol: $",
+        "--decimal-places: 2",
+        "--profit-color: #22C55E",
+        "--loss-color: #EF4444",
+        "--variance-threshold: 10%",
+        "--table-header-bg: #F3F4F6"
+      ]
+    },
+    {
+      "id": "sales-intelligence-dashboard",
+      "style_name": "Sales Intelligence Dashboard",
+      "primary_colors": [
+        "Sales colors: won (green)",
+        "lost (red)",
+        "in-progress (blue)",
+        "blocked (orange)",
+        "quota met (gold)",
+        "quota missed (grey)"
+      ],
+      "secondary_colors": [
+        "Pipeline stage colors",
+        "rep performance colors",
+        "quota achievement colors",
+        "forecast accuracy colors"
+      ],
+      "effects_animations": [
+        "Deal movement animations",
+        "metric updates",
+        "leaderboard ranking changes",
+        "gauge needle movements",
+        "status change highlights"
+      ],
+      "ai_prompt_keywords": [
+        "Design a sales intelligence dashboard. Use: pipeline funnel",
+        "deal cards (kanban)",
+        "quota gauges",
+        "leaderboard table",
+        "territory map",
+        "win/loss ratios",
+        "forecast accuracy",
+        "activity timeline."
+      ],
+      "css_keywords": [
+        "kanban columns (flex)",
+        "gauge chart (SVG arc)",
+        "leaderboard ranking styles",
+        "map integration (Mapbox/Google)",
+        "timeline vertical",
+        "deal card with status border"
+      ],
+      "implementation_checklist": [
+        "Pipeline stages shown",
+        "Deals draggable",
+        "Quotas visualized",
+        "Rankings updated",
+        "Territory clickable",
+        "CRM integration"
+      ],
+      "design_system_variables": [
+        "--pipeline-colors: stage gradient",
+        "--gauge-track: #E5E7EB",
+        "--gauge-fill: primary",
+        "--rank-1-color: #FFD700",
+        "--rank-2-color: #C0C0C0",
+        "--rank-3-color: #CD7F32"
+      ]
+    },
+    {
+      "id": "neubrutalism",
+      "style_name": "Neubrutalism",
+      "primary_colors": [
+        "#FFEB3B (Yellow)",
+        "#FF5252 (Red)",
+        "#2196F3 (Blue)",
+        "#000000 (Black borders)"
+      ],
+      "secondary_colors": [
+        "Limited accent colors",
+        "high contrast combinations",
+        "no gradients allowed"
+      ],
+      "effects_animations": [
+        "box-shadow: 4px 4px 0 #000",
+        "border: 3px solid #000",
+        "no gradients",
+        "sharp corners (0px)",
+        "bold typography"
+      ],
+      "ai_prompt_keywords": [
+        "Design a neubrutalist interface. Use: high contrast",
+        "hard black borders (3px+)",
+        "bright pop colors",
+        "no blur",
+        "sharp or slightly rounded corners",
+        "bold typography",
+        "hard shadows (offset 4px 4px)",
+        "raw aesthetic but functional."
+      ],
+      "css_keywords": [
+        "border: 3px solid black",
+        "box-shadow: 5px 5px 0px black",
+        "colors: #FFDB58 #FF6B6B #4ECDC4",
+        "font-weight: 700",
+        "no gradients"
+      ],
+      "implementation_checklist": [
+        "Hard borders (2-4px)",
+        "Hard offset shadows",
+        "High saturation colors",
+        "Bold typography",
+        "No blurs/gradients",
+        "Distinctive 'ugly-cute' look"
+      ],
+      "design_system_variables": [
+        "--border-width: 3px",
+        "--shadow-offset: 4px",
+        "--shadow-color: #000",
+        "--colors: high saturation",
+        "--font: bold sans"
+      ]
+    },
+    {
+      "id": "bento-box-grid",
+      "style_name": "Bento Box Grid",
+      "primary_colors": [
+        "Neutral base + brand accent",
+        "#FFFFFF",
+        "#F5F5F5",
+        "brand primary"
+      ],
+      "secondary_colors": [
+        "Subtle gradients",
+        "shadow variations",
+        "accent highlights for interactive cards"
+      ],
+      "effects_animations": [
+        "grid-template with varied spans",
+        "rounded-xl (16px)",
+        "subtle shadows",
+        "hover scale (1.02)",
+        "smooth transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Bento Box grid layout. Use: modular cards with varied sizes (1x1",
+        "2x1",
+        "2x2)",
+        "Apple-style aesthetic",
+        "rounded corners (16-24px)",
+        "soft shadows",
+        "clean hierarchy",
+        "asymmetric grid",
+        "neutral backgrounds (#F5F5F7)",
+        "hover effects."
+      ],
+      "css_keywords": [
+        "display: grid",
+        "grid-template-columns: repeat(4",
+        "1fr)",
+        "grid-auto-rows: 200px",
+        "gap: 16px",
+        "border-radius: 24px",
+        "background: #FFFFFF",
+        "box-shadow: 0 4px 6px rgba(0",
+        "0",
+        "0",
+        "0.05)"
+      ],
+      "implementation_checklist": [
+        "Grid responsive (4→2→1 cols)",
+        "Card spans varied",
+        "Rounded corners consistent",
+        "Shadows subtle",
+        "Content fits cards",
+        "Hover scale (1.02)"
+      ],
+      "design_system_variables": [
+        "--grid-gap: 16px",
+        "--card-radius: 24px",
+        "--card-bg: #FFFFFF",
+        "--page-bg: #F5F5F7",
+        "--shadow: 0 4px 6px rgba(0",
+        "0",
+        "0",
+        "0.05)",
+        "--hover-scale: 1.02"
+      ]
+    },
+    {
+      "id": "y2k-aesthetic",
+      "style_name": "Y2K Aesthetic",
+      "primary_colors": [
+        "#FF69B4 (Hot Pink)",
+        "#00FFFF (Cyan)",
+        "#C0C0C0 (Silver)",
+        "#9400D3 (Purple)"
+      ],
+      "secondary_colors": [
+        "Metallic gradients",
+        "glossy overlays",
+        "iridescent effects",
+        "chrome textures"
+      ],
+      "effects_animations": [
+        "linear-gradient metallic",
+        "glossy buttons",
+        "3D chrome effects",
+        "glow animations",
+        "bubble shapes"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Y2K aesthetic interface. Use: neon pink/cyan colors",
+        "chrome/metallic textures",
+        "bubblegum gradients",
+        "glossy buttons",
+        "iridescent effects",
+        "2000s futurism",
+        "star/sparkle decorations",
+        "bubble shapes",
+        "tech-optimistic vibe."
+      ],
+      "css_keywords": [
+        "background: linear-gradient(135deg",
+        "#FF69B4",
+        "#00FFFF)",
+        "filter: drop-shadow for glow",
+        "border-radius: 50% for bubbles",
+        "metallic gradients (silver/chrome)",
+        "text-shadow: neon glow",
+        "::before for sparkles"
+      ],
+      "implementation_checklist": [
+        "Neon colors balanced",
+        "Chrome effects visible",
+        "Glossy buttons styled",
+        "Bubble shapes decorative",
+        "Sparkle animations",
+        "Retro fonts loaded"
+      ],
+      "design_system_variables": [
+        "--neon-pink: #FF69B4",
+        "--neon-cyan: #00FFFF",
+        "--chrome-silver: #C0C0C0",
+        "--glossy-gradient: linear-gradient(180deg",
+        "white 0%",
+        "transparent 50%)",
+        "--glow-blur: 10px"
+      ]
+    },
+    {
+      "id": "cyberpunk-ui",
+      "style_name": "Cyberpunk UI",
+      "primary_colors": [
+        "#00FF00 (Matrix Green)",
+        "#FF00FF (Magenta)",
+        "#00FFFF (Cyan)",
+        "#0D0D0D (Dark)"
+      ],
+      "secondary_colors": [
+        "Neon gradients",
+        "scanline overlays",
+        "glitch colors",
+        "terminal green accents"
+      ],
+      "effects_animations": [
+        "Neon glow (text-shadow)",
+        "glitch animations (skew/offset)",
+        "scanlines (::before overlay)",
+        "terminal fonts"
+      ],
+      "ai_prompt_keywords": [
+        "Design a cyberpunk interface. Use: neon colors on dark (#0D0D0D)",
+        "terminal/HUD aesthetic",
+        "glitch effects",
+        "scanlines overlay",
+        "matrix green accents",
+        "monospace fonts",
+        "angular shapes",
+        "dystopian tech feel."
+      ],
+      "css_keywords": [
+        "background: #0D0D0D",
+        "color: #00FF00 or #FF00FF",
+        "font-family: monospace",
+        "text-shadow: 0 0 10px neon",
+        "animation: glitch (transform skew)",
+        "::before scanlines (repeating-linear-gradient)"
+      ],
+      "implementation_checklist": [
+        "Dark background only",
+        "Neon accents visible",
+        "Glitch effect subtle",
+        "Scanlines optional",
+        "Monospace font",
+        "Terminal aesthetic"
+      ],
+      "design_system_variables": [
+        "--bg-dark: #0D0D0D",
+        "--neon-green: #00FF00",
+        "--neon-magenta: #FF00FF",
+        "--neon-cyan: #00FFFF",
+        "--scanline-opacity: 0.1",
+        "--glitch-duration: 0.3s"
+      ]
+    },
+    {
+      "id": "organic-biophilic",
+      "style_name": "Organic Biophilic",
+      "primary_colors": [
+        "#228B22 (Forest Green)",
+        "#8B4513 (Earth Brown)",
+        "#87CEEB (Sky Blue)",
+        "#F5F5DC (Beige)"
+      ],
+      "secondary_colors": [
+        "Natural gradients",
+        "earth tones",
+        "sky blues",
+        "organic textures",
+        "wood/stone colors"
+      ],
+      "effects_animations": [
+        "Rounded corners (16-24px)",
+        "organic curves (border-radius variations)",
+        "natural shadows",
+        "flowing SVG shapes"
+      ],
+      "ai_prompt_keywords": [
+        "Design a biophilic organic interface. Use: nature-inspired colors (greens",
+        "browns)",
+        "organic curved shapes",
+        "rounded corners (16-24px)",
+        "natural textures (wood",
+        "stone)",
+        "flowing SVG elements",
+        "wellness aesthetic",
+        "earthy palette."
+      ],
+      "css_keywords": [
+        "border-radius: 16-24px (varied)",
+        "background: earth tones",
+        "SVG organic shapes (blob)",
+        "box-shadow: natural soft",
+        "color: #228B22 #8B4513 #87CEEB",
+        "texture overlays (subtle)"
+      ],
+      "implementation_checklist": [
+        "Earth tones dominant",
+        "Organic curves present",
+        "Natural textures subtle",
+        "Green accents",
+        "Rounded everywhere",
+        "Calming feel"
+      ],
+      "design_system_variables": [
+        "--forest-green: #228B22",
+        "--earth-brown: #8B4513",
+        "--sky-blue: #87CEEB",
+        "--cream-bg: #F5F5DC",
+        "--organic-radius: 24px",
+        "--shadow-soft: 0 8px 32px rgba(0",
+        "0",
+        "0",
+        "0.08)"
+      ]
+    },
+    {
+      "id": "ai-native-ui",
+      "style_name": "AI-Native UI",
+      "primary_colors": [
+        "Neutral + single accent",
+        "#6366F1 (AI Purple)",
+        "#10B981 (Success)",
+        "#F5F5F5 (Background)"
+      ],
+      "secondary_colors": [
+        "Status indicators",
+        "streaming highlights",
+        "context card colors",
+        "subtle accent variations"
+      ],
+      "effects_animations": [
+        "Typing indicators (3-dot pulse)",
+        "streaming text animations",
+        "pulse animations",
+        "context cards",
+        "smooth reveals"
+      ],
+      "ai_prompt_keywords": [
+        "Design an AI-native interface. Use: minimal chrome",
+        "conversational layout",
+        "streaming text area",
+        "typing indicators (3-dot pulse)",
+        "context cards",
+        "subtle AI accent color (#6366F1)",
+        "clean input field",
+        "response bubbles."
+      ],
+      "css_keywords": [
+        "chat bubble layout (flex-direction: column)",
+        "typing animation (3 dots pulse)",
+        "streaming text (overflow: hidden + animation)",
+        "input: sticky bottom",
+        "context cards (border-left accent)",
+        "minimal borders"
+      ],
+      "implementation_checklist": [
+        "Chat layout responsive",
+        "Typing indicator smooth",
+        "Input always visible",
+        "Context cards styled",
+        "AI responses distinct",
+        "User messages aligned right"
+      ],
+      "design_system_variables": [
+        "--ai-accent: #6366F1",
+        "--user-bubble-bg: #E0E7FF",
+        "--ai-bubble-bg: #F9FAFB",
+        "--input-height: 48px",
+        "--typing-dot-size: 8px",
+        "--message-gap: 16px"
+      ]
+    },
+    {
+      "id": "memphis-design",
+      "style_name": "Memphis Design",
+      "primary_colors": [
+        "#FF71CE (Hot Pink)",
+        "#FFCE5C (Yellow)",
+        "#86CCCA (Teal)",
+        "#6A7BB4 (Blue Purple)"
+      ],
+      "secondary_colors": [
+        "Complementary geometric colors",
+        "pattern fills",
+        "contrasting accent shapes"
+      ],
+      "effects_animations": [
+        "transform: rotate()",
+        "clip-path: polygon()",
+        "mix-blend-mode",
+        "repeating patterns",
+        "bold shapes"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Memphis style interface. Use: bold geometric shapes (triangles",
+        "squiggles",
+        "circles)",
+        "bright clashing colors",
+        "80s postmodern aesthetic",
+        "playful patterns",
+        "dotted textures",
+        "asymmetric layouts",
+        "decorative elements."
+      ],
+      "css_keywords": [
+        "clip-path: polygon() for shapes",
+        "background: repeating patterns",
+        "transform: rotate() for tilted elements",
+        "mix-blend-mode for overlays",
+        "border: dashed/dotted patterns",
+        "bold sans-serif"
+      ],
+      "implementation_checklist": [
+        "Geometric shapes visible",
+        "Colors bold/clashing",
+        "Patterns present",
+        "Layout asymmetric",
+        "Playful decorations",
+        "80s vibe achieved"
+      ],
+      "design_system_variables": [
+        "--memphis-pink: #FF71CE",
+        "--memphis-yellow: #FFCE5C",
+        "--memphis-teal: #86CCCA",
+        "--memphis-purple: #6A7BB4",
+        "--pattern-size: 20px",
+        "--shape-rotation: 15deg"
+      ]
+    },
+    {
+      "id": "vaporwave",
+      "style_name": "Vaporwave",
+      "primary_colors": [
+        "#FF71CE (Pink)",
+        "#01CDFE (Cyan)",
+        "#05FFA1 (Mint)",
+        "#B967FF (Purple)"
+      ],
+      "secondary_colors": [
+        "Sunset gradients",
+        "glitch overlays",
+        "VHS effects",
+        "neon accents",
+        "pastel variations"
+      ],
+      "effects_animations": [
+        "text-shadow glow",
+        "linear-gradient",
+        "filter: hue-rotate()",
+        "glitch animations",
+        "retro scan lines"
+      ],
+      "ai_prompt_keywords": [
+        "Design a vaporwave aesthetic interface. Use: sunset gradients (pink/cyan/purple)",
+        "80s-90s nostalgia",
+        "glitch effects",
+        "Greek statue imagery",
+        "palm trees",
+        "grid patterns",
+        "neon glow",
+        "retro-futuristic feel",
+        "dreamy atmosphere."
+      ],
+      "css_keywords": [
+        "background: linear-gradient(180deg",
+        "#FF71CE",
+        "#01CDFE",
+        "#B967FF)",
+        "filter: hue-rotate()",
+        "text-shadow: neon glow",
+        "retro grid (perspective + linear-gradient)",
+        "VHS scanlines"
+      ],
+      "implementation_checklist": [
+        "Sunset gradient present",
+        "Neon glow applied",
+        "Retro grid visible",
+        "Glitch effects subtle",
+        "Dreamy atmosphere",
+        "80s-90s aesthetic"
+      ],
+      "design_system_variables": [
+        "--vapor-pink: #FF71CE",
+        "--vapor-cyan: #01CDFE",
+        "--vapor-mint: #05FFA1",
+        "--vapor-purple: #B967FF",
+        "--grid-color: rgba(255",
+        "255",
+        "255",
+        "0.1)",
+        "--glow-intensity: 15px"
+      ]
+    },
+    {
+      "id": "dimensional-layering",
+      "style_name": "Dimensional Layering",
+      "primary_colors": [
+        "Neutral base (#FFFFFF",
+        "#F5F5F5",
+        "#E0E0E0) + brand accent for elevated elements"
+      ],
+      "secondary_colors": [
+        "Shadow variations (sm/md/lg/xl)",
+        "elevation colors",
+        "highlight colors for top layers"
+      ],
+      "effects_animations": [
+        "z-index stacking",
+        "box-shadow elevation (4 levels)",
+        "transform: translateZ()",
+        "backdrop-filter",
+        "parallax"
+      ],
+      "ai_prompt_keywords": [
+        "Design with dimensional layering. Use: z-index depth (multiple layers)",
+        "overlapping cards",
+        "elevation shadows (4 levels)",
+        "floating elements",
+        "parallax depth",
+        "backdrop blur for hierarchy",
+        "spatial UI feel."
+      ],
+      "css_keywords": [
+        "z-index: 1-4 levels",
+        "box-shadow: elevation scale (sm/md/lg/xl)",
+        "transform: translateZ()",
+        "backdrop-filter: blur()",
+        "position: relative for stacking",
+        "parallax on scroll"
+      ],
+      "implementation_checklist": [
+        "Layers clearly defined",
+        "Shadows show depth",
+        "Overlaps intentional",
+        "Hierarchy clear",
+        "Performance optimized",
+        "Mobile depth maintained"
+      ],
+      "design_system_variables": [
+        "--elevation-1: 0 1px 3px rgba(0",
+        "0",
+        "0",
+        "0.1)",
+        "--elevation-2: 0 4px 6px rgba(0",
+        "0",
+        "0",
+        "0.1)",
+        "--elevation-3: 0 10px 20px rgba(0",
+        "0",
+        "0",
+        "0.1)",
+        "--elevation-4: 0 20px 40px rgba(0",
+        "0",
+        "0",
+        "0.15)",
+        "--blur-amount: 8px"
+      ]
+    },
+    {
+      "id": "exaggerated-minimalism",
+      "style_name": "Exaggerated Minimalism",
+      "primary_colors": [
+        "#000000 (Black)",
+        "#FFFFFF (White)",
+        "single vibrant accent only"
+      ],
+      "secondary_colors": [
+        "Minimal - single accent color",
+        "no secondary colors",
+        "extreme restraint"
+      ],
+      "effects_animations": [
+        "font-size: clamp(3rem 10vw 12rem)",
+        "font-weight: 900",
+        "letter-spacing: -0.05em",
+        "massive whitespace"
+      ],
+      "ai_prompt_keywords": [
+        "Design with exaggerated minimalism. Use: oversized typography (clamp 3rem-12rem)",
+        "extreme negative space",
+        "black/white primary",
+        "single accent color only",
+        "bold statements",
+        "minimal elements",
+        "dramatic contrast."
+      ],
+      "css_keywords": [
+        "font-size: clamp(3rem",
+        "10vw",
+        "12rem)",
+        "font-weight: 900",
+        "letter-spacing: -0.05em",
+        "color: #000 or #FFF",
+        "padding: 8rem+",
+        "single accent",
+        "no decorations"
+      ],
+      "implementation_checklist": [
+        "Typography oversized",
+        "White space extreme",
+        "Black/white dominant",
+        "Single accent only",
+        "Elements minimal",
+        "Statement clear"
+      ],
+      "design_system_variables": [
+        "--type-giant: clamp(3rem",
+        "10vw",
+        "12rem)",
+        "--type-weight: 900",
+        "--spacing-huge: 8rem",
+        "--color-primary: #000000",
+        "--color-bg: #FFFFFF",
+        "--accent: single color only"
+      ]
+    },
+    {
+      "id": "kinetic-typography",
+      "style_name": "Kinetic Typography",
+      "primary_colors": [
+        "Flexible - high contrast recommended",
+        "bold colors for emphasis",
+        "animation-friendly palette"
+      ],
+      "secondary_colors": [
+        "Accent colors for emphasis",
+        "transition colors",
+        "gradient text fills"
+      ],
+      "effects_animations": [
+        "@keyframes text animation",
+        "typing effect",
+        "background-clip: text",
+        "GSAP ScrollTrigger",
+        "split text"
+      ],
+      "ai_prompt_keywords": [
+        "Design with kinetic typography. Use: animated text",
+        "scroll-triggered reveals",
+        "typing effects",
+        "letter-by-letter animations",
+        "morphing text",
+        "gradient text fills",
+        "oversized hero text",
+        "text as the main visual element."
+      ],
+      "css_keywords": [
+        "@keyframes for text animation",
+        "background-clip: text",
+        "GSAP SplitText",
+        "typing effect (steps())",
+        "transform on letters",
+        "scroll-triggered (Intersection Observer)",
+        "variable fonts for morphing"
+      ],
+      "implementation_checklist": [
+        "Text animations smooth",
+        "Prefers-reduced-motion respected",
+        "Fallback for no-JS",
+        "Mobile performance ok",
+        "Typing effect timed",
+        "Scroll triggers work"
+      ],
+      "design_system_variables": [
+        "--text-animation-duration: 1s",
+        "--letter-delay: 0.05s",
+        "--typing-speed: 100ms",
+        "--gradient-text: linear-gradient(90deg",
+        "#color1",
+        "#color2)",
+        "--morph-duration: 0.5s"
+      ]
+    },
+    {
+      "id": "parallax-storytelling",
+      "style_name": "Parallax Storytelling",
+      "primary_colors": [
+        "Story-dependent",
+        "often gradients and natural colors",
+        "section-specific palettes"
+      ],
+      "secondary_colors": [
+        "Section transition colors",
+        "depth layer colors",
+        "narrative mood colors"
+      ],
+      "effects_animations": [
+        "transform: translateY(scroll)",
+        "position: fixed/sticky",
+        "perspective: 1px",
+        "scroll-triggered animations"
+      ],
+      "ai_prompt_keywords": [
+        "Design a parallax storytelling page. Use: scroll-driven narrative",
+        "layered backgrounds (3-5 layers)",
+        "fixed/sticky sections",
+        "cinematic transitions",
+        "progressive disclosure",
+        "full-screen chapters",
+        "depth perception."
+      ],
+      "css_keywords": [
+        "position: fixed/sticky",
+        "transform: translateY(calc())",
+        "perspective: 1px",
+        "z-index layering",
+        "scroll-snap-type",
+        "Intersection Observer for triggers",
+        "will-change: transform"
+      ],
+      "implementation_checklist": [
+        "Layers parallax smoothly",
+        "Story flows naturally",
+        "Mobile alternative provided",
+        "Performance optimized",
+        "Skip option available",
+        "Reduced motion fallback"
+      ],
+      "design_system_variables": [
+        "--parallax-speed-bg: 0.3",
+        "--parallax-speed-mid: 0.6",
+        "--parallax-speed-fg: 1",
+        "--section-height: 100vh",
+        "--transition-duration: 600ms",
+        "--perspective: 1px"
+      ]
+    },
+    {
+      "id": "swiss-modernism-2-0",
+      "style_name": "Swiss Modernism 2.0",
+      "primary_colors": [
+        "#000000",
+        "#FFFFFF",
+        "#F5F5F5",
+        "single vibrant accent only"
+      ],
+      "secondary_colors": [
+        "Minimal secondary",
+        "accent for emphasis only",
+        "no gradients"
+      ],
+      "effects_animations": [
+        "display: grid",
+        "grid-template-columns: repeat(12 1fr)",
+        "gap: 1rem",
+        "mathematical ratios",
+        "clear hierarchy"
+      ],
+      "ai_prompt_keywords": [
+        "Design with Swiss Modernism 2.0. Use: strict grid system (12 columns)",
+        "Helvetica/Inter fonts",
+        "mathematical spacing",
+        "asymmetric balance",
+        "high contrast",
+        "minimal decoration",
+        "clean hierarchy",
+        "single accent color."
+      ],
+      "css_keywords": [
+        "display: grid",
+        "grid-template-columns: repeat(12",
+        "1fr)",
+        "gap: 1rem (8px base unit)",
+        "font-family: Inter/Helvetica",
+        "font-weight: 400-700",
+        "color: #000/#FFF",
+        "single accent"
+      ],
+      "implementation_checklist": [
+        "12-column grid strict",
+        "Spacing mathematical",
+        "Typography hierarchy clear",
+        "Single accent only",
+        "No decorations",
+        "High contrast verified"
+      ],
+      "design_system_variables": [
+        "--grid-columns: 12",
+        "--grid-gap: 1rem",
+        "--base-unit: 8px",
+        "--font-primary: Inter",
+        "--color-text: #000000",
+        "--color-bg: #FFFFFF",
+        "--accent: single vibrant"
+      ]
+    },
+    {
+      "id": "hud-sci-fi-fui",
+      "style_name": "HUD / Sci-Fi FUI",
+      "primary_colors": [
+        "Neon Cyan #00FFFF",
+        "Holographic Blue #0080FF",
+        "Alert Red #FF0000"
+      ],
+      "secondary_colors": [
+        "Transparent Black",
+        "Grid Lines #333333"
+      ],
+      "effects_animations": [
+        "Glow effects",
+        "scanning animations",
+        "ticker text",
+        "blinking markers",
+        "fine line drawing"
+      ],
+      "ai_prompt_keywords": [
+        "Design a futuristic HUD (Heads Up Display) or FUI. Use: thin lines (1px)",
+        "neon cyan/blue on black",
+        "technical markers",
+        "decorative brackets",
+        "data visualization",
+        "monospaced tech fonts",
+        "glowing elements",
+        "transparency."
+      ],
+      "css_keywords": [
+        "border: 1px solid rgba(0",
+        "255",
+        "255",
+        "0.5)",
+        "color: #00FFFF",
+        "background: transparent or rgba(0",
+        "0",
+        "0",
+        "0.8)",
+        "font-family: monospace",
+        "text-shadow: 0 0 5px cyan"
+      ],
+      "implementation_checklist": [
+        "Fine lines 1px",
+        "Neon glow text/borders",
+        "Monospaced font",
+        "Dark/Transparent BG",
+        "Decorative tech markers",
+        "Holographic feel"
+      ],
+      "design_system_variables": [
+        "--hud-color: #00FFFF",
+        "--bg-color: rgba(0",
+        "10",
+        "20",
+        "0.9)",
+        "--line-width: 1px",
+        "--glow: 0 0 5px",
+        "--font: monospace"
+      ]
+    },
+    {
+      "id": "pixel-art",
+      "style_name": "Pixel Art",
+      "primary_colors": [
+        "Primary colors (NES Palette)",
+        "brights",
+        "limited palette"
+      ],
+      "secondary_colors": [
+        "Black outlines",
+        "shading via dithering or block colors"
+      ],
+      "effects_animations": [
+        "Frame-by-frame sprite animation",
+        "blinking cursor",
+        "instant transitions",
+        "marquee text"
+      ],
+      "ai_prompt_keywords": [
+        "Design a pixel art inspired interface. Use: pixelated fonts",
+        "8-bit or 16-bit aesthetic",
+        "sharp edges (image-rendering: pixelated)",
+        "limited color palette",
+        "blocky UI elements",
+        "retro gaming feel."
+      ],
+      "css_keywords": [
+        "font-family: 'Press Start 2P'",
+        "image-rendering: pixelated",
+        "box-shadow: 4px 0 0 #000 (pixel border)",
+        "no anti-aliasing"
+      ],
+      "implementation_checklist": [
+        "Pixelated fonts loaded",
+        "Images sharp (no blur)",
+        "CSS box-shadow for pixel borders",
+        "Retro palette",
+        "Blocky layout"
+      ],
+      "design_system_variables": [
+        "--pixel-size: 4px",
+        "--font: pixel font",
+        "--border-style: pixel-shadow",
+        "--anti-alias: none"
+      ]
+    },
+    {
+      "id": "bento-grids",
+      "style_name": "Bento Grids",
+      "primary_colors": [
+        "Off-white #F5F5F7",
+        "Clean White #FFFFFF",
+        "Text #1D1D1F"
+      ],
+      "secondary_colors": [
+        "Subtle accents",
+        "soft shadows",
+        "blurred backdrops"
+      ],
+      "effects_animations": [
+        "Hover scale (1.02)",
+        "soft shadow expansion",
+        "smooth layout shifts",
+        "content reveal"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Bento Grid layout. Use: modular grid system",
+        "rounded corners (16-24px)",
+        "different card sizes (1x1",
+        "2x1",
+        "2x2)",
+        "card-based hierarchy",
+        "soft backgrounds (#F5F5F7)",
+        "subtle borders",
+        "content-first",
+        "Apple-style aesthetic."
+      ],
+      "css_keywords": [
+        "display: grid",
+        "grid-template-columns: repeat(auto-fit",
+        "minmax(...))",
+        "gap: 1rem",
+        "border-radius: 20px",
+        "background: #FFF",
+        "box-shadow: subtle"
+      ],
+      "implementation_checklist": [
+        "Grid layout (CSS Grid)",
+        "Rounded corners 16-24px",
+        "Varied card spans",
+        "Content fits card size",
+        "Responsive re-flow",
+        "Apple-like aesthetic"
+      ],
+      "design_system_variables": [
+        "--grid-gap: 20px",
+        "--card-radius: 24px",
+        "--card-bg: #FFFFFF",
+        "--page-bg: #F5F5F7",
+        "--shadow: soft"
+      ]
+    },
+    {
+      "id": "spatial-ui-visionos",
+      "style_name": "Spatial UI (VisionOS)",
+      "primary_colors": [
+        "Frosted Glass #FFFFFF (15-30% opacity)",
+        "System White"
+      ],
+      "secondary_colors": [
+        "Vibrant system colors for active states",
+        "deep shadows for depth"
+      ],
+      "effects_animations": [
+        "Parallax depth",
+        "dynamic lighting response",
+        "gaze-hover effects",
+        "smooth scale on focus"
+      ],
+      "ai_prompt_keywords": [
+        "Design a VisionOS-style spatial interface. Use: frosted glass panels",
+        "depth layers",
+        "translucent backgrounds (15-30% opacity)",
+        "vibrant colors for active states",
+        "gaze-hover effects",
+        "floating windows",
+        "immersive feel."
+      ],
+      "css_keywords": [
+        "backdrop-filter: blur(40px) saturate(180%)",
+        "background: rgba(255",
+        "255",
+        "255",
+        "0.2)",
+        "border-radius: 24px",
+        "box-shadow: 0 8px 32px rgba(0",
+        "0",
+        "0",
+        "0.1)",
+        "transform: scale on focus",
+        "depth via shadows"
+      ],
+      "implementation_checklist": [
+        "Glass effect visible",
+        "Depth layers clear",
+        "Hover states defined",
+        "Colors vibrant on active",
+        "Floating feel achieved",
+        "Contrast maintained"
+      ],
+      "design_system_variables": [
+        "--glass-bg: rgba(255",
+        "255",
+        "255",
+        "0.2)",
+        "--glass-blur: 40px",
+        "--glass-saturate: 180%",
+        "--window-radius: 24px",
+        "--depth-shadow: 0 8px 32px rgba(0",
+        "0",
+        "0",
+        "0.1)",
+        "--focus-scale: 1.02"
+      ]
+    },
+    {
+      "id": "e-ink-paper",
+      "style_name": "E-Ink / Paper",
+      "primary_colors": [
+        "Off-White #FDFBF7",
+        "Paper White #F5F5F5",
+        "Ink Black #1A1A1A"
+      ],
+      "secondary_colors": [
+        "Pencil Grey #4A4A4A",
+        "Highlighter Yellow #FFFF00 (accent)"
+      ],
+      "effects_animations": [
+        "No motion blur",
+        "distinct page turns",
+        "grain/noise texture",
+        "sharp transitions (no fade)"
+      ],
+      "ai_prompt_keywords": [
+        "Design an e-ink/paper style interface. Use: high contrast black on off-white",
+        "paper texture",
+        "no animations (instant transitions)",
+        "reading-focused",
+        "minimal UI chrome",
+        "distraction-free",
+        "calm aesthetic",
+        "monochrome."
+      ],
+      "css_keywords": [
+        "background: #FDFBF7 (paper white)",
+        "color: #1A1A1A",
+        "transition: none",
+        "font-family: serif for reading",
+        "no gradients",
+        "border: 1px solid #E0E0E0",
+        "texture overlay (noise)"
+      ],
+      "implementation_checklist": [
+        "Paper background color",
+        "High contrast text",
+        "No animations",
+        "Reading optimized",
+        "Distraction-free",
+        "Print-friendly"
+      ],
+      "design_system_variables": [
+        "--paper-bg: #FDFBF7",
+        "--ink-color: #1A1A1A",
+        "--pencil-grey: #4A4A4A",
+        "--border-color: #E0E0E0",
+        "--font-reading: Georgia",
+        "--transition: none"
+      ]
+    },
+    {
+      "id": "gen-z-chaos-maximalism",
+      "style_name": "Gen Z Chaos / Maximalism",
+      "primary_colors": [
+        "Clashing Brights: #FF00FF",
+        "#00FF00",
+        "#FFFF00",
+        "#0000FF"
+      ],
+      "secondary_colors": [
+        "Gradients",
+        "rainbow",
+        "glitch",
+        "noise",
+        "heavily saturated mix"
+      ],
+      "effects_animations": [
+        "Marquee scrolls",
+        "jitter",
+        "sticker layering",
+        "GIF overload",
+        "random placement",
+        "drag-and-drop"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Gen Z chaos maximalist interface. Use: clashing bright colors",
+        "sticker overlays",
+        "collage aesthetic",
+        "raw/unpolished feel",
+        "mixed media",
+        "ironic elements",
+        "loud typography",
+        "GIF-heavy",
+        "internet culture references."
+      ],
+      "css_keywords": [
+        "mix-blend-mode: multiply/screen",
+        "transform: rotate(random)",
+        "animation: jitter",
+        "marquee text",
+        "position: absolute for scattered elements",
+        "filter: saturate(150%)",
+        "z-index chaos"
+      ],
+      "implementation_checklist": [
+        "Colors clash intentionally",
+        "Stickers/overlays present",
+        "Layout chaotic but usable",
+        "GIFs optimized",
+        "Mobile scrollable",
+        "Performance acceptable"
+      ],
+      "design_system_variables": [
+        "--chaos-pink: #FF00FF",
+        "--chaos-green: #00FF00",
+        "--chaos-yellow: #FFFF00",
+        "--chaos-blue: #0000FF",
+        "--jitter-amount: 5deg",
+        "--saturate: 150%"
+      ]
+    },
+    {
+      "id": "biomimetic-organic-2-0",
+      "style_name": "Biomimetic / Organic 2.0",
+      "primary_colors": [
+        "Cellular Pink #FF9999",
+        "Chlorophyll Green #00FF41",
+        "Bioluminescent Blue"
+      ],
+      "secondary_colors": [
+        "Deep Ocean #001E3C",
+        "Coral #FF7F50",
+        "Organic gradients"
+      ],
+      "effects_animations": [
+        "Breathing animations",
+        "fluid morphing",
+        "generative growth",
+        "physics-based movement"
+      ],
+      "ai_prompt_keywords": [
+        "Design a biomimetic organic interface. Use: cellular/fluid shapes",
+        "breathing animations",
+        "generative patterns",
+        "bioluminescent colors",
+        "physics-based movement",
+        "nature algorithms",
+        "life-like elements",
+        "flowing gradients."
+      ],
+      "css_keywords": [
+        "SVG morphing (SMIL or GSAP)",
+        "canvas for generative",
+        "animation: breathing (scale pulse)",
+        "filter: blur for organic",
+        "clip-path for cellular",
+        "WebGL for advanced",
+        "physics libraries"
+      ],
+      "implementation_checklist": [
+        "Organic shapes present",
+        "Animations feel alive",
+        "Generative elements",
+        "Performance monitored",
+        "Mobile fallback",
+        "Accessibility alt content"
+      ],
+      "design_system_variables": [
+        "--cellular-pink: #FF9999",
+        "--chlorophyll: #00FF41",
+        "--bioluminescent: #00FFFF",
+        "--breathing-duration: 4s",
+        "--morph-ease: cubic-bezier(0.4",
+        "0",
+        "0.2",
+        "1)",
+        "--organic-blur: 20px"
+      ]
+    },
+    {
+      "id": "anti-polish-raw-aesthetic",
+      "style_name": "Anti-Polish / Raw Aesthetic",
+      "primary_colors": [
+        "Paper White #FAFAF8",
+        "Pencil Grey #4A4A4A",
+        "Marker Black #1A1A1A",
+        "Kraft Brown #C4A77D"
+      ],
+      "secondary_colors": [
+        "Watercolor washes",
+        "pencil shading",
+        "ink splatters",
+        "tape textures",
+        "aged paper tones"
+      ],
+      "effects_animations": [
+        "No smooth transitions",
+        "hand-drawn animations",
+        "paper texture overlays",
+        "jitter effects",
+        "sketch reveal"
+      ],
+      "ai_prompt_keywords": [
+        "Design with anti-polish raw aesthetic. Use: hand-drawn elements",
+        "scanned textures",
+        "unfinished look",
+        "paper/pencil textures",
+        "collage style",
+        "authentic imperfection",
+        "sketch marks",
+        "tape/sticker overlays",
+        "human touch."
+      ],
+      "css_keywords": [
+        "background: url(paper-texture.png)",
+        "filter: grayscale() contrast()",
+        "border: hand-drawn SVG",
+        "transform: rotate(small random)",
+        "no smooth transitions",
+        "sketch-style fonts",
+        "opacity variations"
+      ],
+      "implementation_checklist": [
+        "Textures loaded",
+        "Hand-drawn elements present",
+        "Imperfections intentional",
+        "Authentic feel achieved",
+        "Performance ok with textures",
+        "Accessibility maintained"
+      ],
+      "design_system_variables": [
+        "--paper-bg: #FAFAF8",
+        "--pencil-color: #4A4A4A",
+        "--marker-black: #1A1A1A",
+        "--kraft-brown: #C4A77D",
+        "--sketch-rotation: random(-3deg",
+        "3deg)",
+        "--texture-opacity: 0.3"
+      ]
+    },
+    {
+      "id": "tactile-digital-deformable-ui",
+      "style_name": "Tactile Digital / Deformable UI",
+      "primary_colors": [
+        "Gradient metallics",
+        "Chrome Silver #C0C0C0",
+        "Jelly Pink #FF9ECD",
+        "Soft Blue #87CEEB"
+      ],
+      "secondary_colors": [
+        "Glossy highlights",
+        "shadow depth",
+        "reflection effects",
+        "material-specific colors"
+      ],
+      "effects_animations": [
+        "Press deformation (scale + squish)",
+        "bounce-back (cubic-bezier)",
+        "material response",
+        "haptic-like feedback",
+        "spring physics"
+      ],
+      "ai_prompt_keywords": [
+        "Design a tactile deformable interface. Use: jelly/squishy buttons",
+        "press deformation effect",
+        "bounce-back animations",
+        "chrome/clay materials",
+        "spring physics",
+        "haptic-like feedback",
+        "material response",
+        "3D depth on interaction."
+      ],
+      "css_keywords": [
+        "transform: scale(0.95) on active",
+        "animation: bounce (cubic-bezier(0.34",
+        "1.56",
+        "0.64",
+        "1))",
+        "box-shadow: inset for press",
+        "filter: brightness on press",
+        "spring physics (react-spring/framer-motion)"
+      ],
+      "implementation_checklist": [
+        "Press effect visible",
+        "Bounce-back smooth",
+        "Material feels tactile",
+        "Spring physics tuned",
+        "Mobile touch responsive",
+        "Reduced motion option"
+      ],
+      "design_system_variables": [
+        "--press-scale: 0.95",
+        "--bounce-duration: 400ms",
+        "--spring-stiffness: 300",
+        "--spring-damping: 20",
+        "--material-glossy: linear-gradient(135deg",
+        "white 0%",
+        "transparent 60%)",
+        "--depth-shadow: 0 10px 30px rgba(0",
+        "0",
+        "0",
+        "0.2)"
+      ]
+    },
+    {
+      "id": "nature-distilled",
+      "style_name": "Nature Distilled",
+      "primary_colors": [
+        "Terracotta #C67B5C",
+        "Sand Beige #D4C4A8",
+        "Warm Clay #B5651D",
+        "Soft Cream #F5F0E1"
+      ],
+      "secondary_colors": [
+        "Earth Brown #8B4513",
+        "Olive Green #6B7B3C",
+        "Warm Stone #9C8B7A",
+        "muted gradients"
+      ],
+      "effects_animations": [
+        "Subtle parallax",
+        "natural easing (ease-out)",
+        "texture overlays",
+        "grain effects",
+        "soft shadows"
+      ],
+      "ai_prompt_keywords": [
+        "Design with nature distilled aesthetic. Use: muted earthy colors (terracotta",
+        "sand",
+        "olive)",
+        "organic materials feel",
+        "warm tones",
+        "handmade warmth",
+        "natural textures",
+        "artisan quality",
+        "sustainable vibe",
+        "soft gradients."
+      ],
+      "css_keywords": [
+        "background: warm earth tones",
+        "color: #C67B5C #D4C4A8 #6B7B3C",
+        "border-radius: organic (varied)",
+        "box-shadow: soft natural",
+        "texture overlays (grain)",
+        "font: humanist sans-serif"
+      ],
+      "implementation_checklist": [
+        "Earth tones dominant",
+        "Warm feel achieved",
+        "Textures subtle",
+        "Handmade quality",
+        "Sustainable messaging",
+        "Calming aesthetic"
+      ],
+      "design_system_variables": [
+        "--terracotta: #C67B5C",
+        "--sand-beige: #D4C4A8",
+        "--warm-clay: #B5651D",
+        "--soft-cream: #F5F0E1",
+        "--olive-green: #6B7B3C",
+        "--grain-opacity: 0.1"
+      ]
+    },
+    {
+      "id": "interactive-cursor-design",
+      "style_name": "Interactive Cursor Design",
+      "primary_colors": [
+        "Brand-dependent",
+        "cursor accent color",
+        "high contrast for visibility"
+      ],
+      "secondary_colors": [
+        "Trail colors",
+        "hover state colors",
+        "magnetic zone indicators",
+        "feedback colors"
+      ],
+      "effects_animations": [
+        "Cursor scale on hover",
+        "magnetic pull to elements",
+        "cursor morphing",
+        "trail effects",
+        "blend mode cursors",
+        "click feedback"
+      ],
+      "ai_prompt_keywords": [
+        "Design with interactive cursor effects. Use: custom cursor",
+        "cursor morphing on hover",
+        "magnetic cursor pull",
+        "cursor trails",
+        "blend mode cursors",
+        "click feedback animations",
+        "cursor as interaction tool",
+        "pointer transformation."
+      ],
+      "css_keywords": [
+        "cursor: none (custom)",
+        "position: fixed for cursor element",
+        "mix-blend-mode: difference",
+        "transform on hover targets",
+        "magnetic effect (JS position lerp)",
+        "trail with opacity fade",
+        "scale on click"
+      ],
+      "implementation_checklist": [
+        "Custom cursor works",
+        "Hover morph smooth",
+        "Magnetic pull subtle",
+        "Trail performance ok",
+        "Click feedback visible",
+        "Touch fallback provided"
+      ],
+      "design_system_variables": [
+        "--cursor-size: 20px",
+        "--cursor-hover-scale: 1.5",
+        "--magnetic-distance: 100px",
+        "--trail-length: 10",
+        "--trail-fade: 0.1",
+        "--blend-mode: difference"
+      ]
+    },
+    {
+      "id": "voice-first-multimodal",
+      "style_name": "Voice-First Multimodal",
+      "primary_colors": [
+        "Calm neutrals: Soft White #FAFAFA",
+        "Muted Blue #6B8FAF",
+        "Gentle Purple #9B8FBB"
+      ],
+      "secondary_colors": [
+        "Audio waveform colors",
+        "status indicators (listening/processing/speaking)",
+        "success/error tones"
+      ],
+      "effects_animations": [
+        "Voice waveform visualization",
+        "listening pulse",
+        "processing spinner",
+        "speak animation",
+        "smooth transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design a voice-first multimodal interface. Use: voice waveform visualization",
+        "listening state indicator",
+        "speaking animation",
+        "minimal visible UI",
+        "audio feedback cues",
+        "hands-free optimized",
+        "conversational flow",
+        "ambient design."
+      ],
+      "css_keywords": [
+        "Web Speech API integration",
+        "canvas for waveform",
+        "animation: pulse for listening",
+        "status indicators (color change)",
+        "audio visualization (Web Audio API)",
+        "minimal chrome",
+        "large touch targets"
+      ],
+      "implementation_checklist": [
+        "Voice recognition works",
+        "Visual feedback clear",
+        "Listening state obvious",
+        "Speaking animation smooth",
+        "Fallback UI provided",
+        "Accessibility excellent"
+      ],
+      "design_system_variables": [
+        "--listening-color: #6B8FAF",
+        "--speaking-color: #22C55E",
+        "--waveform-height: 60px",
+        "--pulse-duration: 1.5s",
+        "--indicator-size: 24px",
+        "--voice-accent: #9B8FBB"
+      ]
+    },
+    {
+      "id": "3d-product-preview",
+      "style_name": "3D Product Preview",
+      "primary_colors": [
+        "Product-dependent",
+        "neutral backgrounds: Soft Grey #E8E8E8",
+        "Pure White #FFFFFF"
+      ],
+      "secondary_colors": [
+        "Shadow gradients",
+        "reflection planes",
+        "environment lighting colors",
+        "accent highlights"
+      ],
+      "effects_animations": [
+        "Drag-to-rotate",
+        "pinch-to-zoom",
+        "spin animation",
+        "AR placement",
+        "material switching",
+        "smooth orbit controls"
+      ],
+      "ai_prompt_keywords": [
+        "Design a 3D product preview interface. Use: 360° rotation",
+        "drag-to-spin",
+        "pinch-to-zoom",
+        "AR preview button",
+        "material/color switcher",
+        "hotspot annotations",
+        "orbit controls",
+        "product configurator",
+        "smooth rendering."
+      ],
+      "css_keywords": [
+        "Three.js or model-viewer",
+        "OrbitControls",
+        "touch events for rotation",
+        "WebXR for AR",
+        "canvas with WebGL",
+        "loading placeholder",
+        "LOD for performance",
+        "environment lighting"
+      ],
+      "implementation_checklist": [
+        "3D model loads fast",
+        "Rotation smooth",
+        "Zoom works (pinch/scroll)",
+        "AR button functional",
+        "Colors switchable",
+        "Mobile touch works"
+      ],
+      "design_system_variables": [
+        "--canvas-bg: #F5F5F5",
+        "--hotspot-color: #3B82F6",
+        "--loading-spinner: primary",
+        "--rotation-speed: 0.5",
+        "--zoom-min: 0.5",
+        "--zoom-max: 2"
+      ]
+    },
+    {
+      "id": "gradient-mesh-aurora-evolved",
+      "style_name": "Gradient Mesh / Aurora Evolved",
+      "primary_colors": [
+        "Multi-stop gradients: Cyan #00FFFF",
+        "Magenta #FF00FF",
+        "Yellow #FFFF00",
+        "Blue #0066FF",
+        "Green #00FF66"
+      ],
+      "secondary_colors": [
+        "Complementary mesh points",
+        "smooth color transitions",
+        "iridescent overlays",
+        "chromatic shifts"
+      ],
+      "effects_animations": [
+        "CSS mesh-gradient (experimental)",
+        "SVG gradients",
+        "canvas gradients",
+        "smooth color morphing",
+        "flowing animation"
+      ],
+      "ai_prompt_keywords": [
+        "Design with gradient mesh aurora effect. Use: multi-color mesh gradients",
+        "flowing color transitions",
+        "aurora/northern lights feel",
+        "iridescent overlays",
+        "holographic shimmer",
+        "prismatic effects",
+        "smooth color morphing."
+      ],
+      "css_keywords": [
+        "background: conic-gradient or mesh (SVG)",
+        "animation: gradient flow (background-position)",
+        "filter: hue-rotate for shimmer",
+        "mix-blend-mode: screen",
+        "canvas for complex mesh",
+        "multiple gradient layers"
+      ],
+      "implementation_checklist": [
+        "Mesh gradient visible",
+        "Colors flow smoothly",
+        "Aurora effect achieved",
+        "Performance acceptable",
+        "Text remains readable",
+        "Mobile renders ok"
+      ],
+      "design_system_variables": [
+        "--mesh-color-1: #00FFFF",
+        "--mesh-color-2: #FF00FF",
+        "--mesh-color-3: #FFFF00",
+        "--mesh-color-4: #00FF66",
+        "--flow-duration: 10s",
+        "--shimmer-intensity: 0.3"
+      ]
+    },
+    {
+      "id": "editorial-grid-magazine",
+      "style_name": "Editorial Grid / Magazine",
+      "primary_colors": [
+        "High contrast: Black #000000",
+        "White #FFFFFF",
+        "accent brand color"
+      ],
+      "secondary_colors": [
+        "Muted supporting",
+        "pull quote highlights",
+        "byline colors",
+        "section dividers"
+      ],
+      "effects_animations": [
+        "Smooth scroll",
+        "reveal on scroll",
+        "parallax images",
+        "text animations",
+        "page-flip transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design an editorial magazine layout. Use: asymmetric grid",
+        "pull quotes",
+        "drop caps",
+        "multi-column text",
+        "large imagery",
+        "bylines",
+        "section dividers",
+        "print-inspired typography",
+        "article hierarchy",
+        "white space balance."
+      ],
+      "css_keywords": [
+        "display: grid with named areas",
+        "column-count for text",
+        "::first-letter for drop caps",
+        "blockquote styling",
+        "figure/figcaption",
+        "gap variations",
+        "font: serif for body",
+        "variable widths"
+      ],
+      "implementation_checklist": [
+        "Grid asymmetric",
+        "Typography editorial",
+        "Pull quotes styled",
+        "Drop caps present",
+        "Images large/impactful",
+        "Mobile reflows well"
+      ],
+      "design_system_variables": [
+        "--grid-cols: asymmetric",
+        "--body-font: Georgia/Merriweather",
+        "--heading-font: bold sans",
+        "--drop-cap-size: 4em",
+        "--pull-quote-size: 1.5em",
+        "--column-gap: 2rem"
+      ]
+    },
+    {
+      "id": "chromatic-aberration-rgb-split",
+      "style_name": "Chromatic Aberration / RGB Split",
+      "primary_colors": [
+        "Offset RGB: Red #FF0000",
+        "Green #00FF00",
+        "Blue #0000FF",
+        "Black #000000"
+      ],
+      "secondary_colors": [
+        "Neon accents",
+        "scan lines",
+        "noise overlays",
+        "error colors"
+      ],
+      "effects_animations": [
+        "RGB offset animation",
+        "glitch timing",
+        "scan line movement",
+        "noise flicker",
+        "distortion on hover"
+      ],
+      "ai_prompt_keywords": [
+        "Design with chromatic aberration RGB split effect. Use: color channel offset (R/G/B)",
+        "glitch aesthetic",
+        "retro tech feel",
+        "VHS error look",
+        "lens distortion",
+        "scan lines",
+        "noise overlay",
+        "analog imperfection."
+      ],
+      "css_keywords": [
+        "filter: drop-shadow with offset colors",
+        "text-shadow: RGB offset (-2px 0 red",
+        "2px 0 cyan)",
+        "animation: glitch (random offset)",
+        "::before for scanlines",
+        "mix-blend-mode: screen for overlays"
+      ],
+      "implementation_checklist": [
+        "RGB split visible",
+        "Glitch effect controlled",
+        "Scan lines subtle",
+        "Performance ok",
+        "Readability maintained",
+        "Reduced motion option"
+      ],
+      "design_system_variables": [
+        "--rgb-offset: 2px",
+        "--red-channel: #FF0000",
+        "--green-channel: #00FF00",
+        "--blue-channel: #0000FF",
+        "--glitch-duration: 0.3s",
+        "--scanline-opacity: 0.1"
+      ]
+    },
+    {
+      "id": "vintage-analog-retro-film",
+      "style_name": "Vintage Analog / Retro Film",
+      "primary_colors": [
+        "Faded Cream #F5E6C8",
+        "Warm Sepia #D4A574",
+        "Muted Teal #4A7B7C",
+        "Soft Pink #E8B4B8"
+      ],
+      "secondary_colors": [
+        "Grain overlays",
+        "light leak oranges",
+        "shadow blues",
+        "vintage paper tones",
+        "desaturated accents"
+      ],
+      "effects_animations": [
+        "Film grain overlay",
+        "VHS tracking effect",
+        "polaroid shake",
+        "fade-in transitions",
+        "light leak animations"
+      ],
+      "ai_prompt_keywords": [
+        "Design with vintage analog film aesthetic. Use: film grain overlay",
+        "faded/desaturated colors",
+        "warm sepia tones",
+        "light leaks",
+        "VHS tracking effect",
+        "polaroid frame",
+        "analog warmth",
+        "nostalgic photography feel."
+      ],
+      "css_keywords": [
+        "filter: sepia() contrast() saturate(0.8)",
+        "background: noise texture overlay",
+        "animation: VHS tracking (transform skew)",
+        "light leak gradient overlay",
+        "border for polaroid frame",
+        "grain via SVG filter"
+      ],
+      "implementation_checklist": [
+        "Film grain visible",
+        "Colors faded/warm",
+        "Light leaks present",
+        "Nostalgic feel achieved",
+        "Performance with filters",
+        "Images look vintage"
+      ],
+      "design_system_variables": [
+        "--sepia-amount: 20%",
+        "--contrast: 1.1",
+        "--saturation: 0.8",
+        "--grain-opacity: 0.15",
+        "--light-leak-color: rgba(255",
+        "200",
+        "100",
+        "0.2)",
+        "--warm-tint: #F5E6C8"
+      ]
+    },
+    {
+      "id": "bauhaus",
+      "style_name": "Bauhaus (包豪斯)",
+      "primary_colors": [
+        "Primary Red #D02020",
+        "Primary Blue #1040C0",
+        "Primary Yellow #F0C020"
+      ],
+      "secondary_colors": [
+        "Background #F0F0F0 (Off-white)",
+        "Foreground #121212 (Stark Black)",
+        "Muted #E0E0E0"
+      ],
+      "effects_animations": [
+        "Hard offset shadows (4px 4px 0px black)",
+        "mechanical press active:translate",
+        "no smooth hover — instant 0ms transitions",
+        "dot grid pattern on sections",
+        "slide-over transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Bauhaus mobile app. Use strict geometric shapes (circles and squares only)",
+        "primary color blocking (Red #D02020",
+        "Blue #1040C0",
+        "Yellow #F0C020)",
+        "hard 4px offset black shadows",
+        "OFF-WHITE canvas (#F0F0F0)",
+        "massive bold uppercase headlines (Outfit Black 900)",
+        "rectangular full-width buttons with mechanical press animation. No gradients. No rounded cards. No soft transitions."
+      ],
+      "css_keywords": [
+        "border-radius: 0px (cards/inputs) or 9999px (buttons/FAB)",
+        "box-shadow: 4px 4px 0px 0px #121212",
+        "active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+        "border: 2px solid #121212",
+        "font-family: Outfit",
+        "font-weight: 900 uppercase tracking-tighter (headlines)"
+      ],
+      "implementation_checklist": [
+        "Geometric shapes only (circle/square)",
+        "Primary color blocking applied",
+        "Hard offset shadows 4px",
+        "border-2 border-black on all elements",
+        "Mechanical press active state",
+        "Outfit Black 900 uppercase headlines",
+        "Safe area (pt-safe pb-safe) respected",
+        "Thumb-friendly h-12/h-14 touch targets",
+        "No hover states (mobile-only)",
+        "Vertical rhythm single-column stack"
+      ],
+      "design_system_variables": [
+        "--color-red: #D02020",
+        "--color-blue: #1040C0",
+        "--color-yellow: #F0C020",
+        "--color-bg: #F0F0F0",
+        "--color-fg: #121212",
+        "--border-width: 2px",
+        "--shadow-hard: 4px 4px 0px 0px #121212",
+        "--radius-block: 0px",
+        "--radius-pill: 9999px",
+        "--font-display: Outfit",
+        "--font-weight-hero: 900"
+      ]
+    },
+    {
+      "id": "minimalist-monochrome",
+      "style_name": "Minimalist Monochrome",
+      "primary_colors": [
+        "Pure Black #000000",
+        "Pure White #FFFFFF"
+      ],
+      "secondary_colors": [
+        "Muted #F5F5F5",
+        "Dark Gray #525252",
+        "Border Light #E5E5E5"
+      ],
+      "effects_animations": [
+        "Instant inversion active state (tap → bg-black text-white",
+        "zero transition-none)",
+        "no shadows (strictly 2D)",
+        "full-bleed horizontal rules (4px black section dividers)",
+        "subtle paper noise texture (opacity: 0.03)",
+        "slide-in page transitions with hard edge"
+      ],
+      "ai_prompt_keywords": [
+        "Design a minimalist monochrome mobile app. Use ONLY black (#000000) and white (#FFFFFF). Zero border-radius on every element. No shadows — depth is created by 1–4px black borders and color inversion only. Typography is the primary visual: Playfair Display for heroes (text-5xl–text-6xl",
+        "tracking-tighter",
+        "leading-[0.9])",
+        "Source Serif 4 for body",
+        "JetBrains Mono for labels/tags. Tap states instantly invert (bg-black text-white). Full-width horizontal rules separate sections. Use the word 'MENU' instead of hamburger icon."
+      ],
+      "css_keywords": [
+        "border-radius: 0px (ALL elements including modals)",
+        "box-shadow: none",
+        "active:bg-black active:text-white transition-none",
+        "border-b-4 border-black (section dividers)",
+        "divide-y divide-black (lists)",
+        "font-family: Playfair Display (headers) + Source Serif 4 (body) + JetBrains Mono (labels)",
+        "background-image: noise SVG opacity-[0.03]"
+      ],
+      "implementation_checklist": [
+        "0px border-radius on ALL elements",
+        "No shadows anywhere",
+        "Instant inversion on every tap (transition-none)",
+        "4px black line separates hero from content",
+        "Safe area respected (pt-safe pb-safe)",
+        "h-14 touch targets",
+        "Sticky section headers with border-b",
+        "Typography hero: word spans full screen width",
+        "Paper noise texture on backgrounds",
+        "Menu word-label instead of icon"
+      ],
+      "design_system_variables": [
+        "--color-bg: #FFFFFF",
+        "--color-fg: #000000",
+        "--color-muted: #F5F5F5",
+        "--color-muted-fg: #525252",
+        "--color-border: #000000",
+        "--color-border-light: #E5E5E5",
+        "--radius: 0px",
+        "--shadow: none",
+        "--border-hairline: 1px solid #E5E5E5",
+        "--border-thin: 1px solid #000000",
+        "--border-thick: 2px solid #000000",
+        "--border-heavy: 4px solid #000000",
+        "--font-display: Playfair Display",
+        "--font-body: Source Serif 4",
+        "--font-mono: JetBrains Mono"
+      ]
+    },
+    {
+      "id": "modern-dark-cinema-mobile",
+      "style_name": "Modern Dark (Cinema Mobile)",
+      "primary_colors": [
+        "Deep #020203",
+        "Base #050506",
+        "Elevated #0a0a0c",
+        "Accent #5E6AD2"
+      ],
+      "secondary_colors": [
+        "Foreground #EDEDEF",
+        "Muted #8A8F98",
+        "Accent Glow rgba(94 106 210/0.2)",
+        "Border rgba(255 255 255/0.08)",
+        "Surface rgba(255 255 255/0.05)"
+      ],
+      "effects_animations": [
+        "Expo.out Bezier(0.16",
+        "1",
+        "0.3",
+        "1) easing; spring modals (damping:20 stiffness:90); haptic-linked press (Impact Light/Medium); animated ambient light blobs (Reanimated translateX/Y slow oscillation); BlurView glassmorphism headers/nav (intensity 20); scale press 0.97 → 1.0; avoid pure #000000 (OLED smear)"
+      ],
+      "ai_prompt_keywords": [
+        "Design a cinematic dark mobile app. Background: LinearGradient from #0a0a0f (top) to #020203 (bottom). Add 2–3 absolute animated 'blob' views: circular",
+        "blurRadius 30–50",
+        "opacity 0.08–0.12",
+        "slow Reanimated oscillation. Cards: borderRadius 16",
+        "border rgba(255",
+        "255",
+        "255",
+        "0.08) hairline",
+        "subtle top-edge shine gradient. Primary button: #5E6AD2",
+        "scale press 0.97",
+        "haptic on press. BlurView (intensity 20",
+        "tint dark) for tab bar and headers. Typography: Inter 700 for headers",
+        "400 for body. Never use pure #000000. Accent glow: rgba(94",
+        "106",
+        "210",
+        "0.2) behind primary actions."
+      ],
+      "css_keywords": [
+        "borderRadius: 16 (cards/buttons)",
+        "background: LinearGradient #0a0a0f→#020203",
+        "border: StyleSheet.hairlineWidth rgba(255",
+        "255",
+        "255",
+        "0.08)",
+        "BlurView intensity={20} tint='dark'",
+        "useAnimatedStyle + withRepeat (blob oscillation)",
+        "Easing.bezier(0.16",
+        "1",
+        "0.3",
+        "1)",
+        "withSpring damping:20 stiffness:90",
+        "Haptics.impactAsync(ImpactFeedbackStyle.Light)",
+        "scale: 0.97 press"
+      ],
+      "implementation_checklist": [
+        "No pure #000000 backgrounds",
+        "LinearGradient base screen",
+        "Animated ambient blobs (Reanimated",
+        "native driver)",
+        "BlurView on tab bar and headers",
+        "borderRadius 16 on all cards",
+        "Haptic feedback on every Pressable",
+        "Bezier(0.16",
+        "1",
+        "0.3",
+        "1) easing used",
+        "Accent glow behind primary button",
+        "No solid grey borders (rgba only)",
+        "Bottom sheets replace all modals"
+      ],
+      "design_system_variables": [
+        "--bg-deep: #020203",
+        "--bg-base: #050506",
+        "--bg-elevated: #0a0a0c",
+        "--surface: rgba(255 255 255/0.05)",
+        "--foreground: #EDEDEF",
+        "--foreground-muted: #8A8F98",
+        "--accent: #5E6AD2",
+        "--accent-glow: rgba(94 106 210/0.2)",
+        "--border: rgba(255 255 255/0.08)",
+        "--radius: 16px",
+        "--easing: cubic-bezier(0.16 1 0.3 1)",
+        "--font: Inter"
+      ]
+    },
+    {
+      "id": "saas-mobile-high-tech-boutique",
+      "style_name": "SaaS Mobile (High-Tech Boutique)",
+      "primary_colors": [
+        "Electric Blue #0052FF",
+        "Gradient End #4D7CFF"
+      ],
+      "secondary_colors": [
+        "Background #FAFAFA",
+        "Foreground #0F172A",
+        "Muted #F1F5F9",
+        "Card #FFFFFF",
+        "Border #E2E8F0"
+      ],
+      "effects_animations": [
+        "Spring animations (mass:1 damping:15 stiffness:120); gradient buttons (0052FF→4D7CFF); scale press 0.96→1.0 with haptics; floating FAB with gentle bobbing (Reanimated); glassmorphism BlurView navigation bars; staggered fade-in entrance (Y:20→0 + opacity:0→1); pulsing status dot on section badges; layout transitions (LayoutAnimation or Reanimated entering)"
+      ],
+      "ai_prompt_keywords": [
+        "Design a high-tech boutique SaaS mobile app. Primary canvas: #FAFAFA (warm off-white). Cards: #FFFFFF with 1pt Slate-200 border",
+        "iOS shadow (shadowOpacity:0.1",
+        "shadowRadius:10",
+        "offset y:4)",
+        "Android elevation:4",
+        "padding 24px",
+        "borderRadius 16. Buttons: LinearGradient #0052FF→#4D7CFF",
+        "height 56px",
+        "borderRadius 16",
+        "scale press 0.96 + haptic. Section badges: rounded pill with rgba(0",
+        "82",
+        "255",
+        "0.05) bg and rgba(0",
+        "82",
+        "255",
+        "0.2) border + PulseDot + JetBrains Mono text. Typography: Calistoga for heroes (36–42pt)",
+        "Inter for body (16–18pt)",
+        "JetBrains Mono for data labels. All screen transitions: spring (mass:1 damping:15 stiffness:120). Always include SafeAreaView."
+      ],
+      "css_keywords": [
+        "borderRadius: 16 (buttons/cards)",
+        "LinearGradient colors={['#0052FF'",
+        "'#4D7CFF']}",
+        "shadowOpacity: 0.1",
+        "shadowRadius: 10",
+        "elevation: 4",
+        "Haptics.impactAsync(ImpactFeedbackStyle.Light) on press",
+        "withSpring({mass:1",
+        "damping:15",
+        "stiffness:120})",
+        "withTiming Y:20→0 opacity:0→1 staggered entrance",
+        "LayoutAnimation.configureNext for list updates",
+        "BlurView on nav bars"
+      ],
+      "implementation_checklist": [
+        "SafeAreaView wraps all screens",
+        "All touch targets ≥ 44×44px",
+        "Spring config used for all transitions",
+        "Gradient buttons (not flat)",
+        "Haptic on every Pressable",
+        "Section badges with PulseDot",
+        "Staggered entrance animation on screen mount",
+        "JetBrains Mono for data labels",
+        "Calistoga for hero headlines",
+        "Elevation/shadow on cards"
+      ],
+      "design_system_variables": [
+        "--bg: #FAFAFA",
+        "--fg: #0F172A",
+        "--muted: #F1F5F9",
+        "--accent: #0052FF",
+        "--accent-sec: #4D7CFF",
+        "--card: #FFFFFF",
+        "--border: #E2E8F0",
+        "--radius: 16px",
+        "--shadow: shadowOpacity 0.1 shadowRadius 10",
+        "--spring: mass 1 damping 15 stiffness 120",
+        "--font-display: Calistoga",
+        "--font-body: Inter",
+        "--font-mono: JetBrains Mono"
+      ]
+    },
+    {
+      "id": "terminal-cli-mobile",
+      "style_name": "Terminal CLI (Mobile)",
+      "primary_colors": [
+        "Matrix Green #33FF00",
+        "OLED Black #050505"
+      ],
+      "secondary_colors": [
+        "Amber #FFB000",
+        "Muted Green #1A3D1A",
+        "Error Red #FF3333",
+        "Border Green #33FF00"
+      ],
+      "effects_animations": [
+        "Blinking cursor (500ms opacity loop)",
+        "typewriter text reveal hook",
+        "scanline overlay (repeating lines 0.05 opacity)",
+        "ASCII art headers",
+        "instant color inversion on press (bg-green text-black)",
+        "haptic on every keystroke",
+        "boot sequence splash on launch"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Mobile Terminal CLI app. Background: #050505 OLED black. ALL text in Matrix Green #33FF00. Font: JetBrains Mono or SpaceMono ONLY — zero border-radius everywhere. ASCII borders using +",
+        "-",
+        "* characters instead of standard containers. Buttons displayed as [ EXECUTE ] or > PROCEED. On press: instantly inverts to green bg + black text + haptic. Cursor: blinking View opacity 0→1 at 500ms. Show boot sequence on launch (fake log scroll). Progress bars as [#####-----] text. Status bar footer: [BATTERY:88%] [NET:CONNECTED]. Scanline overlay: absolute View with repeating 1px horizontal lines at opacity 0.05. Typewriter effect on new data."
+      ],
+      "css_keywords": [
+        "borderRadius: 0 (ALL elements)",
+        "borderWidth: 1",
+        "borderColor: '#33FF00'",
+        "backgroundColor: '#050505'",
+        "color: '#33FF00'",
+        "fontFamily: 'SpaceMono-Regular' or JetBrains Mono",
+        "fontSize: 12 or 14 or 16 only",
+        "lineHeight: 1.2x fontSize",
+        "Haptics.impactAsync(Light) on every press",
+        "useAnimatedValue blink 500ms",
+        "hitSlop: 12px all sides for bracketed buttons"
+      ],
+      "implementation_checklist": [
+        "0px border-radius everywhere",
+        "ASCII-style borders on cards",
+        "Boot sequence on launch",
+        "Blinking cursor component",
+        "Typewriter hook for new content",
+        "Scanline overlay (0.05 opacity)",
+        "Haptic on every button press",
+        "Footer status bar component",
+        "hitSlop on all bracketed buttons (44×44dp)",
+        "Reduced motion respected"
+      ],
+      "design_system_variables": [
+        "--bg: #050505",
+        "--fg-primary: #33FF00",
+        "--fg-amber: #FFB000",
+        "--fg-muted: #1A3D1A",
+        "--fg-error: #FF3333",
+        "--border: #33FF00",
+        "--radius: 0px",
+        "--font: SpaceMono-Regular or JetBrains Mono",
+        "--font-sizes: 12 14 16 only",
+        "--blink-duration: 500ms",
+        "--scanline-opacity: 0.05"
+      ]
+    },
+    {
+      "id": "kinetic-brutalism-mobile",
+      "style_name": "Kinetic Brutalism (Mobile)",
+      "primary_colors": [
+        "Acid Yellow #DFE104",
+        "Rich Black #09090B"
+      ],
+      "secondary_colors": [
+        "Off-white #FAFAFA",
+        "Dark Gray #27272A",
+        "Zinc #A1A1AA",
+        "Border Zinc #3F3F46"
+      ],
+      "effects_animations": [
+        "Infinite marquee (Reanimated",
+        "Linear easing",
+        "5s loop",
+        "hard clip)",
+        "hero parallax (scale 1.0→1.3 + fade)",
+        "sticky section header push",
+        "card flood inversion on press (bg→#DFE104",
+        "text→#000000)",
+        "haptic Medium on every press",
+        "scroll-triggered interpolate transforms",
+        "0px radius",
+        "2px borders",
+        "100ms color transitions"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Kinetic Brutalism mobile app. Canvas: #09090B. Primary accent: Acid Yellow #DFE104 (text: #000000). Typography: Space Grotesk BOLD. Display text: 60–120pt",
+        "uppercase",
+        "letterSpacing -1",
+        "lineHeight 0.9–1.1x. Body: 18–20pt. Labels: 12pt uppercase letterSpacing +2. Add infinite marquee rows (Reanimated",
+        "no easing",
+        "hard edge clip). Hero text parallax on scroll (Interpolate: scale 1.0→1.3",
+        "opacity 1→0). Card press: instantly flood to #DFE104 + flip text to #000. Haptic Medium on every press. 0px radius. 2px solid borders. NO shadows. No gradients. Scale all fonts by (windowWidth / 375 * size) for responsiveness."
+      ],
+      "css_keywords": [
+        "borderRadius: 0",
+        "borderWidth: 2",
+        "borderColor: '#3F3F46'",
+        "backgroundColor: '#09090B'",
+        "color: '#FAFAFA'",
+        "fontWeight: '800 or 900'",
+        "letterSpacing: -1 (large) or 2 (labels)",
+        "lineHeight: 0.9–1.1 * fontSize",
+        "Reanimated withRepeat marquee timing 5000ms Easing.linear",
+        "Interpolate scroll→scale + opacity",
+        "Haptics.impactAsync(Medium)",
+        "scale press: 0.95",
+        "100ms color transitions"
+      ],
+      "implementation_checklist": [
+        "Infinite marquee rows (Reanimated",
+        "no fade edges)",
+        "Hero parallax scroll (scale+opacity Interpolate)",
+        "All display text uppercase",
+        "0px border-radius",
+        "2px borders",
+        "Acid yellow card flood on press",
+        "Haptic Medium on every interaction",
+        "Font scale helper (windowWidth/375*size)",
+        "Safe area for massive headers",
+        "Reduced motion stops marquees"
+      ],
+      "design_system_variables": [
+        "--bg: #09090B",
+        "--fg: #FAFAFA",
+        "--muted: #27272A",
+        "--muted-fg: #A1A1AA",
+        "--accent: #DFE104",
+        "--accent-fg: #000000",
+        "--border: #3F3F46",
+        "--radius: 0px",
+        "--border-width: 2px",
+        "--shadow: none",
+        "--marquee-speed: 5000ms",
+        "--press-duration: 100ms",
+        "--font: Space Grotesk or Inter"
+      ]
+    },
+    {
+      "id": "flat-design-mobile-touch-first",
+      "style_name": "Flat Design Mobile (Touch-First)",
+      "primary_colors": [
+        "Blue #3B82F6",
+        "Emerald #10B981"
+      ],
+      "secondary_colors": [
+        "Background #FFFFFF",
+        "Surface #F3F4F6",
+        "Text #111827",
+        "Amber #F59E0B",
+        "Border #E5E7EB"
+      ],
+      "effects_animations": [
+        "Immediate press feedback (scale 0.97",
+        "no delay)",
+        "color section blocking (full-width contrasting View)",
+        "zero elevation/shadow",
+        "solid icon containers (colored squares/circles)",
+        "geometric low-opacity shape overlays",
+        "bottom tabs solid fill (no floating)"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Flat Mobile app. NO shadows (shadowOpacity: 0",
+        "elevation: 0). Color creates all hierarchy. Sections: full-width View blocks alternating contrasting bg colors (Blue Hero → White Content → Gray Block). Buttons: solid #3B82F6",
+        "borderRadius 8",
+        "height 56. Cards: backgroundColor #FFFFFF (on gray bg) or #DBEAFE (blue tint) — no shadow. Text: fontWeight 800 letterSpacing -0.5 (heads)",
+        "600 (sub)",
+        "400 (body). Inputs: #F3F4F6 bg",
+        "focused: borderWidth 2 borderColor #3B82F6. Icons: Lucide strokeWidth 2.5 inside solid colored square/circle. Press feedback: scale 0.97 Pressable. Use position absolute low-opacity geometric shapes (circles",
+        "rotated squares) as background decoration."
+      ],
+      "css_keywords": [
+        "shadowOpacity: 0",
+        "elevation: 0",
+        "borderRadius: 6/12/999",
+        "height: 48 minimum touch targets",
+        "spacing: 4/8/16/24/32/48 system",
+        "backgroundColor (section blocking)",
+        "Pressable scale: pressed ? 0.97 : 1",
+        "fontWeight: '800' heads / '600' sub / '400' body",
+        "letterSpacing: -0.5 heads / 1 labels",
+        "textTransform: 'uppercase' labels",
+        "strokeWidth={2.5} icons",
+        "borderWidth: 3/4 for featured CTAs"
+      ],
+      "implementation_checklist": [
+        "Zero elevation AND shadowOpacity on all elements",
+        "Color-blocking sections (not borders)",
+        "All touch targets ≥ 48×48",
+        "No gradients on flat elements",
+        "Icons inside solid colored containers",
+        "Pressable scale feedback",
+        "Geometric shapes as bg decoration",
+        "Bold flat bottom tabs (no floating)",
+        "Primary headlines much larger than body",
+        "4pt spacing system throughout"
+      ],
+      "design_system_variables": [
+        "--bg: #FFFFFF",
+        "--surface: #F3F4F6",
+        "--fg: #111827",
+        "--primary: #3B82F6",
+        "--secondary: #10B981",
+        "--accent: #F59E0B",
+        "--border: #E5E7EB",
+        "--radius-sm: 6px",
+        "--radius-md: 12px",
+        "--radius-pill: 999px",
+        "--shadow: none",
+        "--elevation: 0",
+        "--touch-target: 48px",
+        "--spacing: 4 8 16 24 32 48"
+      ]
+    },
+    {
+      "id": "material-you-md3-mobile",
+      "style_name": "Material You (MD3 Mobile)",
+      "primary_colors": [
+        "Primary Violet #6750A4",
+        "Secondary Container #E8DEF8",
+        "Tertiary #7D5260"
+      ],
+      "secondary_colors": [
+        "Surface #FFFBFE",
+        "On Surface #1C1B1F",
+        "Surface Container #F3EDF7",
+        "Outline #79747E"
+      ],
+      "effects_animations": [
+        "Tonal elevation (overlay colors instead of strong shadows)",
+        "pill-shaped buttons and chips (borderRadius 999)",
+        "emphasized easing Easing.bezier(0.2",
+        "0",
+        "0",
+        "1)",
+        "state layers (pressed overlays 10–15% opacity)",
+        "Reanimated-filled label float for inputs",
+        "HapticFeedback on FAB/toggles"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Material You (MD3) mobile app. Use #FFFBFE background",
+        "#6750A4 primary",
+        "#E8DEF8 secondary container",
+        "#F3EDF7 surface container. All interactive elements are pill-shaped (borderRadius: 999). Buttons use Pressable with scale: 0.95 on press and state-layer overlays (black 10% or primary 12%). Inputs use filled M3 style: background #E7E0EC with floating label animation on focus. Elevation is tonal (layering containers) plus light shadow/elevation on Android. Animations use emphasized easing (0.2",
+        "0",
+        "0",
+        "1) at 100–400ms. FABs are tertiary-colored rounded squares/circles with level 3 elevation."
+      ],
+      "css_keywords": [
+        "borderRadius: 999 (buttons/chips)",
+        "containerRadius: 16–28",
+        "backgroundColor: '#FFFBFE'",
+        "colorPrimary: '#6750A4'",
+        "colorSecondaryContainer: '#E8DEF8'",
+        "colorSurfaceContainer: '#F3EDF7'",
+        "outlineColor: '#79747E'",
+        "Pressable state-layer overlay (opacity 0.1–0.15)",
+        "Easing.bezier(0.2",
+        "0",
+        "0",
+        "1)",
+        "HapticFeedback.impactMedium on FAB",
+        "floating label using Reanimated translateY/scale"
+      ],
+      "implementation_checklist": [
+        "MD3 color tokens applied (background/surface/container)",
+        "All CTAs are pill-shaped",
+        "State-layer overlays instead of opacity 0.5 hacks",
+        "Emphasized easing used for all animations",
+        "Floating label inputs implemented",
+        "FAB uses tertiary color with correct elevation",
+        "Safe areas respected for organic shapes",
+        "No pure white background",
+        "No harsh box-shadows (ambient only)"
+      ],
+      "design_system_variables": [
+        "--md3-bg: #FFFBFE",
+        "--md3-on-surface: #1C1B1F",
+        "--md3-primary: #6750A4",
+        "--md3-on-primary: #FFFFFF",
+        "--md3-secondary-container: #E8DEF8",
+        "--md3-on-secondary-container: #1D192B",
+        "--md3-tertiary: #7D5260",
+        "--md3-surface-container: #F3EDF7",
+        "--md3-outline: #79747E",
+        "--radius-pill: 999px",
+        "--easing-emphasized: cubic-bezier(0.2",
+        "0",
+        "0",
+        "1)"
+      ]
+    },
+    {
+      "id": "neo-brutalism-mobile",
+      "style_name": "Neo Brutalism (Mobile)",
+      "primary_colors": [
+        "Cream #FFFDF5",
+        "Hot Red #FF6B6B",
+        "Vivid Yellow #FFD93D"
+      ],
+      "secondary_colors": [
+        "Soft Violet #C4B5FD",
+        "Pure Black #000000",
+        "White #FFFFFF"
+      ],
+      "effects_animations": [
+        "Thick 4px black borders on all major elements",
+        "hard offset shadows (4–8px",
+        "no blur)",
+        "mechanical press: translateX/Y equal to shadow offset",
+        "slightly rotated cards/badges (-2deg/2deg)",
+        "high-saturation color blocking",
+        "spring/linear animations only"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Mobile Neo-Brutalist app. Background: Cream #FFFDF5. All content blocks: white or violet with borderWidth 4 borderColor #000. Shadows are solid offset blocks (no blur) using an extra View behind offset by 4px or 8px. Typography: Space Grotesk Bold/Black only (700–900). Buttons: 56px tall",
+        "4px border",
+        "0 radius; press animation translates button to cover the shadow. Cards slightly rotated (-1deg",
+        "2deg). Colors: Hot Red #FF6B6B for primary",
+        "Yellow #FFD93D for focus/badges",
+        "Soft Violet #C4B5FD as tertiary. Animation: spring/linear only",
+        "no ease-out luxury motion."
+      ],
+      "css_keywords": [
+        "borderWidth: 4 (primary)",
+        "2 (secondary)",
+        "borderRadius: 0 or 999 (badges only)",
+        "backgroundColor: '#FFFDF5'",
+        "shadow implemented as offset View",
+        "transform: [{translateX:4}",
+        "{translateY:4}] on PressIn",
+        "fontFamily: 'SpaceGrotesk-Bold'",
+        "fontWeight: '700/900'",
+        "transform: [{ rotate: '-1deg' }] on cards",
+        "padding: 20",
+        "4px borders on major elements"
+      ],
+      "implementation_checklist": [
+        "Hard offset shadow implemented via extra View"
+      ],
+      "design_system_variables": [
+        "Mechanical press hides shadow"
+      ]
+    },
+    {
+      "id": "bold-typography-mobile-poster",
+      "style_name": "Bold Typography (Mobile Poster)",
+      "primary_colors": [
+        "Near Black #0A0A0A",
+        "Warm White #FAFAFA"
+      ],
+      "secondary_colors": [
+        "Muted #1A1A1A",
+        "Secondary Text #737373",
+        "Accent Vermillion #FF3D00",
+        "Border #262626"
+      ],
+      "effects_animations": [
+        "Hero headlines 48–72px (5:1 vs body size)",
+        "tight tracking (-1.5px)",
+        "edge-to-edge type",
+        "massive vertical spacing (60px+)",
+        "underline CTAs (2–3px accent line)",
+        "instant 200ms transitions (no bounce)",
+        "strictly 0px radius containers",
+        "color shifts for active state instead of elevation"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Bold Typography mobile screen. Background #0A0A0A",
+        "text #FAFAFA",
+        "accent #FF3D00. Use Inter Tight/Inter 600+ for all type; JetBrains Mono for labels. Headline: 56–72px",
+        "tracking -1.5",
+        "lineHeight 1.1",
+        "full-bleed width with slight bleed off-screen. Body: 16–18px",
+        "leading 1.6. Buttons: underline CTA (accent text + 2px underline block)",
+        "or inverted box with 0 radius. No shadows",
+        "no rounded corners. Layout: single column",
+        "paddingHorizontal 24",
+        "vertical gaps 64 between sections. Animation: 200ms",
+        "Easing.bezier(0.25",
+        "0",
+        "0",
+        "1)",
+        "slight slide-up 10px + fade on mount."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#0A0A0A'",
+        "color: '#FAFAFA'",
+        "accent: '#FF3D00'",
+        "borderColor: '#262626'",
+        "borderRadius: 0",
+        "paddingHorizontal: 24",
+        "headline style: fontSize:56–72",
+        "fontWeight:'700/800'",
+        "letterSpacing:-1.5",
+        "lineHeight:1.1*fontSize",
+        "body: fontSize:16–18",
+        "lineHeight:1.6*fontSize",
+        "underline CTA: 2–3px height View under text",
+        "transition: 200ms cubic-bezier(0.25",
+        "0",
+        "0",
+        "1)"
+      ],
+      "implementation_checklist": [
+        "H1 at least 4–5× body size",
+        "All containers 0 radius",
+        "Underline CTA pattern used",
+        "Large vertical gaps between sections",
+        "No shadows or soft corners",
+        "Accent used only for interaction",
+        "Text bleeds to/over screen edges",
+        "Animation timings 200ms",
+        "Accessible contrast ≥ 18:1",
+        "Body text never below 16px"
+      ],
+      "design_system_variables": [
+        "--bg: #0A0A0A",
+        "--fg: #FAFAFA",
+        "--muted: #1A1A1A",
+        "--muted-fg: #737373",
+        "--accent: #FF3D00",
+        "--accent-fg: #0A0A0A",
+        "--border: #262626",
+        "--font-primary: Inter Tight",
+        "--font-display: Playfair Display Italic",
+        "--font-mono: JetBrains Mono"
+      ]
+    },
+    {
+      "id": "academia-scholarly-mobile",
+      "style_name": "Academia (Scholarly Mobile)",
+      "primary_colors": [
+        "Mahogany #1C1714",
+        "Oak #251E19"
+      ],
+      "secondary_colors": [
+        "Parchment #E8DFD4",
+        "Worn Leather #3D332B",
+        "Faded Ink #9C8B7A",
+        "Brass #C9A962",
+        "Library Crimson #8B2635"
+      ],
+      "effects_animations": [
+        "Deep mahogany backgrounds",
+        "oak surface cards",
+        "brass accented CTAs",
+        "arch-top hero/imagery",
+        "heavy vignette overlays",
+        "sepia-tinted images",
+        "drop caps with brass Cinzel",
+        "Roman numeral volume headings",
+        "slow timing-based animations (Easing.out poly(4))",
+        "zero neon or modern tech cues"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Scholarly Academia mobile app. Background #1C1714 (mahogany)",
+        "alt surfaces #251E19 (oak)",
+        "text #E8DFD4 (parchment). Accent brass #C9A962 for CTAs + borders; crimson #8B2635 for wax seals. Typography: Cormorant Garamond (headings)",
+        "Crimson Pro (body)",
+        "Cinzel (labels/overlines). Use arch-top hero containers (borderTopRadius 100). Cards: oak bg",
+        "1px wood-grain border. Inputs: worn-leather background",
+        "brass focus border. Global vignette overlay and ornate brass dividers (Unicode glyph + gradient line). Animations: no spring",
+        "only Timing with Easing.out(Easing.poly(4))."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#1C1714'",
+        "altSurface: '#251E19'",
+        "textColor: '#E8DFD4'",
+        "mutedBg: '#3D332B'",
+        "borderColor: '#4A3F35'",
+        "brass: '#C9A962'",
+        "crimson: '#8B2635'",
+        "borderRadius: 4 (default)",
+        "archTopRadius: 100 for hero",
+        "shadowOpacity:0.4 shadowRadius:6 elevation:8 for cards",
+        "textShadow on headings",
+        "vignette overlay via LinearGradient"
+      ],
+      "implementation_checklist": [
+        "Mahogany/oak/parchment palette applied",
+        "Brass used on all tappable items",
+        "Arch-top imagery used in hero/cards",
+        "Drop caps & Roman numerals used",
+        "Vignette overlay present",
+        "No sans-serif body fonts",
+        "No neon/bright modern colors",
+        "Animations use non-spring timing",
+        "Inputs use worn-leather style",
+        "Wax seal badges implemented"
+      ],
+      "design_system_variables": [
+        "--bg: #1C1714",
+        "--bg-alt: #251E19",
+        "--fg: #E8DFD4",
+        "--muted: #3D332B",
+        "--muted-fg: #9C8B7A",
+        "--border: #4A3F35",
+        "--accent-brass: #C9A962",
+        "--accent-crimson: #8B2635",
+        "--radius: 4px",
+        "--arch-radius: 100px",
+        "--shadow-card: 0 4px 6px rgba(0",
+        "0",
+        "0",
+        "0.4)",
+        "--font-heading: Cormorant Garamond",
+        "--font-body: Crimson Pro",
+        "--font-label: Cinzel"
+      ]
+    },
+    {
+      "id": "cyberpunk-mobile-hud",
+      "style_name": "Cyberpunk Mobile HUD",
+      "primary_colors": [
+        "Void #0A0A0F",
+        "Card #12121A"
+      ],
+      "secondary_colors": [
+        "Neon Green #00FF88",
+        "Neon Magenta #FF00FF",
+        "Cyber Cyan #00D4FF",
+        "Neutral Text #E0E0E0",
+        "Alert Red #FF3366",
+        "Border #2A2A3A"
+      ],
+      "effects_animations": [
+        "Deep void background with neon radiance",
+        "chamfered 45° corners via SVG/Skia",
+        "scanline overlay",
+        "CRT flicker opacity oscillation",
+        "glitch animations (translateX ±2)",
+        "neon pulses around buttons",
+        "HUD corner brackets",
+        "terminal prompt text inputs",
+        "heavy use of blurView holographic panels"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Cyberpunk mobile HUD. Background #0A0A0F",
+        "card #12121A. Accents: #00FF88 (primary)",
+        "#FF00FF",
+        "#00D4FF. Typography: Orbitron for headings",
+        "JetBrains Mono for data. All shapes use chamfered corners via SVG or Skia clipPath. Buttons: neon glow shadows",
+        "scale 0.98 + haptic on press",
+        "optional glitch jitter on active. Global scanline overlay (semi-transparent horizontal lines) and CRT flicker (root opacity 0.98–1). Inputs: prompt style with '>' in accent",
+        "custom blinking block cursor. HUD cards use corner brackets and subtle gradients."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#0A0A0F'",
+        "cardBg: '#12121A'",
+        "accent: '#00FF88'",
+        "accent2: '#FF00FF'",
+        "accent3: '#00D4FF'",
+        "borderColor: '#2A2A3A'",
+        "destructive: '#FF3366'",
+        "borderRadius: 0",
+        "chamfer via SVG path",
+        "shadowColor accent with animated radius",
+        "scanline overlay View pointerEvents='none'",
+        "withRepeat glitch translateX [-2",
+        "2",
+        "0]",
+        "Easing.steps(2)"
+      ],
+      "implementation_checklist": [
+        "Chamfered corners used instead of radius",
+        "Scanline & CRT flicker implemented",
+        "Orbitron + JetBrains Mono typography",
+        "Neon glow shadows on primary buttons",
+        "Glitch animation on active states",
+        "Prompt-style inputs with custom cursor",
+        "HUD corner brackets implemented",
+        "Safe-area system status bar styled",
+        "Reduced motion disables glitch/flicker",
+        "Icons configured with Lucide accent color"
+      ],
+      "design_system_variables": [
+        "--bg: #0A0A0F",
+        "--card: #12121A",
+        "--fg: #E0E0E0",
+        "--muted: #1C1C2E",
+        "--accent: #00FF88",
+        "--accent2: #FF00FF",
+        "--accent3: #00D4FF",
+        "--border: #2A2A3A",
+        "--destructive: #FF3366",
+        "--radius: 0px",
+        "--font-heading: Orbitron",
+        "--font-body: JetBrains Mono"
+      ]
+    },
+    {
+      "id": "bitcoin-defi-mobile",
+      "style_name": "Bitcoin DeFi (Mobile)",
+      "primary_colors": [
+        "Bitcoin Orange #F7931A",
+        "Burnt Orange #EA580C",
+        "Digital Gold #FFD600"
+      ],
+      "secondary_colors": [
+        "Void #030304",
+        "Dark Matter #0F1115",
+        "Pure Light #FFFFFF",
+        "Stardust #94A3B8",
+        "Border Dim rgba(30",
+        "41",
+        "59",
+        "0.2)"
+      ],
+      "effects_animations": [
+        "Deep void + dark matter surfaces",
+        "Bitcoin orange/gold gradients for CTAs",
+        "pill buttons with glowing shadows",
+        "glassmorphic BlurView nav",
+        "monospace data rows",
+        "gradient text balances + masked orange-gold",
+        "pulsing status indicators and vertical ledger timelines",
+        "ultra-thin borders",
+        "high-precision typography"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Bitcoin DeFi mobile app. Background #030304",
+        "cards #0F1115",
+        "text #FFFFFF",
+        "muted #94A3B8. Primary CTA: LinearGradient #EA580C→#F7931A with orange glow shadow. Typography: Space Grotesk Bold for headings",
+        "Inter for body",
+        "JetBrains Mono for prices/hashes. Use BlurView (intensity 20) for nav bars and floating panels. Cards as 'blocks' with hairline borders and light orange glow on active. Use grid background (low-opacity 50px grid). Gradient text for key balances via MaskedView and LinearGradient orange→gold. Status indicators pulse using Reanimated. Ledger timelines drawn as vertical gradient line with pulsing dots."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#030304'",
+        "cardBg: '#0F1115'",
+        "textColor: '#FFFFFF'",
+        "mutedText: '#94A3B8'",
+        "borderColor: 'rgba(30",
+        "41",
+        "59",
+        "0.2)'",
+        "accentBitcoin: '#F7931A'",
+        "accentBurnt: '#EA580C'",
+        "accentGold: '#FFD600'",
+        "borderRadius: 24 for cards",
+        "radiusPill: 999 for buttons",
+        "BlurView intensity 20",
+        "LinearGradient on CTAs",
+        "shadowColor '#F7931A' shadowRadius up to 10",
+        "JetBrains Mono for numeric text"
+      ],
+      "implementation_checklist": [
+        "Void/dark-matter palette applied",
+        "Bitcoin orange/gold gradient buttons",
+        "BlurView nav implemented",
+        "Monospace for numeric data",
+        "Hairline borders on blocks",
+        "Gradient text on balances",
+        "Pulsing network status indicators",
+        "Ledger vertical timeline",
+        "Haptics on money actions",
+        "SafeArea + FlashList for heavy lists"
+      ],
+      "design_system_variables": [
+        "--bg-void: #030304",
+        "--bg-surface: #0F1115",
+        "--fg: #FFFFFF",
+        "--fg-muted: #94A3B8",
+        "--border-dim: rgba(30",
+        "41",
+        "59",
+        "0.2)",
+        "--accent-bitcoin: #F7931A",
+        "--accent-burnt: #EA580C",
+        "--accent-gold: #FFD600",
+        "--radius-card: 24px",
+        "--radius-pill: 999px",
+        "--blur-intensity: 20",
+        "--font-heading: Space Grotesk",
+        "--font-body: Inter",
+        "--font-mono: JetBrains Mono"
+      ]
+    },
+    {
+      "id": "claymorphism-mobile",
+      "style_name": "Claymorphism (Mobile)",
+      "primary_colors": [
+        "Vivid Violet #7C3AED",
+        "Hot Pink #DB2777"
+      ],
+      "secondary_colors": [
+        "Canvas #F4F1FA",
+        "Soft Charcoal #332F3A",
+        "Emerald #10B981",
+        "Amber #F59E0B",
+        "Lavender-Gray #635F69"
+      ],
+      "effects_animations": [
+        "Multi-layer shadow stacks (nested View) to simulate clay depth",
+        "LinearGradient #A78BFA→#7C3AED buttons",
+        "borderRadius 40–50 outer / 32 cards / 20 buttons",
+        "Reanimated spring squish (scale 0.92 on press)",
+        "BlurView glass-clay hybrid cards",
+        "floating blobs with slow ±20px drift",
+        "Haptics Light on every press"
+      ],
+      "ai_prompt_keywords": [
+        "Design a high-fidelity Claymorphism mobile app. Background #F4F1FA (cool lavender-white",
+        "never pure white). Primary CTA: LinearGradient #A78BFA to #7C3AED",
+        "borderRadius 20",
+        "height 56. Cards: borderRadius 32",
+        "backgroundColor rgba(255",
+        "255",
+        "255",
+        "0.7) with BlurView. Multi-layer shadow: outer offset(12",
+        "12) rgba(160",
+        "150",
+        "180",
+        "0.2) + highlight offset(-8",
+        "-8) white. Typography: Nunito Black 900 for headings (48px hero",
+        "32px section",
+        "22px card)",
+        "DM Sans Medium 500 for body 16px. Spring animations: scale 0.92 on press",
+        "spring back damping 10. Background blobs drift ±20px over 8–10s. Bento 2-column grid with hero card spanning full width. Haptics.impactAsync Light on every button press."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#F4F1FA'",
+        "cardBg: 'rgba(255",
+        "255",
+        "255",
+        "0.7)'",
+        "textPrimary: '#332F3A'",
+        "textMuted: '#635F69'",
+        "accentPrimary: '#7C3AED'",
+        "accentSecondary: '#DB2777'",
+        "success: '#10B981'",
+        "warning: '#F59E0B'",
+        "radiusOuter: 50",
+        "radiusCard: 32",
+        "radiusButton: 20",
+        "shadowStack: 'nested View'",
+        "gradientButton: ['#A78BFA'",
+        "'#7C3AED']",
+        "springDamping: 10"
+      ],
+      "implementation_checklist": [
+        "Background uses #F4F1FA (no pure white)",
+        "Multi-layer clay shadow stack applied",
+        "Cards use blurred glass-clay hybrid",
+        "Buttons squish to scale 0.92 on press",
+        "Spring physics on all interactions",
+        "Nunito Black for headings",
+        "Background blobs drifting",
+        "Haptics on every press",
+        "Nested border radius (card 32",
+        "inner 24)",
+        "Bento layout with hero span"
+      ],
+      "design_system_variables": [
+        "--bg: #F4F1FA",
+        "--card-bg: rgba(255",
+        "255",
+        "255",
+        "0.7)",
+        "--text: #332F3A",
+        "--muted: #635F69",
+        "--accent: #7C3AED",
+        "--accent2: #DB2777",
+        "--success: #10B981",
+        "--warning: #F59E0B",
+        "--radius-outer: 50px",
+        "--radius-card: 32px",
+        "--radius-button: 20px",
+        "--font-heading: Nunito Black",
+        "--font-body: DM Sans"
+      ]
+    },
+    {
+      "id": "enterprise-saas-mobile",
+      "style_name": "Enterprise SaaS (Mobile)",
+      "primary_colors": [
+        "Indigo #4F46E5",
+        "Violet #7C3AED"
+      ],
+      "secondary_colors": [
+        "Slate 50 #F8FAFC",
+        "White #FFFFFF",
+        "Slate 900 #0F172A",
+        "Slate 500 #64748B",
+        "Emerald #10B981",
+        "Slate 200 #E2E8F0"
+      ],
+      "effects_animations": [
+        "Indigo→Violet gradient primary CTAs + active tab highlights",
+        "colored card shadows rgba(79",
+        "70",
+        "229",
+        "0.08)",
+        "pill buttons or 12pt radius",
+        "full-width CTA at screen bottom",
+        "spring press scale 0.97",
+        "floating label inputs with animated focus border",
+        "skeletal loading pulses (Indigo/Slate tint)",
+        "Bottom Sheets with drag dismiss",
+        "swipe-to-action list cards",
+        "scroll-linked title collapse"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Modern Enterprise SaaS mobile app. Background #F8FAFC",
+        "surfaces #FFFFFF",
+        "primary #4F46E5 (Indigo)",
+        "secondary #7C3AED (Violet). Typography: Plus Jakarta Sans",
+        "ExtraBold 800 for screen titles",
+        "Bold 700 for section headers",
+        "SemiBold 600 for buttons",
+        "Regular 400 for body. Line height 1.1–1.2 for titles",
+        "1.4–1.5 for body. Primary button: full-width",
+        "LinearGradient Indigo→Violet",
+        "pill-shaped or radius 12",
+        "scale 0.95 on press with medium haptic. Cards: white bg",
+        "16pt radius",
+        "hairline border",
+        "shadow rgba(79",
+        "70",
+        "229",
+        "0.08). Inputs: white bg",
+        "8pt radius",
+        "floating label",
+        "Indigo border on focus. Bottom Tab Navigation (3–5 items)",
+        "gradient active tab icon. Screen padding 16–20pt. Vertical rhythm 24pt between sections",
+        "12pt between items. Shared Element Transition for hero cards opening to detail."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#F8FAFC'",
+        "surfaceBg: '#FFFFFF'",
+        "textPrimary: '#0F172A'",
+        "textMuted: '#64748B'",
+        "primary: '#4F46E5'",
+        "secondary: '#7C3AED'",
+        "success: '#10B981'",
+        "border: '#E2E8F0'",
+        "radiusCard: 16",
+        "radiusButton: 999",
+        "radiusInput: 8",
+        "shadowCard: 'rgba(79",
+        "70",
+        "229",
+        "0.08)'",
+        "gradientPrimary: ['#4F46E5'",
+        "'#7C3AED']",
+        "screenPadding: 20"
+      ],
+      "implementation_checklist": [
+        "Background #F8FAFC applied",
+        "Indigo→Violet gradient on primary CTA",
+        "Colored card shadows (not gray)",
+        "Plus Jakarta Sans typography",
+        "Floating label inputs with Indigo focus",
+        "Scale 0.97 press with haptic Medium",
+        "Bottom Tab Navigation implemented",
+        "Safe Area strict compliance",
+        "Skeletal loading placeholders",
+        "Reduced Motion fallback"
+      ],
+      "design_system_variables": [
+        "--bg: #F8FAFC",
+        "--surface: #FFFFFF",
+        "--text: #0F172A",
+        "--muted: #64748B",
+        "--primary: #4F46E5",
+        "--secondary: #7C3AED",
+        "--success: #10B981",
+        "--border: #E2E8F0",
+        "--radius-card: 16px",
+        "--radius-pill: 999px",
+        "--radius-input: 8px",
+        "--shadow-card: rgba(79",
+        "70",
+        "229",
+        "0.08)",
+        "--font: Plus Jakarta Sans"
+      ]
+    },
+    {
+      "id": "sketch-hand-drawn-mobile",
+      "style_name": "Sketch Hand-Drawn (Mobile)",
+      "primary_colors": [
+        "Red Marker #FF4D4D",
+        "Pencil Black #2D2D2D"
+      ],
+      "secondary_colors": [
+        "Warm Paper #FDFBF7",
+        "Old Paper #E5E0D8",
+        "Blue Ballpoint #2D5DA1",
+        "Post-it Yellow #FFF9C4"
+      ],
+      "effects_animations": [
+        "Wobbly borderRadius (unique per corner: 15/25/20/10)",
+        "borderWidth 2–3 solid/dashed",
+        "hard offset shadow via rear View (4px",
+        "4px) #2D2D2D",
+        "Kalam Bold headings",
+        "PatrickHand Regular body",
+        "slight rotation (-1deg/1deg) on cards",
+        "absolute SVG scribble overlays (arrows/tape/tacks)",
+        "jiggle -2deg↔2deg on error",
+        "LayoutAnimation spring on layout changes",
+        "Haptics on press",
+        "paper texture repeating background"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Hand-Drawn (Sketch) mobile app. Background #FDFBF7 (warm paper texture). Typography: Kalam Bold for headings (high weight",
+        "felt-tip style)",
+        "PatrickHand Regular for body (human but legible). Colors: Pencil Black #2D2D2D for all text and borders",
+        "Red Marker #FF4D4D for accents",
+        "Blue Ballpoint #2D5DA1for input focus. Cards: white background",
+        "wobbly corner radii (e.g.",
+        "15/25/20/10)",
+        "borderWidth 3",
+        "rotate -1deg or +1deg. Hard offset shadow implemented as a second View behind the card offset 4px right and 4px down. Buttons: Post-it yellow #FFF9C4 for primary CTA",
+        "press state shifts the button (translateX 4",
+        "translateY 4) to cover the shadow. Inputs: PatrickHand font",
+        "wobbly border",
+        "focus changes to Blue Ballpoint. Add absolute SVG tape and tack decorations. Error: jiggle animation -2deg to +2deg. All touch targets minimum 48x48."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#FDFBF7'",
+        "cardBg: '#FFFFFF'",
+        "textPrimary: '#2D2D2D'",
+        "accentRed: '#FF4D4D'",
+        "accentBlue: '#2D5DA1'",
+        "accentYellow: '#FFF9C4'",
+        "border: '#2D2D2D'",
+        "shadowView: 'offset 4px 4px #2D2D2D'",
+        "wobblyRadius: [15",
+        "25",
+        "20",
+        "10]",
+        "fontHeading: 'Kalam-Bold'",
+        "fontBody: 'PatrickHand-Regular'"
+      ],
+      "implementation_checklist": [
+        "Warm paper background texture applied",
+        "Kalam Bold headings",
+        "Wobbly corner radii on all cards",
+        "Hard offset shadow View (not blur)",
+        "Cards slightly rotated",
+        "Button press shifts to cover shadow",
+        "SVG tape/tack decorations",
+        "PatrickHand for inputs",
+        "Jiggle error animation",
+        "Minimum 48x48 touch targets"
+      ],
+      "design_system_variables": [
+        "--bg: #FDFBF7",
+        "--text: #2D2D2D",
+        "--accent-red: #FF4D4D",
+        "--accent-blue: #2D5DA1",
+        "--postit: #FFF9C4",
+        "--border-width: 3px",
+        "--shadow-offset: 4px 4px",
+        "--font-heading: Kalam Bold",
+        "--font-body: Patrick Hand",
+        "--rotation-card: -1deg to 1deg"
+      ]
+    },
+    {
+      "id": "neumorphism-mobile",
+      "style_name": "Neumorphism (Mobile)",
+      "primary_colors": [
+        "Accent Violet #6C63FF",
+        "Clay Base #E0E5EC"
+      ],
+      "secondary_colors": [
+        "Text Dark #3D4852",
+        "Text Muted #6B7280",
+        "Shadow Light rgba(255",
+        "255",
+        "255",
+        "0.6)",
+        "Shadow Dark rgba(163",
+        "177",
+        "198",
+        "0.7)",
+        "Inset Background #D1D9E6"
+      ],
+      "effects_animations": [
+        "Full-screen #E0E5EC base",
+        "dual-layer shadow via nested View (light top-left + dark bottom-right)",
+        "extruded convex resting state",
+        "inset concave pressed/input state",
+        "Reanimated scale 0.97 on press",
+        "shadow opacity interpolates 1→0.4 on press",
+        "Haptics Light on every interaction",
+        "8pt grid",
+        "no blur shadows (no shadowRadius blend)",
+        "nested depth (extruded card contains inset icon slot)"
+      ],
+      "ai_prompt_keywords": [
+        "Design a Neumorphism (Soft UI) mobile app. Entire background is a single color #E0E5EC (Cool Clay). No other background colors. Dual shadows: outer dark shadowColor rgba(163",
+        "177",
+        "198",
+        "0.7) offset(6",
+        "6) radius 10 + outer light #FFFFFF offset(-6",
+        "-6) radius 10 using nested View or react-native-shadow-2. Extruded (convex) for resting buttons and cards. Inset (concave) for inputs and pressed states. Buttons: height 56",
+        "borderRadius 16",
+        "scale 0.97 on press with shadow opacity→0.4",
+        "Haptics.impactAsync Light. Cards: padding 24",
+        "borderRadius 32",
+        "nested inner icon container uses inset style. Inputs: height 50",
+        "borderRadius 16",
+        "backgroundColor #E0E5EC (NOT white)",
+        "inset depth effect",
+        "focus borderColor #6C63FF width 1.5. Typography: Plus Jakarta Sans Bold or System. Heading 24–32pt",
+        "body 16pt",
+        "caption 12pt",
+        "letterSpacing -0.5 for headings. Animation: 250ms Bezier(0.4",
+        "0",
+        "0.2",
+        "1). No black shadows",
+        "no pure white backgrounds."
+      ],
+      "css_keywords": [
+        "backgroundColor: '#E0E5EC'",
+        "textPrimary: '#3D4852'",
+        "textMuted: '#6B7280'",
+        "accent: '#6C63FF'",
+        "shadowLight: 'rgba(255",
+        "255",
+        "255",
+        "0.6)'",
+        "shadowDark: 'rgba(163",
+        "177",
+        "198",
+        "0.7)'",
+        "insetBg: '#D1D9E6'",
+        "radiusCard: 32",
+        "radiusButton: 16",
+        "radiusPill: 999",
+        "shadowOffset: 6",
+        "shadowRadius: 10"
+      ],
+      "implementation_checklist": [
+        "Single #E0E5EC base applied across all screens",
+        "Dual shadow (light+dark) implemented via nested View",
+        "Extruded resting state on cards/buttons",
+        "Inset concave state on inputs",
+        "Scale 0.97 press + shadow opacity interpolation",
+        "Haptics Light on all presses",
+        "No black shadows or white backgrounds",
+        "Nested depth pattern (extruded→inset)",
+        "Accent #6C63FF on active/focus only",
+        "8pt grid spacing"
+      ],
+      "design_system_variables": [
+        "--bg: #E0E5EC",
+        "--text: #3D4852",
+        "--muted: #6B7280",
+        "--accent: #6C63FF",
+        "--shadow-light: rgba(255",
+        "255",
+        "255",
+        "0.6)",
+        "--shadow-dark: rgba(163",
+        "177",
+        "198",
+        "0.7)",
+        "--inset-bg: #D1D9E6",
+        "--radius-card: 32px",
+        "--radius-button: 16px",
+        "--font: Plus Jakarta Sans or System"
+      ]
+    }
+  ]
+}

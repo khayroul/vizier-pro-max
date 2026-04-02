@@ -1,0 +1,65 @@
+source:
+  name: Vega-Lite
+  repo_url: https://github.com/vega/vega-lite
+  pinned_ref:
+    type: commit
+    value: ecabfa2db1c99f51349902d95359f6409b9dc55a
+  license: BSD-3-Clause
+  import_date: 2026-04-02
+
+runtime_boundary: Hermes remains the only runtime; Vega-Lite is imported only as a pinned chart-reference corpus and is not executed inside Vizier.
+
+rationale: >
+  Preserve a deterministic local snapshot of chart grammar primitives plus a
+  small set of representative example specs so Vizier can later recommend chart
+  families and emit better infographic/chart guidance without relying on live
+  network lookups or alternate render runtimes.
+
+imported_assets:
+  - path: references/vega_lite/raw/README.md
+    kind: raw
+    purpose: upstream overview
+  - path: references/vega_lite/raw/LICENSE
+    kind: raw
+    purpose: license snapshot
+  - path: references/vega_lite/raw/vega-lite-schema.json
+    kind: raw
+    purpose: machine-readable grammar source
+  - path: references/vega_lite/raw/examples/specs/bar.vl.json
+    kind: raw
+    purpose: categorical comparison example
+  - path: references/vega_lite/raw/examples/specs/line.vl.json
+    kind: raw
+    purpose: trend example
+  - path: references/vega_lite/raw/examples/specs/arc_pie.vl.json
+    kind: raw
+    purpose: part-to-whole example
+  - path: references/vega_lite/raw/examples/specs/rect_binned_heatmap.vl.json
+    kind: raw
+    purpose: density/distribution example
+  - path: references/vega_lite/raw/examples/specs/layer_line_errorband_ci.vl.json
+    kind: raw
+    purpose: uncertainty example
+  - path: references/vega_lite/raw/examples/specs/point_color_with_shape.vl.json
+    kind: raw
+    purpose: correlation example
+  - path: references/vega_lite/raw/examples/specs/trellis_barley.vl.json
+    kind: raw
+    purpose: faceted small-multiples example
+  - path: references/vega_lite/raw/examples/specs/repeat_splom.vl.json
+    kind: raw
+    purpose: exploratory matrix example
+  - path: references/vega_lite/normalized/chart_grammar.json
+    kind: normalized
+    purpose: marks, channels, transforms, and composition operators
+  - path: references/vega_lite/normalized/chart_patterns.json
+    kind: normalized
+    purpose: curated analytic chart patterns
+
+excluded_assets:
+  - path: src/
+    reason: Compiler/runtime implementation stays upstream; Vizier only needs reference material in this session.
+  - path: examples/compiled/
+    reason: Rendered SVG/PNG/Vega outputs are bulky and unnecessary for a first-pass deterministic corpus.
+  - path: full examples catalog
+    reason: A curated representative subset is sufficient now and keeps the import low-noise.

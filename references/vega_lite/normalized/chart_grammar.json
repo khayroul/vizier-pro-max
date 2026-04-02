@@ -1,0 +1,119 @@
+{
+  "dataset_id": "chart_grammar",
+  "source_family": "vega_lite",
+  "description": "Core chart grammar families derived from the Vega-Lite schema.",
+  "generated_from": [
+    "references/vega_lite/raw/vega-lite-schema.json"
+  ],
+  "record_count": 4,
+  "items": [
+    {
+      "id": "marks",
+      "label": "Marks",
+      "values": [
+        "arc",
+        "area",
+        "bar",
+        "circle",
+        "geoshape",
+        "image",
+        "line",
+        "point",
+        "rect",
+        "rule",
+        "square",
+        "text",
+        "tick",
+        "trail",
+        "box-plot",
+        "error-band",
+        "error-bar"
+      ]
+    },
+    {
+      "id": "encoding_channels",
+      "label": "Encoding Channels",
+      "values": [
+        "angle",
+        "color",
+        "column",
+        "description",
+        "detail",
+        "facet",
+        "fill",
+        "fillOpacity",
+        "href",
+        "key",
+        "latitude",
+        "latitude2",
+        "longitude",
+        "longitude2",
+        "opacity",
+        "order",
+        "radius",
+        "radius2",
+        "row",
+        "shape",
+        "size",
+        "stroke",
+        "strokeDash",
+        "strokeOpacity",
+        "strokeWidth",
+        "text",
+        "theta",
+        "theta2",
+        "time",
+        "tooltip",
+        "url",
+        "x",
+        "x2",
+        "xError",
+        "xError2",
+        "xOffset",
+        "y",
+        "y2",
+        "yError",
+        "yError2",
+        "yOffset"
+      ]
+    },
+    {
+      "id": "transform_ops",
+      "label": "Transform Operations",
+      "values": [
+        "aggregate",
+        "bin",
+        "calculate",
+        "density",
+        "extent",
+        "filter",
+        "flatten",
+        "fold",
+        "impute",
+        "join-aggregate",
+        "loess",
+        "lookup",
+        "pivot",
+        "quantile",
+        "regression",
+        "sample",
+        "stack",
+        "time-unit",
+        "window"
+      ]
+    },
+    {
+      "id": "composition_ops",
+      "label": "Composition Operations",
+      "values": [
+        "unit",
+        "layer",
+        "facet",
+        "repeat",
+        "concat",
+        "hconcat",
+        "vconcat"
+      ]
+    }
+  ]
+}

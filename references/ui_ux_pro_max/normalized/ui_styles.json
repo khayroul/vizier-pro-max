@@ -1,0 +1,3609 @@
+{
+  "dataset_id": "ui_styles",
+  "source_family": "ui_ux_pro_max",
+  "description": "Structured UI style families from UI UX Pro Max.",
+  "generated_from": [
+    "references/ui_ux_pro_max/raw/styles.csv"
+  ],
+  "record_count": 84,
+  "items": [
+    {
+      "id": "minimalism-swiss-style",
+      "name": "Minimalism & Swiss Style",
+      "type": "General",
+      "keywords": [
+        "Clean",
+        "simple",
+        "spacious",
+        "functional",
+        "white space",
+        "high contrast",
+        "geometric",
+        "sans-serif",
+        "grid-based",
+        "essential"
+      ],
+      "best_for": [
+        "Enterprise apps",
+        "dashboards",
+        "documentation sites",
+        "SaaS platforms",
+        "professional tools"
+      ],
+      "avoid_for": [
+        "Creative portfolios",
+        "entertainment",
+        "playful brands",
+        "artistic experiments"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10",
+        "MUI 9/10"
+      ],
+      "era_origin": "1950s Swiss",
+      "complexity": "Low",
+      "source_row": 1
+    },
+    {
+      "id": "neumorphism",
+      "name": "Neumorphism",
+      "type": "General",
+      "keywords": [
+        "Soft UI",
+        "embossed",
+        "debossed",
+        "convex",
+        "concave",
+        "light source",
+        "subtle depth",
+        "rounded (12-16px)",
+        "monochromatic"
+      ],
+      "best_for": [
+        "Health/wellness apps",
+        "meditation platforms",
+        "fitness trackers",
+        "minimal interaction UIs"
+      ],
+      "avoid_for": [
+        "Complex apps",
+        "critical accessibility",
+        "data-heavy dashboards",
+        "high-contrast required"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial",
+      "performance": "⚡ Good",
+      "accessibility": "⚠ Low contrast",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "Tailwind 8/10",
+        "CSS-in-JS 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 2
+    },
+    {
+      "id": "glassmorphism",
+      "name": "Glassmorphism",
+      "type": "General",
+      "keywords": [
+        "Frosted glass",
+        "transparent",
+        "blurred background",
+        "layered",
+        "vibrant background",
+        "light source",
+        "depth",
+        "multi-layer"
+      ],
+      "best_for": [
+        "Modern SaaS",
+        "financial dashboards",
+        "high-end corporate",
+        "lifestyle apps",
+        "modal overlays",
+        "navigation"
+      ],
+      "avoid_for": [
+        "Low-contrast backgrounds",
+        "critical accessibility",
+        "performance-limited",
+        "dark text on dark"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Ensure 4.5:1",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 9/10",
+        "MUI 8/10",
+        "Chakra 8/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 3
+    },
+    {
+      "id": "brutalism",
+      "name": "Brutalism",
+      "type": "General",
+      "keywords": [
+        "Raw",
+        "unpolished",
+        "stark",
+        "high contrast",
+        "plain text",
+        "default fonts",
+        "visible borders",
+        "asymmetric",
+        "anti-design"
+      ],
+      "best_for": [
+        "Design portfolios",
+        "artistic projects",
+        "counter-culture brands",
+        "editorial/media sites",
+        "tech blogs"
+      ],
+      "avoid_for": [
+        "Corporate environments",
+        "conservative industries",
+        "critical accessibility",
+        "customer-facing professional"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Low",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 7/10"
+      ],
+      "era_origin": "1950s Brutalist",
+      "complexity": "Low",
+      "source_row": 4
+    },
+    {
+      "id": "3d-hyperrealism",
+      "name": "3D & Hyperrealism",
+      "type": "General",
+      "keywords": [
+        "Depth",
+        "realistic textures",
+        "3D models",
+        "spatial navigation",
+        "tactile",
+        "skeuomorphic elements",
+        "rich detail",
+        "immersive"
+      ],
+      "best_for": [
+        "Gaming",
+        "product showcase",
+        "immersive experiences",
+        "high-end e-commerce",
+        "architectural viz",
+        "VR/AR"
+      ],
+      "avoid_for": [
+        "Low-end mobile",
+        "performance-limited",
+        "critical accessibility",
+        "data tables/forms"
+      ],
+      "light_mode": "◐ Partial",
+      "dark_mode": "◐ Partial",
+      "performance": "❌ Poor",
+      "accessibility": "⚠ Not accessible",
+      "mobile_friendly": "✗ Low",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "Three.js 10/10",
+        "R3F 10/10",
+        "Babylon.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "High",
+      "source_row": 5
+    },
+    {
+      "id": "vibrant-block-based",
+      "name": "Vibrant & Block-based",
+      "type": "General",
+      "keywords": [
+        "Bold",
+        "energetic",
+        "playful",
+        "block layout",
+        "geometric shapes",
+        "high color contrast",
+        "duotone",
+        "modern",
+        "energetic"
+      ],
+      "best_for": [
+        "Startups",
+        "creative agencies",
+        "gaming",
+        "social media",
+        "youth-focused",
+        "entertainment",
+        "consumer"
+      ],
+      "avoid_for": [
+        "Financial institutions",
+        "healthcare",
+        "formal business",
+        "government",
+        "conservative",
+        "elderly"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "◐ Ensure WCAG",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Chakra 9/10",
+        "Styled 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 6
+    },
+    {
+      "id": "dark-mode-oled",
+      "name": "Dark Mode (OLED)",
+      "type": "General",
+      "keywords": [
+        "Dark theme",
+        "low light",
+        "high contrast",
+        "deep black",
+        "midnight blue",
+        "eye-friendly",
+        "OLED",
+        "night mode",
+        "power efficient"
+      ],
+      "best_for": [
+        "Night-mode apps",
+        "coding platforms",
+        "entertainment",
+        "eye-strain prevention",
+        "OLED devices",
+        "low-light"
+      ],
+      "avoid_for": [
+        "Print-first content",
+        "high-brightness outdoor",
+        "color-accuracy-critical"
+      ],
+      "light_mode": "✗ No",
+      "dark_mode": "✓ Only",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "◐ Low",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "MUI 10/10",
+        "Chakra 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Low",
+      "source_row": 7
+    },
+    {
+      "id": "accessible-ethical",
+      "name": "Accessible & Ethical",
+      "type": "General",
+      "keywords": [
+        "High contrast",
+        "large text (16px+)",
+        "keyboard navigation",
+        "screen reader friendly",
+        "WCAG compliant",
+        "focus state",
+        "semantic"
+      ],
+      "best_for": [
+        "Government",
+        "healthcare",
+        "education",
+        "inclusive products",
+        "large audience",
+        "legal compliance",
+        "public"
+      ],
+      "avoid_for": [
+        "None - accessibility universal"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "All frameworks 10/10"
+      ],
+      "era_origin": "Universal",
+      "complexity": "Low",
+      "source_row": 8
+    },
+    {
+      "id": "claymorphism",
+      "name": "Claymorphism",
+      "type": "General",
+      "keywords": [
+        "Soft 3D",
+        "chunky",
+        "playful",
+        "toy-like",
+        "bubbly",
+        "thick borders (3-4px)",
+        "double shadows",
+        "rounded (16-24px)"
+      ],
+      "best_for": [
+        "Educational apps",
+        "children's apps",
+        "SaaS platforms",
+        "creative tools",
+        "fun-focused",
+        "onboarding",
+        "casual games"
+      ],
+      "avoid_for": [
+        "Formal corporate",
+        "professional services",
+        "data-critical",
+        "serious/medical",
+        "legal apps",
+        "finance"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial",
+      "performance": "⚡ Good",
+      "accessibility": "⚠ Ensure 4.5:1",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 9/10",
+        "CSS-in-JS 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 9
+    },
+    {
+      "id": "aurora-ui",
+      "name": "Aurora UI",
+      "type": "General",
+      "keywords": [
+        "Vibrant gradients",
+        "smooth blend",
+        "Northern Lights effect",
+        "mesh gradient",
+        "luminous",
+        "atmospheric",
+        "abstract"
+      ],
+      "best_for": [
+        "Modern SaaS",
+        "creative agencies",
+        "branding",
+        "music platforms",
+        "lifestyle",
+        "premium products",
+        "hero sections"
+      ],
+      "avoid_for": [
+        "Data-heavy dashboards",
+        "critical accessibility",
+        "content-heavy where distraction issues"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Text contrast",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 9/10",
+        "CSS-in-JS 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 10
+    },
+    {
+      "id": "retro-futurism",
+      "name": "Retro-Futurism",
+      "type": "General",
+      "keywords": [
+        "Vintage sci-fi",
+        "80s aesthetic",
+        "neon glow",
+        "geometric patterns",
+        "CRT scanlines",
+        "pixel art",
+        "cyberpunk",
+        "synthwave"
+      ],
+      "best_for": [
+        "Gaming",
+        "entertainment",
+        "music platforms",
+        "tech brands",
+        "artistic projects",
+        "nostalgic",
+        "cyberpunk"
+      ],
+      "avoid_for": [
+        "Conservative industries",
+        "critical accessibility",
+        "professional/corporate",
+        "elderly",
+        "legal/finance"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Dark focused",
+      "performance": "⚠ Moderate",
+      "accessibility": "⚠ High contrast/strain",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "Tailwind 8/10",
+        "CSS-in-JS 9/10"
+      ],
+      "era_origin": "1980s Retro",
+      "complexity": "Medium",
+      "source_row": 11
+    },
+    {
+      "id": "flat-design",
+      "name": "Flat Design",
+      "type": "General",
+      "keywords": [
+        "2D",
+        "minimalist",
+        "bold colors",
+        "no shadows",
+        "clean lines",
+        "simple shapes",
+        "typography-focused",
+        "modern",
+        "icon-heavy"
+      ],
+      "best_for": [
+        "Web apps",
+        "mobile apps",
+        "cross-platform",
+        "startup MVPs",
+        "user-friendly",
+        "SaaS",
+        "dashboards",
+        "corporate"
+      ],
+      "avoid_for": [
+        "Complex 3D",
+        "premium/luxury",
+        "artistic portfolios",
+        "immersive experiences",
+        "high-detail"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 10/10",
+        "MUI 9/10"
+      ],
+      "era_origin": "2010s Modern",
+      "complexity": "Low",
+      "source_row": 12
+    },
+    {
+      "id": "skeuomorphism",
+      "name": "Skeuomorphism",
+      "type": "General",
+      "keywords": [
+        "Realistic",
+        "texture",
+        "depth",
+        "3D appearance",
+        "real-world metaphors",
+        "shadows",
+        "gradients",
+        "tactile",
+        "detailed",
+        "material"
+      ],
+      "best_for": [
+        "Legacy apps",
+        "gaming",
+        "immersive storytelling",
+        "premium products",
+        "luxury",
+        "realistic simulations",
+        "education"
+      ],
+      "avoid_for": [
+        "Modern enterprise",
+        "critical accessibility",
+        "low-performance",
+        "web (use Flat/Modern)"
+      ],
+      "light_mode": "◐ Partial",
+      "dark_mode": "◐ Partial",
+      "performance": "❌ Poor",
+      "accessibility": "⚠ Textures reduce readability",
+      "mobile_friendly": "✗ Low",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "CSS-in-JS 7/10",
+        "Custom 8/10"
+      ],
+      "era_origin": "2007-2012 iOS",
+      "complexity": "High",
+      "source_row": 13
+    },
+    {
+      "id": "liquid-glass",
+      "name": "Liquid Glass",
+      "type": "General",
+      "keywords": [
+        "Flowing glass",
+        "morphing",
+        "smooth transitions",
+        "fluid effects",
+        "translucent",
+        "animated blur",
+        "iridescent",
+        "chromatic aberration"
+      ],
+      "best_for": [
+        "Premium SaaS",
+        "high-end e-commerce",
+        "creative platforms",
+        "branding experiences",
+        "luxury portfolios"
+      ],
+      "avoid_for": [
+        "Performance-limited",
+        "critical accessibility",
+        "complex data",
+        "budget projects"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Moderate-Poor",
+      "accessibility": "⚠ Text contrast",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Framer Motion 10/10",
+        "GSAP 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "High",
+      "source_row": 14
+    },
+    {
+      "id": "motion-driven",
+      "name": "Motion-Driven",
+      "type": "General",
+      "keywords": [
+        "Animation-heavy",
+        "microinteractions",
+        "smooth transitions",
+        "scroll effects",
+        "parallax",
+        "entrance anim",
+        "page transitions"
+      ],
+      "best_for": [
+        "Portfolio sites",
+        "storytelling platforms",
+        "interactive experiences",
+        "entertainment apps",
+        "creative",
+        "SaaS"
+      ],
+      "avoid_for": [
+        "Data dashboards",
+        "critical accessibility",
+        "low-power devices",
+        "content-heavy",
+        "motion-sensitive"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Prefers-reduced-motion",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "GSAP 10/10",
+        "Framer Motion 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "High",
+      "source_row": 15
+    },
+    {
+      "id": "micro-interactions",
+      "name": "Micro-interactions",
+      "type": "General",
+      "keywords": [
+        "Small animations",
+        "gesture-based",
+        "tactile feedback",
+        "subtle animations",
+        "contextual interactions",
+        "responsive"
+      ],
+      "best_for": [
+        "Mobile apps",
+        "touchscreen UIs",
+        "productivity tools",
+        "user-friendly",
+        "consumer apps",
+        "interactive components"
+      ],
+      "avoid_for": [
+        "Desktop-only",
+        "critical performance",
+        "accessibility-first (alternatives needed)"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ Good",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Framer Motion 10/10",
+        "React Spring 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 16
+    },
+    {
+      "id": "inclusive-design",
+      "name": "Inclusive Design",
+      "type": "General",
+      "keywords": [
+        "Accessible",
+        "color-blind friendly",
+        "high contrast",
+        "haptic feedback",
+        "voice interaction",
+        "screen reader",
+        "WCAG AAA",
+        "universal"
+      ],
+      "best_for": [
+        "Public services",
+        "education",
+        "healthcare",
+        "finance",
+        "government",
+        "accessible consumer",
+        "inclusive"
+      ],
+      "avoid_for": [
+        "None - accessibility universal"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "All frameworks 10/10"
+      ],
+      "era_origin": "Universal",
+      "complexity": "Low",
+      "source_row": 17
+    },
+    {
+      "id": "zero-interface",
+      "name": "Zero Interface",
+      "type": "General",
+      "keywords": [
+        "Minimal visible UI",
+        "voice-first",
+        "gesture-based",
+        "AI-driven",
+        "invisible controls",
+        "predictive",
+        "context-aware",
+        "ambient"
+      ],
+      "best_for": [
+        "Voice assistants",
+        "AI platforms",
+        "future-forward UX",
+        "smart home",
+        "contextual computing",
+        "ambient experiences"
+      ],
+      "avoid_for": [
+        "Complex workflows",
+        "data-entry heavy",
+        "traditional systems",
+        "legacy support",
+        "explicit control"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ Excellent",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Custom 10/10"
+      ],
+      "era_origin": "2020s AI-Era",
+      "complexity": "Low",
+      "source_row": 18
+    },
+    {
+      "id": "soft-ui-evolution",
+      "name": "Soft UI Evolution",
+      "type": "General",
+      "keywords": [
+        "Evolved soft UI",
+        "better contrast",
+        "modern aesthetics",
+        "subtle depth",
+        "accessibility-focused",
+        "improved shadows",
+        "hybrid"
+      ],
+      "best_for": [
+        "Modern enterprise apps",
+        "SaaS platforms",
+        "health/wellness",
+        "modern business tools",
+        "professional",
+        "hybrid"
+      ],
+      "avoid_for": [
+        "Extreme minimalism",
+        "critical performance",
+        "systems without modern OS"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA+",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 9/10",
+        "MUI 9/10",
+        "Chakra 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 19
+    },
+    {
+      "id": "hero-centric-design",
+      "name": "Hero-Centric Design",
+      "type": "Landing Page",
+      "keywords": [
+        "Large hero section",
+        "compelling headline",
+        "high-contrast CTA",
+        "product showcase",
+        "value proposition",
+        "hero image/video",
+        "dramatic visual"
+      ],
+      "best_for": [
+        "SaaS landing pages",
+        "product launches",
+        "service landing pages",
+        "B2B platforms",
+        "tech companies"
+      ],
+      "avoid_for": [
+        "Complex navigation",
+        "multi-page experiences",
+        "data-heavy applications"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Full",
+      "conversion_focused": "✓ Very High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 20
+    },
+    {
+      "id": "conversion-optimized",
+      "name": "Conversion-Optimized",
+      "type": "Landing Page",
+      "keywords": [
+        "Form-focused",
+        "minimalist design",
+        "single CTA focus",
+        "high contrast",
+        "urgency elements",
+        "trust signals",
+        "social proof",
+        "clear value"
+      ],
+      "best_for": [
+        "E-commerce product pages",
+        "free trial signups",
+        "lead generation",
+        "SaaS pricing pages",
+        "limited-time offers"
+      ],
+      "avoid_for": [
+        "Complex feature explanations",
+        "multi-product showcases",
+        "technical documentation"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Full (mobile-optimized)",
+      "conversion_focused": "✓ Very High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 21
+    },
+    {
+      "id": "feature-rich-showcase",
+      "name": "Feature-Rich Showcase",
+      "type": "Landing Page",
+      "keywords": [
+        "Multiple feature sections",
+        "grid layout",
+        "benefit cards",
+        "visual feature demonstrations",
+        "interactive elements",
+        "problem-solution pairs"
+      ],
+      "best_for": [
+        "Enterprise SaaS",
+        "software tools landing pages",
+        "platform services",
+        "complex product explanations",
+        "B2B products"
+      ],
+      "avoid_for": [
+        "Simple product pages",
+        "early-stage startups with few features",
+        "entertainment landing pages"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 22
+    },
+    {
+      "id": "minimal-direct",
+      "name": "Minimal & Direct",
+      "type": "Landing Page",
+      "keywords": [
+        "Minimal text",
+        "white space heavy",
+        "single column layout",
+        "direct messaging",
+        "clean typography",
+        "visual-centric",
+        "fast-loading"
+      ],
+      "best_for": [
+        "Simple service landing pages",
+        "indie products",
+        "consulting services",
+        "micro SaaS",
+        "freelancer portfolios"
+      ],
+      "avoid_for": [
+        "Feature-heavy products",
+        "complex explanations",
+        "multi-product showcases"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ Full",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 23
+    },
+    {
+      "id": "social-proof-focused",
+      "name": "Social Proof-Focused",
+      "type": "Landing Page",
+      "keywords": [
+        "Testimonials prominent",
+        "client logos displayed",
+        "case studies sections",
+        "reviews/ratings",
+        "user avatars",
+        "success metrics",
+        "credibility markers"
+      ],
+      "best_for": [
+        "B2B SaaS",
+        "professional services",
+        "premium products",
+        "e-commerce conversion pages",
+        "established brands"
+      ],
+      "avoid_for": [
+        "Startup MVPs",
+        "products without users",
+        "niche/experimental products"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Full",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 24
+    },
+    {
+      "id": "interactive-product-demo",
+      "name": "Interactive Product Demo",
+      "type": "Landing Page",
+      "keywords": [
+        "Embedded product mockup/video",
+        "interactive elements",
+        "product walkthrough",
+        "step-by-step guides",
+        "hover-to-reveal features",
+        "embedded demos"
+      ],
+      "best_for": [
+        "SaaS platforms",
+        "tool/software products",
+        "productivity apps landing pages",
+        "developer tools",
+        "productivity software"
+      ],
+      "avoid_for": [
+        "Simple services",
+        "consulting",
+        "non-digital products",
+        "complexity-averse audiences"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good (video/interactive)",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ Very High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 25
+    },
+    {
+      "id": "trust-authority",
+      "name": "Trust & Authority",
+      "type": "Landing Page",
+      "keywords": [
+        "Certificates/badges displayed",
+        "expert credentials",
+        "case studies with metrics",
+        "before/after comparisons",
+        "industry recognition",
+        "security badges"
+      ],
+      "best_for": [
+        "Healthcare/medical landing pages",
+        "financial services",
+        "enterprise software",
+        "premium/luxury products",
+        "legal services"
+      ],
+      "avoid_for": [
+        "Casual products",
+        "entertainment",
+        "viral/social-first products"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ Full",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 26
+    },
+    {
+      "id": "storytelling-driven",
+      "name": "Storytelling-Driven",
+      "type": "Landing Page",
+      "keywords": [
+        "Narrative flow",
+        "visual story progression",
+        "section transitions",
+        "consistent character/brand voice",
+        "emotional messaging",
+        "journey visualization"
+      ],
+      "best_for": [
+        "Brand/startup stories",
+        "mission-driven products",
+        "premium/lifestyle brands",
+        "documentary-style products",
+        "educational"
+      ],
+      "avoid_for": [
+        "Technical/complex products (unless narrative-driven)",
+        "traditional enterprise software"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Moderate (animations)",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 27
+    },
+    {
+      "id": "data-dense-dashboard",
+      "name": "Data-Dense Dashboard",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Multiple charts/widgets",
+        "data tables",
+        "KPI cards",
+        "minimal padding",
+        "grid layout",
+        "space-efficient",
+        "maximum data visibility"
+      ],
+      "best_for": [
+        "Business intelligence dashboards",
+        "financial analytics",
+        "enterprise reporting",
+        "operational dashboards",
+        "data warehousing"
+      ],
+      "avoid_for": [
+        "Marketing dashboards",
+        "consumer-facing analytics",
+        "simple reporting"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 28
+    },
+    {
+      "id": "heat-map-heatmap-style",
+      "name": "Heat Map & Heatmap Style",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Color-coded grid/matrix",
+        "data intensity visualization",
+        "geographical heat maps",
+        "correlation matrices",
+        "cell-based representation",
+        "gradient coloring"
+      ],
+      "best_for": [
+        "Geographical analysis",
+        "performance matrices",
+        "correlation analysis",
+        "user behavior heatmaps",
+        "temperature/intensity data"
+      ],
+      "avoid_for": [
+        "Linear data representation",
+        "categorical comparisons (use bar charts)",
+        "small datasets"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full (with adjustments)",
+      "performance": "⚡ Excellent",
+      "accessibility": "⚠ Colorblind considerations",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 29
+    },
+    {
+      "id": "executive-dashboard",
+      "name": "Executive Dashboard",
+      "type": "BI/Analytics",
+      "keywords": [
+        "High-level KPIs",
+        "large key metrics",
+        "minimal detail",
+        "summary view",
+        "trend indicators",
+        "at-a-glance insights",
+        "executive summary"
+      ],
+      "best_for": [
+        "C-suite dashboards",
+        "business summary reports",
+        "decision-maker dashboards",
+        "strategic planning views"
+      ],
+      "avoid_for": [
+        "Detailed analyst dashboards",
+        "technical deep-dives",
+        "operational monitoring"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✗ Low (not mobile-optimized)",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 30
+    },
+    {
+      "id": "real-time-monitoring",
+      "name": "Real-Time Monitoring",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Live data updates",
+        "status indicators",
+        "alert notifications",
+        "streaming data visualization",
+        "active monitoring",
+        "streaming charts"
+      ],
+      "best_for": [
+        "System monitoring dashboards",
+        "DevOps dashboards",
+        "real-time analytics",
+        "stock market dashboards",
+        "live event tracking"
+      ],
+      "avoid_for": [
+        "Historical analysis",
+        "long-term trend reports",
+        "archived data dashboards"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good (real-time load)",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 31
+    },
+    {
+      "id": "drill-down-analytics",
+      "name": "Drill-Down Analytics",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Hierarchical data exploration",
+        "expandable sections",
+        "interactive drill-down paths",
+        "summary-to-detail flow",
+        "context preservation"
+      ],
+      "best_for": [
+        "Sales analytics",
+        "product analytics",
+        "funnel analysis",
+        "multi-dimensional data exploration",
+        "business intelligence"
+      ],
+      "avoid_for": [
+        "Simple linear data",
+        "single-metric dashboards",
+        "streaming real-time dashboards"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 32
+    },
+    {
+      "id": "comparative-analysis-dashboard",
+      "name": "Comparative Analysis Dashboard",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Side-by-side comparisons",
+        "period-over-period metrics",
+        "A/B test results",
+        "regional comparisons",
+        "performance benchmarks"
+      ],
+      "best_for": [
+        "Period-over-period reporting",
+        "A/B test dashboards",
+        "market comparison",
+        "competitive analysis",
+        "regional performance"
+      ],
+      "avoid_for": [
+        "Single metric dashboards",
+        "future projections (use forecasting)",
+        "real-time only (no historical)"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 33
+    },
+    {
+      "id": "predictive-analytics",
+      "name": "Predictive Analytics",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Forecast lines",
+        "confidence intervals",
+        "trend projections",
+        "scenario modeling",
+        "AI-driven insights",
+        "anomaly detection visualization"
+      ],
+      "best_for": [
+        "Forecasting dashboards",
+        "anomaly detection systems",
+        "trend prediction dashboards",
+        "AI-powered analytics",
+        "budget planning"
+      ],
+      "avoid_for": [
+        "Historical-only dashboards",
+        "simple reporting",
+        "real-time operational dashboards"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good (computation)",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 34
+    },
+    {
+      "id": "user-behavior-analytics",
+      "name": "User Behavior Analytics",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Funnel visualization",
+        "user flow diagrams",
+        "conversion tracking",
+        "engagement metrics",
+        "user journey mapping",
+        "cohort analysis"
+      ],
+      "best_for": [
+        "Conversion funnel analysis",
+        "user journey tracking",
+        "engagement analytics",
+        "cohort analysis",
+        "retention tracking"
+      ],
+      "avoid_for": [
+        "Real-time operational metrics",
+        "technical system monitoring",
+        "financial transactions"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 35
+    },
+    {
+      "id": "financial-dashboard",
+      "name": "Financial Dashboard",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Revenue metrics",
+        "profit/loss visualization",
+        "budget tracking",
+        "financial ratios",
+        "portfolio performance",
+        "cash flow",
+        "audit trail"
+      ],
+      "best_for": [
+        "Financial reporting",
+        "accounting dashboards",
+        "portfolio tracking",
+        "budget monitoring",
+        "banking analytics"
+      ],
+      "avoid_for": [
+        "Simple business dashboards",
+        "entertainment/social metrics",
+        "non-financial data"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✗ Low",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10",
+        "D3.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 36
+    },
+    {
+      "id": "sales-intelligence-dashboard",
+      "name": "Sales Intelligence Dashboard",
+      "type": "BI/Analytics",
+      "keywords": [
+        "Deal pipeline",
+        "sales metrics",
+        "territory performance",
+        "sales rep leaderboard",
+        "win-loss analysis",
+        "quota tracking",
+        "forecast accuracy"
+      ],
+      "best_for": [
+        "CRM dashboards",
+        "sales management",
+        "opportunity tracking",
+        "performance management",
+        "quota planning"
+      ],
+      "avoid_for": [
+        "Marketing analytics",
+        "customer support metrics",
+        "HR dashboards"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Not applicable",
+      "framework_compatibility": [
+        "Recharts 9/10",
+        "Chart.js 9/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 37
+    },
+    {
+      "id": "neubrutalism",
+      "name": "Neubrutalism",
+      "type": "General",
+      "keywords": [
+        "Bold borders",
+        "black outlines",
+        "primary colors",
+        "thick shadows",
+        "no gradients",
+        "flat colors",
+        "45° shadows",
+        "playful",
+        "Gen Z"
+      ],
+      "best_for": [
+        "Gen Z brands",
+        "startups",
+        "creative agencies",
+        "Figma-style apps",
+        "Notion-style interfaces",
+        "tech blogs"
+      ],
+      "avoid_for": [
+        "Luxury brands",
+        "finance",
+        "healthcare",
+        "conservative industries (too playful)"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 8/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Low",
+      "source_row": 38
+    },
+    {
+      "id": "bento-box-grid",
+      "name": "Bento Box Grid",
+      "type": "General",
+      "keywords": [
+        "Modular cards",
+        "asymmetric grid",
+        "varied sizes",
+        "Apple-style",
+        "dashboard tiles",
+        "negative space",
+        "clean hierarchy",
+        "cards"
+      ],
+      "best_for": [
+        "Dashboards",
+        "product pages",
+        "portfolios",
+        "Apple-style marketing",
+        "feature showcases",
+        "SaaS"
+      ],
+      "avoid_for": [
+        "Dense data tables",
+        "text-heavy content",
+        "real-time monitoring"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "CSS Grid 10/10"
+      ],
+      "era_origin": "2020s Apple",
+      "complexity": "Low",
+      "source_row": 39
+    },
+    {
+      "id": "y2k-aesthetic",
+      "name": "Y2K Aesthetic",
+      "type": "General",
+      "keywords": [
+        "Neon pink",
+        "chrome",
+        "metallic",
+        "bubblegum",
+        "iridescent",
+        "glossy",
+        "retro-futurism",
+        "2000s",
+        "futuristic nostalgia"
+      ],
+      "best_for": [
+        "Fashion brands",
+        "music platforms",
+        "Gen Z brands",
+        "nostalgia marketing",
+        "entertainment",
+        "youth-focused"
+      ],
+      "avoid_for": [
+        "B2B enterprise",
+        "healthcare",
+        "finance",
+        "conservative industries",
+        "elderly users"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Check contrast",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 8/10",
+        "CSS-in-JS 9/10"
+      ],
+      "era_origin": "Y2K 2000s",
+      "complexity": "Medium",
+      "source_row": 40
+    },
+    {
+      "id": "cyberpunk-ui",
+      "name": "Cyberpunk UI",
+      "type": "General",
+      "keywords": [
+        "Neon",
+        "dark mode",
+        "terminal",
+        "HUD",
+        "sci-fi",
+        "glitch",
+        "dystopian",
+        "futuristic",
+        "matrix",
+        "tech noir"
+      ],
+      "best_for": [
+        "Gaming platforms",
+        "tech products",
+        "crypto apps",
+        "sci-fi applications",
+        "developer tools",
+        "entertainment"
+      ],
+      "avoid_for": [
+        "Corporate enterprise",
+        "healthcare",
+        "family apps",
+        "conservative brands",
+        "elderly users"
+      ],
+      "light_mode": "✗ No",
+      "dark_mode": "✓ Only",
+      "performance": "⚠ Moderate",
+      "accessibility": "⚠ Limited (dark+neon)",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "Tailwind 8/10",
+        "Custom CSS 10/10"
+      ],
+      "era_origin": "2020s Cyberpunk",
+      "complexity": "Medium",
+      "source_row": 41
+    },
+    {
+      "id": "organic-biophilic",
+      "name": "Organic Biophilic",
+      "type": "General",
+      "keywords": [
+        "Nature",
+        "organic shapes",
+        "green",
+        "sustainable",
+        "rounded",
+        "flowing",
+        "wellness",
+        "earthy",
+        "natural textures"
+      ],
+      "best_for": [
+        "Wellness apps",
+        "sustainability brands",
+        "eco products",
+        "health apps",
+        "meditation",
+        "organic food brands"
+      ],
+      "avoid_for": [
+        "Tech-focused products",
+        "gaming",
+        "industrial",
+        "urban brands"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "CSS 10/10"
+      ],
+      "era_origin": "2020s Sustainable",
+      "complexity": "Low",
+      "source_row": 42
+    },
+    {
+      "id": "ai-native-ui",
+      "name": "AI-Native UI",
+      "type": "General",
+      "keywords": [
+        "Chatbot",
+        "conversational",
+        "voice",
+        "assistant",
+        "agentic",
+        "ambient",
+        "minimal chrome",
+        "streaming text",
+        "AI interactions"
+      ],
+      "best_for": [
+        "AI products",
+        "chatbots",
+        "voice assistants",
+        "copilots",
+        "AI-powered tools",
+        "conversational interfaces"
+      ],
+      "avoid_for": [
+        "Traditional forms",
+        "data-heavy dashboards",
+        "print-first content"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "React 10/10"
+      ],
+      "era_origin": "2020s AI-Era",
+      "complexity": "Low",
+      "source_row": 43
+    },
+    {
+      "id": "memphis-design",
+      "name": "Memphis Design",
+      "type": "General",
+      "keywords": [
+        "80s",
+        "geometric",
+        "playful",
+        "postmodern",
+        "shapes",
+        "patterns",
+        "squiggles",
+        "triangles",
+        "neon",
+        "abstract",
+        "bold"
+      ],
+      "best_for": [
+        "Creative agencies",
+        "music sites",
+        "youth brands",
+        "event promotion",
+        "artistic portfolios",
+        "entertainment"
+      ],
+      "avoid_for": [
+        "Corporate finance",
+        "healthcare",
+        "legal",
+        "elderly users",
+        "conservative brands"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "⚠ Check contrast",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "Tailwind 9/10",
+        "CSS 10/10"
+      ],
+      "era_origin": "1980s Postmodern",
+      "complexity": "Medium",
+      "source_row": 44
+    },
+    {
+      "id": "vaporwave",
+      "name": "Vaporwave",
+      "type": "General",
+      "keywords": [
+        "Synthwave",
+        "retro-futuristic",
+        "80s-90s",
+        "neon",
+        "glitch",
+        "nostalgic",
+        "sunset gradient",
+        "dreamy",
+        "aesthetic"
+      ],
+      "best_for": [
+        "Music platforms",
+        "gaming",
+        "creative portfolios",
+        "tech startups",
+        "entertainment",
+        "artistic projects"
+      ],
+      "avoid_for": [
+        "Business apps",
+        "e-commerce",
+        "education",
+        "healthcare",
+        "enterprise software"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Dark focused",
+      "performance": "⚠ Moderate",
+      "accessibility": "⚠ Poor (motion)",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "Tailwind 8/10",
+        "CSS-in-JS 9/10"
+      ],
+      "era_origin": "1980s-90s Retro",
+      "complexity": "Medium",
+      "source_row": 45
+    },
+    {
+      "id": "dimensional-layering",
+      "name": "Dimensional Layering",
+      "type": "General",
+      "keywords": [
+        "Depth",
+        "overlapping",
+        "z-index",
+        "layers",
+        "3D",
+        "shadows",
+        "elevation",
+        "floating",
+        "cards",
+        "spatial hierarchy"
+      ],
+      "best_for": [
+        "Dashboards",
+        "card layouts",
+        "modals",
+        "navigation",
+        "product showcases",
+        "SaaS interfaces"
+      ],
+      "avoid_for": [
+        "Print-style layouts",
+        "simple blogs",
+        "low-end devices",
+        "flat design requirements"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Moderate (SR issues)",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "MUI 10/10",
+        "Chakra 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Medium",
+      "source_row": 46
+    },
+    {
+      "id": "exaggerated-minimalism",
+      "name": "Exaggerated Minimalism",
+      "type": "General",
+      "keywords": [
+        "Bold minimalism",
+        "oversized typography",
+        "high contrast",
+        "negative space",
+        "loud minimal",
+        "statement design"
+      ],
+      "best_for": [
+        "Fashion",
+        "architecture",
+        "portfolios",
+        "agency landing pages",
+        "luxury brands",
+        "editorial"
+      ],
+      "avoid_for": [
+        "E-commerce catalogs",
+        "dashboards",
+        "forms",
+        "data-heavy",
+        "elderly users",
+        "complex apps"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Typography.js 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "Low",
+      "source_row": 47
+    },
+    {
+      "id": "kinetic-typography",
+      "name": "Kinetic Typography",
+      "type": "General",
+      "keywords": [
+        "Motion text",
+        "animated type",
+        "moving letters",
+        "dynamic",
+        "typing effect",
+        "morphing",
+        "scroll-triggered text"
+      ],
+      "best_for": [
+        "Hero sections",
+        "marketing sites",
+        "video platforms",
+        "storytelling",
+        "creative portfolios",
+        "landing pages"
+      ],
+      "avoid_for": [
+        "Long-form content",
+        "accessibility-critical",
+        "data interfaces",
+        "forms",
+        "elderly users"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Moderate",
+      "accessibility": "❌ Poor (motion)",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ Very High",
+      "framework_compatibility": [
+        "GSAP 10/10",
+        "Framer Motion 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "High",
+      "source_row": 48
+    },
+    {
+      "id": "parallax-storytelling",
+      "name": "Parallax Storytelling",
+      "type": "General",
+      "keywords": [
+        "Scroll-driven",
+        "narrative",
+        "layered scrolling",
+        "immersive",
+        "progressive disclosure",
+        "cinematic",
+        "scroll-triggered"
+      ],
+      "best_for": [
+        "Brand storytelling",
+        "product launches",
+        "case studies",
+        "portfolios",
+        "annual reports",
+        "marketing campaigns"
+      ],
+      "avoid_for": [
+        "E-commerce",
+        "dashboards",
+        "mobile-first",
+        "SEO-critical",
+        "accessibility-required"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "❌ Poor",
+      "accessibility": "❌ Poor (motion)",
+      "mobile_friendly": "✗ Low",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "GSAP ScrollTrigger 10/10",
+        "Locomotive Scroll 10/10"
+      ],
+      "era_origin": "2020s Modern",
+      "complexity": "High",
+      "source_row": 49
+    },
+    {
+      "id": "swiss-modernism-2-0",
+      "name": "Swiss Modernism 2.0",
+      "type": "General",
+      "keywords": [
+        "Grid system",
+        "Helvetica",
+        "modular",
+        "asymmetric",
+        "international style",
+        "rational",
+        "clean",
+        "mathematical spacing"
+      ],
+      "best_for": [
+        "Corporate sites",
+        "architecture",
+        "editorial",
+        "SaaS",
+        "museums",
+        "professional services",
+        "documentation"
+      ],
+      "avoid_for": [
+        "Playful brands",
+        "children's sites",
+        "entertainment",
+        "gaming",
+        "emotional storytelling"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "Bootstrap 9/10",
+        "Foundation 10/10"
+      ],
+      "era_origin": "1950s Swiss + 2020s",
+      "complexity": "Low",
+      "source_row": 50
+    },
+    {
+      "id": "hud-sci-fi-fui",
+      "name": "HUD / Sci-Fi FUI",
+      "type": "General",
+      "keywords": [
+        "Futuristic",
+        "technical",
+        "wireframe",
+        "neon",
+        "data",
+        "transparency",
+        "iron man",
+        "sci-fi",
+        "interface"
+      ],
+      "best_for": [
+        "Sci-fi games",
+        "space tech",
+        "cybersecurity",
+        "movie props",
+        "immersive dashboards"
+      ],
+      "avoid_for": [
+        "Standard corporate",
+        "reading heavy content",
+        "accessible public services"
+      ],
+      "light_mode": "✓ Low",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Moderate (renders)",
+      "accessibility": "⚠ Poor (thin lines)",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✗ Low",
+      "framework_compatibility": [
+        "React 9/10",
+        "Canvas 10/10"
+      ],
+      "era_origin": "2010s Sci-Fi",
+      "complexity": "High",
+      "source_row": 51
+    },
+    {
+      "id": "pixel-art",
+      "name": "Pixel Art",
+      "type": "General",
+      "keywords": [
+        "Retro",
+        "8-bit",
+        "16-bit",
+        "gaming",
+        "blocky",
+        "nostalgic",
+        "pixelated",
+        "arcade"
+      ],
+      "best_for": [
+        "Indie games",
+        "retro tools",
+        "creative portfolios",
+        "nostalgia marketing",
+        "Web3/NFT"
+      ],
+      "avoid_for": [
+        "Professional corporate",
+        "modern SaaS",
+        "high-res photography sites"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ Good (if contrast ok)",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "CSS (box-shadow) 8/10",
+        "Canvas 10/10"
+      ],
+      "era_origin": "1980s Arcade",
+      "complexity": "Medium",
+      "source_row": 52
+    },
+    {
+      "id": "bento-grids",
+      "name": "Bento Grids",
+      "type": "General",
+      "keywords": [
+        "Apple-style",
+        "modular",
+        "cards",
+        "organized",
+        "clean",
+        "hierarchy",
+        "grid",
+        "rounded",
+        "soft"
+      ],
+      "best_for": [
+        "Product features",
+        "dashboards",
+        "personal sites",
+        "marketing summaries",
+        "galleries"
+      ],
+      "avoid_for": [
+        "Long-form reading",
+        "data tables",
+        "complex forms"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "CSS Grid 10/10",
+        "Tailwind 10/10"
+      ],
+      "era_origin": "2020s Apple/Linear",
+      "complexity": "Low",
+      "source_row": 53
+    },
+    {
+      "id": "spatial-ui-visionos",
+      "name": "Spatial UI (VisionOS)",
+      "type": "General",
+      "keywords": [
+        "Glass",
+        "depth",
+        "immersion",
+        "spatial",
+        "translucent",
+        "gaze",
+        "gesture",
+        "apple",
+        "vision-pro"
+      ],
+      "best_for": [
+        "Spatial computing apps",
+        "VR/AR interfaces",
+        "immersive media",
+        "futuristic dashboards"
+      ],
+      "avoid_for": [
+        "Text-heavy documents",
+        "high-contrast requirements",
+        "non-3D capable devices"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Moderate (blur cost)",
+      "accessibility": "⚠ Contrast risks",
+      "mobile_friendly": "✓ High (if adapted)",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "SwiftUI",
+        "React (Three.js/Fiber)"
+      ],
+      "era_origin": "2024 Spatial Era",
+      "complexity": "High",
+      "source_row": 55
+    },
+    {
+      "id": "e-ink-paper",
+      "name": "E-Ink / Paper",
+      "type": "General",
+      "keywords": [
+        "Paper-like",
+        "matte",
+        "high contrast",
+        "texture",
+        "reading",
+        "calm",
+        "slow tech",
+        "monochrome"
+      ],
+      "best_for": [
+        "Reading apps",
+        "digital newspapers",
+        "minimal journals",
+        "distraction-free writing",
+        "slow-living brands"
+      ],
+      "avoid_for": [
+        "Gaming",
+        "video platforms",
+        "high-energy marketing",
+        "dark mode dependent apps"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✗ Low (inverted only)",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ Medium",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "CSS 10/10"
+      ],
+      "era_origin": "2020s Digital Well-being",
+      "complexity": "Low",
+      "source_row": 56
+    },
+    {
+      "id": "gen-z-chaos-maximalism",
+      "name": "Gen Z Chaos / Maximalism",
+      "type": "General",
+      "keywords": [
+        "Chaos",
+        "clutter",
+        "stickers",
+        "raw",
+        "collage",
+        "mixed media",
+        "loud",
+        "internet culture",
+        "ironic"
+      ],
+      "best_for": [
+        "Gen Z lifestyle brands",
+        "music artists",
+        "creative portfolios",
+        "viral marketing",
+        "fashion"
+      ],
+      "avoid_for": [
+        "Corporate",
+        "government",
+        "healthcare",
+        "banking",
+        "serious tools"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Poor (heavy assets)",
+      "accessibility": "❌ Poor",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✓ High (Viral)",
+      "framework_compatibility": [
+        "CSS-in-JS 8/10"
+      ],
+      "era_origin": "2023+ Internet Core",
+      "complexity": "High",
+      "source_row": 57
+    },
+    {
+      "id": "biomimetic-organic-2-0",
+      "name": "Biomimetic / Organic 2.0",
+      "type": "General",
+      "keywords": [
+        "Nature-inspired",
+        "cellular",
+        "fluid",
+        "breathing",
+        "generative",
+        "algorithms",
+        "life-like"
+      ],
+      "best_for": [
+        "Sustainability tech",
+        "biotech",
+        "advanced health",
+        "meditation",
+        "generative art platforms"
+      ],
+      "avoid_for": [
+        "Standard SaaS",
+        "data grids",
+        "strict corporate",
+        "accounting"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Moderate",
+      "accessibility": "✓ Good",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Canvas 10/10",
+        "WebGL 10/10"
+      ],
+      "era_origin": "2024+ Generative",
+      "complexity": "High",
+      "source_row": 58
+    },
+    {
+      "id": "anti-polish-raw-aesthetic",
+      "name": "Anti-Polish / Raw Aesthetic",
+      "type": "General",
+      "keywords": [
+        "Hand-drawn",
+        "collage",
+        "scanned textures",
+        "unfinished",
+        "imperfect",
+        "authentic",
+        "human",
+        "sketch",
+        "raw marks",
+        "creative process"
+      ],
+      "best_for": [
+        "Creative portfolios",
+        "artist sites",
+        "indie brands",
+        "handmade products",
+        "authentic storytelling",
+        "editorial"
+      ],
+      "avoid_for": [
+        "Corporate enterprise",
+        "fintech",
+        "healthcare",
+        "government",
+        "polished SaaS"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "CSS 10/10",
+        "SVG 10/10"
+      ],
+      "era_origin": "2025+ Anti-Digital",
+      "complexity": "Low",
+      "source_row": 59
+    },
+    {
+      "id": "tactile-digital-deformable-ui",
+      "name": "Tactile Digital / Deformable UI",
+      "type": "General",
+      "keywords": [
+        "Jelly buttons",
+        "chrome",
+        "clay",
+        "squishy",
+        "deformable",
+        "bouncy",
+        "physical",
+        "tactile feedback",
+        "press response"
+      ],
+      "best_for": [
+        "Modern mobile apps",
+        "playful brands",
+        "entertainment",
+        "gaming UI",
+        "consumer products",
+        "interactive demos"
+      ],
+      "avoid_for": [
+        "Enterprise software",
+        "data dashboards",
+        "accessibility-critical",
+        "professional tools"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Motion sensitive",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ Very High",
+      "framework_compatibility": [
+        "Framer Motion 10/10",
+        "React Spring 10/10",
+        "GSAP 10/10"
+      ],
+      "era_origin": "2025+ Tactile Era",
+      "complexity": "Medium",
+      "source_row": 60
+    },
+    {
+      "id": "nature-distilled",
+      "name": "Nature Distilled",
+      "type": "General",
+      "keywords": [
+        "Muted earthy",
+        "skin tones",
+        "wood",
+        "soil",
+        "sand",
+        "terracotta",
+        "warmth",
+        "organic materials",
+        "handmade warmth"
+      ],
+      "best_for": [
+        "Wellness brands",
+        "sustainable products",
+        "artisan goods",
+        "organic food",
+        "spa/beauty",
+        "home decor"
+      ],
+      "avoid_for": [
+        "Tech startups",
+        "gaming",
+        "nightlife",
+        "corporate finance",
+        "high-energy brands"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Tailwind 10/10",
+        "CSS 10/10"
+      ],
+      "era_origin": "2025+ Handmade Warmth",
+      "complexity": "Low",
+      "source_row": 61
+    },
+    {
+      "id": "interactive-cursor-design",
+      "name": "Interactive Cursor Design",
+      "type": "General",
+      "keywords": [
+        "Custom cursor",
+        "cursor as tool",
+        "hover effects",
+        "cursor feedback",
+        "pointer transformation",
+        "cursor trail",
+        "magnetic cursor"
+      ],
+      "best_for": [
+        "Creative portfolios",
+        "interactive experiences",
+        "agency sites",
+        "product showcases",
+        "gaming",
+        "entertainment"
+      ],
+      "avoid_for": [
+        "Mobile-first (no cursor)",
+        "accessibility-critical",
+        "data-heavy dashboards",
+        "forms"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Good",
+      "accessibility": "⚠ Not for touch/SR",
+      "mobile_friendly": "✗ No cursor",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "GSAP 10/10",
+        "Framer Motion 10/10",
+        "Custom JS 10/10"
+      ],
+      "era_origin": "2025+ Interactive",
+      "complexity": "Medium",
+      "source_row": 62
+    },
+    {
+      "id": "voice-first-multimodal",
+      "name": "Voice-First Multimodal",
+      "type": "General",
+      "keywords": [
+        "Voice UI",
+        "multimodal",
+        "audio feedback",
+        "conversational",
+        "hands-free",
+        "ambient",
+        "contextual",
+        "speech recognition"
+      ],
+      "best_for": [
+        "Voice assistants",
+        "accessibility apps",
+        "hands-free tools",
+        "smart home",
+        "automotive UI",
+        "cooking apps"
+      ],
+      "avoid_for": [
+        "Visual-heavy content",
+        "data entry",
+        "complex forms",
+        "noisy environments"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ Excellent",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "Web Speech API 10/10",
+        "React 10/10"
+      ],
+      "era_origin": "2025+ Voice Era",
+      "complexity": "Medium",
+      "source_row": 63
+    },
+    {
+      "id": "3d-product-preview",
+      "name": "3D Product Preview",
+      "type": "General",
+      "keywords": [
+        "360 product view",
+        "rotatable",
+        "zoomable",
+        "touch-to-spin",
+        "AR preview",
+        "product configurator",
+        "interactive 3D model"
+      ],
+      "best_for": [
+        "E-commerce",
+        "furniture",
+        "fashion",
+        "automotive",
+        "electronics",
+        "jewelry",
+        "product configurators"
+      ],
+      "avoid_for": [
+        "Content-heavy sites",
+        "blogs",
+        "dashboards",
+        "low-bandwidth",
+        "accessibility-critical"
+      ],
+      "light_mode": "◐ Partial",
+      "dark_mode": "◐ Partial",
+      "performance": "❌ Poor (3D rendering)",
+      "accessibility": "⚠ Alt content needed",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✓ Very High",
+      "framework_compatibility": [
+        "Three.js 10/10",
+        "model-viewer 10/10",
+        "Spline 9/10"
+      ],
+      "era_origin": "2025+ E-commerce 3D",
+      "complexity": "High",
+      "source_row": 64
+    },
+    {
+      "id": "gradient-mesh-aurora-evolved",
+      "name": "Gradient Mesh / Aurora Evolved",
+      "type": "General",
+      "keywords": [
+        "Complex gradients",
+        "mesh gradients",
+        "multi-color blend",
+        "aurora effect",
+        "flowing colors",
+        "iridescent",
+        "holographic",
+        "prismatic"
+      ],
+      "best_for": [
+        "Hero sections",
+        "backgrounds",
+        "creative brands",
+        "music platforms",
+        "fashion",
+        "lifestyle",
+        "premium products"
+      ],
+      "avoid_for": [
+        "Data interfaces",
+        "text-heavy content",
+        "accessibility-critical",
+        "conservative brands"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Text contrast",
+      "mobile_friendly": "✓ Good",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "CSS 8/10",
+        "SVG 10/10",
+        "Canvas 10/10"
+      ],
+      "era_origin": "2025+ Gradient Evolution",
+      "complexity": "Medium",
+      "source_row": 65
+    },
+    {
+      "id": "editorial-grid-magazine",
+      "name": "Editorial Grid / Magazine",
+      "type": "General",
+      "keywords": [
+        "Magazine layout",
+        "asymmetric grid",
+        "editorial typography",
+        "pull quotes",
+        "drop caps",
+        "column layout",
+        "print-inspired"
+      ],
+      "best_for": [
+        "News sites",
+        "blogs",
+        "magazines",
+        "editorial content",
+        "long-form articles",
+        "journalism",
+        "publishing"
+      ],
+      "avoid_for": [
+        "Dashboards",
+        "apps",
+        "e-commerce catalogs",
+        "real-time data",
+        "short-form content"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ Medium",
+      "framework_compatibility": [
+        "CSS Grid 10/10",
+        "Tailwind 10/10"
+      ],
+      "era_origin": "2020s Editorial Digital",
+      "complexity": "Low",
+      "source_row": 66
+    },
+    {
+      "id": "chromatic-aberration-rgb-split",
+      "name": "Chromatic Aberration / RGB Split",
+      "type": "General",
+      "keywords": [
+        "RGB split",
+        "color fringing",
+        "glitch",
+        "retro tech",
+        "VHS",
+        "analog error",
+        "distortion",
+        "lens effect"
+      ],
+      "best_for": [
+        "Music platforms",
+        "gaming",
+        "tech brands",
+        "creative portfolios",
+        "nightlife",
+        "entertainment",
+        "video platforms"
+      ],
+      "avoid_for": [
+        "Corporate",
+        "healthcare",
+        "finance",
+        "accessibility-critical",
+        "elderly users"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Dark preferred",
+      "performance": "⚠ Good",
+      "accessibility": "⚠ Can cause strain",
+      "mobile_friendly": "◐ Medium",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "CSS filters 10/10",
+        "GSAP 10/10"
+      ],
+      "era_origin": "2020s Retro-Tech",
+      "complexity": "Medium",
+      "source_row": 67
+    },
+    {
+      "id": "vintage-analog-retro-film",
+      "name": "Vintage Analog / Retro Film",
+      "type": "General",
+      "keywords": [
+        "Film grain",
+        "VHS",
+        "cassette tape",
+        "polaroid",
+        "analog warmth",
+        "faded colors",
+        "light leaks",
+        "vintage photography"
+      ],
+      "best_for": [
+        "Photography portfolios",
+        "music/vinyl brands",
+        "vintage fashion",
+        "nostalgia marketing",
+        "film industry",
+        "cafes"
+      ],
+      "avoid_for": [
+        "Modern tech",
+        "SaaS",
+        "healthcare",
+        "children's apps",
+        "corporate enterprise"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial",
+      "performance": "⚡ Good",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ High",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "CSS filters 10/10",
+        "Canvas 9/10"
+      ],
+      "era_origin": "1970s-90s Analog Revival",
+      "complexity": "Medium",
+      "source_row": 68
+    },
+    {
+      "id": "bauhaus",
+      "name": "Bauhaus (包豪斯)",
+      "type": "Mobile",
+      "keywords": [
+        "bauhaus",
+        "geometric",
+        "constructivist",
+        "primary colors",
+        "hard shadow",
+        "bold",
+        "tactile",
+        "functional",
+        "poster",
+        "mechanical",
+        "architectural"
+      ],
+      "best_for": [
+        "Mobile-first apps needing high personality",
+        "onboarding flows",
+        "branding-forward product screens",
+        "artisan/design brands",
+        "editorial mobile experiences"
+      ],
+      "avoid_for": [
+        "Enterprise dashboards",
+        "accessibility-critical contexts (requires extra a11y work)",
+        "data-heavy screens",
+        "conservative industries"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial (primary palette only)",
+      "performance": "⚡ Excellent",
+      "accessibility": "⚠ WCAG AA (high contrast primaries; verify yellow text separately)",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "SwiftUI 9/10",
+        "Flutter 9/10",
+        "Tailwind 9/10"
+      ],
+      "era_origin": "1919 Bauhaus Movement",
+      "complexity": "Medium",
+      "source_row": 69
+    },
+    {
+      "id": "minimalist-monochrome",
+      "name": "Minimalist Monochrome",
+      "type": "Mobile",
+      "keywords": [
+        "monochrome",
+        "black white",
+        "editorial",
+        "austere",
+        "typographic",
+        "sharp",
+        "zero radius",
+        "high contrast",
+        "brutalist",
+        "pocket editorial",
+        "serif",
+        "mechanical"
+      ],
+      "best_for": [
+        "Luxury fashion e-commerce mobile",
+        "editorial publications",
+        "high-end portfolio apps",
+        "experimental/avant-garde brands",
+        "digital exhibitions"
+      ],
+      "avoid_for": [
+        "Entertainment",
+        "colorful brands",
+        "friendly consumer apps",
+        "anything requiring visual warmth or gradient"
+      ],
+      "light_mode": "✓ Full (Light Mode Enforced)",
+      "dark_mode": "◐ Dark by section only (inverted sections)",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AAA (pure black/white)",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "SwiftUI 9/10",
+        "Tailwind 9/10"
+      ],
+      "era_origin": "2020s Editorial Mobile",
+      "complexity": "Medium",
+      "source_row": 70
+    },
+    {
+      "id": "modern-dark-cinema-mobile",
+      "name": "Modern Dark (Cinema Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "dark mode",
+        "cinematic",
+        "ambient light",
+        "glassmorphism",
+        "deep black",
+        "indigo",
+        "glow",
+        "blur",
+        "atmospheric",
+        "reanimated",
+        "haptic",
+        "premium",
+        "layered",
+        "frosted glass",
+        "linear gradient"
+      ],
+      "best_for": [
+        "Developer tools",
+        "pro productivity apps",
+        "fintech/trading dashboards",
+        "media/streaming platforms",
+        "AI tool interfaces",
+        "high-end gaming companion apps"
+      ],
+      "avoid_for": [
+        "Consumer apps needing warmth",
+        "children's apps",
+        "health/medical contexts where dark feels harsh",
+        "high-accessibility contexts needing maximum contrast"
+      ],
+      "light_mode": "✓ Light mode only as exception",
+      "dark_mode": "✓ Dark Mode Primary",
+      "performance": "⚠ Good (blur effects require native driver)",
+      "accessibility": "⚠ WCAG AA (requires careful accent contrast check)",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "react-native-skia 9/10",
+        "SwiftUI 8/10"
+      ],
+      "era_origin": "2020s Cinematic Mobile",
+      "complexity": "High",
+      "source_row": 71
+    },
+    {
+      "id": "saas-mobile-high-tech-boutique",
+      "name": "SaaS Mobile (High-Tech Boutique)",
+      "type": "Mobile",
+      "keywords": [
+        "saas",
+        "electric blue",
+        "gradient",
+        "fintech",
+        "spring animation",
+        "dual font",
+        "glassmorphism",
+        "boutique",
+        "premium",
+        "calistoga",
+        "inter",
+        "mono",
+        "tactile",
+        "haptic",
+        "bento"
+      ],
+      "best_for": [
+        "B2B SaaS mobile dashboards",
+        "fintech apps",
+        "developer tool mobile companions",
+        "marketing analytics apps",
+        "HR/operations apps",
+        "modern business productivity"
+      ],
+      "avoid_for": [
+        "Pure consumer entertainment",
+        "children's apps",
+        "highly decorative lifestyle apps",
+        "contexts where Electric Blue feels too corporate"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "NativeWind 10/10",
+        "SwiftUI 8/10",
+        "Flutter 9/10"
+      ],
+      "era_origin": "2020s SaaS Mobile",
+      "complexity": "Medium",
+      "source_row": 72
+    },
+    {
+      "id": "terminal-cli-mobile",
+      "name": "Terminal CLI (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "terminal",
+        "cli",
+        "matrix green",
+        "monospace",
+        "hacker",
+        "ascii",
+        "command line",
+        "developer",
+        "web3",
+        "crypto",
+        "sci-fi",
+        "OLED",
+        "retro-future",
+        "field operative"
+      ],
+      "best_for": [
+        "Developer tools",
+        "Web3/blockchain apps",
+        "geek-culture apps",
+        "ARG games",
+        "sci-fi/noir gaming companions",
+        "hacker/security tools",
+        "creative studio portfolios"
+      ],
+      "avoid_for": [
+        "Consumer products",
+        "health apps",
+        "anything requiring approachability or warmth",
+        "children's apps",
+        "standard enterprise contexts"
+      ],
+      "light_mode": "✗ No",
+      "dark_mode": "✓ OLED Dark Only",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ High contrast (green on black ≫4.5:1 ratio)",
+      "mobile_friendly": "✓ Mobile-First (OLED optimized)",
+      "conversion_focused": "✗ Low",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "NativeWind 9/10"
+      ],
+      "era_origin": "Retro-Future 1980s–2020s",
+      "complexity": "Medium",
+      "source_row": 73
+    },
+    {
+      "id": "kinetic-brutalism-mobile",
+      "name": "Kinetic Brutalism (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "kinetic",
+        "brutalism",
+        "motion",
+        "marquee",
+        "acid yellow",
+        "uppercase",
+        "oversized",
+        "aggressive typography",
+        "street",
+        "zine",
+        "high contrast",
+        "scroll-driven",
+        "haptic",
+        "reanimated"
+      ],
+      "best_for": [
+        "Immersive storytelling apps",
+        "brand flagship mobile",
+        "music/culture platforms",
+        "sports apps",
+        "underground zines",
+        "limited-edition product drops",
+        "performance dashboards"
+      ],
+      "avoid_for": [
+        "Calm informational apps",
+        "healthcare",
+        "finance contexts needing trust",
+        "children's",
+        "any context where aggressive typography feels inappropriate"
+      ],
+      "light_mode": "✓ Dark Primary",
+      "dark_mode": "◐ Dark only (inverted sections)",
+      "performance": "⚡ Excellent (native driver required)",
+      "accessibility": "⚠ WCAG AA (verify zinc body text on dark bg)",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✓ High energy",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "Reanimated 10/10",
+        "NativeWind 9/10"
+      ],
+      "era_origin": "2020s Mobile Brutalism",
+      "complexity": "High",
+      "source_row": 74
+    },
+    {
+      "id": "flat-design-mobile-touch-first",
+      "name": "Flat Design Mobile (Touch-First)",
+      "type": "Mobile",
+      "keywords": [
+        "flat",
+        "2D",
+        "no shadow",
+        "color blocking",
+        "geometric",
+        "bold",
+        "poster",
+        "icon",
+        "touch-first",
+        "minimal",
+        "clean",
+        "tailored",
+        "cross-platform"
+      ],
+      "best_for": [
+        "Cross-platform apps (iOS+Android parity)",
+        "information-dense dashboards",
+        "system UI",
+        "brand illustration",
+        "onboarding flows",
+        "marketing pages",
+        "icon design"
+      ],
+      "avoid_for": [
+        "Ultra-premium contexts needing depth/shadow",
+        "dark-mode-first products",
+        "contexts where flat design reads as unfinished or sterile"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "◐ Partial (Dark mode via color swap only)",
+      "performance": "⚡ Excellent (no GPU effects)",
+      "accessibility": "✓ WCAG AA (large bold type helps)",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "NativeWind 10/10",
+        "Flutter 9/10",
+        "SwiftUI 9/10"
+      ],
+      "era_origin": "2010s–2020s Flat Mobile",
+      "complexity": "Low",
+      "source_row": 75
+    },
+    {
+      "id": "material-you-md3-mobile",
+      "name": "Material You (MD3 Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "material design 3",
+        "md3",
+        "tonal surfaces",
+        "pills",
+        "soft curves",
+        "android",
+        "md3 easing",
+        "state layers",
+        "haptic",
+        "fab",
+        "google"
+      ],
+      "best_for": [
+        "Android ecosystem apps",
+        "cross-platform productivity tools",
+        "MD3-based admin panels",
+        "data-heavy back-office UI with Material UI"
+      ],
+      "avoid_for": [
+        "Ultra-minimal brutalist brands",
+        "terminal/hacker aesthetics",
+        "monochrome editorial apps"
+      ],
+      "light_mode": "✓ Full",
+      "dark_mode": "✓ Full",
+      "performance": "⚠ Good (requires gradients and overlays)",
+      "accessibility": "✓ WCAG AA (with MD3 token checks)",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 9/10",
+        "Expo 10/10",
+        "React Native Paper 9/10"
+      ],
+      "era_origin": "Material Design 3",
+      "complexity": "Medium",
+      "source_row": 76
+    },
+    {
+      "id": "neo-brutalism-mobile",
+      "name": "Neo Brutalism (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "neo brutalism",
+        "pop art",
+        "stickers",
+        "thick borders",
+        "cream background",
+        "hot red",
+        "vivid yellow",
+        "soft violet",
+        "hard offset shadow",
+        "mechanical press",
+        "collage"
+      ],
+      "best_for": [
+        "Creative tools",
+        "collab platforms",
+        "Gen Z marketing & e-commerce",
+        "portfolio sites",
+        "sticker-book style content apps"
+      ],
+      "avoid_for": [
+        "Serious enterprise apps",
+        "conservative industries",
+        "sober fintech",
+        "accessibility-first contexts (must tune contrast)"
+      ],
+      "light_mode": "✓ Light-first",
+      "dark_mode": "✗ Dark",
+      "performance": "⚠ Moderate (shadows + transforms)",
+      "accessibility": "⚠ Requires careful contrast tuning",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "NativeWind 9/10"
+      ],
+      "era_origin": "2020s Neo-Brutalism",
+      "complexity": "High",
+      "source_row": 77
+    },
+    {
+      "id": "bold-typography-mobile-poster",
+      "name": "Bold Typography (Mobile Poster)",
+      "type": "Mobile",
+      "keywords": [
+        "bold typography",
+        "editorial",
+        "poster",
+        "broadsheet",
+        "vermillion",
+        "negative space",
+        "edge-to-edge type",
+        "underline CTA",
+        "near-black",
+        "warm white"
+      ],
+      "best_for": [
+        "Creative brand heroes",
+        "reading-focused apps",
+        "event/exhibition pages",
+        "editorial mobile experiences",
+        "landing hero sections"
+      ],
+      "avoid_for": [
+        "Utility dashboards",
+        "kids apps",
+        "playful consumer products",
+        "contexts needing many icons or heavy imagery"
+      ],
+      "light_mode": "✓ Dark Mode Primary",
+      "dark_mode": "◐ Light sections optional",
+      "performance": "⚡ Excellent",
+      "accessibility": "✓ Contrast 18:1 achievable",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10"
+      ],
+      "era_origin": "Editorial 2020s",
+      "complexity": "Medium",
+      "source_row": 78
+    },
+    {
+      "id": "academia-scholarly-mobile",
+      "name": "Academia (Scholarly Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "academia",
+        "library",
+        "mahogany",
+        "parchment",
+        "brass",
+        "crimson",
+        "serif",
+        "drop cap",
+        "arch-top",
+        "vignette",
+        "leather",
+        "scholarly",
+        "tactile"
+      ],
+      "best_for": [
+        "Knowledge management apps",
+        "deep reading tools",
+        "ritual-heavy personal brands",
+        "lore-heavy RPG/roleplay apps",
+        "culture-specific community platforms"
+      ],
+      "avoid_for": [
+        "Hyper-modern tech dashboards",
+        "neon/glassmorphism",
+        "playful Gen Z branding"
+      ],
+      "light_mode": "✓ Dark Rich",
+      "dark_mode": "◐ Light parchment sections",
+      "performance": "⚠ Moderate (vignette + shadows)",
+      "accessibility": "✓ Legible (serif optimized)",
+      "mobile_friendly": "◐ Mobile-First",
+      "conversion_focused": "◐ Medium",
+      "framework_compatibility": [
+        "React Native 9/10",
+        "Expo 10/10"
+      ],
+      "era_origin": "Timeless Scholarly",
+      "complexity": "High",
+      "source_row": 79
+    },
+    {
+      "id": "cyberpunk-mobile-hud",
+      "name": "Cyberpunk Mobile HUD",
+      "type": "Mobile",
+      "keywords": [
+        "cyberpunk",
+        "neon",
+        "glitch",
+        "chamfered",
+        "orbitron",
+        "jetbrains",
+        "scanlines",
+        "crt",
+        "hud",
+        "matrix",
+        "military",
+        "decker"
+      ],
+      "best_for": [
+        "Gaming dashboards",
+        "crypto/cyberpunk apps",
+        "sci-fi companion tools",
+        "hacker OS skins",
+        "data-heavy monitoring HUDs"
+      ],
+      "avoid_for": [
+        "Serious enterprise",
+        "health/finance requiring calm trust",
+        "minimal editorial apps"
+      ],
+      "light_mode": "✗ Light",
+      "dark_mode": "✓ Dark-only",
+      "performance": "⚠ Moderate–Heavy (Skia/blur/animations)",
+      "accessibility": "⚠ Requires careful reduced-motion handling",
+      "mobile_friendly": "✓ Mobile-First HUD",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Skia 9/10",
+        "Expo 10/10"
+      ],
+      "era_origin": "Cyber-Noir",
+      "complexity": "High",
+      "source_row": 80
+    },
+    {
+      "id": "bitcoin-defi-mobile",
+      "name": "Bitcoin DeFi (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "web3",
+        "bitcoin",
+        "defi",
+        "digital gold",
+        "fintech",
+        "wallet",
+        "orange",
+        "glassmorphism",
+        "gradient",
+        "blur",
+        "holographic",
+        "trust",
+        "precision"
+      ],
+      "best_for": [
+        "DeFi dashboards",
+        "wallets",
+        "NFT marketplaces",
+        "Web3 social",
+        "metaverse utilities",
+        "high-tech fintech brands"
+      ],
+      "avoid_for": [
+        "Playful casual apps",
+        "low-tech brands",
+        "ultra-minimal editorial apps"
+      ],
+      "light_mode": "✗ Light",
+      "dark_mode": "✓ Dark-only",
+      "performance": "⚠ Moderate (gradients+blur)",
+      "accessibility": "✓ WCAG AA with care",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Expo 10/10",
+        "Reanimated 10/10"
+      ],
+      "era_origin": "Fintech/Web3",
+      "complexity": "High",
+      "source_row": 81
+    },
+    {
+      "id": "claymorphism-mobile",
+      "name": "Claymorphism (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "claymorphism",
+        "clay",
+        "3d",
+        "soft",
+        "bubbly",
+        "candy",
+        "playful",
+        "rounded",
+        "squish",
+        "tactile",
+        "inflate",
+        "silicone",
+        "haptic",
+        "spring"
+      ],
+      "best_for": [
+        "Children education apps",
+        "teen social products",
+        "crypto gamification",
+        "creative tools",
+        "brand mascot-led apps"
+      ],
+      "avoid_for": [
+        "Serious enterprise",
+        "high-density data",
+        "editorial reading apps",
+        "fintech trust signals"
+      ],
+      "light_mode": "✓ Light",
+      "dark_mode": "⚠ Dark (adjusted)",
+      "performance": "⚠ Moderate–Heavy (shadows+blur)",
+      "accessibility": "✓ WCAG AA (careful)",
+      "mobile_friendly": "✓ Mobile-First (thumb zone)",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Reanimated 10/10",
+        "Expo 10/10"
+      ],
+      "era_origin": "Consumer/Education",
+      "complexity": "High",
+      "source_row": 82
+    },
+    {
+      "id": "enterprise-saas-mobile",
+      "name": "Enterprise SaaS (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "enterprise",
+        "saas",
+        "b2b",
+        "professional",
+        "indigo",
+        "violet",
+        "gradient",
+        "polished",
+        "trustworthy",
+        "clean",
+        "approachable",
+        "spring",
+        "haptic"
+      ],
+      "best_for": [
+        "B2B backend management",
+        "productivity tools",
+        "government and finance mobile apps",
+        "SaaS companion apps",
+        "enterprise dashboards"
+      ],
+      "avoid_for": [
+        "Pure consumer entertainment",
+        "Gen-Z youth apps",
+        "gaming UI",
+        "ultra-minimal editorial"
+      ],
+      "light_mode": "✓ Light",
+      "dark_mode": "✓ Dark-ready (token inversion)",
+      "performance": "✓ Performant",
+      "accessibility": "✓ WCAG AA",
+      "mobile_friendly": "✓ Mobile-First (Safe Area strict)",
+      "conversion_focused": "✓ High",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Reanimated 10/10",
+        "NativeWind 9/10"
+      ],
+      "era_origin": "Enterprise/SaaS",
+      "complexity": "High",
+      "source_row": 83
+    },
+    {
+      "id": "sketch-hand-drawn-mobile",
+      "name": "Sketch Hand-Drawn (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "sketch",
+        "hand-drawn",
+        "handwriting",
+        "wobbly",
+        "imperfect",
+        "paper",
+        "kalam",
+        "organic",
+        "collage",
+        "post-it",
+        "tape",
+        "offset shadow",
+        "scribble"
+      ],
+      "best_for": [
+        "Low-fidelity prototyping",
+        "creative brands",
+        "children/picturebook apps",
+        "education tools",
+        "journaling apps",
+        "gamified puzzles"
+      ],
+      "avoid_for": [
+        "Enterprise dashboards",
+        "high-density data tables",
+        "fintech precision tools",
+        "medical or legal apps"
+      ],
+      "light_mode": "✓ Light",
+      "dark_mode": "⚠ Dark (requires texture inversion)",
+      "performance": "✓ Lightweight",
+      "accessibility": "⚠ Moderate (small/muted text risk)",
+      "mobile_friendly": "✓ Mobile-First (wobbly touch targets 48x48)",
+      "conversion_focused": "✗ Low-Conversion",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "Reanimated 9/10",
+        "Expo 9/10"
+      ],
+      "era_origin": "Creative/Education",
+      "complexity": "Medium",
+      "source_row": 84
+    },
+    {
+      "id": "neumorphism-mobile",
+      "name": "Neumorphism (Mobile)",
+      "type": "Mobile",
+      "keywords": [
+        "neumorphism",
+        "soft ui",
+        "dual shadow",
+        "extruded",
+        "inset",
+        "clay surface",
+        "monochromatic",
+        "cool grey",
+        "haptic",
+        "ceramic",
+        "physical",
+        "depth"
+      ],
+      "best_for": [
+        "Minimal hardware controls",
+        "smart home apps",
+        "aesthetic utility tools",
+        "health monitors",
+        "brand showcase pages"
+      ],
+      "avoid_for": [
+        "High-density data",
+        "bright multi-color apps",
+        "apps needing strong visual hierarchy via color",
+        "dark-mode-only products"
+      ],
+      "light_mode": "✓ Light-only",
+      "dark_mode": "✗ Dark (breaks material metaphor)",
+      "performance": "✓ Lightweight",
+      "accessibility": "⚠ Moderate (low-contrast risk)",
+      "mobile_friendly": "✓ Mobile-First",
+      "conversion_focused": "✗ Low-Conversion",
+      "framework_compatibility": [
+        "React Native 10/10",
+        "react-native-shadow-2 9/10",
+        "Reanimated 9/10"
+      ],
+      "era_origin": "Tools/Lifestyle",
+      "complexity": "Medium",
+      "source_row": 85
+    }
+  ]
+}

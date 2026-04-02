@@ -1,0 +1,2017 @@
+{
+  "dataset_id": "typography_pairings",
+  "source_family": "ui_ux_pro_max",
+  "description": "Font pairing references from UI UX Pro Max.",
+  "generated_from": [
+    "references/ui_ux_pro_max/raw/typography.csv"
+  ],
+  "record_count": 73,
+  "items": [
+    {
+      "id": "classic-elegant",
+      "pairing_name": "Classic Elegant",
+      "category": "Serif + Sans",
+      "heading_font": "Playfair Display",
+      "body_font": "Inter",
+      "mood_keywords": [
+        "elegant",
+        "luxury",
+        "sophisticated",
+        "timeless",
+        "premium",
+        "editorial"
+      ],
+      "best_for": [
+        "Luxury brands",
+        "fashion",
+        "spa",
+        "beauty",
+        "editorial",
+        "magazines",
+        "high-end e-commerce"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@300;400;500;600;700|Playfair+Display:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Inter', 'sans-serif'] }",
+      "notes": "High contrast between elegant heading and clean body. Perfect for luxury/premium.",
+      "source_row": 1
+    },
+    {
+      "id": "modern-professional",
+      "pairing_name": "Modern Professional",
+      "category": "Sans + Sans",
+      "heading_font": "Poppins",
+      "body_font": "Open Sans",
+      "mood_keywords": [
+        "modern",
+        "professional",
+        "clean",
+        "corporate",
+        "friendly",
+        "approachable"
+      ],
+      "best_for": [
+        "SaaS",
+        "corporate sites",
+        "business apps",
+        "startups",
+        "professional services"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Open+Sans:wght@300;400;500;600;700|Poppins:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Poppins', 'sans-serif'], body: ['Open Sans', 'sans-serif'] }",
+      "notes": "Geometric Poppins for headings, humanist Open Sans for readability.",
+      "source_row": 2
+    },
+    {
+      "id": "tech-startup",
+      "pairing_name": "Tech Startup",
+      "category": "Sans + Sans",
+      "heading_font": "Space Grotesk",
+      "body_font": "DM Sans",
+      "mood_keywords": [
+        "tech",
+        "startup",
+        "modern",
+        "innovative",
+        "bold",
+        "futuristic"
+      ],
+      "best_for": [
+        "Tech companies",
+        "startups",
+        "SaaS",
+        "developer tools",
+        "AI products"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=DM+Sans:wght@400;500;700|Space+Grotesk:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Space Grotesk', 'sans-serif'], body: ['DM Sans', 'sans-serif'] }",
+      "notes": "Space Grotesk has unique character, DM Sans is highly readable.",
+      "source_row": 3
+    },
+    {
+      "id": "editorial-classic",
+      "pairing_name": "Editorial Classic",
+      "category": "Serif + Serif",
+      "heading_font": "Cormorant Garamond",
+      "body_font": "Libre Baskerville",
+      "mood_keywords": [
+        "editorial",
+        "classic",
+        "literary",
+        "traditional",
+        "refined",
+        "bookish"
+      ],
+      "best_for": [
+        "Publishing",
+        "blogs",
+        "news sites",
+        "literary magazines",
+        "book covers"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Cormorant+Garamond:wght@400;500;600;700|Libre+Baskerville:wght@400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Cormorant Garamond', 'serif'], body: ['Libre Baskerville', 'serif'] }",
+      "notes": "All-serif pairing for traditional editorial feel.",
+      "source_row": 4
+    },
+    {
+      "id": "minimal-swiss",
+      "pairing_name": "Minimal Swiss",
+      "category": "Sans + Sans",
+      "heading_font": "Inter",
+      "body_font": "Inter",
+      "mood_keywords": [
+        "minimal",
+        "clean",
+        "swiss",
+        "functional",
+        "neutral",
+        "professional"
+      ],
+      "best_for": [
+        "Dashboards",
+        "admin panels",
+        "documentation",
+        "enterprise apps",
+        "design systems"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Inter', 'sans-serif'] }",
+      "notes": "Single font family with weight variations. Ultimate simplicity.",
+      "source_row": 5
+    },
+    {
+      "id": "playful-creative",
+      "pairing_name": "Playful Creative",
+      "category": "Display + Sans",
+      "heading_font": "Fredoka",
+      "body_font": "Nunito",
+      "mood_keywords": [
+        "playful",
+        "friendly",
+        "fun",
+        "creative",
+        "warm",
+        "approachable"
+      ],
+      "best_for": [
+        "Children's apps",
+        "educational",
+        "gaming",
+        "creative tools",
+        "entertainment"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Fredoka:wght@400;500;600;700|Nunito:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Fredoka', 'sans-serif'], body: ['Nunito', 'sans-serif'] }",
+      "notes": "Rounded, friendly fonts perfect for playful UIs.",
+      "source_row": 6
+    },
+    {
+      "id": "bold-statement",
+      "pairing_name": "Bold Statement",
+      "category": "Display + Sans",
+      "heading_font": "Bebas Neue",
+      "body_font": "Source Sans 3",
+      "mood_keywords": [
+        "bold",
+        "impactful",
+        "strong",
+        "dramatic",
+        "modern",
+        "headlines"
+      ],
+      "best_for": [
+        "Marketing sites",
+        "portfolios",
+        "agencies",
+        "event pages",
+        "sports"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Bebas+Neue|Source+Sans+3:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Bebas Neue', 'sans-serif'], body: ['Source Sans 3', 'sans-serif'] }",
+      "notes": "Bebas Neue for large headlines only. All-caps display font.",
+      "source_row": 7
+    },
+    {
+      "id": "wellness-calm",
+      "pairing_name": "Wellness Calm",
+      "category": "Serif + Sans",
+      "heading_font": "Lora",
+      "body_font": "Raleway",
+      "mood_keywords": [
+        "calm",
+        "wellness",
+        "health",
+        "relaxing",
+        "natural",
+        "organic"
+      ],
+      "best_for": [
+        "Health apps",
+        "wellness",
+        "spa",
+        "meditation",
+        "yoga",
+        "organic brands"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Lora:wght@400;500;600;700|Raleway:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Lora', 'serif'], sans: ['Raleway', 'sans-serif'] }",
+      "notes": "Lora's organic curves with Raleway's elegant simplicity.",
+      "source_row": 8
+    },
+    {
+      "id": "developer-mono",
+      "pairing_name": "Developer Mono",
+      "category": "Mono + Sans",
+      "heading_font": "JetBrains Mono",
+      "body_font": "IBM Plex Sans",
+      "mood_keywords": [
+        "code",
+        "developer",
+        "technical",
+        "precise",
+        "functional",
+        "hacker"
+      ],
+      "best_for": [
+        "Developer tools",
+        "documentation",
+        "code editors",
+        "tech blogs",
+        "CLI apps"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=IBM+Plex+Sans:wght@300;400;500;600;700|JetBrains+Mono:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { mono: ['JetBrains Mono', 'monospace'], sans: ['IBM Plex Sans', 'sans-serif'] }",
+      "notes": "JetBrains for code, IBM Plex for UI. Developer-focused.",
+      "source_row": 9
+    },
+    {
+      "id": "retro-vintage",
+      "pairing_name": "Retro Vintage",
+      "category": "Display + Serif",
+      "heading_font": "Abril Fatface",
+      "body_font": "Merriweather",
+      "mood_keywords": [
+        "retro",
+        "vintage",
+        "nostalgic",
+        "dramatic",
+        "decorative",
+        "bold"
+      ],
+      "best_for": [
+        "Vintage brands",
+        "breweries",
+        "restaurants",
+        "creative portfolios",
+        "posters"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Abril+Fatface|Merriweather:wght@300;400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:wght@300;400;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Abril Fatface', 'serif'], body: ['Merriweather', 'serif'] }",
+      "notes": "Abril Fatface for hero headlines only. High-impact vintage feel.",
+      "source_row": 10
+    },
+    {
+      "id": "geometric-modern",
+      "pairing_name": "Geometric Modern",
+      "category": "Sans + Sans",
+      "heading_font": "Outfit",
+      "body_font": "Work Sans",
+      "mood_keywords": [
+        "geometric",
+        "modern",
+        "clean",
+        "balanced",
+        "contemporary",
+        "versatile"
+      ],
+      "best_for": [
+        "General purpose",
+        "portfolios",
+        "agencies",
+        "modern brands",
+        "landing pages"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Outfit:wght@300;400;500;600;700|Work+Sans:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Outfit', 'sans-serif'], body: ['Work Sans', 'sans-serif'] }",
+      "notes": "Both geometric but Outfit more distinctive for headings.",
+      "source_row": 11
+    },
+    {
+      "id": "luxury-serif",
+      "pairing_name": "Luxury Serif",
+      "category": "Serif + Sans",
+      "heading_font": "Cormorant",
+      "body_font": "Montserrat",
+      "mood_keywords": [
+        "luxury",
+        "high-end",
+        "fashion",
+        "elegant",
+        "refined",
+        "premium"
+      ],
+      "best_for": [
+        "Fashion brands",
+        "luxury e-commerce",
+        "jewelry",
+        "high-end services"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Cormorant:wght@400;500;600;700|Montserrat:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Cormorant', 'serif'], sans: ['Montserrat', 'sans-serif'] }",
+      "notes": "Cormorant's elegance with Montserrat's geometric precision.",
+      "source_row": 12
+    },
+    {
+      "id": "friendly-saas",
+      "pairing_name": "Friendly SaaS",
+      "category": "Sans + Sans",
+      "heading_font": "Plus Jakarta Sans",
+      "body_font": "Plus Jakarta Sans",
+      "mood_keywords": [
+        "friendly",
+        "modern",
+        "saas",
+        "clean",
+        "approachable",
+        "professional"
+      ],
+      "best_for": [
+        "SaaS products",
+        "web apps",
+        "dashboards",
+        "B2B",
+        "productivity tools"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+      "notes": "Single versatile font. Modern alternative to Inter.",
+      "source_row": 13
+    },
+    {
+      "id": "news-editorial",
+      "pairing_name": "News Editorial",
+      "category": "Serif + Sans",
+      "heading_font": "Newsreader",
+      "body_font": "Roboto",
+      "mood_keywords": [
+        "news",
+        "editorial",
+        "journalism",
+        "trustworthy",
+        "readable",
+        "informative"
+      ],
+      "best_for": [
+        "News sites",
+        "blogs",
+        "magazines",
+        "journalism",
+        "content-heavy sites"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Newsreader:wght@400;500;600;700|Roboto:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Newsreader', 'serif'], sans: ['Roboto', 'sans-serif'] }",
+      "notes": "Newsreader designed for long-form reading. Roboto for UI.",
+      "source_row": 14
+    },
+    {
+      "id": "handwritten-charm",
+      "pairing_name": "Handwritten Charm",
+      "category": "Script + Sans",
+      "heading_font": "Caveat",
+      "body_font": "Quicksand",
+      "mood_keywords": [
+        "handwritten",
+        "personal",
+        "friendly",
+        "casual",
+        "warm",
+        "charming"
+      ],
+      "best_for": [
+        "Personal blogs",
+        "invitations",
+        "creative portfolios",
+        "lifestyle brands"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Caveat:wght@400;500;600;700|Quicksand:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { script: ['Caveat', 'cursive'], sans: ['Quicksand', 'sans-serif'] }",
+      "notes": "Use Caveat sparingly for accents. Quicksand for body.",
+      "source_row": 15
+    },
+    {
+      "id": "corporate-trust",
+      "pairing_name": "Corporate Trust",
+      "category": "Sans + Sans",
+      "heading_font": "Lexend",
+      "body_font": "Source Sans 3",
+      "mood_keywords": [
+        "corporate",
+        "trustworthy",
+        "accessible",
+        "readable",
+        "professional",
+        "clean"
+      ],
+      "best_for": [
+        "Enterprise",
+        "government",
+        "healthcare",
+        "finance",
+        "accessibility-focused"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Lexend:wght@300;400;500;600;700|Source+Sans+3:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Lexend', 'sans-serif'], body: ['Source Sans 3', 'sans-serif'] }",
+      "notes": "Lexend designed for readability. Excellent accessibility.",
+      "source_row": 16
+    },
+    {
+      "id": "brutalist-raw",
+      "pairing_name": "Brutalist Raw",
+      "category": "Mono + Mono",
+      "heading_font": "Space Mono",
+      "body_font": "Space Mono",
+      "mood_keywords": [
+        "brutalist",
+        "raw",
+        "technical",
+        "monospace",
+        "minimal",
+        "stark"
+      ],
+      "best_for": [
+        "Brutalist designs",
+        "developer portfolios",
+        "experimental",
+        "tech art"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Space+Mono:wght@400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');",
+      "tailwind_config": "fontFamily: { mono: ['Space Mono', 'monospace'] }",
+      "notes": "All-mono for raw brutalist aesthetic. Limited weights.",
+      "source_row": 17
+    },
+    {
+      "id": "fashion-forward",
+      "pairing_name": "Fashion Forward",
+      "category": "Sans + Sans",
+      "heading_font": "Syne",
+      "body_font": "Manrope",
+      "mood_keywords": [
+        "fashion",
+        "avant-garde",
+        "creative",
+        "bold",
+        "artistic",
+        "edgy"
+      ],
+      "best_for": [
+        "Fashion brands",
+        "creative agencies",
+        "art galleries",
+        "design studios"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Manrope:wght@300;400;500;600;700|Syne:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Syne', 'sans-serif'], body: ['Manrope', 'sans-serif'] }",
+      "notes": "Syne's unique character for headlines. Manrope for readability.",
+      "source_row": 18
+    },
+    {
+      "id": "soft-rounded",
+      "pairing_name": "Soft Rounded",
+      "category": "Sans + Sans",
+      "heading_font": "Varela Round",
+      "body_font": "Nunito Sans",
+      "mood_keywords": [
+        "soft",
+        "rounded",
+        "friendly",
+        "approachable",
+        "warm",
+        "gentle"
+      ],
+      "best_for": [
+        "Children's products",
+        "pet apps",
+        "friendly brands",
+        "wellness",
+        "soft UI"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Nunito+Sans:wght@300;400;500;600;700|Varela+Round",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700&family=Varela+Round&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Varela Round', 'sans-serif'], body: ['Nunito Sans', 'sans-serif'] }",
+      "notes": "Both rounded and friendly. Perfect for soft UI designs.",
+      "source_row": 19
+    },
+    {
+      "id": "premium-sans",
+      "pairing_name": "Premium Sans",
+      "category": "Sans + Sans",
+      "heading_font": "Satoshi",
+      "body_font": "General Sans",
+      "mood_keywords": [
+        "premium",
+        "modern",
+        "clean",
+        "sophisticated",
+        "versatile",
+        "balanced"
+      ],
+      "best_for": [
+        "Premium brands",
+        "modern agencies",
+        "SaaS",
+        "portfolios",
+        "startups"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=DM+Sans:wght@400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['DM Sans', 'sans-serif'] }",
+      "notes": "Note: Satoshi/General Sans on Fontshare. DM Sans as Google alternative.",
+      "source_row": 20
+    },
+    {
+      "id": "vietnamese-friendly",
+      "pairing_name": "Vietnamese Friendly",
+      "category": "Sans + Sans",
+      "heading_font": "Be Vietnam Pro",
+      "body_font": "Noto Sans",
+      "mood_keywords": [
+        "vietnamese",
+        "international",
+        "readable",
+        "clean",
+        "multilingual",
+        "accessible"
+      ],
+      "best_for": [
+        "Vietnamese sites",
+        "multilingual apps",
+        "international products"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Be+Vietnam+Pro:wght@300;400;500;600;700|Noto+Sans:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Be Vietnam Pro', 'Noto Sans', 'sans-serif'] }",
+      "notes": "Be Vietnam Pro excellent Vietnamese support. Noto as fallback.",
+      "source_row": 21
+    },
+    {
+      "id": "japanese-elegant",
+      "pairing_name": "Japanese Elegant",
+      "category": "Serif + Sans",
+      "heading_font": "Noto Serif JP",
+      "body_font": "Noto Sans JP",
+      "mood_keywords": [
+        "japanese",
+        "elegant",
+        "traditional",
+        "modern",
+        "multilingual",
+        "readable"
+      ],
+      "best_for": [
+        "Japanese sites",
+        "Japanese restaurants",
+        "cultural sites",
+        "anime/manga"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Noto+Sans+JP:wght@300;400;500;700|Noto+Serif+JP:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Noto Serif JP', 'serif'], sans: ['Noto Sans JP', 'sans-serif'] }",
+      "notes": "Noto fonts excellent Japanese support. Traditional + modern feel.",
+      "source_row": 22
+    },
+    {
+      "id": "korean-modern",
+      "pairing_name": "Korean Modern",
+      "category": "Sans + Sans",
+      "heading_font": "Noto Sans KR",
+      "body_font": "Noto Sans KR",
+      "mood_keywords": [
+        "korean",
+        "modern",
+        "clean",
+        "professional",
+        "multilingual",
+        "readable"
+      ],
+      "best_for": [
+        "Korean sites",
+        "K-beauty",
+        "K-pop",
+        "Korean businesses",
+        "multilingual"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Noto+Sans+KR:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] }",
+      "notes": "Clean Korean typography. Single font with weight variations.",
+      "source_row": 23
+    },
+    {
+      "id": "chinese-traditional",
+      "pairing_name": "Chinese Traditional",
+      "category": "Serif + Sans",
+      "heading_font": "Noto Serif TC",
+      "body_font": "Noto Sans TC",
+      "mood_keywords": [
+        "chinese",
+        "traditional",
+        "elegant",
+        "cultural",
+        "multilingual",
+        "readable"
+      ],
+      "best_for": [
+        "Traditional Chinese sites",
+        "cultural content",
+        "Taiwan/Hong Kong markets"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Noto+Sans+TC:wght@300;400;500;700|Noto+Serif+TC:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Noto Serif TC', 'serif'], sans: ['Noto Sans TC', 'sans-serif'] }",
+      "notes": "Traditional Chinese character support. Elegant pairing.",
+      "source_row": 24
+    },
+    {
+      "id": "chinese-simplified",
+      "pairing_name": "Chinese Simplified",
+      "category": "Sans + Sans",
+      "heading_font": "Noto Sans SC",
+      "body_font": "Noto Sans SC",
+      "mood_keywords": [
+        "chinese",
+        "simplified",
+        "modern",
+        "professional",
+        "multilingual",
+        "readable"
+      ],
+      "best_for": [
+        "Simplified Chinese sites",
+        "mainland China market",
+        "business apps"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Noto+Sans+SC:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Noto Sans SC', 'sans-serif'] }",
+      "notes": "Simplified Chinese support. Clean modern look.",
+      "source_row": 25
+    },
+    {
+      "id": "arabic-elegant",
+      "pairing_name": "Arabic Elegant",
+      "category": "Serif + Sans",
+      "heading_font": "Noto Naskh Arabic",
+      "body_font": "Noto Sans Arabic",
+      "mood_keywords": [
+        "arabic",
+        "elegant",
+        "traditional",
+        "cultural",
+        "RTL",
+        "readable"
+      ],
+      "best_for": [
+        "Arabic sites",
+        "Middle East market",
+        "Islamic content",
+        "bilingual sites"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Noto+Naskh+Arabic:wght@400;500;600;700|Noto+Sans+Arabic:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Noto Naskh Arabic', 'serif'], sans: ['Noto Sans Arabic', 'sans-serif'] }",
+      "notes": "RTL support. Naskh for traditional, Sans for modern Arabic.",
+      "source_row": 26
+    },
+    {
+      "id": "thai-modern",
+      "pairing_name": "Thai Modern",
+      "category": "Sans + Sans",
+      "heading_font": "Noto Sans Thai",
+      "body_font": "Noto Sans Thai",
+      "mood_keywords": [
+        "thai",
+        "modern",
+        "readable",
+        "clean",
+        "multilingual",
+        "accessible"
+      ],
+      "best_for": [
+        "Thai sites",
+        "Southeast Asia",
+        "tourism",
+        "Thai restaurants"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Noto+Sans+Thai:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Noto Sans Thai', 'sans-serif'] }",
+      "notes": "Clean Thai typography. Excellent readability.",
+      "source_row": 27
+    },
+    {
+      "id": "hebrew-modern",
+      "pairing_name": "Hebrew Modern",
+      "category": "Sans + Sans",
+      "heading_font": "Noto Sans Hebrew",
+      "body_font": "Noto Sans Hebrew",
+      "mood_keywords": [
+        "hebrew",
+        "modern",
+        "RTL",
+        "clean",
+        "professional",
+        "readable"
+      ],
+      "best_for": [
+        "Hebrew sites",
+        "Israeli market",
+        "Jewish content",
+        "bilingual sites"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Noto+Sans+Hebrew:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Noto Sans Hebrew', 'sans-serif'] }",
+      "notes": "RTL support. Clean modern Hebrew typography.",
+      "source_row": 28
+    },
+    {
+      "id": "legal-professional",
+      "pairing_name": "Legal Professional",
+      "category": "Serif + Sans",
+      "heading_font": "EB Garamond",
+      "body_font": "Lato",
+      "mood_keywords": [
+        "legal",
+        "professional",
+        "traditional",
+        "trustworthy",
+        "formal",
+        "authoritative"
+      ],
+      "best_for": [
+        "Law firms",
+        "legal services",
+        "contracts",
+        "formal documents",
+        "government"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=EB+Garamond:wght@400;500;600;700|Lato:wght@300;400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['EB Garamond', 'serif'], sans: ['Lato', 'sans-serif'] }",
+      "notes": "EB Garamond for authority. Lato for clean body text.",
+      "source_row": 29
+    },
+    {
+      "id": "medical-clean",
+      "pairing_name": "Medical Clean",
+      "category": "Sans + Sans",
+      "heading_font": "Figtree",
+      "body_font": "Noto Sans",
+      "mood_keywords": [
+        "medical",
+        "clean",
+        "accessible",
+        "professional",
+        "healthcare",
+        "trustworthy"
+      ],
+      "best_for": [
+        "Healthcare",
+        "medical clinics",
+        "pharma",
+        "health apps",
+        "accessibility"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Figtree:wght@300;400;500;600;700|Noto+Sans:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Figtree', 'sans-serif'], body: ['Noto Sans', 'sans-serif'] }",
+      "notes": "Clean, accessible fonts for medical contexts.",
+      "source_row": 30
+    },
+    {
+      "id": "financial-trust",
+      "pairing_name": "Financial Trust",
+      "category": "Sans + Sans",
+      "heading_font": "IBM Plex Sans",
+      "body_font": "IBM Plex Sans",
+      "mood_keywords": [
+        "financial",
+        "trustworthy",
+        "professional",
+        "corporate",
+        "banking",
+        "serious"
+      ],
+      "best_for": [
+        "Banks",
+        "finance",
+        "insurance",
+        "investment",
+        "fintech",
+        "enterprise"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=IBM+Plex+Sans:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['IBM Plex Sans', 'sans-serif'] }",
+      "notes": "IBM Plex conveys trust and professionalism. Excellent for data.",
+      "source_row": 31
+    },
+    {
+      "id": "real-estate-luxury",
+      "pairing_name": "Real Estate Luxury",
+      "category": "Serif + Sans",
+      "heading_font": "Cinzel",
+      "body_font": "Josefin Sans",
+      "mood_keywords": [
+        "real estate",
+        "luxury",
+        "elegant",
+        "sophisticated",
+        "property",
+        "premium"
+      ],
+      "best_for": [
+        "Real estate",
+        "luxury properties",
+        "architecture",
+        "interior design"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Cinzel:wght@400;500;600;700|Josefin+Sans:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Josefin+Sans:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Cinzel', 'serif'], sans: ['Josefin Sans', 'sans-serif'] }",
+      "notes": "Cinzel's elegance for headlines. Josefin for modern body.",
+      "source_row": 32
+    },
+    {
+      "id": "restaurant-menu",
+      "pairing_name": "Restaurant Menu",
+      "category": "Serif + Sans",
+      "heading_font": "Playfair Display SC",
+      "body_font": "Karla",
+      "mood_keywords": [
+        "restaurant",
+        "menu",
+        "culinary",
+        "elegant",
+        "foodie",
+        "hospitality"
+      ],
+      "best_for": [
+        "Restaurants",
+        "cafes",
+        "food blogs",
+        "culinary",
+        "hospitality"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Karla:wght@300;400;500;600;700|Playfair+Display+SC:wght@400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500;600;700&family=Playfair+Display+SC:wght@400;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Playfair Display SC', 'serif'], sans: ['Karla', 'sans-serif'] }",
+      "notes": "Small caps Playfair for menu headers. Karla for descriptions.",
+      "source_row": 33
+    },
+    {
+      "id": "art-deco",
+      "pairing_name": "Art Deco",
+      "category": "Display + Sans",
+      "heading_font": "Poiret One",
+      "body_font": "Didact Gothic",
+      "mood_keywords": [
+        "art deco",
+        "vintage",
+        "1920s",
+        "elegant",
+        "decorative",
+        "gatsby"
+      ],
+      "best_for": [
+        "Vintage events",
+        "art deco themes",
+        "luxury hotels",
+        "classic cocktails"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Didact+Gothic|Poiret+One",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Poiret+One&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Poiret One', 'sans-serif'], sans: ['Didact Gothic', 'sans-serif'] }",
+      "notes": "Poiret One for art deco headlines only. Didact for body.",
+      "source_row": 34
+    },
+    {
+      "id": "magazine-style",
+      "pairing_name": "Magazine Style",
+      "category": "Serif + Sans",
+      "heading_font": "Libre Bodoni",
+      "body_font": "Public Sans",
+      "mood_keywords": [
+        "magazine",
+        "editorial",
+        "publishing",
+        "refined",
+        "journalism",
+        "print"
+      ],
+      "best_for": [
+        "Magazines",
+        "online publications",
+        "editorial content",
+        "journalism"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Libre+Bodoni:wght@400;500;600;700|Public+Sans:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:wght@400;500;600;700&family=Public+Sans:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Libre Bodoni', 'serif'], sans: ['Public Sans', 'sans-serif'] }",
+      "notes": "Bodoni's editorial elegance. Public Sans for clean UI.",
+      "source_row": 35
+    },
+    {
+      "id": "crypto-web3",
+      "pairing_name": "Crypto/Web3",
+      "category": "Sans + Sans",
+      "heading_font": "Orbitron",
+      "body_font": "Exo 2",
+      "mood_keywords": [
+        "crypto",
+        "web3",
+        "futuristic",
+        "tech",
+        "blockchain",
+        "digital"
+      ],
+      "best_for": [
+        "Crypto platforms",
+        "NFT",
+        "blockchain",
+        "web3",
+        "futuristic tech"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Exo+2:wght@300;400;500;600;700|Orbitron:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Orbitron', 'sans-serif'], body: ['Exo 2', 'sans-serif'] }",
+      "notes": "Orbitron for futuristic headers. Exo 2 for readable body.",
+      "source_row": 36
+    },
+    {
+      "id": "gaming-bold",
+      "pairing_name": "Gaming Bold",
+      "category": "Display + Sans",
+      "heading_font": "Russo One",
+      "body_font": "Chakra Petch",
+      "mood_keywords": [
+        "gaming",
+        "bold",
+        "action",
+        "esports",
+        "competitive",
+        "energetic"
+      ],
+      "best_for": [
+        "Gaming",
+        "esports",
+        "action games",
+        "competitive sports",
+        "entertainment"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Chakra+Petch:wght@300;400;500;600;700|Russo+One",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Russo+One&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Russo One', 'sans-serif'], body: ['Chakra Petch', 'sans-serif'] }",
+      "notes": "Russo One for impact. Chakra Petch for techy body text.",
+      "source_row": 37
+    },
+    {
+      "id": "indie-craft",
+      "pairing_name": "Indie/Craft",
+      "category": "Display + Sans",
+      "heading_font": "Amatic SC",
+      "body_font": "Cabin",
+      "mood_keywords": [
+        "indie",
+        "craft",
+        "handmade",
+        "artisan",
+        "organic",
+        "creative"
+      ],
+      "best_for": [
+        "Craft brands",
+        "indie products",
+        "artisan",
+        "handmade",
+        "organic products"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Amatic+SC:wght@400;700|Cabin:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cabin:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Amatic SC', 'sans-serif'], sans: ['Cabin', 'sans-serif'] }",
+      "notes": "Amatic for handwritten feel. Cabin for readable body.",
+      "source_row": 38
+    },
+    {
+      "id": "startup-bold",
+      "pairing_name": "Startup Bold",
+      "category": "Sans + Sans",
+      "heading_font": "Clash Display",
+      "body_font": "Satoshi",
+      "mood_keywords": [
+        "startup",
+        "bold",
+        "modern",
+        "innovative",
+        "confident",
+        "dynamic"
+      ],
+      "best_for": [
+        "Startups",
+        "pitch decks",
+        "product launches",
+        "bold brands"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Outfit:wght@400;500;600;700|Rubik:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Outfit', 'sans-serif'], body: ['Rubik', 'sans-serif'] }",
+      "notes": "Note: Clash Display on Fontshare. Outfit as Google alternative.",
+      "source_row": 39
+    },
+    {
+      "id": "e-commerce-clean",
+      "pairing_name": "E-commerce Clean",
+      "category": "Sans + Sans",
+      "heading_font": "Rubik",
+      "body_font": "Nunito Sans",
+      "mood_keywords": [
+        "ecommerce",
+        "clean",
+        "shopping",
+        "product",
+        "retail",
+        "conversion"
+      ],
+      "best_for": [
+        "E-commerce",
+        "online stores",
+        "product pages",
+        "retail",
+        "shopping"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Nunito+Sans:wght@300;400;500;600;700|Rubik:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Rubik', 'sans-serif'], body: ['Nunito Sans', 'sans-serif'] }",
+      "notes": "Clean readable fonts perfect for product descriptions.",
+      "source_row": 40
+    },
+    {
+      "id": "academic-research",
+      "pairing_name": "Academic/Research",
+      "category": "Serif + Sans",
+      "heading_font": "Crimson Pro",
+      "body_font": "Atkinson Hyperlegible",
+      "mood_keywords": [
+        "academic",
+        "research",
+        "scholarly",
+        "accessible",
+        "readable",
+        "educational"
+      ],
+      "best_for": [
+        "Universities",
+        "research papers",
+        "academic journals",
+        "educational"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Atkinson+Hyperlegible:wght@400;700|Crimson+Pro:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Crimson Pro', 'serif'], sans: ['Atkinson Hyperlegible', 'sans-serif'] }",
+      "notes": "Crimson for scholarly headlines. Atkinson for accessibility.",
+      "source_row": 41
+    },
+    {
+      "id": "dashboard-data",
+      "pairing_name": "Dashboard Data",
+      "category": "Mono + Sans",
+      "heading_font": "Fira Code",
+      "body_font": "Fira Sans",
+      "mood_keywords": [
+        "dashboard",
+        "data",
+        "analytics",
+        "code",
+        "technical",
+        "precise"
+      ],
+      "best_for": [
+        "Dashboards",
+        "analytics",
+        "data visualization",
+        "admin panels"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Fira+Code:wght@400;500;600;700|Fira+Sans:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { mono: ['Fira Code', 'monospace'], sans: ['Fira Sans', 'sans-serif'] }",
+      "notes": "Fira family cohesion. Code for data, Sans for labels.",
+      "source_row": 42
+    },
+    {
+      "id": "music-entertainment",
+      "pairing_name": "Music/Entertainment",
+      "category": "Display + Sans",
+      "heading_font": "Righteous",
+      "body_font": "Poppins",
+      "mood_keywords": [
+        "music",
+        "entertainment",
+        "fun",
+        "energetic",
+        "bold",
+        "performance"
+      ],
+      "best_for": [
+        "Music platforms",
+        "entertainment",
+        "events",
+        "festivals",
+        "performers"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Poppins:wght@300;400;500;600;700|Righteous",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Righteous&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Righteous', 'sans-serif'], sans: ['Poppins', 'sans-serif'] }",
+      "notes": "Righteous for bold entertainment headers. Poppins for body.",
+      "source_row": 43
+    },
+    {
+      "id": "minimalist-portfolio",
+      "pairing_name": "Minimalist Portfolio",
+      "category": "Sans + Sans",
+      "heading_font": "Archivo",
+      "body_font": "Space Grotesk",
+      "mood_keywords": [
+        "minimal",
+        "portfolio",
+        "designer",
+        "creative",
+        "clean",
+        "artistic"
+      ],
+      "best_for": [
+        "Design portfolios",
+        "creative professionals",
+        "minimalist brands"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Archivo:wght@300;400;500;600;700|Space+Grotesk:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Space Grotesk', 'sans-serif'], body: ['Archivo', 'sans-serif'] }",
+      "notes": "Space Grotesk for distinctive headers. Archivo for clean body.",
+      "source_row": 44
+    },
+    {
+      "id": "kids-education",
+      "pairing_name": "Kids/Education",
+      "category": "Display + Sans",
+      "heading_font": "Baloo 2",
+      "body_font": "Comic Neue",
+      "mood_keywords": [
+        "kids",
+        "education",
+        "playful",
+        "friendly",
+        "colorful",
+        "learning"
+      ],
+      "best_for": [
+        "Children's apps",
+        "educational games",
+        "kid-friendly content"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Baloo+2:wght@400;500;600;700|Comic+Neue:wght@300;400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Comic+Neue:wght@300;400;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Baloo 2', 'sans-serif'], sans: ['Comic Neue', 'sans-serif'] }",
+      "notes": "Fun, playful fonts for children. Comic Neue is readable comic style.",
+      "source_row": 45
+    },
+    {
+      "id": "wedding-romance",
+      "pairing_name": "Wedding/Romance",
+      "category": "Script + Serif",
+      "heading_font": "Great Vibes",
+      "body_font": "Cormorant Infant",
+      "mood_keywords": [
+        "wedding",
+        "romance",
+        "elegant",
+        "script",
+        "invitation",
+        "feminine"
+      ],
+      "best_for": [
+        "Wedding sites",
+        "invitations",
+        "romantic brands",
+        "bridal"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Cormorant+Infant:wght@300;400;500;600;700|Great+Vibes",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap');",
+      "tailwind_config": "fontFamily: { script: ['Great Vibes', 'cursive'], serif: ['Cormorant Infant', 'serif'] }",
+      "notes": "Great Vibes for elegant accents. Cormorant for readable text.",
+      "source_row": 46
+    },
+    {
+      "id": "science-tech",
+      "pairing_name": "Science/Tech",
+      "category": "Sans + Sans",
+      "heading_font": "Exo",
+      "body_font": "Roboto Mono",
+      "mood_keywords": [
+        "science",
+        "technology",
+        "research",
+        "data",
+        "futuristic",
+        "precise"
+      ],
+      "best_for": [
+        "Science",
+        "research",
+        "tech documentation",
+        "data-heavy sites"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Exo:wght@300;400;500;600;700|Roboto+Mono:wght@300;400;500;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Exo', 'sans-serif'], mono: ['Roboto Mono', 'monospace'] }",
+      "notes": "Exo for modern tech feel. Roboto Mono for code/data.",
+      "source_row": 47
+    },
+    {
+      "id": "accessibility-first",
+      "pairing_name": "Accessibility First",
+      "category": "Sans + Sans",
+      "heading_font": "Atkinson Hyperlegible",
+      "body_font": "Atkinson Hyperlegible",
+      "mood_keywords": [
+        "accessible",
+        "readable",
+        "inclusive",
+        "WCAG",
+        "dyslexia-friendly",
+        "clear"
+      ],
+      "best_for": [
+        "Accessibility-critical sites",
+        "government",
+        "healthcare",
+        "inclusive design"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Atkinson+Hyperlegible:wght@400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Atkinson Hyperlegible', 'sans-serif'] }",
+      "notes": "Designed for maximum legibility. Excellent for accessibility.",
+      "source_row": 48
+    },
+    {
+      "id": "sports-fitness",
+      "pairing_name": "Sports/Fitness",
+      "category": "Sans + Sans",
+      "heading_font": "Barlow Condensed",
+      "body_font": "Barlow",
+      "mood_keywords": [
+        "sports",
+        "fitness",
+        "athletic",
+        "energetic",
+        "condensed",
+        "action"
+      ],
+      "best_for": [
+        "Sports",
+        "fitness",
+        "gyms",
+        "athletic brands",
+        "competition"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Barlow+Condensed:wght@400;500;600;700|Barlow:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Barlow Condensed', 'sans-serif'], body: ['Barlow', 'sans-serif'] }",
+      "notes": "Condensed for impact headlines. Regular Barlow for body.",
+      "source_row": 49
+    },
+    {
+      "id": "luxury-minimalist",
+      "pairing_name": "Luxury Minimalist",
+      "category": "Serif + Sans",
+      "heading_font": "Bodoni Moda",
+      "body_font": "Jost",
+      "mood_keywords": [
+        "luxury",
+        "minimalist",
+        "high-end",
+        "sophisticated",
+        "refined",
+        "premium"
+      ],
+      "best_for": [
+        "Luxury minimalist brands",
+        "high-end fashion",
+        "premium products"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Bodoni+Moda:wght@400;500;600;700|Jost:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=Jost:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { serif: ['Bodoni Moda', 'serif'], sans: ['Jost', 'sans-serif'] }",
+      "notes": "Bodoni's high contrast elegance. Jost for geometric body.",
+      "source_row": 50
+    },
+    {
+      "id": "tech-hud-mono",
+      "pairing_name": "Tech/HUD Mono",
+      "category": "Mono + Mono",
+      "heading_font": "Share Tech Mono",
+      "body_font": "Fira Code",
+      "mood_keywords": [
+        "tech",
+        "futuristic",
+        "hud",
+        "sci-fi",
+        "data",
+        "monospaced",
+        "precise"
+      ],
+      "best_for": [
+        "Sci-fi interfaces",
+        "developer tools",
+        "cybersecurity",
+        "dashboards"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Fira+Code:wght@300;400;500;600;700|Share+Tech+Mono",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');",
+      "tailwind_config": "fontFamily: { hud: ['Share Tech Mono', 'monospace'], code: ['Fira Code', 'monospace'] }",
+      "notes": "Share Tech Mono has that classic sci-fi look.",
+      "source_row": 51
+    },
+    {
+      "id": "pixel-retro",
+      "pairing_name": "Pixel Retro",
+      "category": "Display + Sans",
+      "heading_font": "Press Start 2P",
+      "body_font": "VT323",
+      "mood_keywords": [
+        "pixel",
+        "retro",
+        "gaming",
+        "8-bit",
+        "nostalgic",
+        "arcade"
+      ],
+      "best_for": [
+        "Pixel art games",
+        "retro websites",
+        "creative portfolios"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Press+Start+2P|VT323",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');",
+      "tailwind_config": "fontFamily: { pixel: ['Press Start 2P', 'cursive'], terminal: ['VT323', 'monospace'] }",
+      "notes": "Press Start 2P is very wide/large. VT323 is better for body text.",
+      "source_row": 52
+    },
+    {
+      "id": "neubrutalist-bold",
+      "pairing_name": "Neubrutalist Bold",
+      "category": "Display + Sans",
+      "heading_font": "Lexend Mega",
+      "body_font": "Public Sans",
+      "mood_keywords": [
+        "bold",
+        "neubrutalist",
+        "loud",
+        "strong",
+        "geometric",
+        "quirky"
+      ],
+      "best_for": [
+        "Neubrutalist designs",
+        "Gen Z brands",
+        "bold marketing"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Lexend+Mega:wght@100..900|Public+Sans:wght@100..900",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@100..900&family=Public+Sans:wght@100..900&display=swap');",
+      "tailwind_config": "fontFamily: { mega: ['Lexend Mega', 'sans-serif'], body: ['Public Sans', 'sans-serif'] }",
+      "notes": "Lexend Mega has distinct character and variable weight.",
+      "source_row": 53
+    },
+    {
+      "id": "academic-archival",
+      "pairing_name": "Academic/Archival",
+      "category": "Serif + Serif",
+      "heading_font": "EB Garamond",
+      "body_font": "Crimson Text",
+      "mood_keywords": [
+        "academic",
+        "old-school",
+        "university",
+        "research",
+        "serious",
+        "traditional"
+      ],
+      "best_for": [
+        "University sites",
+        "archives",
+        "research papers",
+        "history"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Crimson+Text:wght@400;600;700|EB+Garamond:wght@400;500;600;700;800",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=EB+Garamond:wght@400;500;600;700;800&display=swap');",
+      "tailwind_config": "fontFamily: { classic: ['EB Garamond', 'serif'], text: ['Crimson Text', 'serif'] }",
+      "notes": "Classic academic aesthetic. Very legible.",
+      "source_row": 54
+    },
+    {
+      "id": "spatial-clear",
+      "pairing_name": "Spatial Clear",
+      "category": "Sans + Sans",
+      "heading_font": "Inter",
+      "body_font": "Inter",
+      "mood_keywords": [
+        "spatial",
+        "legible",
+        "glass",
+        "system",
+        "clean",
+        "neutral"
+      ],
+      "best_for": [
+        "Spatial computing",
+        "AR/VR",
+        "glassmorphism interfaces"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@300;400;500;600",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Inter', 'sans-serif'] }",
+      "notes": "Optimized for readability on dynamic backgrounds.",
+      "source_row": 55
+    },
+    {
+      "id": "kinetic-motion",
+      "pairing_name": "Kinetic Motion",
+      "category": "Display + Mono",
+      "heading_font": "Syncopate",
+      "body_font": "Space Mono",
+      "mood_keywords": [
+        "kinetic",
+        "motion",
+        "futuristic",
+        "speed",
+        "wide",
+        "tech"
+      ],
+      "best_for": [
+        "Music festivals",
+        "automotive",
+        "high-energy brands"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Space+Mono:wght@400;700|Syncopate:wght@400;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Syncopate', 'sans-serif'], mono: ['Space Mono', 'monospace'] }",
+      "notes": "Syncopate's wide stance works well with motion effects.",
+      "source_row": 56
+    },
+    {
+      "id": "gen-z-brutal",
+      "pairing_name": "Gen Z Brutal",
+      "category": "Display + Sans",
+      "heading_font": "Anton",
+      "body_font": "Epilogue",
+      "mood_keywords": [
+        "brutal",
+        "loud",
+        "shouty",
+        "meme",
+        "internet",
+        "bold"
+      ],
+      "best_for": [
+        "Gen Z marketing",
+        "streetwear",
+        "viral campaigns"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Anton|Epilogue:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Anton&family=Epilogue:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Anton', 'sans-serif'], body: ['Epilogue', 'sans-serif'] }",
+      "notes": "Anton is impactful and condensed. Good for stickers/badges.57",
+      "source_row": 57
+    },
+    {
+      "id": "minimalist-monochrome-editorial",
+      "pairing_name": "Minimalist Monochrome Editorial",
+      "category": "Serif + Serif + Mono (Triple Stack)",
+      "heading_font": "Playfair Display",
+      "body_font": "Source Serif 4",
+      "mood_keywords": [
+        "monochrome",
+        "editorial",
+        "austere",
+        "typographic",
+        "pocket manifesto",
+        "luxury",
+        "high contrast",
+        "brutalist mobile"
+      ],
+      "best_for": [
+        "Luxury fashion mobile apps",
+        "editorial publications",
+        "digital exhibitions",
+        "portfolio apps",
+        "high-contrast e-reader aesthetics"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=JetBrains+Mono:wght@400;500|Playfair+Display:ital,wght@0,400;0,700;0,900;1,400|Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Playfair Display', 'serif'], body: ['Source Serif 4', 'serif'], mono: ['JetBrains Mono', 'monospace'] }",
+      "notes": "Triple stack: Playfair Display 900 tracking-tighter leading-[0.9] for heroes (text-5xl–text-6xl breaks words graphically). Source Serif 4 300–600 for body legibility. JetBrains Mono 400–500 uppercase tracking-widest for tags/dates/labels. NO UI sans-serif — 100% serif/mono.",
+      "source_row": 58
+    },
+    {
+      "id": "modern-dark-cinema-inter-system",
+      "pairing_name": "Modern Dark Cinema (Inter System)",
+      "category": "Sans + Mono",
+      "heading_font": "Inter",
+      "body_font": "Inter",
+      "mood_keywords": [
+        "dark",
+        "cinematic",
+        "technical",
+        "precision",
+        "clean",
+        "premium",
+        "developer",
+        "professional",
+        "high-end utility"
+      ],
+      "best_for": [
+        "Developer tools",
+        "fintech/trading",
+        "AI dashboards",
+        "streaming platforms",
+        "high-end productivity apps"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@300;400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Inter', 'sans-serif'] }",
+      "notes": "Single-family precision system: Inter 700 (-1.5 tracking) for Display 48pt; Inter 600 (-0.5 tracking) for H1 32pt / H2 24pt; Inter 400 for body 16pt; Inter 500 uppercase +1.2 tracking for labels/mono. Gradient text via mask-view + react-native-linear-gradient (#FFFFFF → rgba(255,255,255,0.7)) on major headers.",
+      "source_row": 59
+    },
+    {
+      "id": "saas-mobile-boutique-calistoga-inter",
+      "pairing_name": "SaaS Mobile Boutique (Calistoga + Inter)",
+      "category": "Display Serif + Sans + Mono",
+      "heading_font": "Calistoga",
+      "body_font": "Inter",
+      "mood_keywords": [
+        "saas",
+        "boutique",
+        "electric",
+        "warm",
+        "editorial",
+        "bold",
+        "premium",
+        "fintech",
+        "business",
+        "dual font",
+        "human warmth"
+      ],
+      "best_for": [
+        "B2B SaaS mobile",
+        "fintech apps",
+        "analytics dashboards",
+        "marketing tools",
+        "operations platforms"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Calistoga:ital@0;1|Inter:wght@300;400;500;600;700|JetBrains+Mono:wght@400;500",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Calistoga', 'serif'], body: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }",
+      "notes": "Tri-stack: Calistoga (adds human warmth) for heroes 36–42pt leading-1.1; Inter 400–600 for body/UI 16–18pt; JetBrains Mono 12pt uppercase tracking-[1.5] for data labels and section badges. Scale: Hero 36–42pt, Section H2 28–32pt, Body 16–18pt, Label 12pt. Avoid italic Calistoga except editorial callouts.",
+      "source_row": 60
+    },
+    {
+      "id": "terminal-cli-monospace",
+      "pairing_name": "Terminal CLI Monospace",
+      "category": "Mono + Mono (Single Family)",
+      "heading_font": "JetBrains Mono",
+      "body_font": "JetBrains Mono",
+      "mood_keywords": [
+        "terminal",
+        "cli",
+        "hacker",
+        "monospace",
+        "matrix",
+        "developer",
+        "retro-future",
+        "command line",
+        "precision",
+        "OLED"
+      ],
+      "best_for": [
+        "Developer tools",
+        "Web3/blockchain apps",
+        "hacker aesthetic",
+        "sci-fi games",
+        "ARG",
+        "security tools",
+        "geek-culture portfolios"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=JetBrains+Mono:ital,wght@0,400;0,500;1,400",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap');",
+      "tailwind_config": "fontFamily: { mono: ['JetBrains Mono', 'monospace'] }",
+      "notes": "Single monospace system: use ONLY JetBrains Mono (or SpaceMono-Regular as system fallback). Strict sizes: 12pt / 14pt / 16pt only — no in-between. Weight: 400 normal (bold ruins mono character). Line height: 1.2x font size for information density. Letter spacing: normal (monospaced auto-spacing). All UI labels uppercase. ASCII borders and text-based progress bars.",
+      "source_row": 61
+    },
+    {
+      "id": "kinetic-brutalism-space-grotesk",
+      "pairing_name": "Kinetic Brutalism (Space Grotesk)",
+      "category": "Geometric Sans (Single Dominant)",
+      "heading_font": "Space Grotesk",
+      "body_font": "Space Grotesk",
+      "mood_keywords": [
+        "kinetic",
+        "brutalist",
+        "aggressive",
+        "uppercase",
+        "oversized",
+        "display",
+        "motion",
+        "street",
+        "bold",
+        "high-energy",
+        "zine"
+      ],
+      "best_for": [
+        "Music/culture apps",
+        "sports platforms",
+        "brand flagship mobile",
+        "performance dashboards",
+        "underground product drops"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Space+Grotesk:wght@400;500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Space Grotesk', 'sans-serif'], body: ['Space Grotesk', 'sans-serif'] }",
+      "notes": "Dominant single-family system: Space Grotesk 700–900 for ALL display. Scale: Hero 60–120pt (windowWidth/375*size), Section 40–50pt, Card titles 28–32pt, Body 18–20pt, Labels 12pt. ALL display/buttons/nav: UPPERCASE, letterSpacing -1 (large) / +2 (labels), lineHeight 0.9–1.1x. Use Inter as fallback. Font scale must use PixelRatio helper for responsive sizing.",
+      "source_row": 62
+    },
+    {
+      "id": "flat-design-mobile-system-bold",
+      "pairing_name": "Flat Design Mobile (System Bold)",
+      "category": "Sans + Sans",
+      "heading_font": "Inter",
+      "body_font": "Inter",
+      "mood_keywords": [
+        "flat",
+        "clean",
+        "system",
+        "bold",
+        "geometric",
+        "cross-platform",
+        "icon",
+        "poster",
+        "minimal",
+        "functional",
+        "responsive"
+      ],
+      "best_for": [
+        "Cross-platform apps",
+        "dashboards",
+        "system UI",
+        "onboarding",
+        "marketing pages",
+        "informational apps",
+        "icon-heavy interfaces"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@400;600;700;800",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Inter', 'sans-serif'] }",
+      "notes": "System-first strategy: Inter as primary, falls back to system SF/Roboto on iOS/Android. Scale: Headlines fontWeight 800 letterSpacing -0.5; Subheadings fontWeight 600 fontSize 18; Body fontWeight 400 lineHeight 24; Labels fontWeight 700 uppercase letterSpacing 1. Thick weights carry all hierarchy since there are no shadows. Use aggressive size contrast (poster rule: body 16pt vs headline 40pt+). Avoid italic.",
+      "source_row": 63
+    },
+    {
+      "id": "material-you-md3-roboto-system",
+      "pairing_name": "Material You MD3 (Roboto System)",
+      "category": "Sans (System Default)",
+      "heading_font": "Roboto",
+      "body_font": "Roboto",
+      "mood_keywords": [
+        "material design 3",
+        "md3",
+        "android",
+        "google",
+        "tonal",
+        "friendly",
+        "rounded",
+        "accessible",
+        "adaptive"
+      ],
+      "best_for": [
+        "Android apps",
+        "cross-platform tools",
+        "productivity software",
+        "data-heavy B2B dashboards",
+        "enterprise mobile"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Roboto', 'sans-serif'] }",
+      "notes": "MD3 type scale: Display Large 56px/400/64px. Headline Large 32px/500/40px. Title Large 22px/500/28px. Body Large 16px/400/24px. Label Medium 12px/500/16px. Buttons and Labels: letterSpacing 0.1px. Use system Roboto on Android; load from Google Fonts for iOS parity. Never use custom weights beyond 300–700.",
+      "source_row": 64
+    },
+    {
+      "id": "neo-brutalism-mobile-space-grotesk-heavy",
+      "pairing_name": "Neo Brutalism Mobile (Space Grotesk Heavy)",
+      "category": "Geometric Sans (Bold-Only)",
+      "heading_font": "Space Grotesk",
+      "body_font": "Space Grotesk",
+      "mood_keywords": [
+        "neo brutalism",
+        "pop art",
+        "loud",
+        "bold",
+        "heavy",
+        "stickers",
+        "mechanical",
+        "high contrast",
+        "cream",
+        "gen-z"
+      ],
+      "best_for": [
+        "Creative tools",
+        "Gen-Z marketing",
+        "e-commerce for youth culture",
+        "content portfolios",
+        "collage-style apps"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Space+Grotesk:wght@700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Space Grotesk', 'sans-serif'], body: ['Space Grotesk', 'sans-serif'] }",
+      "notes": "Strictly 700 (Bold) and 900 (Black/Heavy) ONLY — never Regular or Light. Display: 48–64px. Heading: 24–32px. Body: 18–20px (stays heavy for brutalist density). Labels: 14px ALL CAPS letterSpacing 2. All buttons and navigation: uppercase. System bold as fallback. No italic, no thin weights.",
+      "source_row": 65
+    },
+    {
+      "id": "bold-typography-mobile-inter-tight-poster",
+      "pairing_name": "Bold Typography Mobile (Inter-Tight Poster)",
+      "category": "Sans + Serif (Display) + Mono",
+      "heading_font": "Inter",
+      "body_font": "Playfair Display",
+      "mood_keywords": [
+        "bold typography",
+        "editorial",
+        "poster",
+        "near-black",
+        "vermillion",
+        "luxury",
+        "type-as-hero",
+        "manifesto",
+        "high-contrast"
+      ],
+      "best_for": [
+        "Creative brand flagships",
+        "reading platforms",
+        "event apps",
+        "flash pages",
+        "luxury mobile experiences"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400|JetBrains+Mono:wght@400|Playfair+Display:ital@1",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital@1&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Inter', 'sans-serif'], quote: ['Playfair Display', 'serif'], mono: ['JetBrains Mono', 'monospace'] }",
+      "notes": "Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mono for labels and stats. Scale: 12px labels, 16px body, 22px sub, 32px section, 40px H2, 56px H1, 72px Hero Statement. 5:1 ratio H1:Body is mandatory. lineHeight 1.1 headlines, 1.6 body. Underlines (2–3pt accent) replace buttons for interactions.",
+      "source_row": 66
+    },
+    {
+      "id": "academia-mobile-cormorant-crimson-cinzel",
+      "pairing_name": "Academia Mobile (Cormorant + Crimson + Cinzel)",
+      "category": "Serif + Book Serif + Engraved (Triple Stack)",
+      "heading_font": "Cormorant Garamond",
+      "body_font": "Crimson Pro",
+      "mood_keywords": [
+        "academia",
+        "library",
+        "mahogany",
+        "parchment",
+        "brass",
+        "scholarly",
+        "prestige",
+        "antique",
+        "victorian",
+        "leather"
+      ],
+      "best_for": [
+        "Knowledge management apps",
+        "scholarly reading tools",
+        "personal brand portfolios",
+        "RPG games",
+        "cultural community platforms"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Cinzel:wght@400;500;600|Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500|Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Cormorant Garamond', 'serif'], body: ['Crimson Pro', 'serif'], display: ['Cinzel', 'serif'] }",
+      "notes": "Triple-stack: Cormorant Garamond Medium for all headings (32–40px tight leading). Crimson Pro Regular for body reading text (16–18px, lineHeight 24–26px). Cinzel SemiBold for ALL-CAPS labels, overlines, section prefixes (10–12px, letterSpacing 2–3px). Drop caps: first letter 60px Cinzel in Brass #C9A962. Section prefix: VOLUME I/II/III in Cinzel 10px. NO sans-serif anywhere.",
+      "source_row": 67
+    },
+    {
+      "id": "cyberpunk-mobile-orbitron-jetbrains-mono",
+      "pairing_name": "Cyberpunk Mobile (Orbitron + JetBrains Mono)",
+      "category": "Tech Display + Mono",
+      "heading_font": "Orbitron",
+      "body_font": "JetBrains Mono",
+      "mood_keywords": [
+        "cyberpunk",
+        "neon",
+        "glitch",
+        "hud",
+        "sci-fi",
+        "dark",
+        "matrix green",
+        "magenta",
+        "chamfered",
+        "tactical"
+      ],
+      "best_for": [
+        "Gaming companion apps",
+        "fintech/crypto",
+        "data visualization",
+        "dark brand apps",
+        "cyberpunk narrative games"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=JetBrains+Mono:wght@400;500|Orbitron:wght@700;900",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@700;900&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Orbitron', 'sans-serif'], body: ['JetBrains Mono', 'monospace'] }",
+      "notes": "Dual-stack: Orbitron 700–900 for H1 (42px uppercase letterSpacing 4, fontWeight 900). JetBrains Mono 400–500 for all body/data text (14px letterSpacing 1). Labels: 10px uppercase opacity 0.7. Heading scale aggressive: H1 42px, H2 28px, Section 20px. Body 14px monospace only. NO mixed sans-serif. Fallback: monospace system font. Orbitron requires loading — use NativeWind or useFonts hook.",
+      "source_row": 68
+    },
+    {
+      "id": "web3-bitcoin-defi-space-grotesk-inter-mono",
+      "pairing_name": "Web3 Bitcoin DeFi (Space Grotesk + Inter + Mono)",
+      "category": "Geometric Sans + Sans + Mono (Triple)",
+      "heading_font": "Space Grotesk",
+      "body_font": "Inter",
+      "mood_keywords": [
+        "web3",
+        "bitcoin",
+        "defi",
+        "digital gold",
+        "fintech",
+        "crypto",
+        "trustless",
+        "luminescent",
+        "precision",
+        "dark"
+      ],
+      "best_for": [
+        "DeFi protocols and wallets",
+        "NFT platforms",
+        "metaverse social apps",
+        "high-tech brand landing pages"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@400;500;600;700|JetBrains+Mono:wght@400;500|Space+Grotesk:wght@500;600;700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Space Grotesk', 'sans-serif'], body: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }",
+      "notes": "Tri-stack: Space Grotesk 600–700 for headings (geometric, technical character). Inter 400–600 for all body and UI text (high legibility). JetBrains Mono Medium for all data/stats/prices/hashes (technical accuracy). Buttons: Inter Bold uppercase letterSpacing 1.5. Balance figures use MaskedView gradient text (orange→gold). Heading scale: H1 36–42px, H2 24–28px, body 16–18px, mono labels 12–14px.",
+      "source_row": 69
+    },
+    {
+      "id": "claymorphism-mobile-nunito-dm-sans",
+      "pairing_name": "Claymorphism Mobile (Nunito + DM Sans)",
+      "category": "Display Rounded + Geometric Sans",
+      "heading_font": "Nunito",
+      "body_font": "DM Sans",
+      "mood_keywords": [
+        "claymorphism",
+        "clay",
+        "rounded",
+        "playful",
+        "candy",
+        "bubbly",
+        "soft",
+        "3d",
+        "children",
+        "education",
+        "tactile",
+        "spring",
+        "nunito",
+        "dm sans"
+      ],
+      "best_for": [
+        "Children education apps",
+        "teen social",
+        "brand mascot apps",
+        "creative tools",
+        "fintech gamification"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400|Nunito:ital,wght@0,700;0,800;0,900;1,700",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Nunito:ital,wght@0,700;0,800;0,900;1,700&display=swap');",
+      "tailwind_config": "fontFamily: { display: ['Nunito', 'sans-serif'], body: ['DM Sans', 'sans-serif'] }",
+      "notes": "Dual-stack: Nunito Black (900) or ExtraBold (800) for ALL headings — rounded terminals are mandatory. DM Sans Medium (500) for body text — clean and geometric. Scale: Hero 48px lineHeight 52 letterSpacing -1. Section Title 32px lineHeight 38. Card Title 22px lineHeight 28. Body 16px lineHeight 24. Never use Nunito for body text (too decorative at small sizes). Never use weights below 700 for any heading. includeFontPadding: false on all Nunito Text components for vertical centering in rounded buttons.",
+      "source_row": 70
+    },
+    {
+      "id": "enterprise-saas-mobile-plus-jakarta-sans",
+      "pairing_name": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+      "category": "Geometric Sans (Single Family)",
+      "heading_font": "Plus Jakarta Sans",
+      "body_font": "Plus Jakarta Sans",
+      "mood_keywords": [
+        "enterprise",
+        "saas",
+        "b2b",
+        "professional",
+        "indigo",
+        "modern",
+        "approachable",
+        "legible",
+        "ios dynamic type",
+        "android scaling"
+      ],
+      "best_for": [
+        "B2B SaaS apps",
+        "productivity tools",
+        "government and finance mobile apps",
+        "admin dashboards",
+        "enterprise onboarding"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+      "notes": "Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability. Weight scale: ExtraBold 800 for screen titles/hero (line height 1.1–1.2). Bold 700 for section headers. SemiBold 600 for card titles and buttons. Regular 400 for body text (line height 1.4–1.5). Must support iOS Dynamic Type and Android font scaling — never hardcode pixel sizes without respecting system font scale. Button text: uppercase, letterSpacing 0.5. Caption: 12px Regular. Muted: Slate 500 #64748B.",
+      "source_row": 71
+    },
+    {
+      "id": "sketch-hand-drawn-mobile-kalam-patrick-hand",
+      "pairing_name": "Sketch Hand-Drawn Mobile (Kalam + Patrick Hand)",
+      "category": "Handwritten + Handwritten (Dual)",
+      "heading_font": "Kalam",
+      "body_font": "Patrick Hand",
+      "mood_keywords": [
+        "sketch",
+        "hand-drawn",
+        "handwriting",
+        "human",
+        "imperfect",
+        "organic",
+        "paper",
+        "kalam",
+        "patrick hand",
+        "education",
+        "journal",
+        "creative"
+      ],
+      "best_for": [
+        "Journaling apps",
+        "prototype tools",
+        "children's picturebook apps",
+        "creative platforms",
+        "gamified puzzle apps"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Kalam:wght@400;700|Patrick+Hand",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap');",
+      "tailwind_config": "fontFamily: { heading: ['Kalam', 'cursive'], body: ['Patrick Hand', 'cursive'] }",
+      "notes": "Dual handwritten stack: Kalam Bold (700) for all headings — high visual weight, felt-tip marker aesthetic, conveys intentional messiness. Patrick Hand Regular for all body text — highly legible at mobile sizes while remaining distinctly human. Scale: Heading 28–36px with lineHeight adjusted for descenders. Body 16–18px lineHeight 1.5. Labels 14px. Vary font sizes slightly between adjacent elements for spontaneous feel. Avoid alignment: 'center' for long body text — left-aligned reads more naturally. Both fonts require useFonts loading in Expo. Never use these fonts for financial figures or legal text.",
+      "source_row": 72
+    },
+    {
+      "id": "neumorphism-mobile-plus-jakarta-sans-system",
+      "pairing_name": "Neumorphism Mobile (Plus Jakarta Sans + System)",
+      "category": "Geometric Sans (System Fallback)",
+      "heading_font": "Plus Jakarta Sans",
+      "body_font": "Plus Jakarta Sans",
+      "mood_keywords": [
+        "neumorphism",
+        "soft ui",
+        "monochromatic",
+        "cool grey",
+        "minimal",
+        "physical",
+        "depth",
+        "ceramic",
+        "system font",
+        "utility"
+      ],
+      "best_for": [
+        "Smart home controls",
+        "minimal tools",
+        "aesthetic dashboards",
+        "health monitors",
+        "brand showcase pages"
+      ],
+      "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;1,400",
+      "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');",
+      "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+      "notes": "Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry without competing with the depth effect. Heading: 24–32px Bold (700), letterSpacing -0.5 for modern premium feel. Body: 16px Medium (500), lineHeight 1.4. Caption: 12px Regular (400). Use Text Primary #3D4852 (7.5:1 contrast against #E0E5EC) for all primary text. Use Text Muted #6B7280 (4.6:1 contrast) for secondary text. Accent color #6C63FF only on active labels or focus indicators. Never use italic or thin weights — they lose legibility against the embossed background. System (SF Pro / Roboto) is an acceptable fallback for performance-sensitive implementations.",
+      "source_row": 73
+    }
+  ]
+}

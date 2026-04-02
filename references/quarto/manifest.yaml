@@ -1,0 +1,79 @@
+source:
+  name: Quarto
+  repo_url: https://github.com/quarto-dev/quarto-cli
+  pinned_ref:
+    type: commit
+    value: 3fa22f9bf21d526f8a9d67112c4f9361bd55e9a2
+  license: MIT
+  import_date: 2026-04-02
+
+runtime_boundary: Hermes remains the only runtime; Quarto is imported only as a pinned publishing-layout reference corpus and is not executed as a document engine inside Vizier.
+
+rationale: >
+  Preserve deterministic local references for document layout, callouts, table
+  and figure handling, project publishing structure, and long-form formatting
+  patterns so future Vizier sessions can recommend richer report structures
+  without embedding the Quarto CLI runtime.
+
+imported_assets:
+  - path: references/quarto/raw/README.md
+    kind: raw
+    purpose: upstream overview
+  - path: references/quarto/raw/COPYING.md
+    kind: raw
+    purpose: license snapshot
+  - path: references/quarto/raw/src/resources/schema/document-layout.yml
+    kind: raw
+    purpose: document layout schema options
+  - path: references/quarto/raw/src/resources/schema/document-formatting.yml
+    kind: raw
+    purpose: document formatting options
+  - path: references/quarto/raw/src/resources/schema/document-figures.yml
+    kind: raw
+    purpose: figure conventions
+  - path: references/quarto/raw/src/resources/schema/cell-table.yml
+    kind: raw
+    purpose: table conventions
+  - path: references/quarto/raw/src/resources/schema/document-typst.yml
+    kind: raw
+    purpose: Typst-specific long-form controls
+  - path: references/quarto/raw/src/resources/projects/book/templates/_quarto.ejs.yml
+    kind: raw
+    purpose: book project structure
+  - path: references/quarto/raw/src/resources/projects/website/templates/_quarto.ejs.yml
+    kind: raw
+    purpose: website project structure
+  - path: references/quarto/raw/src/resources/projects/manuscript/templates/_quarto.ejs.yml
+    kind: raw
+    purpose: manuscript project structure
+  - path: references/quarto/raw/llm-docs/callout-styling-html.md
+    kind: raw
+    purpose: callout architecture notes
+  - path: references/quarto/raw/llm-docs/pandoc-quarto-typst-templates.md
+    kind: raw
+    purpose: Typst long-form template architecture notes
+  - path: references/quarto/normalized/document_layout_options.json
+    kind: normalized
+    purpose: normalized layout options
+  - path: references/quarto/normalized/table_figure_conventions.json
+    kind: normalized
+    purpose: normalized table and figure conventions
+  - path: references/quarto/normalized/callout_patterns.json
+    kind: normalized
+    purpose: normalized callout rendering tiers
+  - path: references/quarto/normalized/publishing_patterns.json
+    kind: normalized
+    purpose: normalized project publishing patterns
+  - path: references/quarto/normalized/longform_structure_patterns.json
+    kind: normalized
+    purpose: normalized long-form formatting patterns
+
+excluded_assets:
+  - path: src/command/
+    reason: Execution/runtime commands are out of scope because Hermes stays the sole runtime.
+  - path: full format implementations
+    reason: This pass captures schema and template references, not renderer internals.
+  - path: tests/, package/, tools/
+    reason: Packaging, binary build, and internal tooling are unnecessary for the reference substrate.
+  - path: revealjs-specific runtime files
+    reason: Presentation runtime behavior is deferred; only callout architecture and project patterns are captured now.

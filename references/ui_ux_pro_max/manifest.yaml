@@ -1,0 +1,72 @@
+source:
+  name: UI UX Pro Max
+  repo_url: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+  pinned_ref:
+    type: commit
+    value: 4255c218a6762c945a782701fd38dfb24fc10064
+  license: MIT
+  import_date: 2026-04-02
+
+runtime_boundary: Hermes remains the only runtime; UI UX Pro Max is imported only as a pinned local reference corpus for Vizier.
+
+rationale: >
+  Preserve structured style, UX, landing, chart, typography, and color guidance
+  as deterministic local references for future style search and calibration work,
+  without introducing the upstream skill or CLI as a runtime dependency.
+
+imported_assets:
+  - path: references/ui_ux_pro_max/raw/README.md
+    kind: raw
+    purpose: upstream overview
+  - path: references/ui_ux_pro_max/raw/LICENSE
+    kind: raw
+    purpose: license snapshot
+  - path: references/ui_ux_pro_max/raw/styles.csv
+    kind: raw
+    purpose: UI style families and implementation heuristics
+  - path: references/ui_ux_pro_max/raw/ux-guidelines.csv
+    kind: raw
+    purpose: UX guidance and anti-patterns
+  - path: references/ui_ux_pro_max/raw/charts.csv
+    kind: raw
+    purpose: chart usage heuristics
+  - path: references/ui_ux_pro_max/raw/landing.csv
+    kind: raw
+    purpose: landing-page and CTA layout patterns
+  - path: references/ui_ux_pro_max/raw/typography.csv
+    kind: raw
+    purpose: font pairing references
+  - path: references/ui_ux_pro_max/raw/colors.csv
+    kind: raw
+    purpose: product-type color systems
+  - path: references/ui_ux_pro_max/normalized/ui_styles.json
+    kind: normalized
+    purpose: searchable UI style families
+  - path: references/ui_ux_pro_max/normalized/visual_motifs.json
+    kind: normalized
+    purpose: visual motif and implementation heuristics
+  - path: references/ui_ux_pro_max/normalized/ux_guidelines.json
+    kind: normalized
+    purpose: normalized UX guidance
+  - path: references/ui_ux_pro_max/normalized/landing_patterns.json
+    kind: normalized
+    purpose: layout and CTA references
+  - path: references/ui_ux_pro_max/normalized/chart_usage_patterns.json
+    kind: normalized
+    purpose: chart recommendation heuristics
+  - path: references/ui_ux_pro_max/normalized/typography_pairings.json
+    kind: normalized
+    purpose: typography references
+  - path: references/ui_ux_pro_max/normalized/color_systems.json
+    kind: normalized
+    purpose: reusable product color systems
+
+excluded_assets:
+  - path: cli/
+    reason: Hermes must remain the only runtime; upstream CLI packaging is out of scope.
+  - path: src/ui-ux-pro-max/scripts/
+    reason: Runtime search code was not imported because Vizier owns normalization and later search helpers.
+  - path: src/ui-ux-pro-max/data/stacks/
+    reason: Framework-specific implementation catalogs are useful later but not required for this reference-foundation pass.
+  - path: src/ui-ux-pro-max/data/design.csv
+    reason: Freeform multilingual notes are lower-signal than the structured CSVs imported in this pass.

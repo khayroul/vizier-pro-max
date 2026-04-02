@@ -1,0 +1,72 @@
+{
+  "dataset_id": "publishing_patterns",
+  "source_family": "quarto",
+  "description": "Project-level publishing structures derived from Quarto project templates.",
+  "generated_from": [
+    "references/quarto/raw/src/resources/projects/book/templates/_quarto.ejs.yml",
+    "references/quarto/raw/src/resources/projects/website/templates/_quarto.ejs.yml",
+    "references/quarto/raw/src/resources/projects/manuscript/templates/_quarto.ejs.yml"
+  ],
+  "record_count": 3,
+  "items": [
+    {
+      "id": "book-project",
+      "project_type": "book",
+      "primary_outputs": [
+        "html",
+        "pdf"
+      ],
+      "structure": [
+        "index",
+        "intro",
+        "summary",
+        "references"
+      ],
+      "supporting_assets": [
+        "references.bib"
+      ],
+      "layout_notes": "Multi-chapter long-form structure with shared bibliography and HTML/PDF parity.",
+      "source_template": "references/quarto/raw/src/resources/projects/book/templates/_quarto.ejs.yml"
+    },
+    {
+      "id": "website-project",
+      "project_type": "website",
+      "primary_outputs": [
+        "html"
+      ],
+      "structure": [
+        "navbar",
+        "home",
+        "about",
+        "shared theme",
+        "styles.css"
+      ],
+      "supporting_assets": [
+        "toc",
+        "brand theme"
+      ],
+      "layout_notes": "Navigation-led publishing structure for docs, hubs, and content sites.",
+      "source_template": "references/quarto/raw/src/resources/projects/website/templates/_quarto.ejs.yml"
+    },
+    {
+      "id": "manuscript-project",
+      "project_type": "manuscript",
+      "primary_outputs": [
+        "html",
+        "docx",
+        "jats"
+      ],
+      "structure": [
+        "article entrypoint",
+        "comments",
+        "freeze execution"
+      ],
+      "supporting_assets": [
+        "peer review comments",
+        "submission-oriented outputs"
+      ],
+      "layout_notes": "Submission-ready long-form layout pattern for research and report workflows.",
+      "source_template": "references/quarto/raw/src/resources/projects/manuscript/templates/_quarto.ejs.yml"
+    }
+  ]
+}

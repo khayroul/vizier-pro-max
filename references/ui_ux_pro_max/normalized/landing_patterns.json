@@ -1,0 +1,955 @@
+{
+  "dataset_id": "landing_patterns",
+  "source_family": "ui_ux_pro_max",
+  "description": "Layout and CTA patterns for marketing-style surfaces from UI UX Pro Max.",
+  "generated_from": [
+    "references/ui_ux_pro_max/raw/landing.csv"
+  ],
+  "record_count": 34,
+  "items": [
+    {
+      "id": "hero-features-cta",
+      "pattern_name": "Hero + Features + CTA",
+      "keywords": [
+        "hero",
+        "hero-centric",
+        "hero-centric design",
+        "features",
+        "feature-rich",
+        "feature-rich showcase",
+        "cta",
+        "call-to-action"
+      ],
+      "section_order": [
+        "1. Hero with headline/image",
+        "2. Value prop",
+        "3. Key features (3-5)",
+        "4. CTA section",
+        "5. Footer"
+      ],
+      "primary_cta_placement": "Hero (sticky) + Bottom",
+      "color_strategy": "Hero: Brand primary or vibrant. Features: Card bg #FAFAFA. CTA: Contrasting accent color",
+      "recommended_effects": [
+        "Hero parallax",
+        "feature card hover lift",
+        "CTA glow on hover"
+      ],
+      "conversion_optimization": "Deep CTA placement. Use contrasting color (at least 7:1 contrast ratio). Sticky navbar CTA.",
+      "source_row": 1
+    },
+    {
+      "id": "hero-testimonials-cta",
+      "pattern_name": "Hero + Testimonials + CTA",
+      "keywords": [
+        "hero",
+        "testimonials",
+        "social-proof",
+        "social-proof-focused",
+        "social proof focused",
+        "trust",
+        "reviews",
+        "cta"
+      ],
+      "section_order": [
+        "1. Hero",
+        "2. Problem statement",
+        "3. Solution overview",
+        "4. Testimonials carousel",
+        "5. CTA"
+      ],
+      "primary_cta_placement": "Hero (sticky) + Post-testimonials",
+      "color_strategy": "Hero: Brand color. Testimonials: Light bg #F5F5F5. Quotes: Italic, muted color #666. CTA: Vibrant",
+      "recommended_effects": [
+        "Testimonial carousel slide animations",
+        "quote marks animations",
+        "avatar fade-in"
+      ],
+      "conversion_optimization": "Social proof before CTA. Use 3-5 testimonials. Include photo + name + role. CTA after social proof.",
+      "source_row": 2
+    },
+    {
+      "id": "product-demo-features",
+      "pattern_name": "Product Demo + Features",
+      "keywords": [
+        "demo",
+        "product-demo",
+        "features",
+        "showcase",
+        "interactive",
+        "interactive-product-demo",
+        "interactive product demo"
+      ],
+      "section_order": [
+        "1. Hero",
+        "2. Product video/mockup (center)",
+        "3. Feature breakdown per section",
+        "4. Comparison (optional)",
+        "5. CTA"
+      ],
+      "primary_cta_placement": "Video center + CTA right/bottom",
+      "color_strategy": "Video surround: Brand color overlay. Features: Icon color #0080FF. Text: Dark #222",
+      "recommended_effects": [
+        "Video play button pulse",
+        "feature scroll reveals",
+        "demo interaction highlights"
+      ],
+      "conversion_optimization": "Embedded product demo increases engagement. Use interactive mockup if possible. Auto-play video muted.",
+      "source_row": 3
+    },
+    {
+      "id": "minimal-single-column",
+      "pattern_name": "Minimal Single Column",
+      "keywords": [
+        "minimal",
+        "simple",
+        "direct",
+        "minimal & direct",
+        "minimal-direct",
+        "single-column",
+        "clean"
+      ],
+      "section_order": [
+        "1. Hero headline",
+        "2. Short description",
+        "3. Benefit bullets (3 max)",
+        "4. CTA",
+        "5. Footer"
+      ],
+      "primary_cta_placement": "Center, large CTA button",
+      "color_strategy": "Minimalist: Brand + white #FFFFFF + accent. Buttons: High contrast 7:1+. Text: Black/Dark grey",
+      "recommended_effects": [
+        "Minimal hover effects. Smooth scroll. CTA scale on hover (subtle)"
+      ],
+      "conversion_optimization": "Single CTA focus. Large typography. Lots of whitespace. No nav clutter. Mobile-first.",
+      "source_row": 4
+    },
+    {
+      "id": "funnel-3-step-conversion",
+      "pattern_name": "Funnel (3-Step Conversion)",
+      "keywords": [
+        "funnel",
+        "conversion",
+        "conversion-optimized",
+        "conversion optimized",
+        "steps",
+        "wizard",
+        "onboarding"
+      ],
+      "section_order": [
+        "1. Hero",
+        "2. Step 1 (problem)",
+        "3. Step 2 (solution)",
+        "4. Step 3 (action)",
+        "5. CTA progression"
+      ],
+      "primary_cta_placement": "Each step: mini-CTA. Final: main CTA",
+      "color_strategy": "Step colors: 1 (Red/Problem), 2 (Orange/Process), 3 (Green/Solution). CTA: Brand color",
+      "recommended_effects": [
+        "Step number animations",
+        "progress bar fill",
+        "step transitions smooth scroll"
+      ],
+      "conversion_optimization": "Progressive disclosure. Show only essential info per step. Use progress indicators. Multiple CTAs.",
+      "source_row": 5
+    },
+    {
+      "id": "comparison-table-cta",
+      "pattern_name": "Comparison Table + CTA",
+      "keywords": [
+        "comparison",
+        "table",
+        "compare",
+        "versus",
+        "cta"
+      ],
+      "section_order": [
+        "1. Hero",
+        "2. Problem intro",
+        "3. Comparison table (product vs competitors)",
+        "4. Pricing (optional)",
+        "5. CTA"
+      ],
+      "primary_cta_placement": "Table: Right column. CTA: Below table",
+      "color_strategy": "Table: Alternating rows (white/light grey). Your product: Highlight #FFFACD (light yellow) or green. Text: Dark",
+      "recommended_effects": [
+        "Table row hover highlight",
+        "price toggle animations",
+        "feature checkmark animations"
+      ],
+      "conversion_optimization": "Use comparison to show unique value. Highlight your product row. Include 'free trial' in pricing row.",
+      "source_row": 6
+    },
+    {
+      "id": "lead-magnet-form",
+      "pattern_name": "Lead Magnet + Form",
+      "keywords": [
+        "lead",
+        "form",
+        "signup",
+        "capture",
+        "email",
+        "magnet"
+      ],
+      "section_order": [
+        "1. Hero (benefit headline)",
+        "2. Lead magnet preview (ebook cover",
+        "checklist",
+        "etc)",
+        "3. Form (minimal fields)",
+        "4. CTA submit"
+      ],
+      "primary_cta_placement": "Form CTA: Submit button",
+      "color_strategy": "Lead magnet: Professional design. Form: Clean white bg. Inputs: Light border #CCCCCC. CTA: Brand color",
+      "recommended_effects": [
+        "Form focus state animations",
+        "input validation animations",
+        "success confirmation animation"
+      ],
+      "conversion_optimization": "Form fields ≤ 3 for best conversion. Offer valuable lead magnet preview. Show form submission progress.",
+      "source_row": 7
+    },
+    {
+      "id": "pricing-page-cta",
+      "pattern_name": "Pricing Page + CTA",
+      "keywords": [
+        "pricing",
+        "plans",
+        "tiers",
+        "comparison",
+        "cta"
+      ],
+      "section_order": [
+        "1. Hero (pricing headline)",
+        "2. Price comparison cards",
+        "3. Feature comparison table",
+        "4. FAQ section",
+        "5. Final CTA"
+      ],
+      "primary_cta_placement": "Each card: CTA button. Sticky CTA in nav",
+      "color_strategy": "Free: Grey, Starter: Blue, Pro: Green/Gold, Enterprise: Dark. Cards: 1px border, shadow",
+      "recommended_effects": [
+        "Price toggle animation (monthly/yearly)",
+        "card comparison highlight",
+        "FAQ accordion open/close"
+      ],
+      "conversion_optimization": "Recommend starter plan (pre-select/highlight). Show annual discount (20-30%). Use FAQs to address concerns.",
+      "source_row": 8
+    },
+    {
+      "id": "video-first-hero",
+      "pattern_name": "Video-First Hero",
+      "keywords": [
+        "video",
+        "hero",
+        "media",
+        "visual",
+        "engaging"
+      ],
+      "section_order": [
+        "1. Hero with video background",
+        "2. Key features overlay",
+        "3. Benefits section",
+        "4. CTA"
+      ],
+      "primary_cta_placement": "Overlay on video (center/bottom) + Bottom section",
+      "color_strategy": "Dark overlay 60% on video. Brand accent for CTA. White text on dark.",
+      "recommended_effects": [
+        "Video autoplay muted",
+        "parallax scroll",
+        "text fade-in on scroll"
+      ],
+      "conversion_optimization": "86% higher engagement with video. Add captions for accessibility. Compress video for performance.",
+      "source_row": 9
+    },
+    {
+      "id": "scroll-triggered-storytelling",
+      "pattern_name": "Scroll-Triggered Storytelling",
+      "keywords": [
+        "storytelling",
+        "scroll",
+        "narrative",
+        "story",
+        "immersive"
+      ],
+      "section_order": [
+        "1. Intro hook",
+        "2. Chapter 1 (problem)",
+        "3. Chapter 2 (journey)",
+        "4. Chapter 3 (solution)",
+        "5. Climax CTA"
+      ],
+      "primary_cta_placement": "End of each chapter (mini) + Final climax CTA",
+      "color_strategy": "Progressive reveal. Each chapter has distinct color. Building intensity.",
+      "recommended_effects": [
+        "ScrollTrigger animations",
+        "parallax layers",
+        "progressive disclosure",
+        "chapter transitions"
+      ],
+      "conversion_optimization": "Narrative increases time-on-page 3x. Use progress indicator. Mobile: simplify animations.",
+      "source_row": 10
+    },
+    {
+      "id": "ai-personalization-landing",
+      "pattern_name": "AI Personalization Landing",
+      "keywords": [
+        "ai",
+        "personalization",
+        "smart",
+        "recommendation",
+        "dynamic"
+      ],
+      "section_order": [
+        "1. Dynamic hero (personalized)",
+        "2. Relevant features",
+        "3. Tailored testimonials",
+        "4. Smart CTA"
+      ],
+      "primary_cta_placement": "Context-aware placement based on user segment",
+      "color_strategy": "Adaptive based on user data. A/B test color variations per segment.",
+      "recommended_effects": [
+        "Dynamic content swap",
+        "fade transitions",
+        "personalized product recommendations"
+      ],
+      "conversion_optimization": "20%+ conversion with personalization. Requires analytics integration. Fallback for new users.",
+      "source_row": 11
+    },
+    {
+      "id": "waitlist-coming-soon",
+      "pattern_name": "Waitlist/Coming Soon",
+      "keywords": [
+        "waitlist",
+        "coming-soon",
+        "launch",
+        "early-access",
+        "notify"
+      ],
+      "section_order": [
+        "1. Hero with countdown",
+        "2. Product teaser/preview",
+        "3. Email capture form",
+        "4. Social proof (waitlist count)"
+      ],
+      "primary_cta_placement": "Email form prominent (above fold) + Sticky form on scroll",
+      "color_strategy": "Anticipation: Dark + accent highlights. Countdown in brand color. Urgency indicators.",
+      "recommended_effects": [
+        "Countdown timer animation",
+        "email validation feedback",
+        "success confetti",
+        "social share buttons"
+      ],
+      "conversion_optimization": "Scarcity + exclusivity. Show waitlist count. Early access benefits. Referral program.",
+      "source_row": 12
+    },
+    {
+      "id": "comparison-table-focus",
+      "pattern_name": "Comparison Table Focus",
+      "keywords": [
+        "comparison",
+        "table",
+        "versus",
+        "compare",
+        "features"
+      ],
+      "section_order": [
+        "1. Hero (problem statement)",
+        "2. Comparison matrix (you vs competitors)",
+        "3. Feature deep-dive",
+        "4. Winner CTA"
+      ],
+      "primary_cta_placement": "After comparison table (highlighted row) + Bottom",
+      "color_strategy": "Your product column highlighted (accent bg or green). Competitors neutral. Checkmarks green.",
+      "recommended_effects": [
+        "Table row hover highlight",
+        "feature checkmark animations",
+        "sticky comparison header"
+      ],
+      "conversion_optimization": "Show value vs competitors. 35% higher conversion. Be factual. Include pricing if favorable.",
+      "source_row": 13
+    },
+    {
+      "id": "pricing-focused-landing",
+      "pattern_name": "Pricing-Focused Landing",
+      "keywords": [
+        "pricing",
+        "price",
+        "cost",
+        "plans",
+        "subscription"
+      ],
+      "section_order": [
+        "1. Hero (value proposition)",
+        "2. Pricing cards (3 tiers)",
+        "3. Feature comparison",
+        "4. FAQ",
+        "5. Final CTA"
+      ],
+      "primary_cta_placement": "Each pricing card + Sticky CTA in nav + Bottom",
+      "color_strategy": "Popular plan highlighted (brand color border/bg). Free: grey. Enterprise: dark/premium.",
+      "recommended_effects": [
+        "Price toggle monthly/annual animation",
+        "card hover lift",
+        "FAQ accordion smooth open"
+      ],
+      "conversion_optimization": "Annual discount 20-30%. Recommend mid-tier (most popular badge). Address objections in FAQ.",
+      "source_row": 14
+    },
+    {
+      "id": "app-store-style-landing",
+      "pattern_name": "App Store Style Landing",
+      "keywords": [
+        "app",
+        "mobile",
+        "download",
+        "store",
+        "install"
+      ],
+      "section_order": [
+        "1. Hero with device mockup",
+        "2. Screenshots carousel",
+        "3. Features with icons",
+        "4. Reviews/ratings",
+        "5. Download CTAs"
+      ],
+      "primary_cta_placement": "Download buttons prominent (App Store + Play Store) throughout",
+      "color_strategy": "Dark/light matching app store feel. Star ratings in gold. Screenshots with device frames.",
+      "recommended_effects": [
+        "Device mockup rotations",
+        "screenshot slider",
+        "star rating animations",
+        "download button pulse"
+      ],
+      "conversion_optimization": "Show real screenshots. Include ratings (4.5+ stars). QR code for mobile. Platform-specific CTAs.",
+      "source_row": 15
+    },
+    {
+      "id": "faq-documentation-landing",
+      "pattern_name": "FAQ/Documentation Landing",
+      "keywords": [
+        "faq",
+        "documentation",
+        "help",
+        "support",
+        "questions",
+        "faq/documentation",
+        "knowledge base"
+      ],
+      "section_order": [
+        "1. Hero with search bar",
+        "2. Popular categories",
+        "3. FAQ accordion",
+        "4. Contact/support CTA"
+      ],
+      "primary_cta_placement": "Search bar prominent + Contact CTA for unresolved questions",
+      "color_strategy": "Clean, high readability. Minimal color. Category icons in brand color. Success green for resolved.",
+      "recommended_effects": [
+        "Search autocomplete",
+        "smooth accordion open/close",
+        "category hover",
+        "helpful feedback buttons"
+      ],
+      "conversion_optimization": "Reduce support tickets. Track search analytics. Show related articles. Contact escalation path.",
+      "source_row": 16
+    },
+    {
+      "id": "immersive-interactive-experience",
+      "pattern_name": "Immersive/Interactive Experience",
+      "keywords": [
+        "immersive",
+        "interactive",
+        "experience",
+        "3d",
+        "animation",
+        "immersive/interactive experience"
+      ],
+      "section_order": [
+        "1. Full-screen interactive element",
+        "2. Guided product tour",
+        "3. Key benefits revealed",
+        "4. CTA after completion"
+      ],
+      "primary_cta_placement": "After interaction complete + Skip option for impatient users",
+      "color_strategy": "Immersive experience colors. Dark background for focus. Highlight interactive elements.",
+      "recommended_effects": [
+        "WebGL",
+        "3D interactions",
+        "gamification elements",
+        "progress indicators",
+        "reward animations"
+      ],
+      "conversion_optimization": "40% higher engagement. Performance trade-off. Provide skip option. Mobile fallback essential.",
+      "source_row": 17
+    },
+    {
+      "id": "event-conference-landing",
+      "pattern_name": "Event/Conference Landing",
+      "keywords": [
+        "event",
+        "conference",
+        "meetup",
+        "registration",
+        "schedule",
+        "hero-centric design",
+        "hero-centric"
+      ],
+      "section_order": [
+        "1. Hero (date/location/countdown)",
+        "2. Speakers grid",
+        "3. Agenda/schedule",
+        "4. Sponsors",
+        "5. Register CTA"
+      ],
+      "primary_cta_placement": "Register CTA sticky + After speakers + Bottom",
+      "color_strategy": "Urgency colors (countdown). Event branding. Speaker cards professional. Sponsor logos neutral.",
+      "recommended_effects": [
+        "Countdown timer",
+        "speaker hover cards with bio",
+        "agenda tabs",
+        "early bird countdown"
+      ],
+      "conversion_optimization": "Early bird pricing with deadline. Social proof (past attendees). Speaker credibility. Multi-ticket discounts.",
+      "source_row": 18
+    },
+    {
+      "id": "product-review-ratings-focused",
+      "pattern_name": "Product Review/Ratings Focused",
+      "keywords": [
+        "reviews",
+        "ratings",
+        "testimonials",
+        "social-proof",
+        "social-proof-focused",
+        "stars"
+      ],
+      "section_order": [
+        "1. Hero (product + aggregate rating)",
+        "2. Rating breakdown",
+        "3. Individual reviews",
+        "4. Buy/CTA"
+      ],
+      "primary_cta_placement": "After reviews summary + Buy button alongside reviews",
+      "color_strategy": "Trust colors. Star ratings gold. Verified badge green. Review sentiment colors.",
+      "recommended_effects": [
+        "Star fill animations",
+        "review filtering",
+        "helpful vote interactions",
+        "photo lightbox"
+      ],
+      "conversion_optimization": "User-generated content builds trust. Show verified purchases. Filter by rating. Respond to negative reviews.",
+      "source_row": 19
+    },
+    {
+      "id": "community-forum-landing",
+      "pattern_name": "Community/Forum Landing",
+      "keywords": [
+        "community",
+        "forum",
+        "social",
+        "members",
+        "discussion"
+      ],
+      "section_order": [
+        "1. Hero (community value prop)",
+        "2. Popular topics/categories",
+        "3. Active members showcase",
+        "4. Join CTA"
+      ],
+      "primary_cta_placement": "Join button prominent + After member showcase",
+      "color_strategy": "Warm, welcoming. Member photos add humanity. Topic badges in brand colors. Activity indicators green.",
+      "recommended_effects": [
+        "Member avatars animation",
+        "activity feed live updates",
+        "topic hover previews",
+        "join success celebration"
+      ],
+      "conversion_optimization": "Show active community (member count, posts today). Highlight benefits. Preview content. Easy onboarding.",
+      "source_row": 20
+    },
+    {
+      "id": "before-after-transformation",
+      "pattern_name": "Before-After Transformation",
+      "keywords": [
+        "before-after",
+        "transformation",
+        "results",
+        "comparison"
+      ],
+      "section_order": [
+        "1. Hero (problem state)",
+        "2. Transformation slider/comparison",
+        "3. How it works",
+        "4. Results CTA"
+      ],
+      "primary_cta_placement": "After transformation reveal + Bottom",
+      "color_strategy": "Contrast: muted/grey (before) vs vibrant/colorful (after). Success green for results.",
+      "recommended_effects": [
+        "Slider comparison interaction",
+        "before/after reveal animations",
+        "result counters",
+        "testimonial videos"
+      ],
+      "conversion_optimization": "Visual proof of value. 45% higher conversion. Real results. Specific metrics. Guarantee offer.",
+      "source_row": 21
+    },
+    {
+      "id": "marketplace-directory",
+      "pattern_name": "Marketplace / Directory",
+      "keywords": [
+        "marketplace",
+        "directory",
+        "search",
+        "listing"
+      ],
+      "section_order": [
+        "1. Hero (Search focused)",
+        "2. Categories",
+        "3. Featured Listings",
+        "4. Trust/Safety",
+        "5. CTA (Become a host/seller)"
+      ],
+      "primary_cta_placement": "Hero Search Bar + Navbar 'List your item'",
+      "color_strategy": "Search: High contrast. Categories: Visual icons. Trust: Blue/Green.",
+      "recommended_effects": [
+        "Search autocomplete animation",
+        "map hover pins",
+        "card carousel"
+      ],
+      "conversion_optimization": "Search bar is the CTA. Reduce friction to search. Popular searches suggestions.",
+      "source_row": 22
+    },
+    {
+      "id": "newsletter-content-first",
+      "pattern_name": "Newsletter / Content First",
+      "keywords": [
+        "newsletter",
+        "content",
+        "writer",
+        "blog",
+        "subscribe",
+        "minimal & direct",
+        "minimal-direct"
+      ],
+      "section_order": [
+        "1. Hero (Value Prop + Form)",
+        "2. Recent Issues/Archives",
+        "3. Social Proof (Subscriber count)",
+        "4. About Author"
+      ],
+      "primary_cta_placement": "Hero inline form + Sticky header form",
+      "color_strategy": "Minimalist. Paper-like background. Text focus. Accent color for Subscribe.",
+      "recommended_effects": [
+        "Text highlight animations",
+        "typewriter effect",
+        "subtle fade-in"
+      ],
+      "conversion_optimization": "Single field form (Email only). Show 'Join X, 000 readers'. Read sample link.",
+      "source_row": 23
+    },
+    {
+      "id": "webinar-registration",
+      "pattern_name": "Webinar Registration",
+      "keywords": [
+        "webinar",
+        "registration",
+        "event",
+        "training",
+        "live"
+      ],
+      "section_order": [
+        "1. Hero (Topic + Timer + Form)",
+        "2. What you'll learn",
+        "3. Speaker Bio",
+        "4. Urgency/Bonuses",
+        "5. Form (again)"
+      ],
+      "primary_cta_placement": "Hero (Right side form) + Bottom anchor",
+      "color_strategy": "Urgency: Red/Orange. Professional: Blue/Navy. Form: High contrast white.",
+      "recommended_effects": [
+        "Countdown timer",
+        "speaker avatar float",
+        "urgent ticker"
+      ],
+      "conversion_optimization": "Limited seats logic. 'Live' indicator. Auto-fill timezone.",
+      "source_row": 24
+    },
+    {
+      "id": "enterprise-gateway",
+      "pattern_name": "Enterprise Gateway",
+      "keywords": [
+        "enterprise",
+        "corporate",
+        "gateway",
+        "solutions",
+        "portal",
+        "trust",
+        "authority",
+        "trust & authority"
+      ],
+      "section_order": [
+        "1. Hero (Video/Mission)",
+        "2. Solutions by Industry",
+        "3. Solutions by Role",
+        "4. Client Logos",
+        "5. Contact Sales"
+      ],
+      "primary_cta_placement": "Contact Sales (Primary) + Login (Secondary)",
+      "color_strategy": "Corporate: Navy/Grey. High integrity. Conservative accents.",
+      "recommended_effects": [
+        "Slow video background",
+        "logo carousel",
+        "tab switching for industries"
+      ],
+      "conversion_optimization": "Path selection (I am a...). Mega menu navigation. Trust signals prominent.",
+      "source_row": 25
+    },
+    {
+      "id": "portfolio-grid",
+      "pattern_name": "Portfolio Grid",
+      "keywords": [
+        "portfolio",
+        "grid",
+        "showcase",
+        "gallery",
+        "masonry",
+        "portfolio grid + visuals"
+      ],
+      "section_order": [
+        "1. Hero (Name/Role)",
+        "2. Project Grid (Masonry)",
+        "3. About/Philosophy",
+        "4. Contact"
+      ],
+      "primary_cta_placement": "Project Card Hover + Footer Contact",
+      "color_strategy": "Neutral background (let work shine). Text: Black/White. Accent: Minimal.",
+      "recommended_effects": [
+        "Image lazy load reveal",
+        "hover overlay info",
+        "lightbox view"
+      ],
+      "conversion_optimization": "Visuals first. Filter by category. Fast loading essential.",
+      "source_row": 26
+    },
+    {
+      "id": "horizontal-scroll-journey",
+      "pattern_name": "Horizontal Scroll Journey",
+      "keywords": [
+        "horizontal",
+        "scroll",
+        "journey",
+        "gallery",
+        "storytelling",
+        "panoramic",
+        "storytelling-driven"
+      ],
+      "section_order": [
+        "1. Intro (Vertical)",
+        "2. The Journey (Horizontal Track)",
+        "3. Detail Reveal",
+        "4. Vertical Footer"
+      ],
+      "primary_cta_placement": "Floating Sticky CTA or End of Horizontal Track",
+      "color_strategy": "Continuous palette transition. Chapter colors. Progress bar #000000.",
+      "recommended_effects": [
+        "Scroll-jacking (careful)",
+        "parallax layers",
+        "horizontal slide",
+        "progress indicator"
+      ],
+      "conversion_optimization": "Immersive product discovery. High engagement. Keep navigation visible.",
+      "source_row": 27
+    },
+    {
+      "id": "bento-grid-showcase",
+      "pattern_name": "Bento Grid Showcase",
+      "keywords": [
+        "bento",
+        "grid",
+        "features",
+        "modular",
+        "apple-style",
+        "showcase",
+        "feature-rich showcase"
+      ],
+      "section_order": [
+        "1. Hero",
+        "2. Bento Grid (Key Features)",
+        "3. Detail Cards",
+        "4. Tech Specs",
+        "5. CTA"
+      ],
+      "primary_cta_placement": "Floating Action Button or Bottom of Grid",
+      "color_strategy": "Card backgrounds: #F5F5F7 or Glass. Icons: Vibrant brand colors. Text: Dark.",
+      "recommended_effects": [
+        "Hover card scale (1.02)",
+        "video inside cards",
+        "tilt effect",
+        "staggered reveal"
+      ],
+      "conversion_optimization": "Scannable value props. High information density without clutter. Mobile stack.",
+      "source_row": 28
+    },
+    {
+      "id": "interactive-3d-configurator",
+      "pattern_name": "Interactive 3D Configurator",
+      "keywords": [
+        "3d",
+        "configurator",
+        "customizer",
+        "interactive",
+        "product",
+        "interactive product demo"
+      ],
+      "section_order": [
+        "1. Hero (Configurator)",
+        "2. Feature Highlight (synced)",
+        "3. Price/Specs",
+        "4. Purchase"
+      ],
+      "primary_cta_placement": "Inside Configurator UI + Sticky Bottom Bar",
+      "color_strategy": "Neutral studio background. Product: Realistic materials. UI: Minimal overlay.",
+      "recommended_effects": [
+        "Real-time rendering",
+        "material swap animation",
+        "camera rotate/zoom",
+        "light reflection"
+      ],
+      "conversion_optimization": "Increases ownership feeling. 360 view reduces return rates. Direct add-to-cart.",
+      "source_row": 29
+    },
+    {
+      "id": "ai-driven-dynamic-landing",
+      "pattern_name": "AI-Driven Dynamic Landing",
+      "keywords": [
+        "ai",
+        "dynamic",
+        "personalized",
+        "adaptive",
+        "generative"
+      ],
+      "section_order": [
+        "1. Prompt/Input Hero",
+        "2. Generated Result Preview",
+        "3. How it Works",
+        "4. Value Prop"
+      ],
+      "primary_cta_placement": "Input Field (Hero) + 'Try it' Buttons",
+      "color_strategy": "Adaptive to user input. Dark mode for compute feel. Neon accents.",
+      "recommended_effects": [
+        "Typing text effects",
+        "shimmering generation loaders",
+        "morphing layouts"
+      ],
+      "conversion_optimization": "Immediate value demonstration. 'Show, don't tell'. Low friction start.",
+      "source_row": 30
+    },
+    {
+      "id": "feature-rich-showcase",
+      "pattern_name": "Feature-Rich Showcase",
+      "keywords": [
+        "feature-rich",
+        "feature-rich showcase",
+        "features",
+        "showcase",
+        "product showcase"
+      ],
+      "section_order": [
+        "1. Hero (value prop)",
+        "2. Feature grid/cards (4-6)",
+        "3. Use cases or benefits",
+        "4. Social proof or logos",
+        "5. CTA"
+      ],
+      "primary_cta_placement": "Hero (sticky) + After features + Bottom",
+      "color_strategy": "Brand primary + card bg #FAFAFA. Feature icons accent. CTA contrasting.",
+      "recommended_effects": [
+        "Feature card hover lift",
+        "scroll reveal",
+        "icon micro-interactions"
+      ],
+      "conversion_optimization": "Clear feature hierarchy. One key message per card. Strong CTA repetition.",
+      "source_row": 31
+    },
+    {
+      "id": "hero-centric-design",
+      "pattern_name": "Hero-Centric Design",
+      "keywords": [
+        "hero-centric",
+        "hero-centric design",
+        "hero-first",
+        "hero above fold"
+      ],
+      "section_order": [
+        "1. Full-bleed Hero (headline + visual)",
+        "2. Single value prop strip",
+        "3. Key benefit or proof",
+        "4. Primary CTA"
+      ],
+      "primary_cta_placement": "Hero dominant (center/bottom) + Sticky nav CTA",
+      "color_strategy": "Hero: High-impact visual. Minimal text. CTA 7:1 contrast.",
+      "recommended_effects": [
+        "Hero parallax or video",
+        "CTA pulse on scroll",
+        "minimal chrome"
+      ],
+      "conversion_optimization": "One primary CTA. Hero is 60-80% above fold. Mobile: same hierarchy.",
+      "source_row": 32
+    },
+    {
+      "id": "trust-authority-conversion",
+      "pattern_name": "Trust & Authority + Conversion",
+      "keywords": [
+        "trust & authority",
+        "trust",
+        "authority",
+        "conversion",
+        "credibility",
+        "enterprise"
+      ],
+      "section_order": [
+        "1. Hero (mission/credibility)",
+        "2. Proof (logos",
+        "certs",
+        "stats)",
+        "3. Solution overview",
+        "4. Clear CTA path"
+      ],
+      "primary_cta_placement": "Contact Sales / Get Quote (primary) + Nav",
+      "color_strategy": "Navy/Grey corporate. Trust blue. Accent for CTA only.",
+      "recommended_effects": [
+        "Logo carousel",
+        "stat counters",
+        "testimonial strip"
+      ],
+      "conversion_optimization": "Security badges. Case studies. Transparent pricing. Low-friction form.",
+      "source_row": 33
+    },
+    {
+      "id": "real-time-operations-landing",
+      "pattern_name": "Real-Time / Operations Landing",
+      "keywords": [
+        "real-time",
+        "real-time monitor",
+        "operations",
+        "dashboard",
+        "telemetry",
+        "live data"
+      ],
+      "section_order": [
+        "1. Hero (product + live preview or status)",
+        "2. Key metrics/indicators",
+        "3. How it works",
+        "4. CTA (Start trial / Contact)"
+      ],
+      "primary_cta_placement": "Primary CTA in nav + After metrics",
+      "color_strategy": "Dark or neutral. Status colors (green/amber/red). Data-dense but scannable.",
+      "recommended_effects": [
+        "Live data ticker",
+        "status pulse",
+        "minimal decoration"
+      ],
+      "conversion_optimization": "For ops/security/iot products. Demo or sandbox link. Trust signals.",
+      "source_row": 34
+    }
+  ]
+}

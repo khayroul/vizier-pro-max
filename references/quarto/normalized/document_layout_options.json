@@ -1,0 +1,276 @@
+{
+  "dataset_id": "document_layout_options",
+  "source_family": "quarto",
+  "description": "Document layout controls normalized from Quarto schema definitions.",
+  "generated_from": [
+    "references/quarto/raw/src/resources/schema/document-layout.yml"
+  ],
+  "record_count": 25,
+  "items": [
+    {
+      "id": "documentclass",
+      "option": "documentclass",
+      "formats": [
+        "$pdf-all"
+      ],
+      "default": "scrartcl",
+      "schema_summary": "string(completions: scrartcl, scrbook, scrreprt, scrlttr2, article, book, report, memoir)",
+      "description": "The document class."
+    },
+    {
+      "id": "classoption",
+      "option": "classoption",
+      "formats": [
+        "$html-files",
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "maybeArrayOf(string)",
+      "description": "Options for the document class,"
+    },
+    {
+      "id": "pagestyle",
+      "option": "pagestyle",
+      "formats": [
+        "$pdf-all"
+      ],
+      "default": "plain",
+      "schema_summary": "string(completions: plain, empty, headings)",
+      "description": "Control the `\\pagestyle{}` for the document."
+    },
+    {
+      "id": "papersize",
+      "option": "papersize",
+      "formats": [
+        "$pdf-all",
+        "typst"
+      ],
+      "default": null,
+      "schema_summary": "string",
+      "description": "The paper size for the document."
+    },
+    {
+      "id": "brand-mode",
+      "option": "brand-mode",
+      "formats": [
+        "typst",
+        "revealjs"
+      ],
+      "default": "light",
+      "schema_summary": "enum(light, dark)",
+      "description": "The brand mode to use for rendering the document, `light` or `dark`."
+    },
+    {
+      "id": "layout",
+      "option": "layout",
+      "formats": [
+        "context"
+      ],
+      "default": null,
+      "schema_summary": "maybeArrayOf(string)",
+      "description": "The options for margins and text layout for this document."
+    },
+    {
+      "id": "page-layout",
+      "option": "page-layout",
+      "formats": [
+        "$html-doc"
+      ],
+      "default": "article",
+      "schema_summary": "enum(article, full, custom)",
+      "description": "The page layout to use for this document (`article`, `full`, or `custom`)"
+    },
+    {
+      "id": "page-width",
+      "option": "page-width",
+      "formats": [
+        "docx",
+        "$odt-all"
+      ],
+      "default": null,
+      "schema_summary": "number",
+      "description": "Target page width for output (used to compute columns widths for `layout` divs)"
+    },
+    {
+      "id": "grid",
+      "option": "grid",
+      "formats": [
+        "$html-doc",
+        "typst"
+      ],
+      "default": null,
+      "schema_summary": "object(content-mode, sidebar-width, margin-width, body-width, gutter-width)",
+      "description": "Properties of the grid system used to layout Quarto HTML and Typst pages."
+    },
+    {
+      "id": "appendix-style",
+      "option": "appendix-style",
+      "formats": [
+        "$html-doc"
+      ],
+      "default": "default",
+      "schema_summary": "enum(default, plain, none)",
+      "description": "The layout of the appendix for this document (`none`, `plain`, or `default`)"
+    },
+    {
+      "id": "appendix-cite-as",
+      "option": "appendix-cite-as",
+      "formats": [
+        "$html-doc"
+      ],
+      "default": null,
+      "schema_summary": "boolean | maybeArrayOf(enum(display, bibtex))",
+      "description": "Controls the formats which are provided in the citation section of the appendix (`false`, `display`, or `bibtex`)."
+    },
+    {
+      "id": "title-block-style",
+      "option": "title-block-style",
+      "formats": [
+        "$html-doc"
+      ],
+      "default": "default",
+      "schema_summary": "enum(default, plain, manuscript, none)",
+      "description": "The layout of the title block for this document (`none`, `plain`, or `default`)."
+    },
+    {
+      "id": "title-block-banner",
+      "option": "title-block-banner",
+      "formats": [
+        "$html-doc"
+      ],
+      "default": null,
+      "schema_summary": "string | boolean",
+      "description": "Apply a banner style treatment to the title block."
+    },
+    {
+      "id": "title-block-banner-color",
+      "option": "title-block-banner-color",
+      "formats": [
+        "$html-doc"
+      ],
+      "default": null,
+      "schema_summary": "string",
+      "description": "Sets the color of text elements in a banner style title block."
+    },
+    {
+      "id": "title-block-categories",
+      "option": "title-block-categories",
+      "formats": [
+        "$html-doc"
+      ],
+      "default": true,
+      "schema_summary": "boolean",
+      "description": "Enables or disables the display of categories in the title block."
+    },
+    {
+      "id": "max-width",
+      "option": "max-width",
+      "formats": [
+        "$html-files"
+      ],
+      "default": null,
+      "schema_summary": "string",
+      "description": "Adds a css `max-width` to the body Element."
+    },
+    {
+      "id": "margin-left",
+      "option": "margin-left",
+      "formats": [
+        "$html-files",
+        "context",
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "string",
+      "description": "Sets the left margin of the document."
+    },
+    {
+      "id": "margin-right",
+      "option": "margin-right",
+      "formats": [
+        "$html-files",
+        "context",
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "string",
+      "description": "Sets the right margin of the document."
+    },
+    {
+      "id": "margin-top",
+      "option": "margin-top",
+      "formats": [
+        "$html-files",
+        "context",
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "string",
+      "description": "Sets the top margin of the document."
+    },
+    {
+      "id": "margin-bottom",
+      "option": "margin-bottom",
+      "formats": [
+        "$html-files",
+        "context",
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "string",
+      "description": "Sets the bottom margin of the document."
+    },
+    {
+      "id": "margin",
+      "option": "margin",
+      "formats": [
+        "revealjs",
+        "typst"
+      ],
+      "default": 0.1,
+      "schema_summary": "number | object(x, y, top, bottom, left, right)",
+      "description": "Margin settings for Reveal.js or Typst output."
+    },
+    {
+      "id": "geometry",
+      "option": "geometry",
+      "formats": [
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "maybeArrayOf(string)",
+      "description": "Options for the geometry package."
+    },
+    {
+      "id": "hyperrefoptions",
+      "option": "hyperrefoptions",
+      "formats": [
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "maybeArrayOf(string)",
+      "description": "Additional non-color options for the hyperref package."
+    },
+    {
+      "id": "indent",
+      "option": "indent",
+      "formats": [
+        "$pdf-all",
+        "ms"
+      ],
+      "default": false,
+      "schema_summary": "boolean | string",
+      "description": "Whether to use document class settings for indentation."
+    },
+    {
+      "id": "block-headings",
+      "option": "block-headings",
+      "formats": [
+        "$pdf-all"
+      ],
+      "default": null,
+      "schema_summary": "boolean",
+      "description": "Make `\\paragraph` and `\\subparagraph` free-standing rather than run-in."
+    }
+  ]
+}

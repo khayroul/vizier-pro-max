@@ -1,0 +1,207 @@
+{
+  "dataset_id": "chart_patterns",
+  "source_family": "vega_lite",
+  "description": "Curated analytic chart patterns anchored to pinned Vega-Lite example specs.",
+  "generated_from": [
+    "references/vega_lite/raw/examples/specs/bar.vl.json",
+    "references/vega_lite/raw/examples/specs/line.vl.json",
+    "references/vega_lite/raw/examples/specs/arc_pie.vl.json",
+    "references/vega_lite/raw/examples/specs/rect_binned_heatmap.vl.json",
+    "references/vega_lite/raw/examples/specs/layer_line_errorband_ci.vl.json",
+    "references/vega_lite/raw/examples/specs/point_color_with_shape.vl.json",
+    "references/vega_lite/raw/examples/specs/trellis_barley.vl.json",
+    "references/vega_lite/raw/examples/specs/repeat_splom.vl.json"
+  ],
+  "record_count": 8,
+  "items": [
+    {
+      "id": "bar",
+      "title": "Categorical Comparison",
+      "analytic_goal": "Compare ranked category magnitudes with a simple bar chart.",
+      "family": "comparison",
+      "when_to_use": "Discrete categories with one main metric and a need for quick ranking.",
+      "avoid_when": "When the x-axis is temporal or when proportions are the primary story.",
+      "accessibility_notes": "Prefer direct labels or accessible tooltips for category-value pairs.",
+      "source_spec": "references/vega_lite/raw/examples/specs/bar.vl.json",
+      "description": "A simple bar chart with embedded data.",
+      "marks": [
+        "bar"
+      ],
+      "channels": [
+        "x",
+        "y"
+      ],
+      "transforms": [],
+      "composition": [
+        "unit"
+      ]
+    },
+    {
+      "id": "line",
+      "title": "Trend Over Time",
+      "analytic_goal": "Track a continuous metric across time with a line chart.",
+      "family": "trend",
+      "when_to_use": "Time series with enough points to show movement or slope changes.",
+      "avoid_when": "When categories are not ordered in time or there are too many overlapping series.",
+      "accessibility_notes": "Use clear axis titles and point markers when the line is dense.",
+      "source_spec": "references/vega_lite/raw/examples/specs/line.vl.json",
+      "description": "Google's stock price over time.",
+      "marks": [
+        "line"
+      ],
+      "channels": [
+        "x",
+        "y"
+      ],
+      "transforms": [
+        "filter"
+      ],
+      "composition": [
+        "unit"
+      ]
+    },
+    {
+      "id": "arc-pie",
+      "title": "Part to Whole",
+      "analytic_goal": "Show a small number of proportions with an arc/pie chart.",
+      "family": "composition",
+      "when_to_use": "A handful of categories where percentage share is more important than precision.",
+      "avoid_when": "When there are many slices or subtle percentage differences.",
+      "accessibility_notes": "Provide labels or a fallback table because color alone is weak.",
+      "source_spec": "references/vega_lite/raw/examples/specs/arc_pie.vl.json",
+      "description": "A simple pie chart with embedded data.",
+      "marks": [
+        "arc"
+      ],
+      "channels": [
+        "color",
+        "theta"
+      ],
+      "transforms": [],
+      "composition": [
+        "unit"
+      ]
+    },
+    {
+      "id": "rect-binned-heatmap",
+      "title": "Binned Density Heatmap",
+      "analytic_goal": "Reveal distribution density across two quantitative axes.",
+      "family": "distribution",
+      "when_to_use": "Large point clouds where raw scatter marks would overplot heavily.",
+      "avoid_when": "When the audience needs exact point-level values instead of density patterns.",
+      "accessibility_notes": "Pair the color scale with a legend and narrative explanation of density bands.",
+      "source_spec": "references/vega_lite/raw/examples/specs/rect_binned_heatmap.vl.json",
+      "description": "",
+      "marks": [
+        "rect"
+      ],
+      "channels": [
+        "color",
+        "x",
+        "y"
+      ],
+      "transforms": [
+        "filter"
+      ],
+      "composition": [
+        "unit"
+      ]
+    },
+    {
+      "id": "layer-line-errorband-ci",
+      "title": "Trend With Uncertainty Band",
+      "analytic_goal": "Combine a mean line with confidence intervals in one layered view.",
+      "family": "uncertainty",
+      "when_to_use": "Time trends where the uncertainty envelope is as important as the mean.",
+      "avoid_when": "When the audience only needs a point estimate or the intervals are uninterpretable.",
+      "accessibility_notes": "Use a sufficiently opaque band and explain what the interval means.",
+      "source_spec": "references/vega_lite/raw/examples/specs/layer_line_errorband_ci.vl.json",
+      "description": "",
+      "marks": [
+        "errorband",
+        "line"
+      ],
+      "channels": [
+        "x",
+        "y"
+      ],
+      "transforms": [],
+      "composition": [
+        "layer",
+        "unit"
+      ]
+    },
+    {
+      "id": "point-color-with-shape",
+      "title": "Correlation With Group Encoding",
+      "analytic_goal": "Show the relationship between two quantitative fields with grouped points.",
+      "family": "relationship",
+      "when_to_use": "Pairwise quantitative comparison with categorical grouping.",
+      "avoid_when": "When there are too many points for overlap or no relationship to compare.",
+      "accessibility_notes": "Use both color and shape so groups remain distinguishable.",
+      "source_spec": "references/vega_lite/raw/examples/specs/point_color_with_shape.vl.json",
+      "description": "A scatterplot showing body mass and flipper lengths of penguins.",
+      "marks": [
+        "point"
+      ],
+      "channels": [
+        "color",
+        "shape",
+        "x",
+        "y"
+      ],
+      "transforms": [],
+      "composition": [
+        "unit"
+      ]
+    },
+    {
+      "id": "trellis-barley",
+      "title": "Small Multiples Comparison",
+      "analytic_goal": "Use faceting to compare repeated measures across categories.",
+      "family": "comparison",
+      "when_to_use": "One repeated structure per site, region, or cohort needs side-by-side reading.",
+      "avoid_when": "When there are too many facets or the repeated pattern is not comparable.",
+      "accessibility_notes": "Keep facet counts manageable and titles descriptive.",
+      "source_spec": "references/vega_lite/raw/examples/specs/trellis_barley.vl.json",
+      "description": "The Trellis display by Becker et al. helped establish small multiples as a “powerful mechanism for understanding interactions in studies of how a response depends on explanatory variables”. Here we reproduce a trellis of Barley yields from the 1930s, complete with main-effects ordering to facilitate comparison.",
+      "marks": [
+        "point"
+      ],
+      "channels": [
+        "color",
+        "facet",
+        "x",
+        "y"
+      ],
+      "transforms": [],
+      "composition": [
+        "unit"
+      ]
+    },
+    {
+      "id": "repeat-splom",
+      "title": "Scatterplot Matrix",
+      "analytic_goal": "Inspect many pairwise quantitative relationships at once.",
+      "family": "exploration",
+      "when_to_use": "Several quantitative measures need broad exploratory comparison.",
+      "avoid_when": "When the audience only needs one or two key relationships.",
+      "accessibility_notes": "Highlight the most important pairs in narrative text for faster reading.",
+      "source_spec": "references/vega_lite/raw/examples/specs/repeat_splom.vl.json",
+      "description": "",
+      "marks": [
+        "point"
+      ],
+      "channels": [
+        "color",
+        "x",
+        "y"
+      ],
+      "transforms": [],
+      "composition": [
+        "repeat",
+        "unit"
+      ]
+    }
+  ]
+}
