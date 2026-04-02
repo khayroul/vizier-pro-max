@@ -88,7 +88,7 @@ class TestPostLLMCallHook:
             model="gpt-5.4-mini",
         )
         post_llm_call(
-            response_text="hello back",
+            response="hello back",
             usage={"prompt_tokens": 10, "completion_tokens": 20},
         )
         conn = sqlite3.connect(str(db_path))
@@ -99,6 +99,26 @@ class TestPostLLMCallHook:
         assert row["output_tokens"] == 20
         assert row["response_text"] == "hello back"
         assert row["latency_ms"] >= 0
+
+
+class TestPreLLMCallContextVar:
+    def test_reads_step_from_context_var(self, db_path: Path) -> None:
+        from middleware.cost_ledger import pre_llm_call
+        from middleware.deliverable_context import set_pipeline_step
+
+        did = start_deliverable()
+        set_pipeline_step("rag_retrieve", "content_generate", "1.0")
+        pre_llm_call(
+            messages=[{"role": "user", "content": "hello"}],
+            model="gpt-5.4-mini",
+            # step_name / pipeline_name intentionally omitted — should come from ContextVar
+        )
+        conn = sqlite3.connect(str(db_path))
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM cost_ledger WHERE deliverable_id = ?", [did]).fetchone()
+        conn.close()
+        assert row["step_name"] == "rag_retrieve"
+        assert row["pipeline_name"] == "content_generate"
 
 
 class TestRecordQuality:
@@ -112,6 +132,21 @@ class TestRecordQuality:
         conn.close()
         assert row["quality_score"] == 8.5
         assert row["all_gates_passed"] == 1
+
+    def test_upserts_on_second_record(self, db_path: Path) -> None:
+        """Second call for same deliverable updates in-place — only one row exists."""
+        from middleware.cost_ledger import record_quality
+
+        record_quality("d-upsert", quality_score=5.0, all_gates_passed=False)
+        record_quality("d-upsert", quality_score=9.0, all_gates_passed=True)
+        conn = sqlite3.connect(str(db_path))
+        rows = conn.execute(
+            "SELECT quality_score FROM quality_results WHERE deliverable_id = ?",
+            ["d-upsert"],
+        ).fetchall()
+        conn.close()
+        assert len(rows) == 1
+        assert rows[0][0] == 9.0
 
 
 class TestUpdateBaseline:
@@ -128,7 +163,7 @@ class TestUpdateBaseline:
                 pipeline_version="1.0",
             )
             post_llm_call(
-                response_text=f"resp {i}",
+                response=f"resp {i}",
                 usage={"prompt_tokens": 100, "completion_tokens": 50},
             )
             clear_context()

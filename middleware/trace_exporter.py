@@ -8,6 +8,7 @@ Notifies via Telegram if available (Gate 2 dependency).
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import time
 from pathlib import Path
@@ -21,6 +22,7 @@ logger = structlog.get_logger(__name__)
 
 DB_PATH = str(Path.home() / ".hermes" / "state.db")
 TRACES_DIR = str(Path(__file__).parent.parent / "traces")
+_PROJECT_ROOT = Path(__file__).parent.parent
 
 
 def check_anomalies(
@@ -203,14 +205,21 @@ def notify_anomaly(
         f"Trace: {trace_path or 'N/A'}"
     )
     try:
-        from scripts.delivery.send_telegram import (
-            send_telegram,  # type: ignore[import-not-found]
+        from scripts.delivery.send_telegram import (  # type: ignore[import-not-found]
+            run as _send_telegram,
         )
-        send_telegram(message)
+        chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+        if not chat_id:
+            logger.warning(
+                "TELEGRAM_CHAT_ID not set — anomaly notification skipped for %s",
+                deliverable_id,
+            )
+            return
+        _send_telegram(chat_id=chat_id, text=message)
     except ImportError:
         logger.info(
-            "Telegram not available (Gate 2)."
-            " Anomaly logged: %s",
+            "Telegram not available (Gate 2 not deployed)."
+            " Anomaly logged locally: %s",
             deliverable_id,
         )
 
@@ -230,7 +239,12 @@ def cleanup_traces(retention_days: int | None = None) -> int:
         if retention_days is not None
         else config["traces"]["retention_days"]
     )
-    archive_dir = Path(config["traces"]["archive_dir"])
+    archive_dir_cfg = config["traces"]["archive_dir"]
+    archive_dir = (
+        Path(archive_dir_cfg)
+        if Path(archive_dir_cfg).is_absolute()
+        else _PROJECT_ROOT / archive_dir_cfg
+    )
     traces_dir = Path(TRACES_DIR)
 
     if not traces_dir.exists():

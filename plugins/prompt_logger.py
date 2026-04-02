@@ -45,6 +45,15 @@ def _ensure_table(db_path: str | None = None) -> None:
                     deliverable_id TEXT
                 )
             """)
+            # For existing installations created before Gate 4 Track 1:
+            # add deliverable_id column if not present (idempotent).
+            try:
+                conn.execute(
+                    "ALTER TABLE prompt_log ADD COLUMN deliverable_id TEXT"
+                )
+            except sqlite3.OperationalError as exc:
+                if "duplicate column" not in str(exc).lower():
+                    raise
         if db_path is None:
             _table_ensured = True
 

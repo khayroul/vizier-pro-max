@@ -14,6 +14,8 @@ from typing import Any
 import dspy
 import structlog
 
+from augments.distillation.compiler import ToolsetClassifier
+
 log = structlog.get_logger(__name__)
 
 ACCURACY_THRESHOLD = 0.90
@@ -32,18 +34,18 @@ class EvaluationReport:
     recommendation: str
 
 
-def _load_program(program_path: Path) -> Any:
+def _load_program(program_path: Path) -> ToolsetClassifier:
     """Load a compiled DSPy program from disk.
 
     Args:
         program_path: Path to saved DSPy program file.
 
     Returns:
-        Callable DSPy program.
+        Loaded ToolsetClassifier instance.
     """
-    program = dspy.Predict("input_text -> output")  # pragma: no cover — DSPy internal; tested via mock
-    program.load(str(program_path))  # pragma: no cover
-    return program  # pragma: no cover
+    program = ToolsetClassifier()
+    program.load(str(program_path))
+    return program
 
 
 def _compute_per_class_metrics(
@@ -123,6 +125,14 @@ def evaluate(
         model=model,
     )
 
+    # Configure DSPy to use the student model for evaluation
+    student_lm = dspy.LM(
+        model=f"ollama_chat/{model}",
+        api_base="http://localhost:11434",
+        temperature=0.0,
+    )
+    dspy.settings.configure(lm=student_lm)
+
     program = _load_program(program_path)
 
     expected_labels: list[str] = []
@@ -132,10 +142,10 @@ def evaluate(
 
     for example in test_examples:
         start = time.perf_counter()
-        result = program(input_text=example["input_text"])
+        result = program(input_message=example["input_text"])
         elapsed_ms = (time.perf_counter() - start) * 1000.0
 
-        predicted = result.output
+        predicted = result.toolset_name
         expected = example["expected_output"]
 
         expected_labels.append(expected)

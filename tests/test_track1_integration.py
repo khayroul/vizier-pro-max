@@ -78,7 +78,7 @@ class TestTrack1EndToEnd:
             pipeline_version="1.0",
         )
         post_llm_call(
-            response_text="Here is your copy...",
+            response="Here is your copy...",
             usage={"prompt_tokens": 150, "completion_tokens": 200},
         )
 
@@ -90,7 +90,7 @@ class TestTrack1EndToEnd:
             pipeline_version="1.0",
         )
         post_llm_call(
-            response_text="Formatted.",
+            response="Formatted.",
             usage={"prompt_tokens": 50, "completion_tokens": 30},
         )
 

@@ -13,7 +13,9 @@ from __future__ import annotations
 import csv
 import io
 import json
+import os
 import shutil
+import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -226,23 +228,94 @@ def _detect_schema_xlsx(file_path: Path) -> dict[str, str]:
     return {}
 
 
+_HERMES_ENTRY = Path(__file__).resolve().parents[2] / "hermes-agent" / "run_agent.py"
+_HERMES_TIMEOUT_SECONDS = 300  # 5 minutes
+
+
 def _start_hermes_session(
     toolset: str,
     pipeline: str | None,
     file_path: Path,
     schema: dict[str, str],
+    *,
+    dry_run: bool = False,
 ) -> None:
     """Start a Hermes agent session with the given toolset and file context.
 
-    This is a stub that will be replaced by actual Hermes integration.
-    In production, this calls the Hermes CLI or API.
+    Args:
+        toolset: The Hermes toolset to enable.
+        pipeline: Optional pipeline name for context.
+        file_path: Path to the data file being processed.
+        schema: Detected schema (column names → types).
+        dry_run: If True, log the command instead of executing it.
     """
+    prompt_parts = [f"Process file: {file_path.name}"]
+    if pipeline:
+        prompt_parts.append(f"Pipeline: {pipeline}")
+    if schema:
+        prompt_parts.append(f"Schema: {json.dumps(schema)}")
+    prompt = "\n".join(prompt_parts)
+
+    cmd = [
+        "python3",
+        str(_HERMES_ENTRY),
+        "--query",
+        prompt,
+        "--enabled_toolsets",
+        toolset,
+        "--max_turns",
+        "10",
+    ]
+
+    if dry_run:
+        logger.info(
+            "hermes_session_dry_run",
+            toolset=toolset,
+            pipeline=pipeline,
+            file_path=str(file_path),
+            schema_keys=list(schema.keys()),
+            command=cmd,
+        )
+        return
+
+    # Load .env into subprocess environment
+    env = {**os.environ}
+    env_file = Path(__file__).resolve().parents[2] / ".env"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                env[key.strip()] = value.strip()
+
     logger.info(
-        "hermes_session_started",
+        "hermes_session_starting",
         toolset=toolset,
         pipeline=pipeline,
         file_path=str(file_path),
-        schema_keys=list(schema.keys()),
+    )
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=_HERMES_TIMEOUT_SECONDS,
+        env=env,
+    )
+
+    if result.returncode != 0:
+        logger.error(
+            "hermes_session_failed",
+            returncode=result.returncode,
+            stderr=result.stderr[:500],
+        )
+        msg = f"Hermes session failed (exit {result.returncode}): {result.stderr[:200]}"
+        raise RuntimeError(msg)
+
+    logger.info(
+        "hermes_session_completed",
+        toolset=toolset,
+        stdout_preview=result.stdout[:200],
     )
 
 
@@ -268,6 +341,7 @@ def process_file(
     uploads_dir: Path,
     *,
     rules_path: Path | None = None,
+    dry_run: bool = True,
 ) -> ProcessResult:
     """Process a single uploaded file: validate, classify, detect schema, dispatch.
 
@@ -278,6 +352,7 @@ def process_file(
         file_path: Path to the uploaded file.
         uploads_dir: Root uploads directory.
         rules_path: Optional path to filename rules YAML.
+        dry_run: If True, log Hermes command instead of executing.
 
     Returns:
         ProcessResult with status, toolset, pipeline, schema, and any error.
@@ -312,6 +387,7 @@ def process_file(
             pipeline=classification.pipeline,
             file_path=file_path,
             schema=schema,
+            dry_run=dry_run,
         )
     except Exception as exc:
         log.error("hermes_session_failed", error=str(exc))

@@ -9,7 +9,11 @@ from middleware.deliverable_context import (
     clear_context,
     get_client_id,
     get_deliverable_id,
+    get_pipeline_name,
+    get_pipeline_version,
+    get_step_name,
     set_context,
+    set_pipeline_step,
     start_deliverable,
 )
 
@@ -59,3 +63,26 @@ class TestGettersWithNoContext:
         clear_context()
         assert get_deliverable_id() is None
         assert get_client_id() is None
+
+
+class TestSetPipelineStep:
+    def test_sets_step_name(self) -> None:
+        clear_context()
+        set_pipeline_step("draft", "content_generate", "1.0")
+        assert get_step_name() == "draft"
+        assert get_pipeline_name() == "content_generate"
+        assert get_pipeline_version() == "1.0"
+
+    def test_clear_context_resets_pipeline_step(self) -> None:
+        clear_context()
+        set_pipeline_step("format", "content_generate")
+        clear_context()
+        assert get_step_name() is None
+        assert get_pipeline_name() is None
+        assert get_pipeline_version() is None
+
+    def test_step_name_none_clears_step(self) -> None:
+        clear_context()
+        set_pipeline_step("draft", "content_generate")
+        set_pipeline_step(None)
+        assert get_step_name() is None

@@ -306,15 +306,16 @@ def test_detect_schema_xlsx_logs_warning(tmp_path: Path) -> None:
 
 
 def test_start_hermes_session_runs(tmp_path: Path) -> None:
-    """Calling _start_hermes_session executes its logger.info body."""
+    """Calling _start_hermes_session in dry_run mode exercises the logging path."""
     dummy_file = tmp_path / "test.csv"
     dummy_file.write_text("a,b\n1,2\n")
-    # Should not raise; just exercises the logger.info call
+    # Should not raise; dry_run=True logs instead of invoking Hermes
     _start_hermes_session(
         toolset="vizier-test",
         pipeline=None,
         file_path=dummy_file,
         schema={"a": "string", "b": "string"},
+        dry_run=True,
     )
 
 

@@ -41,9 +41,10 @@ CREATE TABLE IF NOT EXISTS cost_baselines (
 );
 
 -- Quality results table — per-deliverable quality gate scores
+-- UNIQUE on deliverable_id: record_quality() uses UPSERT so only the latest score is kept.
 CREATE TABLE IF NOT EXISTS quality_results (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    deliverable_id TEXT NOT NULL,
+    deliverable_id TEXT NOT NULL UNIQUE,
     quality_score REAL,
     all_gates_passed INTEGER DEFAULT 0,
     layer_scores_json TEXT,
