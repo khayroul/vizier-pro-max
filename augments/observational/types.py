@@ -209,21 +209,27 @@ class Provenance(ContractModel):
 
     event_ids: tuple[str, ...] = ()
     observation_ids: tuple[str, ...] = ()
-    decision_ids: tuple[str, ...] = ()
+    decision_packet_ids: tuple[str, ...] = ()
+    promotion_decision_ids: tuple[str, ...] = ()
     trace_refs: tuple[str, ...] = ()
     metadata: Mapping[str, FrozenJSONValue] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         event_ids = _normalize_string_tuple("event_ids", self.event_ids)
         observation_ids = _normalize_string_tuple("observation_ids", self.observation_ids)
-        decision_ids = _normalize_string_tuple("decision_ids", self.decision_ids)
+        decision_packet_ids = _normalize_string_tuple("decision_packet_ids", self.decision_packet_ids)
+        promotion_decision_ids = _normalize_string_tuple(
+            "promotion_decision_ids",
+            self.promotion_decision_ids,
+        )
         trace_refs = _normalize_string_tuple("trace_refs", self.trace_refs)
         metadata = _normalize_mapping("metadata", self.metadata)
-        if not any((event_ids, observation_ids, decision_ids, trace_refs, metadata)):
+        if not any((event_ids, observation_ids, decision_packet_ids, promotion_decision_ids, trace_refs, metadata)):
             raise ContractValidationError("provenance must contain at least one reference or metadata entry")
         object.__setattr__(self, "event_ids", event_ids)
         object.__setattr__(self, "observation_ids", observation_ids)
-        object.__setattr__(self, "decision_ids", decision_ids)
+        object.__setattr__(self, "decision_packet_ids", decision_packet_ids)
+        object.__setattr__(self, "promotion_decision_ids", promotion_decision_ids)
         object.__setattr__(self, "trace_refs", trace_refs)
         object.__setattr__(self, "metadata", metadata)
 
@@ -289,7 +295,12 @@ class BuildCaptureEvent(ContractModel):
         object.__setattr__(self, "labels", _normalize_string_tuple("labels", self.labels))
         object.__setattr__(self, "trace_refs", _normalize_string_tuple("trace_refs", self.trace_refs))
         object.__setattr__(self, "metadata", _normalize_mapping("metadata", self.metadata))
-        object.__setattr__(self, "provenance", _normalize_provenance(self.provenance))
+        provenance = _normalize_provenance(self.provenance)
+        if provenance is not None and provenance.trace_refs:
+            raise ContractValidationError(
+                "BuildCaptureEvent trace_refs must use the top-level field, not provenance.trace_refs"
+            )
+        object.__setattr__(self, "provenance", provenance)
 
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> BuildCaptureEvent:
@@ -307,7 +318,7 @@ class DecisionPacket(ContractModel):
         "archived",
     )
 
-    packet_id: str
+    decision_packet_id: str
     source_event_ids: tuple[str, ...]
     problem: str
     proposed_change: str
@@ -321,7 +332,11 @@ class DecisionPacket(ContractModel):
     provenance: Provenance | None = None
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "packet_id", _validate_required_text("packet_id", self.packet_id))
+        object.__setattr__(
+            self,
+            "decision_packet_id",
+            _validate_required_text("decision_packet_id", self.decision_packet_id),
+        )
         object.__setattr__(
             self,
             "source_event_ids",
@@ -450,7 +465,17 @@ class CandidateArtifact(ContractModel):
             "decision_packet_id",
             _validate_optional_text("decision_packet_id", self.decision_packet_id),
         )
-        object.__setattr__(self, "provenance", _normalize_provenance(self.provenance))
+        provenance = _normalize_provenance(self.provenance)
+        if (
+            provenance is not None
+            and self.decision_packet_id is not None
+            and provenance.decision_packet_ids
+            and self.decision_packet_id not in provenance.decision_packet_ids
+        ):
+            raise ContractValidationError(
+                "decision_packet_id must match provenance.decision_packet_ids when both are provided"
+            )
+        object.__setattr__(self, "provenance", provenance)
         object.__setattr__(self, "eval_pack", _normalize_mapping("eval_pack", self.eval_pack, allow_none=True))
         object.__setattr__(self, "risk_tier", _validate_optional_text("risk_tier", self.risk_tier))
 

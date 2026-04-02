@@ -17,11 +17,14 @@ class StateLayout:
     build_capture_dir: Path
     build_capture_events: Path
     build_capture_index_db: Path
+    decision_packets_dir: Path
+    decision_packets_db: Path
     observational_dir: Path
     observational_episodes_db: Path
     observational_observations_db: Path
     observational_reflections_db: Path
     candidates_dir: Path
+    candidate_registry_db: Path
     candidate_skills_dir: Path
     candidate_prompts_dir: Path
     candidate_templates_dir: Path
@@ -42,6 +45,7 @@ class StateLayout:
         return (
             self.root,
             self.build_capture_dir,
+            self.decision_packets_dir,
             self.observational_dir,
             self.candidates_dir,
             self.candidate_skills_dir,
@@ -64,9 +68,11 @@ class StateLayout:
         return (
             self.build_capture_events,
             self.build_capture_index_db,
+            self.decision_packets_db,
             self.observational_episodes_db,
             self.observational_observations_db,
             self.observational_reflections_db,
+            self.candidate_registry_db,
             self.selfbuild_decisions,
         )
 
@@ -81,6 +87,7 @@ def state_layout(root: Path | str = DEFAULT_STATE_ROOT) -> StateLayout:
 
     state_root = Path(root)
     build_capture_dir = state_root / "build_capture"
+    decision_packets_dir = state_root / "decision_packets"
     observational_dir = state_root / "observational"
     candidates_dir = state_root / "candidates"
     selfbuild_dir = state_root / "selfbuild"
@@ -91,11 +98,14 @@ def state_layout(root: Path | str = DEFAULT_STATE_ROOT) -> StateLayout:
         build_capture_dir=build_capture_dir,
         build_capture_events=build_capture_dir / "events.jsonl",
         build_capture_index_db=build_capture_dir / "index.sqlite",
+        decision_packets_dir=decision_packets_dir,
+        decision_packets_db=decision_packets_dir / "packets.sqlite",
         observational_dir=observational_dir,
         observational_episodes_db=observational_dir / "episodes.sqlite",
         observational_observations_db=observational_dir / "observations.sqlite",
         observational_reflections_db=observational_dir / "reflections.sqlite",
         candidates_dir=candidates_dir,
+        candidate_registry_db=candidates_dir / "registry.sqlite",
         candidate_skills_dir=candidates_dir / "skills",
         candidate_prompts_dir=candidates_dir / "prompts",
         candidate_templates_dir=candidates_dir / "templates",

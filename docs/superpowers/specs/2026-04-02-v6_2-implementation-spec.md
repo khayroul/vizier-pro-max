@@ -109,10 +109,12 @@ Shared rules:
 - downstream records may attach optional `provenance` with the same shape:
   - `event_ids`
   - `observation_ids`
-  - `decision_ids`
+  - `decision_packet_ids`
+  - `promotion_decision_ids`
   - `trace_refs`
   - `metadata`
 - `candidate_path` is repo-relative and must stay inside `state/candidates/<artifact-family>/`
+- `BuildCaptureEvent.trace_refs` is the canonical home for event trace pointers; `BuildCaptureEvent.provenance.trace_refs` is invalid
 
 ### 4.1 `BuildCaptureEvent`
 
@@ -166,7 +168,7 @@ Normalized handoff between capture, observational memory, evolution, and selfbui
 
 Required fields:
 
-- `packet_id`
+- `decision_packet_id`
 - `source_event_ids`
 - `problem`
 - `proposed_change`
@@ -289,11 +291,14 @@ state/
 ├── build_capture/
 │   ├── events.jsonl
 │   └── index.sqlite
+├── decision_packets/
+│   └── packets.sqlite
 ├── observational/
 │   ├── episodes.sqlite
 │   ├── observations.sqlite
 │   └── reflections.sqlite
 ├── candidates/
+│   ├── registry.sqlite
 │   ├── skills/
 │   ├── prompts/
 │   ├── templates/
@@ -312,7 +317,9 @@ state/
 Rules:
 
 - Source code is not the candidate scratchpad.
+- `DecisionPacket` records persist in `state/decision_packets/packets.sqlite`.
 - Generated artifacts land in `state/candidates/` first.
+- `CandidateArtifact` records persist in `state/candidates/registry.sqlite` even when the materialized candidate files are absent or later superseded.
 - `MEMORY.md` may remain, but it is a rendered view, not the canonical observational ledger.
 - Promotion records are append-only.
 - The shared helper surface in `augments/observational/store.py` creates directories only; append-first ledger files appear when later packets write them.
