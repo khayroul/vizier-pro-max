@@ -76,12 +76,13 @@ def pre_llm_call(
                 _step_counter.get(effective_task_id, 0) + 1
             )
             step = _step_counter[effective_task_id]
+        deliverable_id = kwargs.get("deliverable_id")
 
         with sqlite3.connect(DB_PATH) as conn:
             conn.execute(
                 """INSERT INTO prompt_log
-                   (task_id, step, model, messages_json, tools_json, timestamp)
-                   VALUES (?, ?, ?, ?, ?, ?)""",
+                   (task_id, step, model, messages_json, tools_json, timestamp, deliverable_id)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 [
                     effective_task_id,
                     step,
@@ -97,6 +98,7 @@ def pre_llm_call(
                         else "[]"
                     ),
                     time.time(),
+                    str(deliverable_id) if deliverable_id is not None else None,
                 ],
             )
     except (sqlite3.Error, OSError, ValueError) as exc:
