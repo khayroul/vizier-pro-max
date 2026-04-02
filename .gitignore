@@ -21,3 +21,13 @@ tests/benchmarks/baseline/**/*.pdf
 tests/benchmarks/baseline/**/*.mp3
 tests/benchmarks/baseline/**/*.png
 tests/benchmarks/outputs/**
+
+# Runtime / generated data
+traces/
+data/
+
+# External projects (scouted, not part of this repo)
+scouts/
+
+# Hermes workspace state
+hermes-workspace/
