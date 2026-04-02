@@ -1,8 +1,4 @@
-"""Design Intelligence plugin — palette + font search tools.
-
-Registers search_palettes and search_fonts tools backed by BM25 search
-over bundled CSV data from UI UX Pro Max.
-"""
+"""Design Intelligence plugin — palette/font and reference lookup tools."""
 from __future__ import annotations
 
 import json
@@ -11,6 +7,14 @@ from pathlib import Path
 from typing import Any
 
 from plugins.design_intelligence.search_engine import BM25Index, load_csv
+from references.query import (
+    search_chart_patterns,
+    search_quarto_layouts,
+    search_report_layouts,
+    search_ui_styles,
+    search_ux_guidelines,
+    warm_reference_query_indices,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +57,45 @@ SEARCH_FONTS_SCHEMA = {
 }
 
 
+def _build_query_schema(description: str) -> dict[str, Any]:
+    return {
+        "type": "object",
+        "properties": {
+            "query": {
+                "type": "string",
+                "description": description,
+            },
+        },
+        "required": ["query"],
+    }
+
+
+SEARCH_UI_STYLES_SCHEMA = _build_query_schema(
+    "Search query for UI style families and visual motifs, e.g. 'swiss saas dashboard' or 'retro brutalist landing page'."
+)
+SEARCH_UX_GUIDELINES_SCHEMA = _build_query_schema(
+    "Search query for UX problems, platforms, or best practices, e.g. 'smooth scroll navigation web' or 'form validation mobile'."
+)
+SEARCH_CHART_PATTERNS_SCHEMA = _build_query_schema(
+    "Search query for chart families, analytic goals, or data stories, e.g. 'time series growth line' or 'category comparison ranking'."
+)
+SEARCH_REPORT_LAYOUTS_SCHEMA = _build_query_schema(
+    "Search query for report layout, figure/table conventions, or long-form structure, e.g. 'figure width pdf report' or 'modular typst longform'."
+)
+SEARCH_QUARTO_LAYOUTS_SCHEMA = _build_query_schema(
+    "Search query for Quarto-derived layout, publishing, or callout patterns, e.g. 'collapsible dark mode callout' or 'book project html pdf'."
+)
+
+
+def _handle_reference_search(
+    args: dict[str, Any],
+    search_fn: Any,
+) -> str:
+    query = str(args.get("query", ""))
+    results = search_fn(query)
+    return json.dumps(results, default=str)
+
+
 def _handle_search_palettes(args: dict[str, Any], agent: Any) -> str:
     """Search palette database and return top 5 matches."""
     if _palette_index is None:
@@ -89,10 +132,12 @@ def register(ctx: Any) -> None:
         len(palette_rows),
         len(font_rows),
     )
+    reference_counts = warm_reference_query_indices()
+    logger.info("Reference corpus lookups loaded: %s", reference_counts)
 
     ctx.register_tool(
         name="search_palettes",
-        toolset="vizier-design",
+        toolset="vizier-visual",
         schema=SEARCH_PALETTES_SCHEMA,
         handler=lambda args, **kw: _handle_search_palettes(args, None),
         check_fn=lambda: True,
@@ -105,7 +150,7 @@ def register(ctx: Any) -> None:
 
     ctx.register_tool(
         name="search_fonts",
-        toolset="vizier-design",
+        toolset="vizier-visual",
         schema=SEARCH_FONTS_SCHEMA,
         handler=lambda args, **kw: _handle_search_fonts(args, None),
         check_fn=lambda: True,
@@ -113,5 +158,65 @@ def register(ctx: Any) -> None:
             "Search the typography database by style, mood, or use-case keywords. "
             "Returns top 5 font pairings with weight and spacing specs. "
             "Call this BEFORE generate_poster to select typography."
+        ),
+    )
+
+    ctx.register_tool(
+        name="search_ui_styles",
+        toolset="vizier-visual",
+        schema=SEARCH_UI_STYLES_SCHEMA,
+        handler=lambda args, **kw: _handle_reference_search(args, search_ui_styles),
+        check_fn=lambda: True,
+        description=(
+            "Search local UI style references from UI UX Pro Max, enriched with "
+            "visual motifs. Returns top 5 matches from pinned local corpora only."
+        ),
+    )
+
+    ctx.register_tool(
+        name="search_ux_guidelines",
+        toolset="vizier-visual",
+        schema=SEARCH_UX_GUIDELINES_SCHEMA,
+        handler=lambda args, **kw: _handle_reference_search(args, search_ux_guidelines),
+        check_fn=lambda: True,
+        description=(
+            "Search local UX do/don't guidance from the normalized UI UX Pro Max "
+            "corpus. Returns top 5 matching issues, recommendations, and anti-patterns."
+        ),
+    )
+
+    ctx.register_tool(
+        name="search_chart_patterns",
+        toolset="vizier-visual",
+        schema=SEARCH_CHART_PATTERNS_SCHEMA,
+        handler=lambda args, **kw: _handle_reference_search(args, search_chart_patterns),
+        check_fn=lambda: True,
+        description=(
+            "Search local chart references across UI UX Pro Max heuristics and "
+            "Vega-Lite example patterns. Reference only; does not invoke a chart runtime."
+        ),
+    )
+
+    ctx.register_tool(
+        name="search_report_layouts",
+        toolset="vizier-document",
+        schema=SEARCH_REPORT_LAYOUTS_SCHEMA,
+        handler=lambda args, **kw: _handle_reference_search(args, search_report_layouts),
+        check_fn=lambda: True,
+        description=(
+            "Search local report-layout references across Quarto layout options, "
+            "table/figure conventions, and long-form structure patterns."
+        ),
+    )
+
+    ctx.register_tool(
+        name="search_quarto_layouts",
+        toolset="vizier-document",
+        schema=SEARCH_QUARTO_LAYOUTS_SCHEMA,
+        handler=lambda args, **kw: _handle_reference_search(args, search_quarto_layouts),
+        check_fn=lambda: True,
+        description=(
+            "Search Quarto-derived layout, publishing, and callout references from "
+            "the pinned local corpus. Reference only; Quarto is not executed."
         ),
     )

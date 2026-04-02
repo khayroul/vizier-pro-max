@@ -47,9 +47,9 @@ not execute Quarto or adopt Quarto as an alternate pipeline runtime.
 
 ## Not Wired Yet
 
-- No new Hermes tools are registered yet.
-- No pipeline search helpers are wired yet for style, UX, report layout, chart,
-  or Quarto-specific lookup.
+- At import time, no Hermes tools were registered yet. See
+  `docs/superpowers/plans/2026-04-02-reference-corpus-lookup-layer.md` for the
+  first lookup-layer follow-up.
 - No chart renderer or document renderer runtime has been added.
 - No style calibration packs have been built on top of the imported corpora yet.
 

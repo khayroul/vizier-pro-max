@@ -35,7 +35,16 @@ def test_register_exposes_expected_tools_and_hooks() -> None:
 
     tool_names = {call.kwargs["name"] for call in ctx.register_tool.call_args_list}
     assert {"run_pipeline", "query_logs", "query_costs"} <= tool_names
-    assert {"search_palettes", "search_fonts", "generate_poster"} <= tool_names
+    assert {
+        "search_palettes",
+        "search_fonts",
+        "search_ui_styles",
+        "search_ux_guidelines",
+        "search_chart_patterns",
+        "search_report_layouts",
+        "search_quarto_layouts",
+        "generate_poster",
+    } <= tool_names
     assert {"switch_toolset", "decompose_task", "merge_results"} <= tool_names
 
     hook_names = [call.args[0] for call in ctx.register_hook.call_args_list]

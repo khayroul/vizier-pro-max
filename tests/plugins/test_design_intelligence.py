@@ -189,17 +189,43 @@ class TestLoadCsv:
 
 
 class TestPluginRegistration:
-    def test_registers_two_tools(self) -> None:
-        """Plugin registers search_palettes and search_fonts tools."""
+    def test_registers_lookup_tools(self) -> None:
+        """Plugin registers palette/font and reference lookup tools."""
         from plugins.design_intelligence import register
 
         ctx = MagicMock()
         register(ctx)
 
-        assert ctx.register_tool.call_count == 2
+        assert ctx.register_tool.call_count == 7
         tool_names = [call[1]["name"] for call in ctx.register_tool.call_args_list]
         assert "search_palettes" in tool_names
         assert "search_fonts" in tool_names
+        assert "search_ui_styles" in tool_names
+        assert "search_ux_guidelines" in tool_names
+        assert "search_chart_patterns" in tool_names
+        assert "search_report_layouts" in tool_names
+        assert "search_quarto_layouts" in tool_names
+
+    def test_registers_under_visual_toolset(self) -> None:
+        """Design search tools should register under visual/document toolsets."""
+        from plugins.design_intelligence import register
+
+        ctx = MagicMock()
+        register(ctx)
+
+        toolsets = {
+            call[1]["name"]: call[1]["toolset"]
+            for call in ctx.register_tool.call_args_list
+        }
+        assert toolsets == {
+            "search_palettes": "vizier-visual",
+            "search_fonts": "vizier-visual",
+            "search_ui_styles": "vizier-visual",
+            "search_ux_guidelines": "vizier-visual",
+            "search_chart_patterns": "vizier-visual",
+            "search_report_layouts": "vizier-document",
+            "search_quarto_layouts": "vizier-document",
+        }
 
     def test_tool_schemas_have_query_param(self) -> None:
         """Both tool schemas require a 'query' parameter."""
@@ -253,3 +279,45 @@ class TestPluginRegistration:
         assert len(results) == 5
         assert "heading_font" in results[0]
         assert "body_font" in results[0]
+        assert "score" in results[0]
+
+    def test_ui_style_handler_returns_json(self) -> None:
+        """search_ui_styles handler returns local reference results."""
+        from plugins.design_intelligence import register
+
+        ctx = MagicMock()
+        register(ctx)
+
+        style_call = next(
+            c for c in ctx.register_tool.call_args_list
+            if c[1]["name"] == "search_ui_styles"
+        )
+        handler = style_call[1]["handler"]
+        result_json = handler({"query": "swiss saas dashboard"})
+        results = json.loads(result_json)
+
+        assert isinstance(results, list)
+        assert len(results) == 5
+        assert results[0]["dataset_id"] == "ui_styles"
+        assert "visual_motif" in results[0]
+        assert "score" in results[0]
+
+    def test_quarto_layout_handler_returns_json(self) -> None:
+        """search_quarto_layouts handler returns Quarto-derived references."""
+        from plugins.design_intelligence import register
+
+        ctx = MagicMock()
+        register(ctx)
+
+        quarto_call = next(
+            c for c in ctx.register_tool.call_args_list
+            if c[1]["name"] == "search_quarto_layouts"
+        )
+        handler = quarto_call[1]["handler"]
+        result_json = handler({"query": "collapsible dark mode callout"})
+        results = json.loads(result_json)
+
+        assert isinstance(results, list)
+        assert len(results) == 5
+        assert results[0]["dataset_id"] == "callout_patterns"
+        assert "score" in results[0]
