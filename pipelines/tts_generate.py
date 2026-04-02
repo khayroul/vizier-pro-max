@@ -1,6 +1,7 @@
 """TTS generation — text -> edge-tts -> ffmpeg normalize -> output."""
 from __future__ import annotations
 
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -8,6 +9,7 @@ from typing import Any
 import structlog
 
 from middleware.quality_gate import ValidationResult
+from middleware.quality_scorer import score_tts_generate
 from scripts.audio.process_media import run as ffmpeg_run
 from scripts.audio.speak_text import run as tts_run
 
@@ -102,6 +104,13 @@ def run(
     Returns:
         Dict with file_path, voice, and status keys.
     """
+    if not shutil.which("ffmpeg"):
+        raise RuntimeError("ffmpeg not found on PATH — required for audio normalization")
+    try:
+        import edge_tts  # noqa: F401  # type: ignore[import-untyped]
+    except ImportError as exc:
+        raise RuntimeError("edge-tts package not installed — run: pip install edge-tts") from exc
+
     if not text.strip():
         msg = "text must not be empty"
         raise ValueError(msg)
@@ -137,13 +146,29 @@ def run(
             "TTS output quality check failed: %s", quality_result.errors
         )
 
+    # Duration heuristic for longer text
+    if quality_result.passed and len(text) > 50:
+        min_duration_bytes = max(16_000, int((len(text) / 2.5) * 16_000))
+        actual_size = Path(output_path).stat().st_size
+        if actual_size < min_duration_bytes:
+            logger.warning(
+                "Audio duration suspect: %d bytes < %d minimum for %d chars",
+                actual_size, min_duration_bytes, len(text),
+            )
+
+    score = score_tts_generate(Path(output_path), text_length=len(text))
+
     return {
         "file_path": output_path,
         "voice": voice,
         "status": "completed",
         "quality_report": {
-            "passed": quality_result.passed,
-            "errors": quality_result.errors,
-            "layer": quality_result.layer,
+            "passed": score.passed,
+            "score": score.score,
+            "properties": [
+                {"name": p.name, "passed": p.passed, "detail": p.detail}
+                for p in score.properties
+            ],
+            "layer": "output_verification",
         },
     }
