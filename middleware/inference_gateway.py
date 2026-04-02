@@ -55,10 +55,7 @@ def default_openai_base_url() -> str:
 
 def default_openai_api_key() -> str:
     """Return the upstream OpenAI API key."""
-    return (
-        os.environ.get("VIZIER_UPSTREAM_OPENAI_API_KEY", "").strip()
-        or os.environ.get("OPENAI_API_KEY", "").strip()
-    )
+    return os.environ.get("VIZIER_UPSTREAM_OPENAI_API_KEY", "").strip()
 
 
 def default_openai_model() -> str:
@@ -243,7 +240,7 @@ def _proxy_openai_chat_completion(
     start = time.monotonic()
     api_key = default_openai_api_key()
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY or VIZIER_UPSTREAM_OPENAI_API_KEY is required for gateway upstream access")
+        raise RuntimeError("VIZIER_UPSTREAM_OPENAI_API_KEY is required for gateway upstream access")
 
     response = httpx.post(
         f"{default_openai_base_url()}/chat/completions",
@@ -348,7 +345,7 @@ def proxy_image_generation(
     start = time.monotonic()
     api_key = default_openai_api_key()
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY or VIZIER_UPSTREAM_OPENAI_API_KEY is required for gateway upstream access")
+        raise RuntimeError("VIZIER_UPSTREAM_OPENAI_API_KEY is required for gateway upstream access")
 
     response = httpx.post(
         f"{default_openai_base_url()}/images/generations",

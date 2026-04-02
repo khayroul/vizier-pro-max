@@ -9,7 +9,7 @@ from pathlib import Path
 _lock = threading.Lock()
 _loaded = False
 _DEFAULT_OVERRIDE_KEYS = frozenset({
-    "OPENAI_API_KEY",
+    "VIZIER_UPSTREAM_OPENAI_API_KEY",
     "TELEGRAM_BOT_TOKEN",
     "FAL_KEY",
     "ELEVENLABS_API_KEY",

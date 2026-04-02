@@ -4,10 +4,12 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Sequence
 from xml.sax.saxutils import escape
 
+import httpx
 import yaml
 
 from adapter.env_loader import ensure_env
@@ -16,6 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = Path(__file__).resolve()
 HERMES_BIN = PROJECT_ROOT / ".venv" / "bin" / "hermes"
 PYTHON_BIN = PROJECT_ROOT / ".venv" / "bin" / "python"
+INFERENCE_GATEWAY_SCRIPT = PROJECT_ROOT / "scripts" / "delivery" / "run_inference_gateway.py"
 MODELS_CONFIG_PATH = PROJECT_ROOT / "config" / "models.yaml"
 HERMES_CONFIG_PATH = PROJECT_ROOT / "config" / "hermes.yaml"
 DEFAULT_MODEL = "gpt-5.4-mini"
@@ -78,6 +81,101 @@ def _is_local_gateway_url(base_url: str) -> bool:
     return normalized.startswith("http://127.0.0.1:11436") or normalized.startswith("http://localhost:11436")
 
 
+def _gateway_health_url(base_url: str) -> str:
+    return f"{base_url.rstrip('/')}/health"
+
+
+def _require_local_gateway_ready(base_url: str, *, timeout: float = 2.0) -> None:
+    """Fail closed if Hermes is pointed at a local Vizier gateway that is down."""
+    if not _is_local_gateway_url(base_url):
+        return
+
+    health_url = _gateway_health_url(base_url)
+    try:
+        response = httpx.get(health_url, timeout=timeout)
+    except (httpx.HTTPError, httpx.TimeoutException, OSError) as exc:
+        msg = f"Vizier inference gateway is not reachable at {health_url}: {exc}"
+        raise RuntimeError(msg) from exc
+
+    if response.status_code != 200:
+        msg = f"Vizier inference gateway health check failed at {health_url} with status {response.status_code}"
+        raise RuntimeError(msg)
+
+
+def _build_inference_gateway_env(base_url: str) -> dict[str, str]:
+    """Build the child environment for the local inference gateway process."""
+    from scripts.delivery.run_inference_gateway import _prepare_gateway_env
+
+    _prepare_gateway_env()
+    env = os.environ.copy()
+    env.setdefault("VIRTUAL_ENV", str(PROJECT_ROOT / ".venv"))
+    env.setdefault(
+        "PATH",
+        f"{PROJECT_ROOT / '.venv' / 'bin'}:{os.environ.get('PATH', os.defpath)}",
+    )
+    if base_url:
+        env["VIZIER_GATEWAY_BASE_URL"] = base_url
+    return env
+
+
+def _inference_gateway_command() -> list[str]:
+    return [str(PYTHON_BIN), str(INFERENCE_GATEWAY_SCRIPT)]
+
+
+def _ensure_local_gateway_process(
+    base_url: str,
+    *,
+    poll_attempts: int = 20,
+    poll_interval: float = 0.25,
+) -> subprocess.Popen[bytes] | None:
+    """Start the local inference gateway if Hermes depends on it and it is not running."""
+    if not _is_local_gateway_url(base_url):
+        return None
+
+    try:
+        _require_local_gateway_ready(base_url, timeout=0.5)
+        return None
+    except RuntimeError:
+        pass
+
+    process = subprocess.Popen(
+        _inference_gateway_command(),
+        cwd=PROJECT_ROOT,
+        env=_build_inference_gateway_env(base_url),
+    )
+
+    for _ in range(poll_attempts):
+        if process.poll() is not None:
+            msg = f"Vizier inference gateway exited before becoming healthy (exit={process.poll()})"
+            raise RuntimeError(msg)
+        try:
+            _require_local_gateway_ready(base_url, timeout=0.5)
+            return process
+        except RuntimeError:
+            time.sleep(poll_interval)
+
+    process.terminate()
+    try:
+        process.wait(timeout=2.0)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=2.0)
+    msg = f"Vizier inference gateway did not become healthy at {_gateway_health_url(base_url)}"
+    raise RuntimeError(msg)
+
+
+def _stop_local_gateway_process(process: subprocess.Popen[bytes] | None) -> None:
+    """Terminate a local inference gateway process started by this launcher."""
+    if process is None or process.poll() is not None:
+        return
+    process.terminate()
+    try:
+        process.wait(timeout=2.0)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=2.0)
+
+
 def build_gateway_env() -> dict[str, str]:
     """Build the environment for Hermes Telegram runs."""
     ensure_env()
@@ -103,8 +201,9 @@ def build_gateway_env() -> dict[str, str]:
         env.setdefault("VIZIER_GATEWAY_BASE_URL", base_url)
 
     normalized_base_url = base_url.lower()
-    if provider == "custom" and _is_local_gateway_url(base_url) and not env.get("OPENAI_API_KEY"):
+    if provider == "custom" and _is_local_gateway_url(base_url):
         env["OPENAI_API_KEY"] = "vizier-local-gateway"
+        env.pop("VIZIER_UPSTREAM_OPENAI_API_KEY", None)
     if provider == "custom" and "api.openai.com" in normalized_base_url and not env.get("OPENAI_API_KEY"):
         raise RuntimeError("OPENAI_API_KEY is required for the configured OpenAI-compatible Hermes endpoint")
 
@@ -127,8 +226,14 @@ def build_gateway_command(args: Sequence[str] | None = None) -> list[str]:
 def run(args: Sequence[str] | None = None) -> subprocess.CompletedProcess[bytes]:
     """Launch Hermes gateway from the repo root."""
     env = build_gateway_env()
+    base_url = str(env.get("OPENAI_BASE_URL", "")).strip()
+    gateway_process = _ensure_local_gateway_process(base_url)
     command = build_gateway_command(args)
-    return subprocess.run(command, cwd=PROJECT_ROOT, env=env, check=True)
+    try:
+        _require_local_gateway_ready(base_url)
+        return subprocess.run(command, cwd=PROJECT_ROOT, env=env, check=True)
+    finally:
+        _stop_local_gateway_process(gateway_process)
 
 
 def _launchctl_target() -> str:

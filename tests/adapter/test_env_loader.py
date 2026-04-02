@@ -44,7 +44,7 @@ class TestEnsureEnv:
         ensure_env()
         assert os.environ["EXISTING_VAR"] == "from_env"
 
-    @pytest.mark.parametrize("key_name", ["OPENAI_API_KEY", "ELEVENLABS_API_KEY", "GAMMA_API_KEY"])
+    @pytest.mark.parametrize("key_name", ["VIZIER_UPSTREAM_OPENAI_API_KEY", "ELEVENLABS_API_KEY", "GAMMA_API_KEY"])
     def test_overrides_repo_secret_keys_by_default(
         self, key_name: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
     ) -> None:
@@ -54,6 +54,16 @@ class TestEnsureEnv:
         monkeypatch.setenv(key_name, "from_env")
         ensure_env()
         assert os.environ[key_name] == "from_file"
+
+    def test_does_not_override_openai_api_key_by_default(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        env_file = tmp_path / ".env"
+        env_file.write_text("OPENAI_API_KEY=from_file\n")
+        monkeypatch.setattr("adapter.env_loader._env_file_path", lambda: env_file)
+        monkeypatch.setenv("OPENAI_API_KEY", "from_env")
+        ensure_env()
+        assert os.environ["OPENAI_API_KEY"] == "from_env"
 
     def test_custom_override_keys(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,

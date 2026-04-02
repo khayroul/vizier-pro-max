@@ -69,7 +69,7 @@ def test_proxy_chat_completion_logs_openai_success(
 
     monkeypatch.setattr("middleware.inference_gateway.record_external_usage", _fake_record)
     monkeypatch.setattr("middleware.inference_gateway.httpx.post", _fake_post)
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("VIZIER_UPSTREAM_OPENAI_API_KEY", "sk-test")
 
     response = proxy_chat_completion(
         request_body={
@@ -120,7 +120,7 @@ def test_proxy_chat_completion_falls_back_to_ollama_on_openai_500(
 
     monkeypatch.setattr("middleware.inference_gateway.record_external_usage", _fake_record)
     monkeypatch.setattr("middleware.inference_gateway.httpx.post", _fake_post)
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("VIZIER_UPSTREAM_OPENAI_API_KEY", "sk-test")
 
     response = proxy_chat_completion(
         request_body={
@@ -167,7 +167,7 @@ def test_proxy_chat_completion_bubbles_non_chat_openai_failure(
 
     monkeypatch.setattr("middleware.inference_gateway.record_external_usage", _fake_record)
     monkeypatch.setattr("middleware.inference_gateway.httpx.post", _fake_post)
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("VIZIER_UPSTREAM_OPENAI_API_KEY", "sk-test")
 
     response = proxy_chat_completion(
         request_body={
@@ -206,7 +206,7 @@ def test_proxy_image_generation_logs_openai_success(
 
     monkeypatch.setattr("middleware.inference_gateway.record_external_usage", _fake_record)
     monkeypatch.setattr("middleware.inference_gateway.httpx.post", _fake_post)
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("VIZIER_UPSTREAM_OPENAI_API_KEY", "sk-test")
 
     response = proxy_image_generation(
         request_body={
@@ -247,7 +247,7 @@ def test_proxy_image_generation_logs_openai_failure(
 
     monkeypatch.setattr("middleware.inference_gateway.record_external_usage", _fake_record)
     monkeypatch.setattr("middleware.inference_gateway.httpx.post", _fake_post)
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("VIZIER_UPSTREAM_OPENAI_API_KEY", "sk-test")
 
     response = proxy_image_generation(
         request_body={
