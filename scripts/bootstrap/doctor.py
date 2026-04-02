@@ -4,8 +4,10 @@ from __future__ import annotations
 import configparser
 import json
 import subprocess
+import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 from adapter.hermes_registry import load_hermes_registry
 
@@ -90,6 +92,112 @@ def _parse_submodule_status(raw_status: str) -> tuple[str, str | None]:
     status_flag = line[0]
     sha = line[1:].split()[0] if len(line) > 1 else None
     return (status_flag, sha)
+
+
+def _detect_repo_python(project_root: Path) -> Path | None:
+    """Return the repo-managed virtualenv Python if present."""
+    candidates = [
+        project_root / ".venv" / "bin" / "python",
+        project_root / "venv" / "bin" / "python",
+        project_root / ".venv" / "Scripts" / "python.exe",
+        project_root / "venv" / "Scripts" / "python.exe",
+    ]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    current = Path(sys.executable)
+    return current if current.is_file() else None
+
+
+def _run_python_snippet(python_path: Path, cwd: Path, code: str) -> str:
+    """Run a short Python snippet and return stdout."""
+    result = subprocess.run(
+        [str(python_path), "-c", code],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        stderr = result.stderr.strip()
+        stdout = result.stdout.strip()
+        detail = stderr or stdout or "unknown python error"
+        raise RuntimeError(detail)
+    return result.stdout.strip()
+
+
+def _parse_last_json_value(raw_output: str) -> Any:
+    """Parse the last JSON object/array found in process output."""
+    for line in reversed(raw_output.splitlines()):
+        text = line.strip()
+        if not text:
+            continue
+        if not text.startswith(("{", "[")):
+            continue
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            continue
+    raise RuntimeError("No JSON payload found in process output")
+
+
+def _run_pip_check(python_path: Path, cwd: Path) -> tuple[bool, str]:
+    """Run ``pip check`` and return ``(passed, detail)``."""
+    result = subprocess.run(
+        [str(python_path), "-m", "pip", "check"],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    detail = (result.stdout or result.stderr).strip()
+    return (result.returncode == 0, detail or "No dependency conflicts detected")
+
+
+def _probe_shared_imports(python_path: Path, project_root: Path) -> dict[str, str]:
+    """Check that the shared repo Python can import core Hermes modules."""
+    code = """
+import importlib
+import json
+
+results = {}
+for name in ("hermes_cli.main", "gateway.run", "model_tools"):
+    try:
+        importlib.import_module(name)
+        results[name] = "ok"
+    except Exception as exc:
+        results[name] = f"{type(exc).__name__}: {exc}"
+
+print(json.dumps(results))
+"""
+    output = _run_python_snippet(python_path, project_root, code)
+    parsed = _parse_last_json_value(output)
+    if not isinstance(parsed, dict):
+        raise RuntimeError("Shared import probe did not return a JSON object")
+    return {str(key): str(value) for key, value in parsed.items()}
+
+
+def _probe_plugin_loads(python_path: Path, hermes_path: Path) -> list[dict[str, Any]]:
+    """Return Hermes plugin-manager results from the shared repo Python."""
+    code = """
+import json
+import logging
+import warnings
+
+warnings.filterwarnings("ignore")
+logging.disable(logging.CRITICAL)
+
+from hermes_cli.plugins import get_plugin_manager
+
+manager = get_plugin_manager()
+manager.discover_and_load()
+print(json.dumps(manager.list_plugins()))
+"""
+    output = _run_python_snippet(python_path, hermes_path, code)
+    parsed = _parse_last_json_value(output)
+    if not isinstance(parsed, list):
+        raise RuntimeError("Plugin probe did not return a JSON array")
+    return [dict(item) for item in parsed]
 
 
 def run_doctor(project_root: Path | None = None) -> DoctorReport:
@@ -288,6 +396,97 @@ def run_doctor(project_root: Path | None = None) -> DoctorReport:
                 detail="Hermes registry is importable and exposes register()",
             )
         )
+
+    repo_python = _detect_repo_python(root)
+    if repo_python is None:
+        checks.append(
+            DoctorCheck(
+                name="repo_python",
+                status="warn",
+                detail="Repo virtualenv Python could not be detected",
+            )
+        )
+    else:
+        checks.append(
+            DoctorCheck(
+                name="repo_python",
+                status="ok",
+                detail=f"Using repo Python at {repo_python}",
+            )
+        )
+
+        pip_ok, pip_detail = _run_pip_check(repo_python, root)
+        checks.append(
+            DoctorCheck(
+                name="dependency_conflicts",
+                status="ok" if pip_ok else "fail",
+                detail=pip_detail,
+            )
+        )
+
+        try:
+            import_results = _probe_shared_imports(repo_python, root)
+            failures = {
+                name: result
+                for name, result in import_results.items()
+                if result != "ok"
+            }
+            if failures:
+                checks.append(
+                    DoctorCheck(
+                        name="shared_runtime_imports",
+                        status="fail",
+                        detail=f"Hermes imports failed in repo venv: {failures}",
+                    )
+                )
+            else:
+                checks.append(
+                    DoctorCheck(
+                        name="shared_runtime_imports",
+                        status="ok",
+                        detail="Repo venv can import Hermes runtime modules",
+                    )
+                )
+        except RuntimeError as exc:
+            checks.append(
+                DoctorCheck(
+                    name="shared_runtime_imports",
+                    status="fail",
+                    detail=f"Unable to probe shared Hermes imports: {exc}",
+                )
+            )
+
+        try:
+            plugin_results = _probe_plugin_loads(repo_python, hermes_path)
+            broken_plugins = [
+                plugin["name"]
+                for plugin in plugin_results
+                if plugin.get("error") and plugin.get("error") != "disabled via config"
+            ]
+            if broken_plugins:
+                checks.append(
+                    DoctorCheck(
+                        name="plugin_runtime",
+                        status="fail",
+                        detail=f"Plugins failed to load: {', '.join(broken_plugins)}",
+                    )
+                )
+            else:
+                checks.append(
+                    DoctorCheck(
+                        name="plugin_runtime",
+                        status="ok",
+                        detail=f"Loaded {len(plugin_results)} Hermes plugins without errors",
+                    )
+                )
+        except RuntimeError as exc:
+            checks.append(
+                DoctorCheck(
+                    name="plugin_runtime",
+                    status="fail",
+                    detail=f"Unable to inspect Hermes plugins: {exc}",
+                )
+            )
 
     return DoctorReport(
         project_root=str(root),

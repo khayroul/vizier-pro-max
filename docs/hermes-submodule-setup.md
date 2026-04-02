@@ -9,8 +9,17 @@ truth for runtime compatibility.
 git submodule update --init --recursive
 git -C hermes-agent remote set-url origin git@github.com:khayroul/hermes-agent.git
 git -C hermes-agent remote add upstream git@github.com:NousResearch/hermes-agent.git
+python3 -m pip install -e . -e ./hermes-agent
+# If you enable optional user plugins such as ~/.hermes/plugins/langfuse_tracer,
+# install their runtime packages into the same venv too.
 python3 -m scripts.bootstrap.doctor
 ```
+
+The shared repo venv is only considered healthy when it can:
+
+- import Hermes runtime modules from the Vizier root
+- pass `pip check` without dependency conflicts
+- load installed Hermes user plugins without errors
 
 ## Maintenance workflow
 
@@ -20,6 +29,8 @@ python3 -m scripts.bootstrap.doctor
 - The `vizier-gate2-patch` branch is the preferred maintenance branch when
   doing Hermes patch work, but detached HEAD at the pinned commit is also
   acceptable.
+- `python3 -m scripts.bootstrap.doctor` is the preflight gate before gateway
+  restarts and unattended runs.
 
 ## Update flow
 
