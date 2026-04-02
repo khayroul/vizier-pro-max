@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import structlog
 
 from adapter.executor import execute_tool
+from adapter.hermes_registry import load_hermes_registry
 from adapter.schemas import ManifestConfig, manifest_to_openai_schema, parse_manifest
 
 if TYPE_CHECKING:
@@ -21,13 +22,10 @@ def _get_registry() -> object | None:
     Returns:
         Registry object if available, None otherwise.
     """
-    try:
-        from tools.registry import registry  # type: ignore[import-not-found]
-
-        return registry
-    except ImportError:
+    registry = load_hermes_registry()
+    if registry is None:
         logger.warning("Hermes registry not available — tools will not be registered")
-        return None
+    return registry
 
 
 def load_all_manifests(manifests_dir: Path) -> list[ManifestConfig]:

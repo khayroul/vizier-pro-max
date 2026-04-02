@@ -8,6 +8,7 @@ from typing import Any
 
 import structlog
 
+from adapter.hermes_registry import load_hermes_registry
 from middleware.cost_config import calculate_cost
 
 logger = structlog.get_logger(__name__)
@@ -173,9 +174,8 @@ def _top_expensive_steps(conn: sqlite3.Connection, limit: int) -> str:
 
 def register_query_costs_tool() -> None:
     """Register query_costs as a Hermes tool."""
-    try:
-        from tools.registry import registry  # type: ignore[import-not-found]
-    except ImportError:
+    registry = load_hermes_registry()
+    if registry is None:
         logger.warning("Hermes registry not available — query_costs not registered")
         return
 

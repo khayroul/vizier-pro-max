@@ -10,6 +10,8 @@ from __future__ import annotations
 import json
 import logging
 
+from adapter.hermes_registry import load_hermes_registry
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,9 +46,8 @@ def _handle_generate_poster(args: dict[str, object]) -> str:
 
 def register_generate_poster_tool() -> None:
     """Register generate_poster with the Hermes tool registry."""
-    try:
-        from tools.registry import registry  # type: ignore[import-not-found]
-    except ImportError:
+    registry = load_hermes_registry()
+    if registry is None:
         logger.warning("Hermes registry not available — skipping generate_poster")
         return
 

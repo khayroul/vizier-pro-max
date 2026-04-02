@@ -142,7 +142,6 @@ input:
     def test_get_registry_returns_none_when_unavailable(self) -> None:
         from adapter.loader import _get_registry
 
-        # The import of tools.registry will fail in test env — should return None
-        with patch("adapter.loader._get_registry", return_value=None):
+        with patch("adapter.loader.load_hermes_registry", return_value=None):
             result = _get_registry()
             assert result is None

@@ -17,6 +17,8 @@ from typing import Any
 import structlog
 import yaml
 
+from adapter.hermes_registry import load_hermes_registry
+
 logger = structlog.get_logger(__name__)
 
 PIPELINES_DIR = Path(__file__).parent.parent / "pipelines"
@@ -121,9 +123,8 @@ def run_pipeline(args: dict[str, Any], **kw: Any) -> str:
 
 def register_run_pipeline_tool() -> None:
     """Register run_pipeline as a Hermes tool in vizier-core toolset."""
-    try:
-        from tools.registry import registry  # type: ignore[import-not-found]
-    except ImportError:
+    registry = load_hermes_registry()
+    if registry is None:
         logger.warning("Hermes registry not available")
         return
 

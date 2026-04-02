@@ -8,6 +8,8 @@ from typing import Any
 
 import structlog
 
+from adapter.hermes_registry import load_hermes_registry
+
 logger = structlog.get_logger(__name__)
 
 DB_PATH = str(Path.home() / ".hermes" / "state.db")
@@ -67,9 +69,8 @@ def query_logs(args: dict[str, Any], **kw: Any) -> str:
 
 def register_query_logs_tool() -> None:
     """Register query_logs as a Hermes tool in the vizier-core toolset."""
-    try:
-        from tools.registry import registry  # type: ignore[import-not-found]
-    except ImportError:
+    registry = load_hermes_registry()
+    if registry is None:
         logger.warning("Hermes registry not available — query_logs not registered")
         return
 
