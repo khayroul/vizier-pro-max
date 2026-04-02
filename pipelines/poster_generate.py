@@ -26,6 +26,9 @@ _OUTPUT_DIR: Path = Path(__file__).parent.parent / "output" / "posters"
 
 _SLOT_PATTERN = re.compile(r"\{\{(\w+)\}\}")
 _META_PATTERN = re.compile(r'<meta\s+name="reactor-(\w+)"\s+content="([^"]+)"')
+_HEX_PATTERN = re.compile(
+    r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -55,6 +58,8 @@ class PosterRequest:
     template_name: str = "social-post"
     image_mode: str = "openai"
     output_path: str = ""
+    palette: dict[str, str] | None = None
+    fonts: dict[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -196,6 +201,64 @@ def _to_data_uri(image_path: Path) -> str:
     return f"data:{mime};base64,{payload}"
 
 
+def _validate_palette(palette: dict[str, str]) -> None:
+    """Validate all palette values are valid hex colors."""
+    for key in ("primary", "secondary", "accent", "background", "text"):
+        value = palette.get(key, "")
+        if not _HEX_PATTERN.match(value):
+            msg = f"Invalid hex color for palette.{key}: {value!r}"
+            raise ValueError(msg)
+
+
+def _build_design_css(palette: dict[str, str], fonts: dict[str, str]) -> str:
+    """Build CSS custom properties block from palette and font selections."""
+    return (
+        "<style>\n"
+        ":root {\n"
+        f"  --color-accent: {palette['primary']};\n"
+        f"  --color-accent-end: {palette['secondary']};\n"
+        f"  --color-accent-glow: {palette['accent']};\n"
+        f"  --color-bg: {palette['background']};\n"
+        f"  --color-text: {palette['text']};\n"
+        f"  --font-heading: '{fonts['heading_font']}';\n"
+        f"  --font-body: '{fonts['body_font']}';\n"
+        f"  --font-weight-heading: {fonts['heading_weight']};\n"
+        f"  --font-weight-body: {fonts['body_weight']};\n"
+        f"  --letter-spacing-heading: {fonts['letter_spacing_heading']};\n"
+        f"  --letter-spacing-body: {fonts['letter_spacing_body']};\n"
+        f"  --line-height-heading: {fonts['line_height_heading']};\n"
+        f"  --line-height-body: {fonts['line_height_body']};\n"
+        "}\n"
+        "</style>"
+    )
+
+
+def _build_font_link(fonts: dict[str, str]) -> str:
+    """Build Google Fonts <link> tag for the selected font pairing.
+
+    Loads heading weight, body weight, AND weight 600 for CTA button text.
+    """
+    heading = fonts["heading_font"].replace(" ", "+")
+    body = fonts["body_font"].replace(" ", "+")
+    hw = fonts["heading_weight"]
+    bw = fonts["body_weight"]
+    body_weights = sorted(set([bw, "600"]))
+    body_wght = ";".join(body_weights)
+    return (
+        f'<link href="https://fonts.googleapis.com/css2?'
+        f"family={heading}:wght@{hw}&"
+        f'family={body}:wght@{body_wght}&display=swap" rel="stylesheet">'
+    )
+
+
+def _inject_design(html: str, palette: dict[str, str], fonts: dict[str, str]) -> str:
+    """Inject design CSS and font link into HTML before </head>."""
+    _validate_palette(palette)
+    design_css = _build_design_css(palette, fonts)
+    font_link = _build_font_link(fonts)
+    return html.replace("</head>", f"{design_css}\n{font_link}\n</head>")
+
+
 def _inject_slots(html: str, content: dict[str, str]) -> str:
     """Replace {{slot_name}} placeholders with content values."""
     return _SLOT_PATTERN.sub(
@@ -226,9 +289,16 @@ def _render_poster(
     template: TemplateConfig,
     content: dict[str, str],
     output_path: str,
+    palette: dict[str, str] | None = None,
+    fonts: dict[str, str] | None = None,
 ) -> str:
     """Inject content into template and render via Playwright."""
     html_source = Path(template.path).read_text(encoding="utf-8")
+
+    # Inject design CSS BEFORE slot replacement to avoid {{regex}} conflicts
+    if palette is not None and fonts is not None:
+        html_source = _inject_design(html_source, palette, fonts)
+
     injected_html = _inject_slots(html_source, content)
 
     logger.info(
@@ -257,6 +327,8 @@ def run(
     template_name: str = "social-post",
     image_mode: str = "openai",
     output_path: str = "",
+    palette: dict[str, str] | None = None,
+    fonts: dict[str, str] | None = None,
 ) -> dict[str, str | int]:
     """Generate a two-layer poster: AI background + HTML text overlay.
 
@@ -270,12 +342,20 @@ def run(
         image_mode: Image generation provider — 'openai' or 'falai'.
         output_path: Where to save the final poster PNG. Auto-generated
             if empty.
+        palette: Color palette dict with primary, secondary, accent,
+            background, text hex values.
+        fonts: Font pairing dict with heading_font, body_font, weights,
+            spacing, and line heights.
 
     Returns:
         Dict with poster_path, hero_path, template_used, width, height,
         and image_mode.
     """
     t0 = time.monotonic()
+
+    if palette is None or fonts is None:
+        msg = "palette and fonts are required"
+        raise ValueError(msg)
 
     # Resolve template
     template = _resolve_template(template_name)
@@ -305,7 +385,7 @@ def run(
         "cta": cta,
         "image_url": image_uri,
     }
-    _render_poster(template, content, poster_path)
+    _render_poster(template, content, poster_path, palette=palette, fonts=fonts)
 
     duration = time.monotonic() - t0
     logger.info("Poster generated in %.1fs: %s", duration, poster_path)

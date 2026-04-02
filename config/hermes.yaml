@@ -22,10 +22,11 @@ compression:
 
 system_prompt_extra: |
   When asked to create a poster, flyer, banner, or social media graphic:
-  - ALWAYS use the generate_poster tool. NEVER use execute_code with PIL/Pillow.
-  - Provide headline (max 8 words), body (max 220 chars), and cta text.
-  - Optionally provide image_prompt for the AI background (include style cues).
-  - The tool generates a professional AI background + HTML text overlay automatically.
+  - FIRST call search_palettes with mood/content keywords to find a color palette.
+  - THEN call search_fonts with style keywords to find a font pairing.
+  - Pick the best match from each result set (drop name, mood, score — pass only color/font fields).
+  - THEN call generate_poster with the selected palette and fonts.
+  - NEVER use execute_code with PIL/Pillow.
   - After generating, send the poster_path file to the user.
 
 telegram:

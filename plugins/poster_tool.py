@@ -50,8 +50,46 @@ GENERATE_POSTER_SCHEMA = {
             "type": "string",
             "description": "Custom output path for poster PNG (auto-generated if empty)",
         },
+        "palette": {
+            "type": "object",
+            "description": (
+                "Color palette from search_palettes result. Pass only the color "
+                "fields (primary, secondary, accent, background, text) — drop "
+                "name, mood, and score."
+            ),
+            "properties": {
+                "primary": {"type": "string"},
+                "secondary": {"type": "string"},
+                "accent": {"type": "string"},
+                "background": {"type": "string"},
+                "text": {"type": "string"},
+            },
+            "required": ["primary", "secondary", "accent", "background", "text"],
+        },
+        "fonts": {
+            "type": "object",
+            "description": (
+                "Font pairing from search_fonts result. Pass only the font "
+                "fields — drop name, mood, and score."
+            ),
+            "properties": {
+                "heading_font": {"type": "string"},
+                "heading_weight": {"type": "string"},
+                "body_font": {"type": "string"},
+                "body_weight": {"type": "string"},
+                "letter_spacing_heading": {"type": "string"},
+                "letter_spacing_body": {"type": "string"},
+                "line_height_heading": {"type": "string"},
+                "line_height_body": {"type": "string"},
+            },
+            "required": [
+                "heading_font", "heading_weight", "body_font", "body_weight",
+                "letter_spacing_heading", "letter_spacing_body",
+                "line_height_heading", "line_height_body",
+            ],
+        },
     },
-    "required": ["headline", "body"],
+    "required": ["headline", "body", "palette", "fonts"],
 }
 
 
@@ -64,6 +102,11 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
     if not headline or not body:
         return json.dumps({"error": "headline and body are required"})
 
+    palette = args.get("palette")
+    fonts = args.get("fonts")
+    if not palette or not fonts:
+        return json.dumps({"error": "palette and fonts are required"})
+
     try:
         result = run(
             headline=headline,
@@ -73,6 +116,8 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
             template_name=str(args.get("template_name", "social-post")),
             image_mode=str(args.get("image_mode", "openai")),
             output_path=str(args.get("output_path", "")),
+            palette=palette,
+            fonts=fonts,
         )
         return json.dumps(result, default=str)
     except Exception as exc:

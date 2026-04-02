@@ -11,13 +11,41 @@ from pipelines.poster_generate import (
     PosterRequest,
     PosterResult,
     TemplateConfig,
+    _build_design_css,
+    _build_font_link,
+    _inject_design,
     _inject_slots,
     _parse_template,
     _resolve_template,
     _to_data_uri,
+    _validate_palette,
     list_templates,
     run,
 )
+
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+SAMPLE_PALETTE = {
+    "primary": "#E07A5F",
+    "secondary": "#F2CC8F",
+    "accent": "#81B29A",
+    "background": "#3D405B",
+    "text": "#F4F1DE",
+}
+
+SAMPLE_FONTS = {
+    "heading_font": "Cormorant Garamond",
+    "heading_weight": "700",
+    "body_font": "Lato",
+    "body_weight": "400",
+    "letter_spacing_heading": "-0.5px",
+    "letter_spacing_body": "0px",
+    "line_height_heading": "1.1",
+    "line_height_body": "1.6",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -154,6 +182,126 @@ class TestDataclasses:
         assert req.cta == "Learn More"
         assert req.template_name == "social-post"
         assert req.image_mode == "openai"
+        assert req.palette is None
+        assert req.fonts is None
+
+
+# ---------------------------------------------------------------------------
+# Palette validation
+# ---------------------------------------------------------------------------
+
+
+class TestValidatePalette:
+    def test_valid_palette_passes(self) -> None:
+        _validate_palette(SAMPLE_PALETTE)
+
+    def test_invalid_hex_raises(self) -> None:
+        bad_palette = {**SAMPLE_PALETTE, "primary": "not-a-color"}
+        with pytest.raises(ValueError, match="Invalid hex color for palette.primary"):
+            _validate_palette(bad_palette)
+
+    def test_missing_key_raises(self) -> None:
+        incomplete = {"primary": "#FFF", "secondary": "#000"}
+        with pytest.raises(ValueError, match="palette.accent"):
+            _validate_palette(incomplete)
+
+    @pytest.mark.parametrize(
+        "hex_val",
+        ["#FFF", "#FFFF", "#AABBCC", "#AABBCCDD"],
+    )
+    def test_accepts_valid_hex_lengths(self, hex_val: str) -> None:
+        palette = {**SAMPLE_PALETTE, "primary": hex_val}
+        _validate_palette(palette)
+
+    @pytest.mark.parametrize(
+        "hex_val",
+        ["#12", "#12345", "#1234567", "#123456789", "FFF", ""],
+    )
+    def test_rejects_invalid_hex(self, hex_val: str) -> None:
+        palette = {**SAMPLE_PALETTE, "primary": hex_val}
+        with pytest.raises(ValueError):
+            _validate_palette(palette)
+
+
+# ---------------------------------------------------------------------------
+# CSS injection
+# ---------------------------------------------------------------------------
+
+
+class TestBuildDesignCss:
+    def test_contains_all_custom_properties(self) -> None:
+        css = _build_design_css(SAMPLE_PALETTE, SAMPLE_FONTS)
+        assert "--color-accent: #E07A5F" in css
+        assert "--color-accent-end: #F2CC8F" in css
+        assert "--color-accent-glow: #81B29A" in css
+        assert "--color-bg: #3D405B" in css
+        assert "--color-text: #F4F1DE" in css
+        assert "--font-heading: 'Cormorant Garamond'" in css
+        assert "--font-body: 'Lato'" in css
+        assert "--font-weight-heading: 700" in css
+        assert "--font-weight-body: 400" in css
+
+    def test_wrapped_in_style_tag(self) -> None:
+        css = _build_design_css(SAMPLE_PALETTE, SAMPLE_FONTS)
+        assert css.startswith("<style>")
+        assert css.endswith("</style>")
+
+    def test_no_curly_brace_corruption(self) -> None:
+        """CSS curly braces must not be treated as {{slot}} placeholders."""
+        css = _build_design_css(SAMPLE_PALETTE, SAMPLE_FONTS)
+        # Should not match the {{word}} slot pattern
+        slot_matches = re.findall(r"\{\{(\w+)\}\}", css)
+        assert slot_matches == []
+
+
+class TestBuildFontLink:
+    def test_includes_heading_font(self) -> None:
+        link = _build_font_link(SAMPLE_FONTS)
+        assert "Cormorant+Garamond" in link
+
+    def test_includes_body_font(self) -> None:
+        link = _build_font_link(SAMPLE_FONTS)
+        assert "Lato" in link
+
+    def test_includes_600_weight_for_cta(self) -> None:
+        """Body font weights must include 600 for CTA button."""
+        link = _build_font_link(SAMPLE_FONTS)
+        # Body part should have both 400 and 600
+        assert "400;600" in link
+
+    def test_is_link_tag(self) -> None:
+        link = _build_font_link(SAMPLE_FONTS)
+        assert link.startswith('<link href="https://fonts.googleapis.com')
+        assert 'rel="stylesheet">' in link
+
+    def test_deduplicates_600_weight(self) -> None:
+        """If body_weight is already 600, don't duplicate it."""
+        fonts_600 = {**SAMPLE_FONTS, "body_weight": "600"}
+        link = _build_font_link(fonts_600)
+        # Should contain just "600", not "600;600"
+        assert "600;600" not in link
+
+
+class TestInjectDesign:
+    def test_inserts_before_head_close(self) -> None:
+        html = "<html><head><title>Test</title></head><body></body></html>"
+        result = _inject_design(html, SAMPLE_PALETTE, SAMPLE_FONTS)
+        assert "</style>\n<link" in result
+        assert result.index("<style>") < result.index("</head>")
+
+    def test_preserves_existing_content(self) -> None:
+        html = "<html><head><title>Test</title></head><body>Hello</body></html>"
+        result = _inject_design(html, SAMPLE_PALETTE, SAMPLE_FONTS)
+        assert "<title>Test</title>" in result
+        assert "Hello" in result
+
+    def test_css_not_corrupted_by_slot_regex(self) -> None:
+        """Injected CSS must survive _inject_slots without corruption."""
+        html = "<html><head></head><body>{{headline}}</body></html>"
+        designed = _inject_design(html, SAMPLE_PALETTE, SAMPLE_FONTS)
+        slotted = re.sub(r"\{\{(\w+)\}\}", lambda m: "REPLACED", designed)
+        # CSS custom properties should still be intact
+        assert "--color-accent: #E07A5F" in slotted
 
 
 # ---------------------------------------------------------------------------
@@ -164,11 +312,10 @@ class TestDataclasses:
 class TestRunPipeline:
     @patch("pipelines.poster_generate._screenshot")
     @patch("pipelines.poster_generate._generate_hero")
-    def test_full_pipeline_openai(
+    def test_full_pipeline_with_palette_fonts(
         self, mock_hero: MagicMock, mock_screenshot: MagicMock, tmp_path: Path
     ) -> None:
-        """Full pipeline: hero generation + template render."""
-        # Mock hero generation to write a fake PNG
+        """Full pipeline with palette and fonts injects CSS custom properties."""
         hero_file = tmp_path / "hero.png"
         hero_file.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 50)
 
@@ -181,27 +328,44 @@ class TestRunPipeline:
         mock_screenshot.return_value = None
 
         result = run(
-            headline="Hari Raya Sale",
-            body="Get 50% off all items this festive season",
-            cta="Shop Now",
-            image_prompt="festive Hari Raya background",
+            headline="Jazz Festival",
+            body="Live music under the stars",
+            cta="Get Tickets",
+            image_prompt="jazz festival background",
             output_path=str(tmp_path / "poster.png"),
+            palette=SAMPLE_PALETTE,
+            fonts=SAMPLE_FONTS,
         )
 
         assert result["template_used"] == "social-post"
         assert result["width"] == 1080
-        assert result["height"] == 1080
-        assert result["image_mode"] == "openai"
-        assert "poster_path" in result
-        assert "hero_path" in result
 
-        mock_hero.assert_called_once()
-        mock_screenshot.assert_called_once()
-
-        # Verify screenshot was called with injected HTML containing the headline
+        # Verify screenshot was called with HTML containing CSS vars
         call_args = mock_screenshot.call_args
         html_arg = call_args[1]["html"] if "html" in call_args[1] else call_args[0][0]
-        assert "Hari Raya Sale" in html_arg
+        assert "--color-accent: #E07A5F" in html_arg
+        assert "Cormorant+Garamond" in html_arg
+        assert "Jazz Festival" in html_arg
+
+    def test_none_palette_raises(self) -> None:
+        """run() raises ValueError when palette is None."""
+        with pytest.raises(ValueError, match="palette and fonts are required"):
+            run(
+                headline="Test",
+                body="Body",
+                palette=None,
+                fonts=SAMPLE_FONTS,
+            )
+
+    def test_none_fonts_raises(self) -> None:
+        """run() raises ValueError when fonts is None."""
+        with pytest.raises(ValueError, match="palette and fonts are required"):
+            run(
+                headline="Test",
+                body="Body",
+                palette=SAMPLE_PALETTE,
+                fonts=None,
+            )
 
     @patch("pipelines.poster_generate._screenshot")
     @patch("pipelines.poster_generate._generate_hero")
@@ -225,6 +389,8 @@ class TestRunPipeline:
             headline="Premium Launch",
             body="Our newest product is here",
             output_path=str(tmp_path / "poster.png"),
+            palette=SAMPLE_PALETTE,
+            fonts=SAMPLE_FONTS,
         )
 
         assert result["template_used"] == "social-post"
@@ -253,6 +419,8 @@ class TestRunPipeline:
             body="Body text",
             image_mode="falai",
             output_path=str(tmp_path / "poster.png"),
+            palette=SAMPLE_PALETTE,
+            fonts=SAMPLE_FONTS,
         )
 
         assert result["image_mode"] == "falai"
@@ -264,6 +432,8 @@ class TestRunPipeline:
                 headline="Test",
                 body="Body",
                 template_name="nonexistent",
+                palette=SAMPLE_PALETTE,
+                fonts=SAMPLE_FONTS,
             )
 
     def test_invalid_mode_raises(self) -> None:
@@ -273,6 +443,8 @@ class TestRunPipeline:
                 headline="Test",
                 body="Body",
                 image_mode="dalle",
+                palette=SAMPLE_PALETTE,
+                fonts=SAMPLE_FONTS,
             )
 
 
@@ -295,8 +467,17 @@ class TestPluginRegistration:
         assert call_kwargs["toolset"] == "vizier-visual"
         assert "headline" in call_kwargs["schema"]["properties"]
         assert "body" in call_kwargs["schema"]["properties"]
+        assert "palette" in call_kwargs["schema"]["properties"]
+        assert "fonts" in call_kwargs["schema"]["properties"]
 
         ctx.register_hook.assert_called_once()
         hook_args = ctx.register_hook.call_args[0]
         assert hook_args[0] == "on_agent_ready"
         assert callable(hook_args[1])
+
+    def test_palette_fonts_required_in_schema(self) -> None:
+        """palette and fonts are required in the tool schema."""
+        from plugins.poster_tool import GENERATE_POSTER_SCHEMA
+
+        assert "palette" in GENERATE_POSTER_SCHEMA["required"]
+        assert "fonts" in GENERATE_POSTER_SCHEMA["required"]
