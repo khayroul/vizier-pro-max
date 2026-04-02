@@ -13,7 +13,9 @@ from augments.distillation.compiler import (
     CompilationResult,
     ToolsetClassifier,
     _toolset_match_metric,
+    build_distillation_lm,
     compile_program,
+    distillation_gateway_base_url,
     load_program,
 )
 
@@ -149,10 +151,17 @@ class TestCompilation:
         # Teacher LM should be configured with OpenAI
         lm_calls = mock_dspy.LM.call_args_list
         assert len(lm_calls) >= 2
-        teacher_call = lm_calls[0]
-        student_call = lm_calls[1]
-        assert "gpt-5.4-mini" in str(teacher_call)
-        assert "qwen3.5:9b" in str(student_call)
+        teacher_kwargs = lm_calls[0].kwargs
+        student_kwargs = lm_calls[1].kwargs
+        assert teacher_kwargs["model"] == "openai/gpt-5.4-mini"
+        assert teacher_kwargs["api_base"] == "http://127.0.0.1:11436/v1"
+        assert teacher_kwargs["api_key"] == "vizier-local-gateway"
+        assert teacher_kwargs["headers"]["x-vizier-source"] == "distillation"
+        assert teacher_kwargs["headers"]["x-vizier-step-name"] == "teacher_bootstrap"
+        assert student_kwargs["model"] == "openai/qwen3.5:9b"
+        assert student_kwargs["api_base"] == "http://127.0.0.1:11436/v1"
+        assert student_kwargs["api_key"] == "vizier-local-gateway"
+        assert student_kwargs["headers"]["x-vizier-step-name"] == "student_compile"
 
     @patch("augments.distillation.compiler.dspy")
     def test_compile_saves_program(
@@ -215,3 +224,37 @@ class TestCompilationResultFields:
         assert result.program_path == Path(
             "data/distilled/task_classification/program.json"
         )
+
+
+class TestDistillationGatewayConfig:
+    def test_distillation_gateway_base_url_uses_env_override(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        monkeypatch.setenv("VIZIER_GATEWAY_BASE_URL", "http://127.0.0.1:19999/v1")
+
+        assert distillation_gateway_base_url() == "http://127.0.0.1:19999/v1"
+
+    @patch("augments.distillation.compiler.dspy")
+    def test_build_distillation_lm_stamps_gateway_headers(
+        self,
+        mock_dspy: MagicMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        mock_dspy.LM.return_value = MagicMock()
+        monkeypatch.setenv("VIZIER_GATEWAY_BASE_URL", "http://127.0.0.1:15555/v1")
+
+        build_distillation_lm(
+            model_name="qwen3.5:9b",
+            step_name="student_evaluate",
+            temperature=0.0,
+        )
+
+        call_kwargs = mock_dspy.LM.call_args.kwargs
+        assert call_kwargs["model"] == "openai/qwen3.5:9b"
+        assert call_kwargs["api_base"] == "http://127.0.0.1:15555/v1"
+        assert call_kwargs["api_key"] == "vizier-local-gateway"
+        assert call_kwargs["headers"]["x-vizier-source"] == "distillation"
+        assert call_kwargs["headers"]["x-vizier-pipeline-name"] == "distillation"
+        assert call_kwargs["headers"]["x-vizier-pipeline-version"] == "1.0"
+        assert call_kwargs["headers"]["x-vizier-step-name"] == "student_evaluate"

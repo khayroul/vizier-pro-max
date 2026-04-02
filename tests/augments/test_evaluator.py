@@ -8,7 +8,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from augments.distillation.evaluator import EvaluationReport, evaluate
+import augments.distillation.evaluator as evaluator_mod
+from augments.distillation.evaluator import EvaluationReport, _invoke_program, evaluate
 
 
 @pytest.fixture()
@@ -61,6 +62,47 @@ class TestAccuracyCalculation:
         assert report.accuracy == pytest.approx(0.6)
         assert report.correct == 3
         assert report.total_examples == 5
+
+    def test_evaluate_configures_gateway_backed_student_lm(
+        self,
+        tmp_path: Path,
+        sample_test_examples: list[dict[str, str]],
+    ) -> None:
+        program_path = tmp_path / "program.json"
+        program_path.touch()
+
+        mock_lm = MagicMock()
+        mock_prog = MagicMock()
+        mock_prog.side_effect = [MagicMock(output=example["expected_output"]) for example in sample_test_examples]
+
+        with (
+            patch(
+                "augments.distillation.evaluator._load_program",
+                return_value=mock_prog,
+            ),
+            patch(
+                "augments.distillation.evaluator.build_distillation_lm",
+                return_value=mock_lm,
+            ) as mock_build_lm,
+            patch.object(
+                evaluator_mod.dspy,
+                "settings",
+                new=MagicMock(),
+            ) as mock_settings,
+        ):
+            evaluate(
+                program_path=program_path,
+                test_examples=sample_test_examples,
+                task_type="task_classification",
+                model="qwen3.5:9b",
+            )
+
+        mock_build_lm.assert_called_once_with(
+            model_name="qwen3.5:9b",
+            step_name="student_evaluate",
+            temperature=0.0,
+        )
+        mock_settings.configure.assert_called_once_with(lm=mock_lm)
 
 
 class TestThresholdLogic:
@@ -246,3 +288,19 @@ class TestEdgeCases:
         assert report.accuracy == pytest.approx(0.0)
         assert report.correct == 0
         assert report.recommendation == "hold"
+
+
+class TestProgramInvocation:
+    def test_invoke_program_falls_back_to_positional_call_for_older_test_doubles(self) -> None:
+        program = MagicMock()
+
+        def _side_effect(input_text: str) -> MagicMock:
+            result = MagicMock()
+            result.output = input_text
+            return result
+
+        program.side_effect = _side_effect
+
+        result = _invoke_program(program, "classify this")
+
+        assert result.output == "classify this"

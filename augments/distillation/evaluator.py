@@ -7,14 +7,14 @@ from __future__ import annotations
 
 import time
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import dspy
 import structlog
 
-from augments.distillation.compiler import ToolsetClassifier
+from augments.distillation.compiler import ToolsetClassifier, build_distillation_lm
 
 log = structlog.get_logger(__name__)
 
@@ -115,6 +115,16 @@ def _extract_prediction_label(result: Any) -> str | None:
     return None
 
 
+def _invoke_program(program: Any, input_text: str) -> Any:
+    """Call a compiled program, tolerating older positional-only test doubles."""
+    try:
+        return program(input_message=input_text)
+    except TypeError as exc:
+        if "unexpected keyword argument 'input_message'" not in str(exc):
+            raise
+        return program(input_text)
+
+
 def evaluate(
     program_path: Path,
     test_examples: list[dict[str, str]],
@@ -143,10 +153,10 @@ def evaluate(
         model=model,
     )
 
-    # Configure DSPy to use the student model for evaluation
-    student_lm = dspy.LM(
-        model=f"ollama_chat/{model}",
-        api_base="http://localhost:11434",
+    # Configure DSPy to use the student model through the Vizier gateway.
+    student_lm = build_distillation_lm(
+        model_name=model,
+        step_name="student_evaluate",
         temperature=0.0,
     )
     dspy.settings.configure(lm=student_lm)
@@ -160,7 +170,7 @@ def evaluate(
 
     for example in test_examples:
         start = time.perf_counter()
-        result = program(input_message=example["input_text"])
+        result = _invoke_program(program, example["input_text"])
         elapsed_ms = (time.perf_counter() - start) * 1000.0
 
         predicted = _extract_prediction_label(result)

@@ -5,6 +5,7 @@ to optimize prompts for Qwen 3.5 9B via Ollama.
 """
 from __future__ import annotations
 
+import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -13,13 +14,17 @@ import dspy
 import structlog
 
 from augments.distillation.collector import TrainingExample
+from adapter.env_loader import ensure_env
+from middleware.deliverable_context import build_gateway_headers
 
 log = structlog.get_logger(__name__)
 
 DEFAULT_OUTPUT_DIR = Path("data/distilled")
 DEFAULT_TEACHER_MODEL = "gpt-5.4-mini"
 DEFAULT_STUDENT_MODEL = "qwen3.5:9b"
-OLLAMA_BASE_URL = "http://localhost:11434"
+DISTILLATION_PIPELINE_NAME = "distillation"
+DISTILLATION_PIPELINE_VERSION = "1.0"
+DEFAULT_GATEWAY_BASE_URL = "http://127.0.0.1:11436/v1"
 
 
 @dataclass(frozen=True)
@@ -88,6 +93,34 @@ def _toolset_match_metric(
     return str(example.toolset_name).strip() == str(prediction.toolset_name).strip()
 
 
+def distillation_gateway_base_url() -> str:
+    """Return the Vizier inference gateway used for distillation traffic."""
+    ensure_env()
+    return os.environ.get("VIZIER_GATEWAY_BASE_URL", DEFAULT_GATEWAY_BASE_URL).rstrip("/")
+
+
+def build_distillation_lm(
+    *,
+    model_name: str,
+    step_name: str,
+    temperature: float | None = None,
+) -> dspy.LM:
+    """Build a DSPy LM that routes through the Vizier-owned gateway."""
+    return dspy.LM(
+        model=f"openai/{model_name}",
+        api_base=distillation_gateway_base_url(),
+        api_key="vizier-local-gateway",
+        headers=build_gateway_headers(
+            source="distillation",
+            modality="chat",
+            default_pipeline_name=DISTILLATION_PIPELINE_NAME,
+            default_pipeline_version=DISTILLATION_PIPELINE_VERSION,
+            default_step_name=step_name,
+        ),
+        temperature=temperature,
+    )
+
+
 def compile_program(
     train_examples: list[TrainingExample],
     task_type: str,
@@ -117,14 +150,15 @@ def compile_program(
 
     start_time = time.monotonic()
 
-    # Configure LMs
-    teacher_lm = dspy.LM(
-        model=f"openai/{teacher_model}",
+    # Route both teacher and student traffic through the Vizier gateway.
+    teacher_lm = build_distillation_lm(
+        model_name=teacher_model,
+        step_name="teacher_bootstrap",
         temperature=0.7,
     )
-    student_lm = dspy.LM(
-        model=f"ollama_chat/{student_model}",
-        api_base=OLLAMA_BASE_URL,
+    student_lm = build_distillation_lm(
+        model_name=student_model,
+        step_name="student_compile",
         temperature=0.0,
     )
 
