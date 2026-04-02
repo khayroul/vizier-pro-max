@@ -19,7 +19,11 @@ class TestLoadState:
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
         state = _load_state()
-        assert state == {"manifests": {}, "pipelines": {}}
+        assert state == {
+            "manifests": {},
+            "pipelines": {},
+            "runtime_capture": {"last_prompt_log_id": 0.0},
+        }
 
     def test_loads_existing_state(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -30,7 +34,11 @@ class TestLoadState:
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
         state = _load_state()
-        assert state == state_data
+        assert state == {
+            "manifests": {"foo.yaml": 1000.0},
+            "pipelines": {"bar": 2000.0},
+            "runtime_capture": {"last_prompt_log_id": 0.0},
+        }
 
     def test_returns_default_on_invalid_json(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -40,7 +48,11 @@ class TestLoadState:
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
         state = _load_state()
-        assert state == {"manifests": {}, "pipelines": {}}
+        assert state == {
+            "manifests": {},
+            "pipelines": {},
+            "runtime_capture": {"last_prompt_log_id": 0.0},
+        }
 
     def test_returns_default_on_os_error(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -51,7 +63,11 @@ class TestLoadState:
         monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
 
         state = _load_state()
-        assert state == {"manifests": {}, "pipelines": {}}
+        assert state == {
+            "manifests": {},
+            "pipelines": {},
+            "runtime_capture": {"last_prompt_log_id": 0.0},
+        }
 
 
 class TestSaveState:
@@ -88,6 +104,7 @@ class TestStateRoundtrip:
         original = {
             "manifests": {"path/to/tool.yaml": 12345.6},
             "pipelines": {"my_pipeline": 99999.0},
+            "runtime_capture": {"last_prompt_log_id": 8.0},
         }
         _save_state(original)
         loaded = _load_state()
@@ -111,8 +128,10 @@ class TestRun:
         pipelines_dir.mkdir()
 
         with patch("bridge.git_watcher.run") as mock_git_run:
-            mock_git_run.return_value = None
-            run(repo_path=tmp_path)
+            with patch("bridge.watcher.sync_prompt_log_to_build_capture") as mock_session_sync:
+                mock_git_run.return_value = None
+                mock_session_sync.return_value = MagicMock(last_prompt_log_id=0)
+                run(repo_path=tmp_path)
 
         mock_syncer.check_new_manifests.assert_called_once()
         mock_syncer.check_new_pipelines.assert_called_once()
@@ -131,10 +150,14 @@ class TestRun:
         (tmp_path / "pipelines").mkdir()
 
         with patch("bridge.git_watcher.run") as mock_git_run:
-            mock_git_run.return_value = None
-            run(repo_path=tmp_path)
+            with patch("bridge.watcher.sync_prompt_log_to_build_capture") as mock_session_sync:
+                mock_git_run.return_value = None
+                mock_session_sync.return_value = MagicMock(last_prompt_log_id=4)
+                run(repo_path=tmp_path)
 
         assert state_file.exists()
+        loaded = json.loads(state_file.read_text(encoding="utf-8"))
+        assert loaded["runtime_capture"] == {"last_prompt_log_id": 4.0}
 
     @patch("bridge.watcher.manifest_syncer")
     def test_run_continues_when_git_watcher_fails(
@@ -150,9 +173,11 @@ class TestRun:
         (tmp_path / "pipelines").mkdir()
 
         with patch("bridge.git_watcher.run") as mock_git_run:
-            mock_git_run.side_effect = OSError("git exploded")
-            # Should not raise
-            run(repo_path=tmp_path)
+            with patch("bridge.watcher.sync_prompt_log_to_build_capture") as mock_session_sync:
+                mock_git_run.side_effect = OSError("git exploded")
+                mock_session_sync.return_value = MagicMock(last_prompt_log_id=0)
+                # Should not raise
+                run(repo_path=tmp_path)
 
         mock_syncer.check_new_manifests.assert_called_once()
 
@@ -168,7 +193,9 @@ class TestRun:
 
         # Call run() without repo_path — should resolve from __file__ without error
         with patch("bridge.git_watcher.run"):
-            run()  # No exception expected
+            with patch("bridge.watcher.sync_prompt_log_to_build_capture") as mock_session_sync:
+                mock_session_sync.return_value = MagicMock(last_prompt_log_id=0)
+                run()  # No exception expected
 
     @patch("bridge.watcher.manifest_syncer")
     def test_run_skips_skill_syncer_when_no_skills_dir(
@@ -185,7 +212,68 @@ class TestRun:
         (tmp_path / "pipelines").mkdir()
 
         with patch("bridge.git_watcher.run"):
-            with patch("bridge.skill_syncer") as mock_skill:
+            with patch("bridge.watcher.sync_prompt_log_to_build_capture") as mock_session_sync:
+                with patch("bridge.skill_syncer") as mock_skill:
+                    mock_session_sync.return_value = MagicMock(last_prompt_log_id=0)
+                    run(repo_path=tmp_path)
+                    # sync functions should NOT be called because skills dir doesn't exist
+                    mock_skill.sync_repo_to_hermes.assert_not_called()
+
+    @patch("bridge.watcher.manifest_syncer")
+    def test_run_emits_capture_events_for_detected_changes(
+        self, mock_syncer: MagicMock, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        state_file = tmp_path / "bridge-state.json"
+        monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
+
+        manifest_path = tmp_path / "manifests" / "code" / "tool.yaml"
+        pipeline_path = tmp_path / "pipelines" / "build.py"
+        manifest_path.parent.mkdir(parents=True)
+        pipeline_path.parent.mkdir(parents=True)
+
+        mock_syncer.check_new_manifests.return_value = (
+            ["tool-name"],
+            {str(manifest_path): 1234.0},
+        )
+        mock_syncer.check_new_pipelines.return_value = (
+            ["build"],
+            {str(pipeline_path): 5678.0},
+        )
+
+        with patch("bridge.git_watcher.run"):
+            with patch("bridge.watcher.sync_prompt_log_to_build_capture") as mock_session_sync:
+                with patch("bridge.watcher.capture_external_build_event") as mock_capture:
+                    mock_session_sync.return_value = MagicMock(last_prompt_log_id=0)
+                    run(repo_path=tmp_path)
+
+        assert mock_capture.call_count == 2
+        manifest_call = mock_capture.call_args_list[0].kwargs
+        pipeline_call = mock_capture.call_args_list[1].kwargs
+        assert manifest_call["event_type"] == "artifact_created"
+        assert manifest_call["files_touched"] == ("manifests/code/tool.yaml",)
+        assert manifest_call["artifacts"] == ("tool-name",)
+        assert pipeline_call["event_type"] == "file_changed"
+        assert pipeline_call["files_touched"] == ("pipelines/build.py",)
+
+    @patch("bridge.watcher.manifest_syncer")
+    def test_run_syncs_runtime_capture_before_saving_state(
+        self, mock_syncer: MagicMock, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        state_file = tmp_path / "bridge-state.json"
+        monkeypatch.setattr(watcher, "_STATE_FILE", state_file)
+
+        mock_syncer.check_new_manifests.return_value = ([], {})
+        mock_syncer.check_new_pipelines.return_value = ([], {})
+
+        (tmp_path / "manifests").mkdir()
+        (tmp_path / "pipelines").mkdir()
+
+        with patch("bridge.git_watcher.run"):
+            with patch("bridge.watcher.sync_prompt_log_to_build_capture") as mock_session_sync:
+                mock_session_sync.return_value = MagicMock(last_prompt_log_id=11)
                 run(repo_path=tmp_path)
-                # sync functions should NOT be called because skills dir doesn't exist
-                mock_skill.sync_repo_to_hermes.assert_not_called()
+
+        mock_session_sync.assert_called_once_with(
+            state_root=tmp_path / "state",
+            after_row_id=0,
+        )
