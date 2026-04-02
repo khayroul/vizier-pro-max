@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="reactor-width" content="1080">
+  <meta name="reactor-height" content="1080">
+  <meta name="reactor-slots" content="headline,body,cta,image_url">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+      background: #111111;
+      position: relative;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('{{image_url}}');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.4;
+    }
+    .gradient-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(17, 17, 17, 0.3) 0%,
+        rgba(17, 17, 17, 0.7) 50%,
+        rgba(17, 17, 17, 0.95) 100%
+      );
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      padding: 80px 72px;
+    }
+    .swoosh {
+      position: absolute;
+      top: 56px;
+      right: 64px;
+      z-index: 2;
+      width: 72px;
+      height: 28px;
+      background: white;
+      clip-path: polygon(
+        0% 70%, 15% 50%, 40% 40%, 70% 20%, 100% 0%,
+        100% 15%, 65% 45%, 35% 60%, 10% 75%, 0% 85%
+      );
+    }
+    .accent-bar {
+      width: 64px;
+      height: 6px;
+      background: #CDFF00;
+      margin-bottom: 32px;
+    }
+    .headline {
+      font-family: "Futura Condensed Extra Bold", "Arial Black", "Impact", sans-serif;
+      font-size: 72px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-transform: uppercase;
+      line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+    .body-text {
+      font-size: 28px;
+      color: #B8B8CC;
+      line-height: 1.4;
+      margin-bottom: 40px;
+      max-width: 700px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: #CDFF00;
+      color: #111111;
+      font-family: "Futura Condensed Extra Bold", "Arial Black", "Impact", sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 18px 48px;
+      border-radius: 40px;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-bg"></div>
+  <div class="gradient-overlay"></div>
+  <div class="swoosh"></div>
+  <div class="content">
+    <div class="accent-bar"></div>
+    <div class="headline">{{headline}}</div>
+    <div class="body-text">{{body}}</div>
+    <div class="cta-btn">{{cta}}</div>
+  </div>
+</body>
+</html>

@@ -13,6 +13,7 @@ from pipelines.poster_generate import (
     TemplateConfig,
     _build_design_css,
     _build_font_link,
+    _inject_brand_css,
     _inject_design,
     _inject_slots,
     _parse_template,
@@ -100,10 +101,11 @@ class TestResolveTemplate:
 
 class TestListTemplates:
     def test_lists_available_templates(self) -> None:
-        """list_templates returns at least social-post."""
+        """list_templates returns the full visual inventory including social-post."""
         templates = list_templates()
         names = [t.name for t in templates]
         assert "social-post" in names
+        assert len(templates) >= 30
 
 
 # ---------------------------------------------------------------------------
@@ -180,8 +182,13 @@ class TestDataclasses:
     def test_poster_request_defaults(self) -> None:
         req = PosterRequest(headline="Test", body="Body")
         assert req.cta == "Learn More"
-        assert req.template_name == "social-post"
-        assert req.image_mode == "openai"
+        assert req.template_name == ""
+        assert req.image_mode == ""
+        assert req.brand_name == ""
+        assert req.logo_mark == ""
+        assert req.brand_css is None
+        assert req.client_id == ""
+        assert req.style_reference == ""
         assert req.palette is None
         assert req.fonts is None
 
@@ -304,6 +311,15 @@ class TestInjectDesign:
         assert "--color-accent: #E07A5F" in slotted
 
 
+class TestInjectBrandCss:
+    def test_inserts_root_override(self) -> None:
+        html = "<html><head></head><body>Poster</body></html>"
+        result = _inject_brand_css(html, {"--bg-color": "#111111", "--accent-color": "#abcdef"})
+        assert "--bg-color: #111111;" in result
+        assert "--accent-color: #abcdef;" in result
+        assert result.index("<style>") < result.index("</head>")
+
+
 # ---------------------------------------------------------------------------
 # Full pipeline (mocked AI + Playwright)
 # ---------------------------------------------------------------------------
@@ -348,8 +364,8 @@ class TestRunPipeline:
         assert "Jazz Festival" in html_arg
 
     def test_none_palette_raises(self) -> None:
-        """run() raises ValueError when palette is None."""
-        with pytest.raises(ValueError, match="palette and fonts are required"):
+        """run() raises ValueError when only fonts are provided."""
+        with pytest.raises(ValueError, match="palette and fonts must be provided together"):
             run(
                 headline="Test",
                 body="Body",
@@ -358,13 +374,62 @@ class TestRunPipeline:
             )
 
     def test_none_fonts_raises(self) -> None:
-        """run() raises ValueError when fonts is None."""
-        with pytest.raises(ValueError, match="palette and fonts are required"):
+        """run() raises ValueError when only palette is provided."""
+        with pytest.raises(ValueError, match="palette and fonts must be provided together"):
             run(
                 headline="Test",
                 body="Body",
                 palette=SAMPLE_PALETTE,
                 fonts=None,
+            )
+
+    def test_missing_theme_inputs_raises(self) -> None:
+        """run() raises ValueError when neither design nor client theming is provided."""
+        with pytest.raises(ValueError, match="palette/fonts or brand_css/client_id are required"):
+            run(
+                headline="Test",
+                body="Body",
+            )
+
+    @patch("pipelines.poster_generate._screenshot")
+    @patch("pipelines.poster_generate._generate_hero")
+    def test_style_reference_applies_catalog_defaults(
+        self, mock_hero: MagicMock, mock_screenshot: MagicMock, tmp_path: Path
+    ) -> None:
+        """style_reference can drive template, prompt, and theming without client_id."""
+        hero_file = tmp_path / "hero.png"
+        hero_file.write_bytes(b"\x89PNG" + b"\x00" * 50)
+
+        def fake_hero(prompt: str, output_path: str, mode: str) -> str:
+            assert "modern Malaysian coffee branding" in prompt
+            assert "Avoid overly corporate finance look" in prompt
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(output_path).write_bytes(hero_file.read_bytes())
+            return output_path
+
+        mock_hero.side_effect = fake_hero
+        mock_screenshot.return_value = None
+
+        result = run(
+            headline="Iced Latte Drop",
+            body="Special launch promo for coffee lovers",
+            style_reference="zus-coffee",
+            output_path=str(tmp_path / "poster.png"),
+        )
+
+        assert result["template_used"] == "center-stage-square"
+        call_args = mock_screenshot.call_args
+        html_arg = call_args[1]["html"] if "html" in call_args[1] else call_args[0][0]
+        assert "--bg-color: #0D2B4D;" in html_arg
+        assert "--accent-color: #D38B3D;" in html_arg
+
+    def test_unknown_style_reference_raises(self) -> None:
+        """Unknown shared style references should fail clearly."""
+        with pytest.raises(ValueError, match="Unknown style_reference"):
+            run(
+                headline="Test",
+                body="Body",
+                style_reference="unknown-style",
             )
 
     @patch("pipelines.poster_generate._screenshot")
@@ -475,9 +540,13 @@ class TestPluginRegistration:
         assert hook_args[0] == "on_agent_ready"
         assert callable(hook_args[1])
 
-    def test_palette_fonts_required_in_schema(self) -> None:
-        """palette and fonts are required in the tool schema."""
+    def test_schema_supports_client_theming_fields(self) -> None:
+        """Schema exposes client-aware poster theming fields."""
         from plugins.poster_tool import GENERATE_POSTER_SCHEMA
 
-        assert "palette" in GENERATE_POSTER_SCHEMA["required"]
-        assert "fonts" in GENERATE_POSTER_SCHEMA["required"]
+        assert GENERATE_POSTER_SCHEMA["required"] == ["headline", "body"]
+        assert "client_id" in GENERATE_POSTER_SCHEMA["properties"]
+        assert "style_reference" in GENERATE_POSTER_SCHEMA["properties"]
+        assert "brand_name" in GENERATE_POSTER_SCHEMA["properties"]
+        assert "logo_mark" in GENERATE_POSTER_SCHEMA["properties"]
+        assert "brand_css" in GENERATE_POSTER_SCHEMA["properties"]

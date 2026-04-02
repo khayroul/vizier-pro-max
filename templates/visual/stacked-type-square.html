@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="reactor-width" content="1080">
+  <meta name="reactor-height" content="1080">
+  <meta name="reactor-slots" content="headline,body,cta,brand_name,logo_mark">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: var(--bg-color);
+      position: relative;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: var(--font-body-weight, 400);
+    }
+
+    /* Solid background — pure typography, no hero image */
+    .bg-solid {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-color);
+    }
+
+    /* Noise texture — film grain on the solid bg */
+    .noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+    }
+
+    /* Accent geometric — large translucent circle, bottom-right corner */
+    .accent-orb {
+      position: absolute;
+      bottom: -220px;
+      right: -220px;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Brand whisper — top-left */
+    .brand-whisper {
+      position: absolute;
+      top: 52px;
+      left: 56px;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      z-index: 10;
+    }
+
+    /* Logo mark — top-right, 36px circle with 2.5px white border */
+    .logo-mark {
+      position: absolute;
+      top: 44px;
+      right: 56px;
+      width: 36px;
+      height: 36px;
+      border: 2.5px solid rgba(255, 255, 255, 1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight, 900);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: -0.5px;
+      z-index: 10;
+    }
+
+    /* Main stage — full canvas, column layout, left-aligned */
+    .stage {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 120px 72px 80px;
+    }
+
+    /* MASSIVE stacked headline — dominates ~70-80% of the frame */
+    .headline {
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight, 900);
+      font-size: 120px;
+      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: -4px;
+      color: var(--text-color);
+      max-width: 940px;
+      flex-shrink: 0;
+    }
+
+    /* Bottom panel — body + CTA anchored below headline */
+    .bottom-panel {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0 72px 72px;
+      z-index: 3;
+    }
+
+    /* Accent line — separates headline from body copy */
+    .accent-line {
+      width: 48px;
+      height: 3px;
+      background: var(--accent-color);
+      margin-bottom: 20px;
+      box-shadow: 0 0 16px color-mix(in srgb, var(--accent-color) 50%, transparent);
+      flex-shrink: 0;
+    }
+
+    /* Body text — small, muted, restrained */
+    .body-text {
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: var(--font-body-weight, 400);
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      letter-spacing: 0.1px;
+      max-width: 500px;
+      margin-bottom: 32px;
+    }
+
+    /* CTA pill button — accent bg, bg-color text */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent-color);
+      color: var(--bg-color);
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 15px 34px;
+      border-radius: 100px;
+    }
+
+    .cta-arrow {
+      font-size: 14px;
+      letter-spacing: 0;
+      margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-solid"></div>
+  <div class="noise"></div>
+  <div class="accent-orb"></div>
+
+  <div class="brand-whisper">{{brand_name}}</div>
+  <div class="logo-mark">{{logo_mark}}</div>
+
+  <div class="stage">
+    <div class="headline">{{headline}}</div>
+  </div>
+
+  <div class="bottom-panel">
+    <div class="accent-line"></div>
+    <div class="body-text">{{body}}</div>
+    <div class="cta-btn">{{cta}} <span class="cta-arrow">&rarr;</span></div>
+  </div>
+</body>
+</html>

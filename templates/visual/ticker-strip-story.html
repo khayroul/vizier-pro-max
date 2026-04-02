@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="reactor-width" content="1080">
+  <meta name="reactor-height" content="1920">
+  <meta name="reactor-slots" content="headline,body,cta,image_url,brand_name,logo_mark">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: var(--bg-color);
+      position: relative;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: var(--font-body-weight, 400);
+    }
+
+    /* Full-bleed hero image */
+    .hero {
+      position: absolute;
+      inset: 0;
+      background-image: url('{{image_url}}');
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    /* Gradient overlay — readability above and below the strip */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0.3) 35%,
+        rgba(0, 0, 0, 0.1) 48%,
+        rgba(0, 0, 0, 0.2) 55%,
+        rgba(0, 0, 0, 0.55) 75%,
+        rgba(0, 0, 0, 0.75) 100%
+      );
+      z-index: 1;
+    }
+
+    /* Noise texture */
+    .noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      z-index: 4;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+    }
+
+    /* Brand whisper — top-left */
+    .brand-whisper {
+      position: absolute;
+      top: 72px;
+      left: 64px;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      z-index: 5;
+    }
+
+    /* Logo mark — top-right circle */
+    .logo-mark {
+      position: absolute;
+      top: 60px;
+      right: 64px;
+      width: 36px;
+      height: 36px;
+      border: 2.5px solid rgba(255, 255, 255, 1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight, 900);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+      z-index: 5;
+    }
+
+    /* Headline — positioned at ~35% from top */
+    .headline {
+      position: absolute;
+      top: 580px;
+      left: 0;
+      right: 0;
+      padding: 0 80px;
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight, 900);
+      font-size: 64px;
+      line-height: 1.02;
+      letter-spacing: -2px;
+      color: var(--text-color);
+      text-transform: uppercase;
+      z-index: 3;
+    }
+
+    /* Ticker strip container — at ~48% vertical center */
+    .ticker-strip-wrapper {
+      position: absolute;
+      top: 888px;
+      left: -50px;
+      right: -50px;
+      height: 80px;
+      transform: rotate(-2.5deg);
+      overflow: hidden;
+      z-index: 6;
+    }
+
+    .ticker-strip {
+      width: 100%;
+      height: 100%;
+      background: var(--accent-color);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .ticker-content {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight, 900);
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--bg-color);
+      padding: 0 40px;
+    }
+
+    .ticker-sep {
+      margin: 0 24px;
+      opacity: 0.6;
+      font-size: 20px;
+    }
+
+    /* CTA — below strip at ~60% */
+    .cta-wrap {
+      position: absolute;
+      top: 1088px;
+      left: 80px;
+      z-index: 3;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent-color);
+      color: var(--bg-color);
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 14px 32px;
+      border-radius: 100px;
+    }
+
+    .cta-arrow {
+      font-size: 16px;
+      letter-spacing: 0;
+      margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero"></div>
+  <div class="hero-overlay"></div>
+  <div class="noise"></div>
+
+  <div class="brand-whisper">{{brand_name}}</div>
+  <div class="logo-mark">{{logo_mark}}</div>
+
+  <div class="headline">{{headline}}</div>
+
+  <div class="ticker-strip-wrapper">
+    <div class="ticker-strip">
+      <div class="ticker-content">
+        {{body}}<span class="ticker-sep">&#8226;</span>{{body}}<span class="ticker-sep">&#8226;</span>{{body}}<span class="ticker-sep">&#8226;</span>{{body}}<span class="ticker-sep">&#8226;</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <div class="cta-btn">{{cta}} <span class="cta-arrow">&rarr;</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+name: compose_report
+description: "Compose a structured report as Markdown or Typst"
+version: "1.0"
+toolset: vizier-research
+
+execution:
+  type: python_function
+  entrypoint: "scripts.research.compose_report:run"
+  timeout: 30
+
+input:
+  title:
+    type: string
+    required: true
+    description: "Report title"
+  sections:
+    type: array
+    required: true
+    description: "List of section objects with heading, level, and body"
+  output_format:
+    type: string
+    required: false
+    description: "markdown or typst"
+  subtitle:
+    type: string
+    required: false
+  author:
+    type: string
+    required: false
+  client_name:
+    type: string
+    required: false
+  date:
+    type: string
+    required: false
+  output_path:
+    type: string
+    required: false
+    description: "Optional path to save the composed report"
+
+output:
+  content:
+    type: string
+  output_format:
+    type: string
+  section_count:
+    type: integer
+  file_path:
+    type: string

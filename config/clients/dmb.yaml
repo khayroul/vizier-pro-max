@@ -1,0 +1,21 @@
+client_id: dmb
+client_name: Desa Murni Batik
+brand:
+  primary_color: "#2C1810"
+  secondary_color: "#F5E6D3"
+  accent_color: "#C4956A"
+  headline_font: "Playfair Display"
+  body_font: "Inter"
+  logo_mark: "DMB"
+defaults:
+  template_name: "editorial-split-square"
+  image_mode: "openai"
+  style_hint: "batik textile patterns, warm earth tones, artisan craftsmanship, traditional Malay textile art"
+  language: "ms"
+  tone: "premium"
+  style_reference: "aesop"
+  style_reference_options:
+    - "aesop"
+    - "boh-tea"
+    - "the-duck-group"
+    - "muji"

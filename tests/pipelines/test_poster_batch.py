@@ -122,22 +122,18 @@ class TestPosterBatch:
         assert result["posters"] == []
 
     def test_client_id_forwarded(self, tmp_path: Path) -> None:
-        """client_id is passed through to start_deliverable."""
-        tmpl = tmp_path / "template.html"
-        tmpl.write_text("<p>{{ headline }}</p>")
+        """client_id batch mode calls poster_generate and start_deliverable."""
         csv_file = tmp_path / "data.csv"
-        csv_file.write_text("headline\nTest\n")
+        csv_file.write_text("headline,body\nTest,Body copy\n")
 
         poster_path = str(tmp_path / "out" / "poster_0000.png")
 
         with (
-            patch("pipelines.poster_batch.screenshot_run", return_value={"file_path": poster_path}),
-            patch("pipelines.poster_batch._generate_ai_background", return_value=None),
-            patch("pipelines.poster_batch._generate_image_prompt", return_value="prompt"),
-            patch("pipelines.poster_batch.start_deliverable", return_value="did") as mock_start,
             patch("pipelines.poster_batch.clear_context"),
+            patch("pipelines.poster_batch.start_deliverable", return_value="did") as mock_start,
             patch("pipelines.poster_batch.record_quality"),
             patch("pipelines.poster_batch.check_anomalies", return_value={"is_anomaly": False, "reasons": []}),
+            patch("pipelines.poster_generate.run", return_value={"poster_path": poster_path}) as mock_generate,
             patch("pipelines.poster_batch.score_poster_batch") as mock_score,
         ):
             fake_score = MagicMock()
@@ -146,13 +142,40 @@ class TestPosterBatch:
             mock_score.return_value = fake_score
 
             run(
-                template_path=str(tmpl),
                 data_path=str(csv_file),
                 output_dir=str(tmp_path / "out"),
                 client_id="client-abc",
             )
 
         mock_start.assert_called_once_with(client_id="client-abc")
+        mock_generate.assert_called_once()
+
+    def test_client_id_mode_does_not_require_template_path(self, tmp_path: Path) -> None:
+        """client_id batch mode can run without a legacy template path."""
+        csv_file = tmp_path / "data.csv"
+        csv_file.write_text("headline,body\nTest,Body copy\n")
+
+        with (
+            patch("pipelines.poster_batch.clear_context"),
+            patch("pipelines.poster_batch.start_deliverable", return_value="did"),
+            patch("pipelines.poster_batch.record_quality"),
+            patch("pipelines.poster_batch.check_anomalies", return_value={"is_anomaly": False, "reasons": []}),
+            patch("pipelines.poster_generate.run", return_value={"poster_path": str(tmp_path / "poster.png")}),
+            patch("pipelines.poster_batch.score_poster_batch") as mock_score,
+        ):
+            fake_score = MagicMock()
+            fake_score.score = 8.0
+            fake_score.passed = True
+            mock_score.return_value = fake_score
+
+            result = run(
+                data_path=str(csv_file),
+                output_dir=str(tmp_path / "out"),
+                client_id="client-abc",
+            )
+
+        assert result["count"] == 1
+        assert result["status"] == "completed"
 
     def test_gradient_fallback_used_when_ai_fails(self, tmp_path: Path) -> None:
         """When AI background fails, CSS gradient fallback is injected."""

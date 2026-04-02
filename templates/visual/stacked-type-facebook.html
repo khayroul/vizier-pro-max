@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="reactor-width" content="1200">
+  <meta name="reactor-height" content="630">
+  <meta name="reactor-slots" content="headline,body,cta,brand_name,logo_mark">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background: var(--bg-color);
+      position: relative;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: var(--font-body-weight, 400);
+    }
+
+    /* Solid background — pure typography, no hero image */
+    .bg-solid {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-color);
+    }
+
+    /* Noise texture — film grain on the solid bg */
+    .noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+    }
+
+    /* Accent geometric — diagonal band across the background for landscape visual interest */
+    .accent-diagonal {
+      position: absolute;
+      top: -200px;
+      right: -100px;
+      width: 520px;
+      height: 1000px;
+      background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+      transform: rotate(-18deg);
+      transform-origin: top right;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Brand whisper — top-left */
+    .brand-whisper {
+      position: absolute;
+      top: 40px;
+      left: 56px;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      z-index: 10;
+    }
+
+    /* Logo mark — top-right, 36px circle with 2.5px white border */
+    .logo-mark {
+      position: absolute;
+      top: 32px;
+      right: 52px;
+      width: 36px;
+      height: 36px;
+      border: 2.5px solid rgba(255, 255, 255, 1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight, 900);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: -0.5px;
+      z-index: 10;
+    }
+
+    /*
+      Two-column layout for the landscape 630px height:
+      Left ~65%: massive stacked headline
+      Right ~35%: accent line, body, CTA — vertically centered
+    */
+    .stage {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    /* Left column — headline dominates */
+    .left-col {
+      flex: 0 0 780px;
+      display: flex;
+      align-items: center;
+      padding: 56px 48px 56px 64px;
+    }
+
+    /* MASSIVE stacked headline — compact for landscape */
+    .headline {
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight, 900);
+      font-size: 80px;
+      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: -3px;
+      color: var(--text-color);
+      max-width: 700px;
+    }
+
+    /* Thin vertical divider — visual separator between columns */
+    .divider {
+      flex: 0 0 1px;
+      background: color-mix(in srgb, var(--accent-color) 30%, transparent);
+      margin: 72px 0;
+      align-self: stretch;
+    }
+
+    /* Right column — body + CTA, vertically centered */
+    .right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 52px;
+    }
+
+    /* Accent line */
+    .accent-line {
+      width: 40px;
+      height: 3px;
+      background: var(--accent-color);
+      margin-bottom: 20px;
+      box-shadow: 0 0 14px color-mix(in srgb, var(--accent-color) 50%, transparent);
+      flex-shrink: 0;
+    }
+
+    /* Body text — compact for the 630px canvas */
+    .body-text {
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: var(--font-body-weight, 400);
+      font-size: 17px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      letter-spacing: 0.1px;
+      max-width: 320px;
+      margin-bottom: 30px;
+    }
+
+    /* CTA pill button — accent bg, bg-color text */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--accent-color);
+      color: var(--bg-color);
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 13px 28px;
+      border-radius: 100px;
+    }
+
+    .cta-arrow {
+      font-size: 13px;
+      letter-spacing: 0;
+      margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-solid"></div>
+  <div class="noise"></div>
+  <div class="accent-diagonal"></div>
+
+  <div class="brand-whisper">{{brand_name}}</div>
+  <div class="logo-mark">{{logo_mark}}</div>
+
+  <div class="stage">
+    <div class="left-col">
+      <div class="headline">{{headline}}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="right-col">
+      <div class="accent-line"></div>
+      <div class="body-text">{{body}}</div>
+      <div class="cta-btn">{{cta}} <span class="cta-arrow">&rarr;</span></div>
+    </div>
+  </div>
+</body>
+</html>

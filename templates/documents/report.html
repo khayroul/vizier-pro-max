@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <style>
+    /* ── Brand tokens ────────────────────────────────────────── */
+    :root {
+      --primary:      {{primary_color}};
+      --secondary:    {{secondary_color}};
+      --accent:       {{accent_color}};
+      --font-heading: {{headline_font}};
+      --font-body:    {{body_font}};
+
+      /* fallbacks */
+      --primary:      #1A1A2E;
+      --secondary:    #F4F4F8;
+      --accent:       #E94560;
+      --font-heading: Georgia, "Times New Roman", serif;
+      --font-body:    system-ui, -apple-system, sans-serif;
+    }
+
+    /* ── Print / page setup ──────────────────────────────────── */
+    @page {
+      size: A4;
+      margin: 2.5cm;
+      @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-family: var(--font-body);
+        font-size: 9px;
+        color: #888;
+      }
+    }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* ── Base ────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      color: #222;
+      background: #fff;
+    }
+
+    /* ── Typography scale (1.25 ratio) ──────────────────────── */
+    h1 { font-size: 31px; }   /* 16 × 1.25³ ≈ 31 */
+    h2 { font-size: 25px; }   /* 16 × 1.25² = 25 */
+    h3 { font-size: 20px; }   /* 16 × 1.25¹ = 20 */
+
+    h1, h2, h3 {
+      font-family: var(--font-heading);
+      color: var(--primary);
+      line-height: 1.25;
+    }
+
+    p { margin-bottom: 16px; }
+
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ── Title page ──────────────────────────────────────────── */
+    .title-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 64px 48px;
+      background: var(--primary);
+      color: #fff;
+      page-break-after: always;
+    }
+
+    .title-page .eyebrow {
+      font-family: var(--font-body);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .title-page h1 {
+      color: #fff;
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+
+    .title-page .subtitle {
+      font-family: var(--font-body);
+      font-size: 20px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 48px;
+    }
+
+    .title-page .meta {
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 24px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      gap: 32px;
+    }
+
+    .title-page .meta strong { color: #fff; }
+
+    /* ── Executive summary ───────────────────────────────────── */
+    .executive-summary {
+      padding: 48px 0;
+      page-break-before: always;
+      page-break-after: always;
+    }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .executive-summary h2 { margin-bottom: 24px; }
+
+    .summary-box {
+      background: var(--secondary);
+      border-left: 4px solid var(--accent);
+      padding: 24px 32px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .summary-box p:last-child { margin-bottom: 0; }
+
+    /* ── Body sections ───────────────────────────────────────── */
+    .body-content {
+      padding: 48px 0;
+    }
+
+    .body-content h2 {
+      margin-top: 40px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--secondary);
+    }
+
+    .body-content h2:first-child { margin-top: 0; }
+
+    .body-content h3 {
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .report-footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #888;
+      page-break-before: avoid;
+    }
+
+    .report-footer .footer-brand {
+      font-family: var(--font-heading);
+      color: var(--primary);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Title page ── -->
+  <section class="title-page">
+    <p class="eyebrow">Report</p>
+    <h1>{{title}}</h1>
+    <p class="subtitle">{{subtitle}}</p>
+    <div class="meta">
+      <span><strong>Author</strong><br>{{author}}</span>
+      <span><strong>Date</strong><br>{{date}}</span>
+    </div>
+  </section>
+
+  <!-- ── Executive summary ── -->
+  <section class="executive-summary">
+    <p class="section-label">Executive Summary</p>
+    <h2>Overview</h2>
+    <div class="summary-box">
+      {{executive_summary}}
+    </div>
+  </section>
+
+  <!-- ── Body ── -->
+  <section class="body-content">
+    {{body}}
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="report-footer">
+    <span class="footer-brand">{{title}}</span>
+    <span>{{footer}}</span>
+    <span>{{author}} &middot; {{date}}</span>
+  </footer>
+
+</body>
+</html>

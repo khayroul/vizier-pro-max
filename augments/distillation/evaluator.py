@@ -50,7 +50,7 @@ def _load_program(program_path: Path) -> ToolsetClassifier:
 
 def _compute_per_class_metrics(
     expected: list[str],
-    predicted: list[str],
+    predicted: list[str | None],
 ) -> dict[str, dict[str, float]]:
     """Compute precision, recall, and F1 per class.
 
@@ -99,6 +99,22 @@ def _compute_per_class_metrics(
     return metrics
 
 
+def _extract_prediction_label(result: Any) -> str | None:
+    """Normalize classifier output from DSPy predictions and test doubles."""
+    toolset_name = getattr(result, "toolset_name", None)
+    if isinstance(toolset_name, str):
+        return toolset_name
+
+    output = getattr(result, "output", None)
+    if isinstance(output, str):
+        return output
+
+    if isinstance(result, str):
+        return result
+
+    return None
+
+
 def evaluate(
     program_path: Path,
     test_examples: list[dict[str, str]],
@@ -138,7 +154,7 @@ def evaluate(
     program = _load_program(program_path)
 
     expected_labels: list[str] = []
-    predicted_labels: list[str] = []
+    predicted_labels: list[str | None] = []
     correct = 0
     total_latency_ms = 0.0
 
@@ -147,7 +163,7 @@ def evaluate(
         result = program(input_message=example["input_text"])
         elapsed_ms = (time.perf_counter() - start) * 1000.0
 
-        predicted = result.toolset_name
+        predicted = _extract_prediction_label(result)
         expected = example["expected_output"]
 
         expected_labels.append(expected)

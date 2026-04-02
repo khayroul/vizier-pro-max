@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice {{invoice_number}}</title>
+  <style>
+    @page {
+      margin: 2.5cm;
+      @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 9px;
+        color: #888;
+      }
+    }
+
+    :root {
+      --primary:      {{primary_color}};
+      --secondary:    {{secondary_color}};
+      --accent:       {{accent_color}};
+      --font-heading: {{headline_font}};
+      --font-body:    {{body_font}};
+    }
+
+    /* Scale: 16px base, 1.25 ratio — 10 12 16 20 25 31 */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body, 'Helvetica Neue', Helvetica, Arial, sans-serif);
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      border-top: 6px solid var(--primary, #1a56db);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+    }
+
+    .company-name {
+      font-family: var(--font-heading, 'Helvetica Neue', Helvetica, Arial, sans-serif);
+      font-size: 31px;
+      font-weight: 700;
+      color: var(--primary, #1a56db);
+      letter-spacing: -0.5px;
+    }
+
+    .invoice-meta { text-align: right; }
+    .invoice-meta .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #888; }
+    .invoice-meta .value { font-size: 20px; font-weight: 600; color: var(--secondary, #374151); }
+    .invoice-meta .date  { font-size: 14px; color: #555; margin-top: 4px; }
+
+    /* ── Client block ───────────────────────────────────── */
+    .parties {
+      display: flex;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+
+    .party-block { flex: 1; }
+    .party-block .block-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .party-block .block-name {
+      font-family: var(--font-heading, inherit);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--secondary, #374151);
+    }
+
+    /* ── Line items table ───────────────────────────────── */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+
+    .items-table thead tr {
+      background: var(--primary, #1a56db);
+      color: #fff;
+    }
+
+    .items-table thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-family: var(--font-heading, inherit);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .items-table thead th:last-child,
+    .items-table tbody td:last-child { text-align: right; }
+
+    .items-table tbody tr:nth-child(odd)  { background: #f8f9fb; }
+    .items-table tbody tr:nth-child(even) { background: #fff; }
+
+    .items-table tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+
+    .items-table tbody td.desc { color: #555; font-size: 13px; padding-top: 2px; }
+
+    /* ── Totals ─────────────────────────────────────────── */
+    .totals-wrapper { display: flex; justify-content: flex-end; margin-bottom: 40px; }
+
+    .totals-table { width: 280px; font-size: 14px; }
+
+    .totals-table tr td { padding: 6px 0; }
+    .totals-table tr td:last-child { text-align: right; font-weight: 500; }
+
+    .totals-table .row-subtotal td { color: #555; }
+    .totals-table .row-tax td      { color: #555; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; }
+
+    .totals-table .row-total td {
+      padding-top: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent, #047857);
+    }
+
+    /* ── Payment info ───────────────────────────────────── */
+    .payment-block {
+      border-top: 2px solid var(--secondary, #374151);
+      padding-top: 16px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .payment-block .payment-label {
+      font-family: var(--font-heading, inherit);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--secondary, #374151);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="company-name">{{company_name}}</div>
+    <div class="invoice-meta">
+      <div class="label">Invoice</div>
+      <div class="value">#{{invoice_number}}</div>
+      <div class="date">{{date}}</div>
+    </div>
+  </header>
+
+  <!-- Bill-to / Bill-from -->
+  <section class="parties">
+    <div class="party-block">
+      <div class="block-label">Bill To</div>
+      <div class="block-name">{{client_name}}</div>
+    </div>
+  </section>
+
+  <!-- Line items -->
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th style="width:45%">Description</th>
+        <th style="width:15%">Qty</th>
+        <th style="width:20%">Unit Price</th>
+        <th style="width:20%">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{line_items}}
+    </tbody>
+  </table>
+
+  <!-- Totals -->
+  <div class="totals-wrapper">
+    <table class="totals-table">
+      <tr class="row-subtotal">
+        <td>Subtotal</td>
+        <td>{{subtotal}}</td>
+      </tr>
+      <tr class="row-tax">
+        <td>Tax</td>
+        <td>{{tax}}</td>
+      </tr>
+      <tr class="row-total">
+        <td>Total</td>
+        <td>{{total}}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Payment info -->
+  <footer class="payment-block">
+    <div class="payment-label">Payment Information</div>
+    {{payment_info}}
+  </footer>
+
+</body>
+</html>

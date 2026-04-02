@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="reactor-width" content="1190">
+<meta name="reactor-height" content="1684">
+<meta name="reactor-slots" content="title,subtitle,author,category">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 1190px; height: 1684px; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .canvas {
+    width: 1190px; height: 1684px;
+    background: #0d1117;
+    display: flex; flex-direction: column;
+    color: #f0f0f0;
+    position: relative;
+  }
+  .top-band {
+    background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #1a1040 100%);
+    padding: 64px 80px 56px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .category-pill {
+    align-self: flex-start;
+    padding: 10px 28px;
+    background: rgba(124,110,248,0.25);
+    border: 1.5px solid rgba(124,110,248,0.6);
+    border-radius: 40px;
+    font-size: 22px; font-weight: 600;
+    color: #b8aaff;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .title {
+    font-size: 88px; font-weight: 800; line-height: 1.05;
+    letter-spacing: -2px;
+    color: #ffffff;
+    padding-top: 16px;
+  }
+  .subtitle {
+    font-size: 36px; font-weight: 400; line-height: 1.5;
+    color: #9b9bc0;
+    padding-top: 8px;
+    max-width: 900px;
+  }
+  .middle {
+    flex: 1;
+    background: #0d1117;
+    position: relative;
+    overflow: hidden;
+  }
+  .grid-pattern {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(124,110,248,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,110,248,0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+  }
+  .orb-1 { width: 500px; height: 500px; background: #7c6ef8; top: 80px; right: -100px; }
+  .orb-2 { width: 400px; height: 400px; background: #e066b0; bottom: 40px; left: -80px; }
+  .divider {
+    position: absolute; bottom: 0; left: 80px; right: 80px;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(124,110,248,0.4), transparent);
+  }
+  .bottom-band {
+    padding: 48px 80px 56px;
+    background: #0d1117;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .author-block { display: flex; flex-direction: column; gap: 8px; }
+  .author-label {
+    font-size: 20px; font-weight: 500;
+    color: #5c5c7a;
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .author-name {
+    font-size: 34px; font-weight: 700;
+    color: #d0d0e8;
+  }
+  .logo-mark {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #7c6ef8, #e066b0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 900; color: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="top-band">
+    <div class="category-pill">{{category}}</div>
+    <div class="title">{{title}}</div>
+    <div class="subtitle">{{subtitle}}</div>
+  </div>
+  <div class="middle">
+    <div class="grid-pattern"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="divider"></div>
+  </div>
+  <div class="bottom-band">
+    <div class="author-block">
+      <div class="author-label">Instructor</div>
+      <div class="author-name">{{author}}</div>
+    </div>
+    <div class="logo-mark">R</div>
+  </div>
+</div>
+</body>
+</html>

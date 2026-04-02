@@ -1,0 +1,154 @@
+aesop:
+  display_name: "Aesop"
+  categories:
+    - premium
+    - editorial
+    - beauty
+    - retail
+  primary_color: "#2F241F"
+  secondary_color: "#E8DED1"
+  accent_color: "#8A6F56"
+  headline_font: "Cormorant Garamond"
+  body_font: "Inter"
+  template_name: "editorial-split-square"
+  style_hint: "editorial minimalism, tactile premium surfaces, earthy neutrals, restrained luxury, calm art-direction"
+  avoid_hint: "glossy gradients, neon colors, cluttered layout, loud discount-poster energy"
+
+apple:
+  display_name: "Apple"
+  categories:
+    - minimal
+    - tech
+    - product
+  primary_color: "#111111"
+  secondary_color: "#F5F5F7"
+  accent_color: "#8E8E93"
+  headline_font: "Inter"
+  body_font: "Inter"
+  template_name: "center-stage-square"
+  style_hint: "precise minimalism, clean product focus, generous whitespace, crisp lighting, polished simplicity"
+  avoid_hint: "busy collage backgrounds, decorative textures, noisy color palettes"
+
+muji:
+  display_name: "MUJI"
+  categories:
+    - minimal
+    - lifestyle
+    - retail
+  primary_color: "#7A2E2E"
+  secondary_color: "#F3EFE7"
+  accent_color: "#A35A3D"
+  headline_font: "Noto Serif"
+  body_font: "Inter"
+  template_name: "floating-card-square"
+  style_hint: "quiet minimalism, warm neutrals, utility-first layout, understated Japanese-inspired retail calm"
+  avoid_hint: "hyper-saturated colors, flashy effects, aggressive CTA styling"
+
+nike:
+  display_name: "Nike"
+  categories:
+    - sports
+    - bold
+    - youth
+  primary_color: "#111111"
+  secondary_color: "#F5F5F5"
+  accent_color: "#FF5A1F"
+  headline_font: "Oswald"
+  body_font: "Inter"
+  template_name: "bold-knockout-square"
+  style_hint: "high-contrast athletic energy, bold cropping, assertive typography, motion, grit, dynamic confidence"
+  avoid_hint: "soft pastel lifestyle mood, delicate serif-heavy editorial styling"
+
+starbucks:
+  display_name: "Starbucks"
+  categories:
+    - fnb
+    - beverage
+    - lifestyle
+  primary_color: "#1E3932"
+  secondary_color: "#F1F8F6"
+  accent_color: "#00754A"
+  headline_font: "Lora"
+  body_font: "Inter"
+  template_name: "hero-bottom-text-square"
+  style_hint: "inviting cafe atmosphere, rich beverage photography, cozy green-led palette, lifestyle warmth, premium everyday comfort"
+  avoid_hint: "sterile tech minimalism, excessive red-orange heat, nightclub lighting"
+
+zus-coffee:
+  display_name: "ZUS Coffee"
+  categories:
+    - fnb
+    - coffee
+    - malaysian
+  primary_color: "#0D2B4D"
+  secondary_color: "#F7F2EA"
+  accent_color: "#D38B3D"
+  headline_font: "Poppins"
+  body_font: "Inter"
+  template_name: "center-stage-square"
+  style_hint: "modern Malaysian coffee branding, punchy but clean visual system, blue-and-cream confidence, youthful cafe energy, app-native clarity"
+  avoid_hint: "overly corporate finance look, muted luxury beige-only palette, cluttered copy blocks"
+
+boh-tea:
+  display_name: "BOH Tea"
+  categories:
+    - fnb
+    - tea
+    - malaysian
+    - heritage
+  primary_color: "#2F5D3A"
+  secondary_color: "#F7F3E9"
+  accent_color: "#B08D57"
+  headline_font: "Playfair Display"
+  body_font: "Inter"
+  template_name: "editorial-split-square"
+  style_hint: "Malaysian heritage warmth, lush tea-estate calm, trusted household branding, refined natural textures, inviting familiarity"
+  avoid_hint: "cold monochrome tech vibe, neon gradients, aggressive streetwear styling"
+
+petronas:
+  display_name: "PETRONAS"
+  categories:
+    - corporate
+    - malaysian
+    - trust
+    - energy
+  primary_color: "#005F56"
+  secondary_color: "#EAF7F5"
+  accent_color: "#00A19A"
+  headline_font: "Montserrat"
+  body_font: "Inter"
+  template_name: "center-stage-square"
+  style_hint: "clean corporate trust, Malaysian institutional confidence, clear hierarchy, optimistic teal-led professionalism"
+  avoid_hint: "messy collage composition, distressed textures, playful sticker aesthetics"
+
+farm-fresh:
+  display_name: "Farm Fresh"
+  categories:
+    - fnb
+    - dairy
+    - malaysian
+    - family
+  primary_color: "#2D6A4F"
+  secondary_color: "#FFF7E8"
+  accent_color: "#F4A261"
+  headline_font: "Nunito Sans"
+  body_font: "Inter"
+  template_name: "hero-bottom-text-square"
+  style_hint: "fresh farm-to-table optimism, family-friendly warmth, clean food photography, natural daylight, approachable premium feel"
+  avoid_hint: "luxury noir styling, overly dense editorial text, hard-edged high-fashion mood"
+
+the-duck-group:
+  display_name: "The dUCk Group"
+  categories:
+    - lifestyle
+    - fashion
+    - malaysian
+    - premium
+  primary_color: "#8F3059"
+  secondary_color: "#FDF2F6"
+  accent_color: "#D68AA2"
+  headline_font: "Playfair Display"
+  body_font: "Inter"
+  template_name: "floating-card-square"
+  style_hint: "polished lifestyle femininity, premium local fashion energy, graceful typography, curated softness with strong brand confidence"
+  avoid_hint: "harsh industrial mood, brutalist black-only treatment, masculine sportswear aggression"

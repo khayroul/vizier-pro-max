@@ -1,0 +1,21 @@
+client_id: rempah-tok-ma
+client_name: Rempah Tok Ma
+brand:
+  primary_color: "#7C2D12"
+  secondary_color: "#FEF3C7"
+  accent_color: "#DC2626"
+  headline_font: "Georgia"
+  body_font: "Inter"
+  logo_mark: "RTM"
+defaults:
+  template_name: "hero-bottom-text-square"
+  image_mode: "openai"
+  style_hint: "Terengganu spice market, rich warm colors, traditional spice blends, rempah, Malaysian cooking"
+  language: "loghat-terengganu"
+  tone: "casual"
+  style_reference: "zus-coffee"
+  style_reference_options:
+    - "zus-coffee"
+    - "starbucks"
+    - "boh-tea"
+    - "farm-fresh"

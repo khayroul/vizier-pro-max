@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm;
+  }
+
+  :root {
+    --primary: {{primary_color}};
+    --secondary: {{secondary_color}};
+    --accent: {{accent_color}};
+    --font-heading: {{headline_font}};
+    --font-body: {{body_font}};
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+    font-size: 16px;
+    line-height: 1.5;
+    color: #1a1a1a;
+    background: #ffffff;
+    height: 100%;
+  }
+
+  /* ── Logo + Headline ── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 3px solid var(--primary, #2563eb);
+    margin-bottom: 32px;
+  }
+
+  .logo-placeholder {
+    width: 56px;
+    height: 56px;
+    background: var(--primary, #2563eb);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .headline h1 {
+    font-family: var(--font-heading, 'Helvetica Neue', Arial, sans-serif);
+    font-size: 31px;   /* 16 × 1.25³ */
+    font-weight: 700;
+    color: var(--primary, #2563eb);
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+  }
+
+  .headline p {
+    font-size: 20px;   /* 16 × 1.25 */
+    color: var(--secondary, #64748b);
+    margin-top: 4px;
+  }
+
+  /* ── Features ── */
+  .features {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .feature-card {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-top: 4px solid var(--secondary, #64748b);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .feature-card h2 {
+    font-family: var(--font-heading, 'Helvetica Neue', Arial, sans-serif);
+    font-size: 20px;   /* 16 × 1.25 */
+    font-weight: 600;
+    color: var(--primary, #2563eb);
+    margin-bottom: 8px;
+  }
+
+  .feature-card p {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  /* ── CTA ── */
+  .cta {
+    background: var(--accent, #f59e0b);
+    border-radius: 8px;
+    padding: 24px 32px;
+    text-align: center;
+  }
+
+  .cta p {
+    font-family: var(--font-heading, 'Helvetica Neue', Arial, sans-serif);
+    font-size: 25px;   /* 16 × 1.25² */
+    font-weight: 700;
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-placeholder"></div>
+    <div class="headline">
+      <h1>{{title}}</h1>
+      <p>{{subtitle}}</p>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <h2>Feature One</h2>
+      <p>{{feature_1}}</p>
+    </div>
+    <div class="feature-card">
+      <h2>Feature Two</h2>
+      <p>{{feature_2}}</p>
+    </div>
+    <div class="feature-card">
+      <h2>Feature Three</h2>
+      <p>{{feature_3}}</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <p>{{cta}}</p>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+name: render_pdf
+description: "Render HTML content or an HTML file to PDF via weasyprint"
+version: "1.0"
+toolset: vizier-document
+
+execution:
+  type: python_function
+  entrypoint: "scripts.document.render_pdf:run"
+  timeout: 30
+
+input:
+  html_content:
+    type: string
+    required: false
+    description: "HTML content string"
+  input_path:
+    type: string
+    required: false
+    description: "Path to HTML input file"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output PDF"
+
+output:
+  file_path:
+    type: string
+    description: "Path to rendered PDF"

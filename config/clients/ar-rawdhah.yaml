@@ -1,0 +1,20 @@
+client_id: ar-rawdhah
+client_name: Ar-Rawdhah
+brand:
+  primary_color: "#1B4332"
+  secondary_color: "#F0F7F4"
+  accent_color: "#52B788"
+  headline_font: "Georgia"
+  body_font: "Inter"
+  logo_mark: "AR"
+defaults:
+  template_name: "center-stage-square"
+  image_mode: "openai"
+  style_hint: "natural wellness, herbal ingredients, calm serene atmosphere, Islamic wellness"
+  language: "ms"
+  tone: "formal"
+  style_reference: "petronas"
+  style_reference_options:
+    - "petronas"
+    - "muji"
+    - "aesop"

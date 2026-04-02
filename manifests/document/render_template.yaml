@@ -1,0 +1,38 @@
+name: render_template
+description: "Fill an HTML document template with content and brand variables"
+version: "1.0"
+toolset: vizier-document
+
+execution:
+  type: python_script
+  path: scripts/document/render_template.py
+  entrypoint: run
+  timeout: 10
+
+input:
+  template_name:
+    type: string
+    required: false
+    description: "Template name (article, report, proposal, invoice, one-pager, ebook-chapter)"
+  template_path:
+    type: string
+    required: false
+    description: "Explicit path to an HTML template"
+  content:
+    type: object
+    required: false
+    description: "Content values to fill into template slots"
+  brand:
+    type: object
+    required: false
+    description: "Brand variables such as colors and fonts"
+  output_path:
+    type: string
+    required: true
+    description: "Where to save the filled HTML file"
+
+output:
+  filled_template_path:
+    type: string
+  html_length:
+    type: integer

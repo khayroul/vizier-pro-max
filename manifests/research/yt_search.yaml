@@ -1,0 +1,35 @@
+name: yt_search
+description: "Search YouTube metadata via yt-dlp"
+version: "1.0"
+toolset: vizier-research
+
+execution:
+  type: python_function
+  entrypoint: "scripts.research.yt_search:run"
+  timeout: 30
+
+input:
+  query:
+    type: string
+    required: true
+    description: "YouTube search topic"
+  max_results:
+    type: integer
+    required: false
+  date_filter:
+    type: string
+    required: false
+  min_duration:
+    type: integer
+    required: false
+  max_duration:
+    type: integer
+    required: false
+
+output:
+  results:
+    type: array
+  query:
+    type: string
+  result_count:
+    type: integer

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="reactor-width" content="1200">
+  <meta name="reactor-height" content="630">
+  <meta name="reactor-slots" content="headline,body,cta,image_url,brand_name,logo_mark">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 55% 45%;
+      background: var(--bg-color, #0a0a0f);
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      position: relative;
+    }
+
+    /* ── Image panel ── */
+    .image-panel {
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg-color, #0a0a0f);
+      background-image: url('{{image_url}}');
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Vignette fade to right edge */
+    .image-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 55%,
+        color-mix(in srgb, var(--bg-color, #0a0a0f) 40%, transparent) 82%,
+        var(--bg-color, #0a0a0f) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* ── Accent divider — vertical line ── */
+    .divider {
+      position: absolute;
+      left: calc(55% - 1px);
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      z-index: 10;
+    }
+
+    .divider-line {
+      position: absolute;
+      top: 14%;
+      bottom: 14%;
+      left: 0;
+      width: 2px;
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        var(--accent-color, #e8c87a) 20%,
+        var(--accent-color, #e8c87a) 80%,
+        transparent 100%
+      );
+      box-shadow:
+        0 0 6px color-mix(in srgb, var(--accent-color, #e8c87a) 60%, transparent),
+        0 0 16px color-mix(in srgb, var(--accent-color, #e8c87a) 22%, transparent);
+    }
+
+    /* ── Text panel ── */
+    .text-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px 40px 32px 36px;
+      position: relative;
+      background: var(--bg-color, #0a0a0f);
+    }
+
+    /* Subtle noise texture */
+    .text-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+    }
+
+    /* ── Logo mark ── */
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid color-mix(in srgb, var(--text-color, #ffffff) 55%, transparent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-headline, 'Georgia', serif);
+      font-weight: var(--font-headline-weight, 700);
+      font-size: 12px;
+      color: var(--text-color, #ffffff);
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      font-weight: var(--font-body-weight, 400);
+      font-size: 9px;
+      color: var(--text-muted, rgba(255,255,255,0.35));
+      text-transform: uppercase;
+      letter-spacing: 3.5px;
+    }
+
+    /* ── Content block ── */
+    .content-block {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      justify-content: center;
+      padding: 16px 0;
+    }
+
+    /* Accent rule above headline */
+    .accent-rule {
+      width: 24px;
+      height: 2px;
+      background: var(--accent-color, #e8c87a);
+      margin-bottom: 16px;
+      box-shadow: 0 0 7px color-mix(in srgb, var(--accent-color, #e8c87a) 40%, transparent);
+    }
+
+    .headline {
+      font-family: var(--font-headline, 'Georgia', serif);
+      font-weight: var(--font-headline-weight, 700);
+      font-size: 40px;
+      color: var(--text-color, #ffffff);
+      text-transform: uppercase;
+      line-height: 0.95;
+      letter-spacing: -0.8px;
+      margin-bottom: 14px;
+    }
+
+    .body-text {
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      font-weight: var(--font-body-weight, 400);
+      font-size: 16px;
+      color: var(--text-muted, rgba(255,255,255,0.5));
+      line-height: 1.5;
+      letter-spacing: 0.1px;
+    }
+
+    /* ── CTA ── */
+    .cta-block {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent-color, #e8c87a);
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding-bottom: 8px;
+      border-bottom: 1.5px solid color-mix(in srgb, var(--accent-color, #e8c87a) 45%, transparent);
+    }
+
+    .cta-arrow {
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    /* Brand whisper — inline at bottom right for wide format */
+    .brand-whisper {
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      font-size: 8px;
+      color: color-mix(in srgb, var(--text-muted, rgba(255,255,255,0.35)) 65%, transparent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="image-panel"></div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="text-panel">
+    <div class="logo-block">
+      <div class="logo-mark">{{logo_mark}}</div>
+      <span class="brand-name">{{brand_name}}</span>
+    </div>
+
+    <div class="content-block">
+      <div class="accent-rule"></div>
+      <div class="headline">{{headline}}</div>
+      <div class="body-text">{{body}}</div>
+    </div>
+
+    <div class="cta-block">
+      <div class="cta-btn">{{cta}} <span class="cta-arrow">&rarr;</span></div>
+      <div class="brand-whisper">{{brand_name}}</div>
+    </div>
+  </div>
+
+</body>
+</html>

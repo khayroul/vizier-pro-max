@@ -55,9 +55,14 @@ class PosterRequest:
     body: str
     cta: str = "Learn More"
     image_prompt: str = ""
-    template_name: str = "social-post"
-    image_mode: str = "openai"
+    template_name: str = ""
+    image_mode: str = ""
     output_path: str = ""
+    brand_name: str = ""
+    logo_mark: str = ""
+    brand_css: dict[str, str] | None = None
+    client_id: str = ""
+    style_reference: str = ""
     palette: dict[str, str] | None = None
     fonts: dict[str, str] | None = None
 
@@ -72,6 +77,8 @@ class PosterResult:
     width: int
     height: int
     image_mode: str
+    brand_name: str = ""
+    logo_mark: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -259,6 +266,15 @@ def _inject_design(html: str, palette: dict[str, str], fonts: dict[str, str]) ->
     return html.replace("</head>", f"{design_css}\n{font_link}\n</head>")
 
 
+def _inject_brand_css(html: str, brand_css: dict[str, str]) -> str:
+    """Inject CSS custom property overrides into HTML before </head>."""
+    if not brand_css:
+        return html
+    declarations = "\n".join(f"    {key}: {value};" for key, value in brand_css.items())
+    css_block = f"\n<style>\n  :root {{\n{declarations}\n  }}\n</style>\n"
+    return html.replace("</head>", f"{css_block}</head>")
+
+
 def _inject_slots(html: str, content: dict[str, str]) -> str:
     """Replace {{slot_name}} placeholders with content values."""
     return _SLOT_PATTERN.sub(
@@ -289,6 +305,7 @@ def _render_poster(
     template: TemplateConfig,
     content: dict[str, str],
     output_path: str,
+    brand_css: dict[str, str] | None = None,
     palette: dict[str, str] | None = None,
     fonts: dict[str, str] | None = None,
 ) -> str:
@@ -300,6 +317,8 @@ def _render_poster(
         html_source = _inject_design(html_source, palette, fonts)
 
     injected_html = _inject_slots(html_source, content)
+    if brand_css is not None:
+        injected_html = _inject_brand_css(injected_html, brand_css)
 
     logger.info(
         "Rendering poster: template=%s, output=%s, size=%dx%d",
@@ -324,9 +343,14 @@ def run(
     body: str,
     cta: str = "Learn More",
     image_prompt: str = "",
-    template_name: str = "social-post",
-    image_mode: str = "openai",
+    template_name: str = "",
+    image_mode: str = "",
     output_path: str = "",
+    brand_name: str = "",
+    logo_mark: str = "",
+    brand_css: dict[str, str] | None = None,
+    client_id: str = "",
+    style_reference: str = "",
     palette: dict[str, str] | None = None,
     fonts: dict[str, str] | None = None,
 ) -> dict[str, str | int]:
@@ -338,10 +362,19 @@ def run(
         cta: Call-to-action button text.
         image_prompt: Prompt for AI background generation. If empty,
             a default prompt is built from headline + body.
-        template_name: HTML template to use (default: social-post).
+        template_name: HTML template to use. Falls back to client default or
+            social-post.
         image_mode: Image generation provider — 'openai' or 'falai'.
         output_path: Where to save the final poster PNG. Auto-generated
             if empty.
+        brand_name: Optional brand label injected into templates that support it.
+        logo_mark: Optional short brand mark injected into templates that
+            support it.
+        brand_css: Optional CSS custom property overrides injected into the
+            template.
+        client_id: Optional client configuration ID for auto-theming.
+        style_reference: Optional shared style preset such as ``"zus-coffee"``
+            or ``"aesop"`` used to steer mood, template, and theming.
         palette: Color palette dict with primary, secondary, accent,
             background, text hex values.
         fonts: Font pairing dict with heading_font, body_font, weights,
@@ -353,12 +386,68 @@ def run(
     """
     t0 = time.monotonic()
 
-    if palette is None or fonts is None:
-        msg = "palette and fonts are required"
+    if (palette is None) != (fonts is None):
+        msg = "palette and fonts must be provided together"
+        raise ValueError(msg)
+
+    client = None
+    effective_template_name = template_name
+    effective_image_mode = image_mode
+    effective_brand_name = brand_name
+    effective_logo_mark = logo_mark
+    effective_brand_css = dict(brand_css) if brand_css is not None else None
+    client_style_hint = ""
+    style_reference_hint = ""
+    style_reference_avoid = ""
+    effective_style_reference = style_reference.strip()
+
+    if client_id:
+        from config.client_loader import brand_to_css_vars, load_client
+
+        client = load_client(client_id)
+        if client is not None:
+            client_style_hint = client.defaults.style_hint
+            if not effective_image_mode:
+                effective_image_mode = client.defaults.image_mode
+            if not effective_logo_mark:
+                effective_logo_mark = client.brand.logo_mark
+            if not effective_brand_name:
+                effective_brand_name = client.client_name
+            if effective_brand_css is None:
+                effective_brand_css = brand_to_css_vars(client.brand)
+            if not effective_style_reference:
+                effective_style_reference = client.defaults.style_reference.strip()
+
+    if effective_style_reference:
+        from config.client_loader import (
+            load_style_reference,
+            style_reference_to_css_vars,
+        )
+
+        style_ref = load_style_reference(effective_style_reference)
+        if style_ref is None:
+            msg = f"Unknown style_reference: {effective_style_reference}"
+            raise ValueError(msg)
+        style_reference_hint = style_ref.style_hint
+        style_reference_avoid = style_ref.avoid_hint
+        if not template_name and style_ref.template_name:
+            effective_template_name = style_ref.template_name
+        if effective_brand_css is None:
+            effective_brand_css = style_reference_to_css_vars(style_ref)
+
+    if client is not None and not template_name and not style_reference.strip():
+        effective_template_name = client.defaults.template_name
+
+    if not effective_template_name:
+        effective_template_name = "social-post"
+    if not effective_image_mode:
+        effective_image_mode = "openai"
+    if palette is None and fonts is None and effective_brand_css is None:
+        msg = "palette/fonts or brand_css/client_id are required"
         raise ValueError(msg)
 
     # Resolve template
-    template = _resolve_template(template_name)
+    template = _resolve_template(effective_template_name)
 
     # Build output paths
     stamp = time.strftime("%Y%m%d-%H%M%S")
@@ -369,13 +458,24 @@ def run(
     poster_path = output_path or str(out_dir / "poster.png")
 
     # Layer 1: Generate AI background
+    prompt_prefix_parts = [
+        part for part in (style_reference_hint, client_style_hint) if part
+    ]
+    prompt_prefix = ". ".join(prompt_prefix_parts)
+    if prompt_prefix:
+        prompt_prefix += ". "
+    avoid_sentence = (
+        f"Avoid {style_reference_avoid}. " if style_reference_avoid else ""
+    )
     effective_prompt = image_prompt or (
+        f"{prompt_prefix}"
         f"Create a premium visual background for a poster about: "
         f"{headline}. {body}. "
         "No text, no logos, no letters, clean composition, "
-        "vibrant colors, social-media ready lighting, high quality."
-    )
-    hero_file = _generate_hero(effective_prompt, hero_path, image_mode)
+        "vibrant colors, social-media ready lighting, high quality. "
+        f"{avoid_sentence}"
+    ).strip()
+    hero_file = _generate_hero(effective_prompt, hero_path, effective_image_mode)
 
     # Layer 2: Render template with text + hero as background
     image_uri = _to_data_uri(Path(hero_file))
@@ -384,8 +484,17 @@ def run(
         "body": body,
         "cta": cta,
         "image_url": image_uri,
+        "brand_name": effective_brand_name,
+        "logo_mark": effective_logo_mark,
     }
-    _render_poster(template, content, poster_path, palette=palette, fonts=fonts)
+    _render_poster(
+        template,
+        content,
+        poster_path,
+        brand_css=effective_brand_css,
+        palette=palette,
+        fonts=fonts,
+    )
 
     duration = time.monotonic() - t0
     logger.info("Poster generated in %.1fs: %s", duration, poster_path)
@@ -396,6 +505,8 @@ def run(
         template_used=template.name,
         width=template.width,
         height=template.height,
-        image_mode=image_mode,
+        image_mode=effective_image_mode,
+        brand_name=effective_brand_name,
+        logo_mark=effective_logo_mark,
     )
     return {k: v for k, v in asdict(result).items()}

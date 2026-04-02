@@ -1,0 +1,36 @@
+name: assemble_epub
+description: "Assemble an EPUB file from structured chapter HTML"
+version: "1.0"
+toolset: vizier-document
+
+execution:
+  type: python_function
+  entrypoint: "scripts.document.assemble_epub:run"
+  timeout: 30
+
+input:
+  title:
+    type: string
+    required: true
+    description: "Book title"
+  author:
+    type: string
+    required: true
+    description: "Book author"
+  chapters:
+    type: array
+    required: true
+    description: "List of chapter objects with title and html"
+  cover_path:
+    type: string
+    required: false
+    description: "Optional cover image path"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output EPUB"
+
+output:
+  file_path:
+    type: string
+    description: "Path to assembled EPUB"

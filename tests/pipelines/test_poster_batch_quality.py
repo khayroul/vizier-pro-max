@@ -115,11 +115,12 @@ def test_run_with_gates_integration() -> None:
 
 
 def test_input_schema_required_fields() -> None:
-    """_INPUT_SCHEMA must mark template_path and data_path as required."""
+    """_INPUT_SCHEMA must require data_path and allow client-driven template resolution."""
     from pipelines.poster_batch import _INPUT_SCHEMA
 
-    assert _INPUT_SCHEMA["template_path"]["required"] is True
+    assert _INPUT_SCHEMA["template_path"]["required"] is False
     assert _INPUT_SCHEMA["data_path"]["required"] is True
+    assert _INPUT_SCHEMA["client_id"]["required"] is False
     assert _INPUT_SCHEMA.get("output_dir", {}).get("required", False) is False
 
 

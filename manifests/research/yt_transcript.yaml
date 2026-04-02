@@ -1,0 +1,27 @@
+name: yt_transcript
+description: "Fetch YouTube transcripts with optional auto-caption fallback"
+version: "1.0"
+toolset: vizier-research
+
+execution:
+  type: python_function
+  entrypoint: "scripts.research.yt_transcript:run"
+  timeout: 30
+
+input:
+  video_ids:
+    type: array
+    required: true
+    description: "List of YouTube video IDs"
+  languages:
+    type: array
+    required: false
+  fallback_auto:
+    type: boolean
+    required: false
+
+output:
+  transcripts:
+    type: array
+  failed:
+    type: array

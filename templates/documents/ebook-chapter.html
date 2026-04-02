@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    margin: 2.5cm;
+    @bottom-center {
+      content: counter(page);
+      font-family: var(--font-body, Georgia, serif);
+      font-size: 11px;
+      color: #888;
+    }
+  }
+
+  :root {
+    --primary:   {{primary_color}};
+    --secondary: {{secondary_color}};
+    --accent:    {{accent_color}};
+    --font-heading: {{headline_font}};
+    --font-body:    {{body_font}};
+  }
+
+  /* Fallbacks applied via cascade if vars are empty strings */
+  html { font-size: 16px; }
+
+  body {
+    font-family: var(--font-body, Georgia, "Times New Roman", serif);
+    color: #1a1a1a;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ── Typography scale (1.25 ratio) ─────────────────────────── */
+  h1 { font-size: 1.953rem; }   /* 31px */
+  h2 { font-size: 1.563rem; }   /* 25px */
+  h3 { font-size: 1.25rem;  }   /* 20px */
+  p  { font-size: 1rem;     }   /* 16px */
+
+  h1, h2, h3 {
+    font-family: var(--font-heading, "Helvetica Neue", Arial, sans-serif);
+    color: var(--primary, #1a1a2e);
+    line-height: 1.25;
+    margin-top: 2rem;       /* 32px — 8px grid */
+    margin-bottom: 0.5rem;  /* 8px  */
+  }
+
+  /* ── Chapter header ─────────────────────────────────────────── */
+  .chapter-header {
+    border-bottom: 3px solid var(--secondary, #e63946);
+    padding-bottom: 1.5rem;   /* 24px */
+    margin-bottom: 2rem;      /* 32px */
+    page-break-after: avoid;
+  }
+
+  .chapter-number {
+    font-family: var(--font-heading, "Helvetica Neue", Arial, sans-serif);
+    font-size: 0.875rem;      /* 14px */
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--secondary, #e63946);
+    margin: 0 0 0.5rem;
+  }
+
+  .chapter-title {
+    font-size: 1.953rem;
+    margin: 0;
+    color: var(--primary, #1a1a2e);
+  }
+
+  /* ── Body text ──────────────────────────────────────────────── */
+  .body-text p {
+    margin: 0 0 1rem;         /* 16px bottom — 8px grid */
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /* Drop cap on first paragraph's first letter */
+  .body-text p:first-of-type::first-letter {
+    font-family: var(--font-heading, "Helvetica Neue", Arial, sans-serif);
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--primary, #1a1a2e);
+    float: left;
+    line-height: 0.8;
+    margin: 0.1em 0.12em 0 0;
+    padding: 0;
+  }
+
+  /* ── Callout / sidebar box ──────────────────────────────────── */
+  .callout {
+    background: var(--accent, #f4a261);
+    border-left: 4px solid var(--secondary, #e63946);
+    border-radius: 2px;
+    padding: 1rem 1.25rem;    /* 16px 20px */
+    margin: 2rem 0;           /* 32px */
+    page-break-inside: avoid;
+  }
+
+  .callout p {
+    margin: 0;
+    font-size: 0.9375rem;     /* 15px */
+    color: #1a1a1a;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+  <div class="chapter-header">
+    <p class="chapter-number">Chapter {{chapter_number}}</p>
+    <h1 class="chapter-title">{{title}}</h1>
+  </div>
+
+  <div class="body-text">
+    {{body}}
+  </div>
+
+  <div class="callout">
+    <p>{{callout}}</p>
+  </div>
+
+</body>
+</html>

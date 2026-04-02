@@ -1,0 +1,19 @@
+# Client brand configuration schema
+# Each client gets a YAML file: config/clients/{client_id}.yaml
+client_id: string
+client_name: string
+brand:
+  primary_color: string
+  secondary_color: string
+  accent_color: string
+  headline_font: string
+  body_font: string
+  logo_mark: string
+defaults:
+  template_name: string
+  image_mode: string
+  style_hint: string
+  language: string
+  tone: string
+  style_reference: string
+  style_reference_options: [string]

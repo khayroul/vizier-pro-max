@@ -60,6 +60,7 @@ pipelines:
       body: { type: string, required: true, description: "Poster body text (max ~220 chars)" }
       cta: { type: string, required: false, description: "Call-to-action button text" }
       image_prompt: { type: string, required: false, description: "Custom prompt for AI background" }
+      style_reference: { type: string, required: false, description: "Shared style preset such as zus-coffee, starbucks, boh-tea, aesop, or nike" }
       template_name: { type: string, required: false, description: "HTML template name (default: social-post)" }
       image_mode: { type: string, required: false, description: "openai or falai (default: openai)" }
       output_path: { type: string, required: false }
@@ -67,6 +68,20 @@ pipelines:
       poster_path: { type: string }
       hero_path: { type: string }
       template_used: { type: string }
+
+  - name: ads_clone
+    description: "Fetch and rank ad creatives from Facebook or TikTok ads libraries"
+    input:
+      platform: { type: string, required: true, description: "facebook or tiktok" }
+      query: { type: string, required: true, description: "Ads-library search query" }
+      country: { type: string, required: false }
+      limit: { type: integer, required: false }
+      status: { type: string, required: false }
+      client_id: { type: string, required: false }
+    output:
+      ads: { type: array }
+      count: { type: integer }
+      status: { type: string }
 
   - name: tts_generate
     description: "Text → TTS audio via edge-tts + ffmpeg normalization"

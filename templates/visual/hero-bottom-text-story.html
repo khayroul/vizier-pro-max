@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="reactor-width" content="1080">
+  <meta name="reactor-height" content="1920">
+  <meta name="reactor-slots" content="headline,body,cta,image_url,brand_name,logo_mark">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: var(--bg-color);
+      position: relative;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* Hero image — full bleed, position higher for vertical format */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('{{image_url}}');
+      background-size: cover;
+      background-position: center 30%;
+      opacity: 0.75;
+    }
+
+    /* Gradient: clear at top, opaque at bottom — deeper fade for taller canvas */
+    .gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg-color) 0%, transparent) 0%,
+        color-mix(in srgb, var(--bg-color) 0%, transparent) 30%,
+        color-mix(in srgb, var(--bg-color) 20%, transparent) 50%,
+        color-mix(in srgb, var(--bg-color) 70%, transparent) 65%,
+        color-mix(in srgb, var(--bg-color) 92%, transparent) 78%,
+        var(--bg-color) 88%
+      );
+    }
+
+    /* Subtle noise texture for depth */
+    .noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px;
+    }
+
+    /* Brand whisper — top-left, safe zone for story UI */
+    .brand-whisper {
+      position: absolute;
+      top: 72px;
+      left: 72px;
+      z-index: 3;
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      font-weight: var(--font-body-weight);
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+    }
+
+    /* Logo mark — top-right, below story progress bar safe zone */
+    .logo {
+      position: absolute;
+      top: 64px;
+      right: 72px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border: 2.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-weight: var(--font-headline-weight);
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    /* Content area — bottom ~30% of canvas, generous vertical breathing */
+    .content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      padding: 0 72px 100px;
+    }
+
+    /* Accent line */
+    .accent-line {
+      width: 40px;
+      height: 3px;
+      background: var(--accent-color);
+      margin-bottom: 32px;
+      box-shadow: 0 0 14px color-mix(in srgb, var(--accent-color) 30%, transparent);
+    }
+
+    /* Headline — larger for tall canvas, tight tracking */
+    .headline {
+      font-family: var(--font-headline), 'Arial Black', Impact, sans-serif;
+      font-size: 72px;
+      font-weight: var(--font-headline-weight);
+      color: var(--text-color);
+      text-transform: uppercase;
+      line-height: 0.93;
+      letter-spacing: -2.5px;
+      margin-bottom: 28px;
+      max-width: 600px;
+    }
+
+    /* Body — more vertical room, slightly wider */
+    .body-text {
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-size: 22px;
+      font-weight: var(--font-body-weight);
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 52px;
+      max-width: 500px;
+      letter-spacing: 0.2px;
+    }
+
+    /* CTA — pill, slightly taller for thumb tap targets */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent-color);
+      color: var(--bg-color);
+      font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      font-weight: var(--font-headline-weight);
+      text-transform: uppercase;
+      padding: 18px 40px;
+      border-radius: 100px;
+      letter-spacing: 1.5px;
+    }
+
+    .cta-arrow {
+      font-size: 18px;
+      margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-bg"></div>
+  <div class="gradient"></div>
+  <div class="noise"></div>
+
+  <div class="brand-whisper">{{brand_name}}</div>
+
+  <div class="logo">
+    <div class="logo-mark">{{logo_mark}}</div>
+  </div>
+
+  <div class="content">
+    <div class="accent-line"></div>
+    <div class="headline">{{headline}}</div>
+    <div class="body-text">{{body}}</div>
+    <div class="cta-btn">{{cta}} <span class="cta-arrow">&rarr;</span></div>
+  </div>
+</body>
+</html>

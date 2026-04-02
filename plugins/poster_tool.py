@@ -37,18 +37,48 @@ GENERATE_POSTER_SCHEMA = {
         },
         "template_name": {
             "type": "string",
-            "description": "HTML template name (default: social-post)",
-            "default": "social-post",
+            "description": "HTML template name. Leave empty to use the client default or social-post.",
+            "default": "",
         },
         "image_mode": {
             "type": "string",
-            "description": "AI image provider: 'openai' or 'falai'",
+            "description": "AI image provider: 'openai' or 'falai'. Leave empty to use the client default.",
             "enum": ["openai", "falai"],
-            "default": "openai",
+            "default": "",
         },
         "output_path": {
             "type": "string",
             "description": "Custom output path for poster PNG (auto-generated if empty)",
+        },
+        "brand_name": {
+            "type": "string",
+            "description": "Brand name displayed on templates that support it (optional)",
+            "default": "",
+        },
+        "logo_mark": {
+            "type": "string",
+            "description": "Short logo mark text, e.g. initials (optional)",
+            "default": "",
+        },
+        "brand_css": {
+            "type": "object",
+            "description": "CSS custom property overrides for brand theming",
+            "default": {},
+        },
+        "client_id": {
+            "type": "string",
+            "description": "Client configuration ID for auto-theming (optional)",
+            "default": "",
+        },
+        "style_reference": {
+            "type": "string",
+            "description": (
+                "Optional shared style preset, e.g. 'zus-coffee', 'starbucks', "
+                "'boh-tea', 'petronas', 'aesop', 'nike', or 'apple'. "
+                "Use this when you want a known brand-like art direction "
+                "without copying logos or taglines."
+            ),
+            "default": "",
         },
         "palette": {
             "type": "object",
@@ -89,7 +119,7 @@ GENERATE_POSTER_SCHEMA = {
             ],
         },
     },
-    "required": ["headline", "body", "palette", "fonts"],
+    "required": ["headline", "body"],
 }
 
 
@@ -104,18 +134,20 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
 
     palette = args.get("palette")
     fonts = args.get("fonts")
-    if not palette or not fonts:
-        return json.dumps({"error": "palette and fonts are required"})
-
     try:
         result = run(
             headline=headline,
             body=body,
             cta=str(args.get("cta", "Learn More")),
             image_prompt=str(args.get("image_prompt", "")),
-            template_name=str(args.get("template_name", "social-post")),
-            image_mode=str(args.get("image_mode", "openai")),
+            template_name=str(args.get("template_name", "")),
+            image_mode=str(args.get("image_mode", "")),
             output_path=str(args.get("output_path", "")),
+            brand_name=str(args.get("brand_name", "")),
+            logo_mark=str(args.get("logo_mark", "")),
+            brand_css=args.get("brand_css") if isinstance(args.get("brand_css"), dict) else None,
+            client_id=str(args.get("client_id", "")),
+            style_reference=str(args.get("style_reference", "")),
             palette=palette,
             fonts=fonts,
         )

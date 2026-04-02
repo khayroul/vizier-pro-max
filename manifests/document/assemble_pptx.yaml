@@ -1,0 +1,28 @@
+name: assemble_pptx
+description: "Assemble a PPTX slide deck from structured slides"
+version: "1.0"
+toolset: vizier-document
+
+execution:
+  type: python_function
+  entrypoint: "scripts.document.assemble_pptx:run"
+  timeout: 30
+
+input:
+  title:
+    type: string
+    required: true
+    description: "Presentation title"
+  slides:
+    type: array
+    required: true
+    description: "List of slide objects with title, body, notes, and optional image_path"
+  output_path:
+    type: string
+    required: true
+    description: "Path for output PPTX"
+
+output:
+  file_path:
+    type: string
+    description: "Path to assembled PPTX"

@@ -27,9 +27,15 @@ def _handle_generate_poster(args: dict[str, object]) -> str:
         body=body,
         cta=str(args.get("cta", "Learn More")),
         image_prompt=str(args.get("image_prompt", "")),
-        template_name=str(args.get("template_name", "social-post")),
-        image_mode=str(args.get("image_mode", "openai")),
+        template_name=str(args.get("template_name", "")),
+        image_mode=str(args.get("image_mode", "")),
         output_path=str(args.get("output_path", "")),
+        brand_name=str(args.get("brand_name", "")),
+        logo_mark=str(args.get("logo_mark", "")),
+        brand_css=args.get("brand_css") if isinstance(args.get("brand_css"), dict) else None,
+        client_id=str(args.get("client_id", "")),
+        palette=args.get("palette") if isinstance(args.get("palette"), dict) else None,
+        fonts=args.get("fonts") if isinstance(args.get("fonts"), dict) else None,
     )
     return json.dumps(result, default=str)
 
@@ -71,18 +77,46 @@ def register_generate_poster_tool() -> None:
                 },
                 "template_name": {
                     "type": "string",
-                    "description": "HTML template name (default: social-post)",
-                    "default": "social-post",
+                    "description": "HTML template name. Leave empty to use the client default or social-post.",
+                    "default": "",
                 },
                 "image_mode": {
                     "type": "string",
-                    "description": "AI image provider: 'openai' or 'falai'",
+                    "description": "AI image provider: 'openai' or 'falai'. Leave empty to use the client default.",
                     "enum": ["openai", "falai"],
-                    "default": "openai",
+                    "default": "",
                 },
                 "output_path": {
                     "type": "string",
                     "description": "Custom output path for poster PNG (auto-generated if empty)",
+                },
+                "brand_name": {
+                    "type": "string",
+                    "description": "Brand name displayed on templates that support it (optional)",
+                    "default": "",
+                },
+                "logo_mark": {
+                    "type": "string",
+                    "description": "Short logo mark text, e.g. initials (optional)",
+                    "default": "",
+                },
+                "brand_css": {
+                    "type": "object",
+                    "description": "CSS custom property overrides for brand theming",
+                    "default": {},
+                },
+                "client_id": {
+                    "type": "string",
+                    "description": "Client configuration ID for auto-theming (optional)",
+                    "default": "",
+                },
+                "palette": {
+                    "type": "object",
+                    "description": "Optional design-intelligence palette for social-post rendering",
+                },
+                "fonts": {
+                    "type": "object",
+                    "description": "Optional design-intelligence font pairing for social-post rendering",
                 },
             },
             "required": ["headline", "body"],

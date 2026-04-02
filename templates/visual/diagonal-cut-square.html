@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="reactor-width" content="1080">
+  <meta name="reactor-height" content="1080">
+  <meta name="reactor-slots" content="headline,body,cta,image_url,brand_name,logo_mark">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg-color, #0a0a0f);
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+    }
+
+    /* ── Image panel — left side, clipped diagonally ── */
+    /* Diagonal: top-right corner at 60% width, bottom-right at 45% width */
+    .image-panel {
+      position: absolute;
+      inset: 0;
+      background-image: url('{{image_url}}');
+      background-size: cover;
+      background-position: center;
+      clip-path: polygon(0 0, 60% 0, 45% 100%, 0 100%);
+    }
+
+    /* Dark overlay on image for depth */
+    .image-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        100deg,
+        transparent 40%,
+        color-mix(in srgb, var(--bg-color, #0a0a0f) 60%, transparent) 100%
+      );
+    }
+
+    /* ── Accent stripe along the diagonal edge ── */
+    /* Positioned at the diagonal boundary using a thin rotated element */
+    .diagonal-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 1080px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .diagonal-stripe::before {
+      content: '';
+      position: absolute;
+      /* The diagonal runs from (60%×1080, 0) = (648, 0) to (45%×1080, 1080) = (486, 1080) */
+      /* Width = 648 - 486 = 162px across 1080px height → angle = atan(162/1080) ≈ 8.53° */
+      top: 0;
+      left: 646px;
+      width: 4px;
+      height: 1166px; /* hypotenuse: sqrt(162² + 1080²) ≈ 1092, add buffer */
+      background: var(--accent-color, #e8c87a);
+      transform-origin: 0 0;
+      transform: rotate(8.53deg);
+      box-shadow:
+        0 0 8px color-mix(in srgb, var(--accent-color, #e8c87a) 70%, transparent),
+        0 0 20px color-mix(in srgb, var(--accent-color, #e8c87a) 30%, transparent);
+    }
+
+    /* ── Text panel — right side ── */
+    .text-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 46%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 72px 56px 72px 48px;
+      background: var(--bg-color, #0a0a0f);
+      z-index: 2;
+    }
+
+    /* ── Noise texture ── */
+    .noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ── Brand whisper — top left ── */
+    .brand-whisper {
+      position: absolute;
+      top: 36px;
+      left: 40px;
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      z-index: 20;
+    }
+
+    /* ── Logo mark — top right ── */
+    .logo-mark {
+      position: absolute;
+      top: 28px;
+      right: 40px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255, 255, 255, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-headline, 'Georgia', serif);
+      font-weight: var(--font-headline-weight, 700);
+      font-size: 13px;
+      color: var(--text-color, #ffffff);
+      z-index: 20;
+    }
+
+    /* ── Content ── */
+    .content-block {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* Accent rule above headline */
+    .accent-rule {
+      width: 40px;
+      height: 4px;
+      background: var(--accent-color, #e8c87a);
+      margin-bottom: 28px;
+      box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color, #e8c87a) 50%, transparent);
+    }
+
+    .headline {
+      font-family: var(--font-headline, 'Georgia', serif);
+      font-weight: var(--font-headline-weight, 700);
+      font-size: 52px;
+      color: var(--text-color, #ffffff);
+      text-transform: uppercase;
+      line-height: 0.93;
+      letter-spacing: -1.5px;
+      margin-bottom: 28px;
+    }
+
+    .body-text {
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      font-weight: var(--font-body-weight, 400);
+      font-size: 17px;
+      color: var(--text-muted, rgba(255, 255, 255, 0.5));
+      line-height: 1.6;
+      margin-bottom: 44px;
+    }
+
+    /* ── CTA pill button ── */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent-color, #e8c87a);
+      color: var(--bg-color, #0a0a0f);
+      font-family: var(--font-body, 'Helvetica Neue', Arial, sans-serif);
+      font-weight: 700;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-radius: 100px;
+      padding: 14px 32px;
+      align-self: flex-start;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="noise"></div>
+  <div class="brand-whisper">{{brand_name}}</div>
+  <div class="logo-mark">{{logo_mark}}</div>
+
+  <div class="image-panel"></div>
+  <div class="diagonal-stripe"></div>
+
+  <div class="text-panel">
+    <div class="content-block">
+      <div class="accent-rule"></div>
+      <div class="headline">{{headline}}</div>
+      <div class="body-text">{{body}}</div>
+      <div class="cta-btn">{{cta}} &rarr;</div>
+    </div>
+  </div>
+
+</body>
+</html>
