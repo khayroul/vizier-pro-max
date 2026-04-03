@@ -1,9 +1,16 @@
 """Tests for structured poster revision planning."""
 from __future__ import annotations
 
+import sys
 from unittest.mock import MagicMock, patch
+from types import SimpleNamespace
 
 import pytest
+
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
 
 from pipelines.poster_revision import (
     build_revision_generate_kwargs,
@@ -87,14 +94,20 @@ def test_compile_revision_plan_extracts_structured_change_goals() -> None:
 
 def test_build_revision_generate_kwargs_preserves_prior_state() -> None:
     """Revision generation should reuse prior poster inputs and active reference state."""
+    latest_state = {
+        **SAMPLE_STATE,
+        "brand_context": {
+            "logo_image_path": "/tmp/petronas-logo.png",
+        },
+    }
     plan = compile_revision_plan(
         feedback="Make the logo bigger and clean up the layout.",
-        latest_poster_state=SAMPLE_STATE,
+        latest_poster_state=latest_state,
     )
 
     kwargs = build_revision_generate_kwargs(
         feedback="Make the logo bigger and clean up the layout.",
-        latest_poster_state=SAMPLE_STATE,
+        latest_poster_state=latest_state,
         plan=plan,
     )
 
@@ -108,6 +121,14 @@ def test_build_revision_generate_kwargs_preserves_prior_state() -> None:
     assert kwargs["output_path"].endswith("original-poster-revision.png")
     assert "Revise the existing poster instead of starting from scratch." in kwargs["brief"]
     assert "Increase the logo or brand mark prominence" in kwargs["brief"]
+    assert kwargs["logo_image_path"] == "/tmp/petronas-logo.png"
+    assert kwargs["revision_goals"][0]["key"] == "brand_visibility"
+    assert any(goal["key"] == "preserve_template_composition" for goal in kwargs["preserve_goals"])
+    assert any(goal["key"] == "preserve_core_copy" for goal in kwargs["preserve_goals"])
+    assert any(goal["key"] == "preserve_working_cta_hierarchy" for goal in kwargs["preserve_goals"])
+    assert any(goal["key"] == "preserve_premium_feel" for goal in kwargs["preserve_goals"])
+    assert kwargs["prior_poster_context"]["template_name"] == "social-post"
+    assert kwargs["prior_poster_context"]["poster_path"] == "/tmp/original-poster.png"
 
 
 def test_prepare_poster_revision_returns_compact_summary_and_risks() -> None:
@@ -188,6 +209,36 @@ def test_check_poster_revision_returns_safe_summary() -> None:
     assert payload["overall_status"] in {"supported_with_review", "needs_visual_review"}
     assert payload["goal_statuses"]
     assert "official logo" in payload["telegram_summary"].lower()
+
+
+def test_check_poster_revision_reports_rendered_logo_asset_honestly() -> None:
+    """When a real logo asset was rendered, the summary should reflect that instead of text-only fallback wording."""
+    payload = check_poster_revision(
+        revised_poster_result={
+            "revision_plan": {
+                "feedback": "Make the logo bigger.",
+                "change_goals": [
+                    {
+                        "key": "brand_visibility",
+                        "label": "Stronger brand visibility",
+                        "instruction": "Increase the logo.",
+                    },
+                ],
+                "asset_status": {
+                    "status": "found_local_asset",
+                    "logo_mark": "PETRONAS",
+                },
+            },
+            "logo_rendering": {"asset_rendered": True},
+            "claim_level": "soft",
+        },
+        latest_poster_state=SAMPLE_STATE,
+    )
+
+    assert payload["status"] == "checked"
+    assert payload["goal_statuses"][0]["status"] == "supported"
+    assert "provided local logo asset" in payload["telegram_summary"].lower()
+    assert "text-based logo_mark surfaces" not in payload["telegram_summary"]
 
 
 def test_resolve_brand_asset_reports_text_mark_only_truthfully() -> None:

@@ -208,6 +208,9 @@ def normalize_latest_poster_state(
             "logo_image_path": _first_text(
                 logo_image_path,
                 base_brand_context.get("logo_image_path"),
+                merged_args.get("logo_image_path"),
+                merged_result.get("logo_image_path"),
+                trace_args.get("logo_image_path"),
             ),
         },
         "prior_strengths": list(
@@ -406,6 +409,177 @@ def _build_revision_output_path(previous_path: str) -> str:
     return str(source.with_name(f"{stem}-revision{suffix}"))
 
 
+def _change_goal_payloads(plan: RevisionPlan) -> list[dict[str, str]]:
+    return [
+        {
+            "key": goal.key,
+            "category": "change",
+            "label": goal.label,
+            "instruction": goal.instruction,
+            "rationale": "",
+        }
+        for goal in plan.change_goals
+    ]
+
+
+def _preserve_goal_payloads(
+    *,
+    latest_poster_state: Mapping[str, Any],
+    plan: RevisionPlan,
+    headline_override: str,
+    body_override: str,
+    cta_override: str,
+) -> list[dict[str, str]]:
+    previous_args = _previous_tool_args(latest_poster_state)
+    previous_result = _mapping(latest_poster_state.get("latest_poster_result"))
+    creative_brief = _previous_creative_brief(latest_poster_state)
+    prior_template = _first_text(
+        previous_args.get("template_name"),
+        previous_result.get("template_used"),
+    )
+    preserve_goals: list[dict[str, str]] = []
+    if prior_template:
+        preserve_goals.append(
+            {
+                "key": "preserve_template_composition",
+                "category": "preserve",
+                "label": "Preserve working composition",
+                "instruction": (
+                    f"Preserve the strongest parts of the existing {prior_template} composition "
+                    "unless a requested change requires a deliberate layout shift."
+                ),
+                "rationale": "Keep the prior composition as the baseline for revision work.",
+            }
+        )
+
+    previous_headline = _first_text(
+        creative_brief.get("headline"),
+        previous_args.get("headline"),
+    )
+    previous_body = _first_text(
+        creative_brief.get("body"),
+        previous_args.get("body"),
+    )
+    if (previous_headline or previous_body) and not _normalized_text(headline_override) and not _normalized_text(body_override):
+        preserve_goals.append(
+            {
+                "key": "preserve_core_copy",
+                "category": "preserve",
+                "label": "Preserve working copy",
+                "instruction": (
+                    "Preserve the working headline and body copy unless the feedback explicitly asks for new copy."
+                ),
+                "rationale": "Keep strong copy stable while revising composition and brand treatment.",
+            }
+        )
+
+    previous_cta = _first_text(
+        creative_brief.get("cta"),
+        previous_args.get("cta"),
+    )
+    if previous_cta and not _normalized_text(cta_override):
+        preserve_goals.append(
+            {
+                "key": "preserve_working_cta_hierarchy",
+                "category": "preserve",
+                "label": "Preserve working CTA hierarchy",
+                "instruction": (
+                    "Keep the CTA prominent and intact unless the feedback explicitly asks to change the CTA."
+                ),
+                "rationale": "Avoid losing a working CTA during layout cleanup.",
+            }
+        )
+
+    preserve_key_map = {
+        "festive mood": (
+            "preserve_festive_mood",
+            "Preserve festive mood",
+            "Preserve the festive warmth and celebratory feel from the prior poster.",
+        ),
+        "premium feel": (
+            "preserve_premium_feel",
+            "Preserve premium feel",
+            "Preserve the premium finish, polish, and restrained tone from the prior poster.",
+        ),
+        "clean composition": (
+            "preserve_clean_composition",
+            "Preserve clean composition",
+            "Keep the composition clean and disciplined even while tightening the layout.",
+        ),
+        "clear readability": (
+            "preserve_readability",
+            "Preserve readability",
+            "Preserve clear readability while adjusting hierarchy and scale.",
+        ),
+        "warm tone": (
+            "preserve_warm_tone",
+            "Preserve warm tone",
+            "Preserve the warm tone from the prior poster while applying the revision.",
+        ),
+    }
+    for strength in plan.preserve_strengths:
+        mapped = preserve_key_map.get(strength)
+        if not mapped:
+            continue
+        preserve_goals.append(
+            {
+                "key": mapped[0],
+                "category": "preserve",
+                "label": mapped[1],
+                "instruction": mapped[2],
+                "rationale": f"Preserve prior strength: {strength}.",
+            }
+        )
+
+    deduped: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for goal in preserve_goals:
+        key = _normalized_text(goal.get("key"))
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        deduped.append(goal)
+    return deduped
+
+
+def _prior_poster_context_payload(latest_poster_state: Mapping[str, Any]) -> dict[str, Any]:
+    previous_args = _previous_tool_args(latest_poster_state)
+    previous_result = _mapping(latest_poster_state.get("latest_poster_result"))
+    creative_brief = _previous_creative_brief(latest_poster_state)
+    context = {
+        "template_name": _first_text(
+            previous_args.get("template_name"),
+            previous_result.get("template_used"),
+        ),
+        "image_mode": _first_text(
+            previous_args.get("image_mode"),
+            previous_result.get("image_mode"),
+        ),
+        "poster_path": _first_text(
+            latest_poster_state.get("latest_generated_poster_path"),
+            previous_result.get("poster_path"),
+        ),
+        "trace_path": _first_text(
+            latest_poster_state.get("latest_generated_trace_path"),
+            previous_result.get("trace_path"),
+        ),
+        "headline": _first_text(
+            creative_brief.get("headline"),
+            previous_args.get("headline"),
+        ),
+        "body": _first_text(
+            creative_brief.get("body"),
+            previous_args.get("body"),
+        ),
+        "cta": _first_text(
+            creative_brief.get("cta"),
+            previous_args.get("cta"),
+        ),
+        "logo_render_mode": _first_text(previous_result.get("logo_render_mode")),
+    }
+    return {key: value for key, value in context.items() if _normalized_text(value)}
+
+
 def build_revision_generate_kwargs(
     *,
     feedback: str,
@@ -491,6 +665,11 @@ def build_revision_generate_kwargs(
             brand_context.get("style_reference"),
             previous_args.get("style_reference"),
         ),
+        "logo_image_path": _first_text(
+            brand_context.get("logo_image_path"),
+            previous_args.get("logo_image_path"),
+            previous_result.get("logo_image_path"),
+        ),
         "reference_image_path": _normalized_text(
             reference_image_path
             or latest_poster_state.get("latest_reference_image_path")
@@ -498,6 +677,15 @@ def build_revision_generate_kwargs(
         ),
         "palette": previous_args.get("palette"),
         "fonts": previous_args.get("fonts"),
+        "revision_goals": _change_goal_payloads(plan),
+        "preserve_goals": _preserve_goal_payloads(
+            latest_poster_state=latest_poster_state,
+            plan=plan,
+            headline_override=headline,
+            body_override=body,
+            cta_override=cta,
+        ),
+        "prior_poster_context": _prior_poster_context_payload(latest_poster_state),
     }
 
 
@@ -634,9 +822,7 @@ def resolve_brand_asset(
 def _logo_runtime_constraints(asset_status: Mapping[str, Any]) -> tuple[str, ...]:
     status = _normalized_text(asset_status.get("status"))
     if status == "found_local_asset":
-        return (
-            "A local logo asset exists, but the current poster runtime still renders text-based logo_mark surfaces unless downstream image-logo support is added.",
-        )
+        return ()
     if status == "text_mark_only":
         return (
             "Only a text logo_mark is available locally; no official logo asset is configured yet.",
@@ -813,7 +999,7 @@ def _applied_change_entries(
             if _normalized_text(asset_status.get("status")) == "text_mark_only":
                 note = "Applied with text-based brand context; no official logo asset is configured locally."
             elif _normalized_text(asset_status.get("status")) == "found_local_asset":
-                note = "Applied with local brand context available, but current poster templates still rely on text-based logo_mark surfaces."
+                note = "Applied with the provided local logo asset so the revised poster can render the official mark as an overlay."
             else:
                 note = "Applied to the revision brief, but brand visibility is still constrained by missing local brand assets."
         entries.append(
@@ -983,6 +1169,14 @@ def _goal_check_entry(
     artifact = _artifact_payload(revised_poster_result)
 
     if goal.key == "brand_visibility":
+        logo_rendering = _mapping(revised_poster_result.get("logo_rendering"))
+        if bool(logo_rendering.get("asset_rendered")):
+            return {
+                "key": goal.key,
+                "label": goal.label,
+                "status": "supported",
+                "evidence": "Revision rendered the provided local logo asset as a separate overlay for clearer brand visibility.",
+            }
         logo_mark = _first_text(
             revised_poster_result.get("logo_mark"),
             revision_generate_args.get("logo_mark"),
@@ -1086,7 +1280,7 @@ def _check_summary(
     if asset_state == "text_mark_only":
         summary += " The official logo still depends on a provided local asset."
     elif asset_state == "found_local_asset":
-        summary += " A local logo asset is available, but current poster templates still rely on text-based logo_mark surfaces."
+        summary += " I also used the provided local logo asset for the brand mark."
     elif asset_state == "unavailable":
         summary += " Stronger brand treatment is still limited by missing local brand assets."
     return summary

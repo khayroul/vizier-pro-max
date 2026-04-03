@@ -949,6 +949,81 @@ class TestRunPipeline:
         assert result["revision_trace"]["change_goals"][0]["key"] == "increase_logo_visibility"
         assert result["revision_trace"]["preserve_goals"][0]["key"] == "preserve_premium_feel"
 
+    @patch("pipelines.poster_generate._screenshot")
+    @patch("pipelines.poster_generate._generate_hero")
+    def test_revision_engine_goal_keys_trigger_same_guardrails(
+        self,
+        mock_hero: MagicMock,
+        mock_screenshot: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """Generator should honor the revision engine's goal taxonomy directly."""
+        hero_file = tmp_path / "hero.png"
+        hero_file.write_bytes(b"\x89PNG" + b"\x00" * 50)
+        logo_file = tmp_path / "logo.png"
+        logo_file.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 50)
+
+        def fake_hero(prompt: str, output_path: str, mode: str) -> str:
+            assert "Only one clear primary headline" in prompt
+            assert "Reserve a clean, high-contrast area for the separate official logo overlay" in prompt
+            assert "Refine hierarchy and spacing" in prompt
+            assert "Protect small-screen readability" in prompt
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(output_path).write_bytes(hero_file.read_bytes())
+            return output_path
+
+        mock_hero.side_effect = fake_hero
+        mock_screenshot.return_value = None
+
+        result = run(
+            headline="Selamat Hari Raya",
+            body="Celebrate the season together.",
+            template_name="hero-bottom-text-square",
+            logo_mark="PETRONAS",
+            logo_image_path=str(logo_file),
+            revision_goals=[
+                {
+                    "key": "brand_visibility",
+                    "category": "change",
+                    "label": "Stronger brand visibility",
+                    "instruction": "Increase the logo or brand mark prominence with clearer scale, contrast, and placement.",
+                },
+                {
+                    "key": "single_main_headline",
+                    "category": "change",
+                    "label": "One main headline only",
+                    "instruction": "Use one clear primary greeting or headline treatment and remove duplicate headline emphasis.",
+                },
+                {
+                    "key": "cleaner_hierarchy",
+                    "category": "change",
+                    "label": "Cleaner hierarchy",
+                    "instruction": "Tighten the layout hierarchy, reduce wasted space, and keep the composition premium instead of sparse.",
+                },
+                {
+                    "key": "mobile_readability",
+                    "category": "change",
+                    "label": "Stronger mobile readability",
+                    "instruction": "Protect small-screen readability with clearer type scale, contrast, and spacing.",
+                },
+            ],
+            preserve_goals=[
+                {
+                    "key": "preserve_template_composition",
+                    "category": "preserve",
+                    "label": "Preserve working composition",
+                    "instruction": "Preserve the strongest parts of the existing hero-bottom-text-square composition unless a requested change requires a deliberate layout shift.",
+                }
+            ],
+            prior_poster_context={"template_name": "hero-bottom-text-square"},
+            output_path=str(tmp_path / "poster.png"),
+            palette=SAMPLE_PALETTE,
+            fonts=SAMPLE_FONTS,
+        )
+
+        assert result["prompt_trace"]["revision_guardrail_parts"]
+        assert result["revision_trace"]["change_goals"][0]["key"] == "brand_visibility"
+
 
 # ---------------------------------------------------------------------------
 # Plugin registration

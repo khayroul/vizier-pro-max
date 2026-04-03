@@ -886,7 +886,7 @@ def _build_revision_guardrails(
     for goal in change_goals:
         key = goal.get("key", "")
         instruction = goal.get("instruction", "")
-        if key == "increase_logo_visibility":
+        if key in {"increase_logo_visibility", "brand_visibility"}:
             if logo_render_mode == "asset_overlay":
                 guardrails.append(
                     "Reserve a clean, high-contrast area for the separate official logo overlay. Do not invent, redraw, or hide logos inside the generated hero."
@@ -899,19 +899,19 @@ def _build_revision_guardrails(
                 guardrails.append(
                     "Do not invent or hallucinate logos in the generated hero, because no official logo asset is available."
                 )
-        elif key == "remove_duplicate_main_headline":
+        elif key in {"remove_duplicate_main_headline", "single_main_headline"}:
             guardrails.append(
                 "Only one clear primary headline in the final poster. No duplicate greeting treatments, repeated words, or text-like artifacts in the hero/background."
             )
-        elif key == "clean_up_layout":
+        elif key in {"clean_up_layout", "cleaner_hierarchy"}:
             guardrails.append(
                 "Refine hierarchy and spacing so the poster feels cleaner and more intentional without losing visual presence."
             )
-        elif key == "reduce_wasted_space":
+        elif key in {"reduce_wasted_space", "reduce_clutter"}:
             guardrails.append(
-                "Reduce dead space and avoid sparse empty zones so the composition stays full and deliberate."
+                "Reduce dead space, decorative clutter, and sparse empty zones so the composition stays full and deliberate."
             )
-        elif key == "improve_mobile_readability":
+        elif key in {"improve_mobile_readability", "mobile_readability"}:
             guardrails.append(
                 "Protect small-screen readability with strong contrast, clear focal hierarchy, and calm text placement."
             )
@@ -931,6 +931,12 @@ def _build_revision_guardrails(
             guardrails.append("Preserve the festive warmth and celebratory feel from the prior poster.")
         elif key == "preserve_premium_feel":
             guardrails.append("Preserve the premium finish, polish, and restrained tone from the prior poster.")
+        elif key == "preserve_clean_composition":
+            guardrails.append("Preserve the disciplined, uncluttered composition while applying the requested changes.")
+        elif key == "preserve_readability":
+            guardrails.append("Preserve the prior readability and calm text placement while adjusting hierarchy.")
+        elif key == "preserve_warm_tone":
+            guardrails.append("Preserve the warm tone from the prior poster while applying the requested changes.")
         elif instruction:
             guardrails.append(instruction)
 
