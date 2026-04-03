@@ -273,7 +273,14 @@ class TestValidatePalette:
 class TestBuildDesignCss:
     def test_contains_all_custom_properties(self) -> None:
         css = _build_design_css(SAMPLE_PALETTE, SAMPLE_FONTS)
-        assert "--color-accent: #E07A5F" in css
+        assert "--bg-color: #3D405B" in css
+        assert "--accent-color: #81B29A" in css
+        assert "--text-color: #F4F1DE" in css
+        assert "--text-muted: rgba(244, 241, 222, 0.72)" in css
+        assert "--font-headline: 'Cormorant Garamond'" in css
+        assert "--font-headline-weight: 700" in css
+        assert "--font-body-weight: 400" in css
+        assert "--color-accent: #81B29A" in css
         assert "--color-accent-end: #F2CC8F" in css
         assert "--color-accent-glow: #81B29A" in css
         assert "--color-bg: #3D405B" in css
@@ -470,7 +477,9 @@ class TestRunPipeline:
         # Verify screenshot was called with HTML containing CSS vars
         call_args = mock_screenshot.call_args
         html_arg = call_args[1]["html"] if "html" in call_args[1] else call_args[0][0]
-        assert "--color-accent: #E07A5F" in html_arg
+        assert "--bg-color: #3D405B" in html_arg
+        assert "--accent-color: #81B29A" in html_arg
+        assert "--color-accent: #81B29A" in html_arg
         assert "Cormorant+Garamond" in html_arg
         assert "Jazz Festival" in html_arg
 
@@ -694,6 +703,7 @@ class TestRunPipeline:
 
         def fake_hero(prompt: str, output_path: str, mode: str) -> str:
             assert "Premium Launch" in prompt
+            assert mode == "falai"
             Path(output_path).parent.mkdir(parents=True, exist_ok=True)
             Path(output_path).write_bytes(hero_file.read_bytes())
             return output_path

@@ -9,7 +9,7 @@ brand:
   logo_mark: "AR"
 defaults:
   template_name: "center-stage-square"
-  image_mode: "openai"
+  image_mode: "falai"
   style_hint: "natural wellness, herbal ingredients, calm serene atmosphere, Islamic wellness"
   language: "ms"
   tone: "formal"

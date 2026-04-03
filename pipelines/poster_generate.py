@@ -625,12 +625,34 @@ def _validate_palette(palette: dict[str, str]) -> None:
             raise ValueError(msg)
 
 
+def _hex_to_rgba(hex_color: str, alpha: float) -> str:
+    """Convert a hex color into an rgba() string."""
+    raw = hex_color.lstrip("#")
+    if len(raw) in (3, 4):
+        raw = "".join(ch * 2 for ch in raw[:3])
+    elif len(raw) >= 6:
+        raw = raw[:6]
+    red = int(raw[0:2], 16)
+    green = int(raw[2:4], 16)
+    blue = int(raw[4:6], 16)
+    return f"rgba({red}, {green}, {blue}, {alpha:.2f})"
+
+
 def _build_design_css(palette: dict[str, str], fonts: dict[str, str]) -> str:
     """Build CSS custom properties block from palette and font selections."""
+    text_muted = _hex_to_rgba(palette["text"], 0.72)
     return (
         "<style>\n"
         ":root {\n"
-        f"  --color-accent: {palette['primary']};\n"
+        f"  --bg-color: {palette['background']};\n"
+        f"  --accent-color: {palette['accent']};\n"
+        f"  --text-color: {palette['text']};\n"
+        f"  --text-muted: {text_muted};\n"
+        f"  --font-headline: '{fonts['heading_font']}';\n"
+        f"  --font-body: '{fonts['body_font']}';\n"
+        f"  --font-headline-weight: {fonts['heading_weight']};\n"
+        f"  --font-body-weight: {fonts['body_weight']};\n"
+        f"  --color-accent: {palette['accent']};\n"
         f"  --color-accent-end: {palette['secondary']};\n"
         f"  --color-accent-glow: {palette['accent']};\n"
         f"  --color-bg: {palette['background']};\n"
@@ -886,7 +908,7 @@ def run(
     if not effective_template_name:
         effective_template_name = "social-post"
     if not effective_image_mode:
-        effective_image_mode = "openai"
+        effective_image_mode = "falai"
     if palette is None and fonts is None and effective_brand_css is None:
         msg = "palette/fonts or brand_css/client_id are required"
         raise ValueError(msg)

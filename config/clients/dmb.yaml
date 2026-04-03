@@ -9,7 +9,7 @@ brand:
   logo_mark: "DMB"
 defaults:
   template_name: "editorial-split-square"
-  image_mode: "openai"
+  image_mode: "falai"
   style_hint: "batik textile patterns, warm earth tones, artisan craftsmanship, traditional Malay textile art"
   language: "ms"
   tone: "premium"

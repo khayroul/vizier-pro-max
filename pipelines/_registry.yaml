@@ -63,7 +63,7 @@ pipelines:
       style_reference: { type: string, required: false, description: "Shared style preset such as zus-coffee, starbucks, boh-tea, aesop, or nike" }
       reference_image_path: { type: string, required: false, description: "Local path to a sample poster/image used as direct visual reference" }
       template_name: { type: string, required: false, description: "HTML template name (default: social-post)" }
-      image_mode: { type: string, required: false, description: "openai or falai (default: openai)" }
+      image_mode: { type: string, required: false, description: "openai or falai (default: falai)" }
       output_path: { type: string, required: false }
     output:
       poster_path: { type: string }

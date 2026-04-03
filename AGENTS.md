@@ -18,6 +18,18 @@ Global rules (Python, immutability, testing, git, security, halal) apply.
 - Hermes lifecycle hooks in `plugins/` — NOT tools
 - Test files mirror source: `adapter/loader.py` -> `tests/adapter/test_loader.py`
 
+## Decision Notes
+- Architectural, governance, routing, metering, quality-gate, lifecycle, and default-behavior changes must add or update a decision note in `docs/superpowers/decisions/`
+- Use filename pattern `YYYY-MM-DD-short-slug.md`
+- Decision notes must explain:
+  - context and trigger
+  - decision taken
+  - prior work or subsystem being preserved
+  - invariant(s) that must remain true
+  - validation or tests
+  - follow-up work, if any
+- Use a decision note whenever a future reader might otherwise mistake a deliberate architectural constraint for a regression or rollback
+
 ## No litellm. Ever.
 Supply chain compromise confirmed. Use direct provider SDKs via Hermes.
 

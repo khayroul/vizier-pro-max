@@ -32,7 +32,7 @@ class TestPosterClientIntegration:
         )
 
         assert result["template_used"] == "editorial-split-square"
-        assert result["image_mode"] == "openai"
+        assert result["image_mode"] == "falai"
         assert result["brand_name"] == "Desa Murni Batik"
         assert result["logo_mark"] == "DMB"
 

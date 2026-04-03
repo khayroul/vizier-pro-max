@@ -9,7 +9,7 @@ brand:
   logo_mark: "RTM"
 defaults:
   template_name: "hero-bottom-text-square"
-  image_mode: "openai"
+  image_mode: "falai"
   style_hint: "Terengganu spice market, rich warm colors, traditional spice blends, rempah, Malaysian cooking"
   language: "loghat-terengganu"
   tone: "casual"

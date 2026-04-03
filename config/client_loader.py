@@ -27,7 +27,7 @@ class BrandConfig:
 @dataclass(frozen=True)
 class ClientDefaults:
     template_name: str = "social-post"
-    image_mode: str = "openai"
+    image_mode: str = "falai"
     style_hint: str = ""
     language: str = "en"
     tone: str = "formal"
