@@ -328,6 +328,54 @@ def _build_art_direction_plan(
     }
 
 
+def _build_subject_clarity_guardrail(creative_brief: Any) -> str:
+    """Add task-specific anti-abstraction guidance to the image prompt."""
+    subject_haystack = " ".join(
+        part
+        for part in (
+            getattr(creative_brief, "raw_brief", ""),
+            getattr(creative_brief, "campaign_angle", ""),
+            getattr(creative_brief, "visual_direction", ""),
+            getattr(creative_brief, "hero_focus", ""),
+            getattr(creative_brief, "image_prompt", ""),
+        )
+        if part
+    ).lower()
+    if any(
+        token in subject_haystack
+        for token in ("product", "launch", "drop", "coffee", "drink", "bottle", "can", "pack")
+    ):
+        return (
+            "Show a clearly recognizable physical product hero with real materials, believable proportions, and polished studio lighting. "
+            "Do not use abstract geometric stand-ins, empty frames, or placeholder packaging."
+        )
+    if any(
+        token in subject_haystack
+        for token in ("analytics", "dashboard", "forecast", "finance", "cfo", "saas", "ui")
+    ):
+        return (
+            "Show a recognizable analytics or product interface with real chart structure, screen framing, and depth. "
+            "Do not use vague glowing rectangles or placeholder panels."
+        )
+    if any(
+        token in subject_haystack
+        for token in ("relief", "donation", "fundraiser", "shelter", "water", "disaster")
+    ):
+        return (
+            "Show a recognizable relief scene or trust-building symbol with real-world texture and emotional clarity. "
+            "Do not use abstract polygons or generic glowing shapes."
+        )
+    if any(
+        token in subject_haystack
+        for token in ("event", "festival", "concert", "music", "synthwave", "retro")
+    ):
+        return (
+            "Show a dimensional stage-light or nightlife scene with recognizable forms and atmosphere. "
+            "Do not reduce the hero to a single abstract glowing block."
+        )
+    return ""
+
+
 def _derive_trace_path(poster_path: str) -> str:
     """Place the trace next to the final poster artifact."""
     path = Path(poster_path)
@@ -996,6 +1044,7 @@ def run(
     quality_guardrail_parts = [
         art_direction_plan["composition_instruction"],
         art_direction_plan["hero_instruction"],
+        _build_subject_clarity_guardrail(creative_brief),
         art_direction_plan["readability_instruction"],
         art_direction_plan["cta_instruction"],
         art_direction_plan["template_profile"]["prompt_guardrail"],

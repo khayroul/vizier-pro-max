@@ -23,12 +23,13 @@ local reference corpora only.
   - prompt guardrail coverage
   - hero-region visual presence
   - text-zone readability calmness
-  - CTA-region salience
+- CTA-region salience
 
 ## What It Still Measures Poorly
 
 - final visual taste
 - whether the generated hero image truly feels premium
+- whether the generated hero subject is actually recognizable instead of an abstract stand-in
 - subtle hierarchy failures that need human eyes
 - nuanced brand-fit judgments
 
@@ -65,5 +66,6 @@ for:
    - template choice improved
    - copy/CTA discipline improved
    - prompt guardrails became more explicit
+   - CTA and readability checks still align with the live template geometry
 4. Generate a poster review template with `prepare-poster-scorecard`.
 5. Use the poster scorecard for the subjective visual call and compare completed reviews with `compare-poster-scorecards`.

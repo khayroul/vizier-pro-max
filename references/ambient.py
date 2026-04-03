@@ -151,6 +151,80 @@ def _clip_sentence(text: str, *, limit: int = 220) -> str:
     return collapsed[: limit - 3].rstrip() + "..."
 
 
+def _contains_any(text: str, tokens: tuple[str, ...]) -> bool:
+    haystack = text.lower()
+    return any(token in haystack for token in tokens)
+
+
+def _select_visual_ux_guidance(result: dict[str, Any]) -> str:
+    issue = _coerce_text(result.get("issue"))
+    practice = _coerce_text(result.get("recommended_practice"))
+    combined = _join_query_parts(issue, practice).lower()
+    if not combined:
+        return ""
+    if not _contains_any(
+        combined,
+        (
+            "heading",
+            "headline",
+            "typography",
+            "hierarchy",
+            "contrast",
+            "readability",
+            "readable",
+            "spacing",
+            "whitespace",
+            "button",
+            "cta",
+            "layout",
+            "grid",
+            "focus",
+        ),
+    ):
+        return ""
+    return _clip_sentence(practice or issue, limit=140)
+
+
+def _select_visual_cta_guidance(result: dict[str, Any]) -> str:
+    placement = _coerce_text(result.get("primary_cta_placement"))
+    optimization = _coerce_text(result.get("conversion_optimization"))
+    placement_lower = placement.lower()
+    optimization_lower = optimization.lower()
+    fragments: list[str] = []
+    if _contains_any(
+        placement_lower,
+        (
+            "hero",
+            "above the fold",
+            "above-fold",
+            "below the headline",
+            "below headline",
+            "sticky",
+            "footer",
+            "bottom",
+            "rail",
+            "side",
+        ),
+    ):
+        fragments.append(placement)
+    if _contains_any(
+        optimization_lower,
+        (
+            "single primary",
+            "primary action",
+            "one action",
+            "clear action",
+            "deadline",
+            "social proof",
+            "trust",
+            "urgent",
+            "clarity",
+        ),
+    ):
+        fragments.append(optimization)
+    return _clip_sentence(" ".join(fragment for fragment in fragments if fragment), limit=150)
+
+
 def _summarize_ui_style(result: dict[str, Any]) -> str:
     name = _coerce_text(result.get("name")) or "UI style"
     best_for = _take_items(result.get("best_for"))
@@ -431,19 +505,6 @@ def _infer_visual_design_axes(
     style_name = _coerce_text(style_result.get("name")).lower()
     landing_id = _coerce_text(landing_result.get("id")).lower()
 
-    if any(
-        token in query_lower
-        for token in ("event", "festival", "concert", "poster", "music", "retro")
-    ) or "bold typography" in style_name:
-        return {
-            "composition_mode": "type_driven",
-            "template_candidates": [
-                "stacked-type-square",
-                "bold-knockout-square",
-                "hero-bottom-text-square",
-            ],
-            "reason": "Type-led/event signals favor a bold headline-first poster composition.",
-        }
     if any(token in style_id for token in ("swiss", "editorial")) or any(
         token in query_lower for token in ("swiss", "editorial", "grid", "magazine")
     ):
@@ -457,7 +518,8 @@ def _infer_visual_design_axes(
             "reason": "Swiss/editorial cues favor a disciplined split or grid-led composition.",
         }
     if any(
-        token in query_lower for token in ("dashboard", "analytics", "app", "ui", "saas")
+        token in query_lower
+        for token in ("dashboard", "analytics", "app", "ui", "saas", "interface")
     ):
         return {
             "composition_mode": "card_showcase",
@@ -467,6 +529,43 @@ def _infer_visual_design_axes(
                 "editorial-split-square",
             ],
             "reason": "UI/product-surface cues favor a framed hero or card-showcase composition.",
+        }
+    if any(
+        token in query_lower
+        for token in (
+            "product",
+            "launch",
+            "drop",
+            "limited release",
+            "limited-edition",
+            "coffee",
+            "drink",
+            "bottle",
+            "can",
+            "packaging",
+            "hero-forward",
+        )
+    ):
+        return {
+            "composition_mode": "product_hero",
+            "template_candidates": [
+                "center-stage-square",
+                "hero-bottom-text-square",
+                "floating-card-square",
+            ],
+            "reason": "Product-launch cues favor one dominant object hero with a clear purchase-ready CTA rail.",
+        }
+    if any(
+        token in query_lower for token in ("event", "festival", "concert", "music", "retro", "synthwave")
+    ) or "bold typography" in style_name:
+        return {
+            "composition_mode": "type_driven",
+            "template_candidates": [
+                "bold-knockout-square",
+                "stacked-type-square",
+                "hero-bottom-text-square",
+            ],
+            "reason": "Event and retro cues favor a headline-led poster with a visible hero texture behind the type.",
         }
     if "hero" in landing_id or "hero-centric" in style_id or "hero-centric" in style_name:
         return {
@@ -529,6 +628,9 @@ def _build_visual_art_direction(
         "card_showcase": (
             "Use a framed hero/product surface that occupies the visual center so the design feels intentional instead of generic."
         ),
+        "product_hero": (
+            "Build the layout around one dominant product hero with confident negative space and a CTA rail that reads immediately."
+        ),
         "minimal_direct": (
             "Keep the composition spare and premium, with one focal move and generous whitespace around the message."
         ),
@@ -546,6 +648,9 @@ def _build_visual_art_direction(
         "card_showcase": (
             "Make the hero subject read at a glance with crisp edges and enough scale to feel premium, not thumbnail-sized."
         ),
+        "product_hero": (
+            "Let the product occupy roughly half the frame with polished lighting, clean edges, and protected negative space around the CTA block."
+        ),
         "minimal_direct": (
             "Use one calm hero subject with minimal clutter and no muddy background textures behind the text zone."
         ),
@@ -554,15 +659,16 @@ def _build_visual_art_direction(
         ),
     }
     typography_note = _coerce_text(typography_result.get("notes"))
+    ux_guidance = _select_visual_ux_guidance(ux_result)
+    cta_reference = _select_visual_cta_guidance(landing_result)
     readability = _join_query_parts(
         "Reserve a high-contrast text zone with low visual noise behind body copy.",
-        ux_result.get("recommended_practice"),
+        ux_guidance,
         typography_note,
     )
     cta = _join_query_parts(
         "Give the CTA one dominant action zone and avoid burying it under secondary decoration.",
-        landing_result.get("primary_cta_placement"),
-        landing_result.get("conversion_optimization"),
+        cta_reference,
     )
     color = _join_query_parts(
         "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors.",

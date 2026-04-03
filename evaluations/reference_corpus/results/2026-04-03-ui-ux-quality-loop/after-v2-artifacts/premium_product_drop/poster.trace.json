@@ -1,0 +1,919 @@
+{
+  "schema_version": 1,
+  "generated_at": "20260403-100919",
+  "inputs": {
+    "headline": "",
+    "body": "",
+    "cta": "",
+    "brief": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.\n",
+    "image_prompt": "",
+    "template_name": "",
+    "image_mode": "",
+    "brand_name": "",
+    "client_id": "",
+    "style_reference": "",
+    "reference_image_path": ""
+  },
+  "creative_brief": {
+    "raw_brief": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.",
+    "campaign_angle": "Limited drop with a premium cafe feel",
+    "audience": "Coffee fans ready for a launch-day purchase",
+    "visual_direction": "Hero-forward premium product poster with clean lighting and clear CTA hierarchy",
+    "hero_focus": "Large iced coffee product hero with glossy highlights and negative space",
+    "headline": "The Cold Brew Drop",
+    "body": "Limited release. Bright citrus notes, silky finish, and launch-day energy.",
+    "cta": "Shop Now",
+    "image_prompt": "Premium iced coffee hero, polished lighting, no text, no logos",
+    "template_name": "",
+    "avoid": [
+      "tiny hero subject",
+      "flat muddy background"
+    ]
+  },
+  "reference_trace": {
+    "task_family": "visual",
+    "auto_consulted": true,
+    "query_count": 1,
+    "tool_names": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "auxiliary_tool_names": [
+      "search_landing_patterns",
+      "search_typography_pairings",
+      "search_color_systems"
+    ],
+    "route_description": "visual/UI/poster -> search_ui_styles + search_ux_guidelines, plus landing-pattern, typography-pairing, and color-system probes",
+    "lookup_tools_used": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "dataset_searches_used": [
+      "search_color_systems",
+      "search_landing_patterns",
+      "search_typography_pairings"
+    ],
+    "reference_families_consulted": [
+      "ui_ux_pro_max"
+    ],
+    "datasets_consulted": [
+      "color_systems",
+      "landing_patterns",
+      "typography_pairings",
+      "ui_styles",
+      "ux_guidelines"
+    ],
+    "searches": [
+      {
+        "tool_name": "search_ui_styles",
+        "query": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "conversion-optimized",
+            "name": "Conversion-Optimized",
+            "type": "Landing Page",
+            "keywords": [
+              "Form-focused",
+              "minimalist design",
+              "single CTA focus",
+              "high contrast",
+              "urgency elements",
+              "trust signals",
+              "social proof",
+              "clear value"
+            ],
+            "best_for": [
+              "E-commerce product pages",
+              "free trial signups",
+              "lead generation",
+              "SaaS pricing pages",
+              "limited-time offers"
+            ],
+            "avoid_for": [
+              "Complex feature explanations",
+              "multi-product showcases",
+              "technical documentation"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "✓ Full",
+            "performance": "⚡ Excellent",
+            "accessibility": "✓ WCAG AA",
+            "mobile_friendly": "✓ Full (mobile-optimized)",
+            "conversion_focused": "✓ Very High",
+            "framework_compatibility": [
+              "Tailwind 10/10",
+              "Bootstrap 9/10"
+            ],
+            "era_origin": "2020s Modern",
+            "complexity": "Medium",
+            "source_row": 21,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "conversion-optimized",
+              "style_name": "Conversion-Optimized",
+              "primary_colors": [
+                "Primary brand color",
+                "high-contrast white/light backgrounds",
+                "warning/urgency colors for time-limited offers"
+              ],
+              "secondary_colors": [
+                "Secondary CTA color (muted)",
+                "trust element colors (testimonial highlights)",
+                "accent for key benefits"
+              ],
+              "effects_animations": [
+                "Hover states on CTA (color shift",
+                "slight scale)",
+                "form field focus animations",
+                "loading spinner",
+                "success feedback"
+              ],
+              "ai_prompt_keywords": [
+                "Design a conversion-optimized landing page. Use: single primary CTA",
+                "minimal distractions",
+                "trust badges",
+                "urgency elements (limited time)",
+                "social proof (testimonials)",
+                "clear value proposition",
+                "form above fold",
+                "progress indicators."
+              ],
+              "css_keywords": [
+                "form with focus states",
+                "input:focus ring",
+                "button: primary color high contrast",
+                "position: sticky for CTA",
+                "max-width: 600px for form",
+                "loading spinner",
+                "success/error states"
+              ],
+              "implementation_checklist": [
+                "Single primary CTA visible",
+                "Form fields minimal (3-5)",
+                "Trust badges present",
+                "Social proof above fold",
+                "Mobile form optimized",
+                "Loading states implemented",
+                "A/B test ready"
+              ],
+              "design_system_variables": [
+                "--cta-color: high contrast primary",
+                "--form-max-width: 600px",
+                "--input-height: 48px",
+                "--focus-ring: 3px solid accent",
+                "--success-color: #22C55E",
+                "--error-color: #EF4444"
+              ]
+            },
+            "score": 15.89
+          },
+          {
+            "id": "3d-hyperrealism",
+            "name": "3D & Hyperrealism",
+            "type": "General",
+            "keywords": [
+              "Depth",
+              "realistic textures",
+              "3D models",
+              "spatial navigation",
+              "tactile",
+              "skeuomorphic elements",
+              "rich detail",
+              "immersive"
+            ],
+            "best_for": [
+              "Gaming",
+              "product showcase",
+              "immersive experiences",
+              "high-end e-commerce",
+              "architectural viz",
+              "VR/AR"
+            ],
+            "avoid_for": [
+              "Low-end mobile",
+              "performance-limited",
+              "critical accessibility",
+              "data tables/forms"
+            ],
+            "light_mode": "◐ Partial",
+            "dark_mode": "◐ Partial",
+            "performance": "❌ Poor",
+            "accessibility": "⚠ Not accessible",
+            "mobile_friendly": "✗ Low",
+            "conversion_focused": "◐ Medium",
+            "framework_compatibility": [
+              "Three.js 10/10",
+              "R3F 10/10",
+              "Babylon.js 10/10"
+            ],
+            "era_origin": "2020s Modern",
+            "complexity": "High",
+            "source_row": 5,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "3d-hyperrealism",
+              "style_name": "3D & Hyperrealism",
+              "primary_colors": [
+                "Deep Navy #001F3F",
+                "Forest Green #228B22",
+                "Burgundy #800020",
+                "Gold #FFD700",
+                "Silver #C0C0C0"
+              ],
+              "secondary_colors": [
+                "Complex gradients (5-10 stops)",
+                "realistic lighting",
+                "shadow variations (20-40% darker)"
+              ],
+              "effects_animations": [
+                "WebGL/Three.js 3D",
+                "realistic shadows (layers)",
+                "physics lighting",
+                "parallax (3-5 layers)",
+                "smooth 3D (300-400ms)"
+              ],
+              "ai_prompt_keywords": [
+                "Build an immersive 3D interface using realistic textures",
+                "3D models (Three.js/Babylon.js)",
+                "complex shadows",
+                "realistic lighting",
+                "parallax scrolling (3-5 layers)",
+                "physics-based motion. Include skeuomorphic elements with tactile detail."
+              ],
+              "css_keywords": [
+                "transform: translate3d",
+                "perspective: 1000px",
+                "WebGL canvas",
+                "Three.js/Babylon.js library",
+                "box-shadow: complex multi-layer",
+                "background: complex gradients",
+                "filter: drop-shadow()"
+              ],
+              "implementation_checklist": [
+                "WebGL/Three.js integrated",
+                "3D models loaded",
+                "Parallax 3-5 layers",
+                "Realistic lighting verified",
+                "Complex shadows rendered",
+                "Physics animation smooth 300-400ms"
+              ],
+              "design_system_variables": [
+                "--perspective: 1000px",
+                "--parallax-layers: 5",
+                "--lighting-intensity: realistic",
+                "--shadow-depth: 20-40%",
+                "--animation-duration: 300-400ms"
+              ]
+            },
+            "score": 12.68
+          },
+          {
+            "id": "liquid-glass",
+            "name": "Liquid Glass",
+            "type": "General",
+            "keywords": [
+              "Flowing glass",
+              "morphing",
+              "smooth transitions",
+              "fluid effects",
+              "translucent",
+              "animated blur",
+              "iridescent",
+              "chromatic aberration"
+            ],
+            "best_for": [
+              "Premium SaaS",
+              "high-end e-commerce",
+              "creative platforms",
+              "branding experiences",
+              "luxury portfolios"
+            ],
+            "avoid_for": [
+              "Performance-limited",
+              "critical accessibility",
+              "complex data",
+              "budget projects"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "✓ Full",
+            "performance": "⚠ Moderate-Poor",
+            "accessibility": "⚠ Text contrast",
+            "mobile_friendly": "◐ Medium",
+            "conversion_focused": "✓ High",
+            "framework_compatibility": [
+              "Framer Motion 10/10",
+              "GSAP 10/10"
+            ],
+            "era_origin": "2020s Modern",
+            "complexity": "High",
+            "source_row": 14,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "liquid-glass",
+              "style_name": "Liquid Glass",
+              "primary_colors": [
+                "Vibrant iridescent (rainbow spectrum)",
+                "translucent base with opacity shifts",
+                "gradient fluidity"
+              ],
+              "secondary_colors": [
+                "Chromatic aberration (Red-Cyan)",
+                "iridescent oil-spill",
+                "fluid gradient blends",
+                "holographic effects"
+              ],
+              "effects_animations": [
+                "Morphing elements (SVG/CSS)",
+                "fluid animations (400-600ms curves)",
+                "dynamic blur (backdrop-filter)",
+                "color transitions"
+              ],
+              "ai_prompt_keywords": [
+                "Create a premium liquid glass effect with morphing shapes",
+                "flowing animations",
+                "chromatic aberration",
+                "iridescent gradients",
+                "smooth 400-600ms transitions. Use SVG morphing for shape changes",
+                "dynamic blur",
+                "smooth color transitions creating a fluid",
+                "premium feel."
+              ],
+              "css_keywords": [
+                "animation: morphing SVG paths (400-600ms)",
+                "backdrop-filter: blur + saturate",
+                "filter: hue-rotate + brightness",
+                "blend-mode: screen",
+                "background: iridescent gradient"
+              ],
+              "implementation_checklist": [
+                "Morphing animations 400-600ms",
+                "Chromatic aberration applied",
+                "Dynamic blur active",
+                "Iridescent gradients",
+                "Smooth color transitions",
+                "Premium feel achieved"
+              ],
+              "design_system_variables": [
+                "--morph-duration: 400-600ms",
+                "--blur-amount: 15px",
+                "--chromatic-aberration: true",
+                "--iridescent: true",
+                "--blend-mode: screen",
+                "--smooth-transitions: true"
+              ]
+            },
+            "score": 11.01
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UI style reference: Conversion-Optimized. Best for E-commerce product pages, free trial signups, lead generation. Accessibility note: ✓ WCAG AA."
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "query": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "forms-input-labels-all",
+            "category": "Forms",
+            "issue": "Input Labels",
+            "platform": "All",
+            "description": "Every input needs a visible label",
+            "recommended_practice": "Always show label above or beside input",
+            "avoid": "Placeholder as only label",
+            "code_example_good": "<label>Email</label><input>",
+            "code_example_bad": "placeholder='Email' only",
+            "severity": "High",
+            "source_row": 54,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 11.03
+          },
+          {
+            "id": "navigation-smooth-scroll-web",
+            "category": "Navigation",
+            "issue": "Smooth Scroll",
+            "platform": "Web",
+            "description": "Anchor links should scroll smoothly to target section",
+            "recommended_practice": "Use scroll-behavior: smooth on html element",
+            "avoid": "Jump directly without transition",
+            "code_example_good": "html { scroll-behavior: smooth; }",
+            "code_example_bad": "<a href='#section'> without CSS",
+            "severity": "High",
+            "source_row": 1,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 10.61
+          },
+          {
+            "id": "navigation-breadcrumbs-web",
+            "category": "Navigation",
+            "issue": "Breadcrumbs",
+            "platform": "Web",
+            "description": "Show user location in site hierarchy",
+            "recommended_practice": "Use for sites with 3+ levels of depth",
+            "avoid": "Use for flat single-level sites",
+            "code_example_good": "Home > Category > Product",
+            "code_example_bad": "Only on deep nested pages",
+            "severity": "Low",
+            "source_row": 6,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 10.49
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UX guidance: Input Labels (All). Use Always show label above or beside input. Avoid Placeholder as only label."
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "query": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "ai-personalization-landing",
+            "pattern_name": "AI Personalization Landing",
+            "keywords": [
+              "ai",
+              "personalization",
+              "smart",
+              "recommendation",
+              "dynamic"
+            ],
+            "section_order": [
+              "1. Dynamic hero (personalized)",
+              "2. Relevant features",
+              "3. Tailored testimonials",
+              "4. Smart CTA"
+            ],
+            "primary_cta_placement": "Context-aware placement based on user segment",
+            "color_strategy": "Adaptive based on user data. A/B test color variations per segment.",
+            "recommended_effects": [
+              "Dynamic content swap",
+              "fade transitions",
+              "personalized product recommendations"
+            ],
+            "conversion_optimization": "20%+ conversion with personalization. Requires analytics integration. Fallback for new users.",
+            "source_row": 11,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 11.18
+          },
+          {
+            "id": "feature-rich-showcase",
+            "pattern_name": "Feature-Rich Showcase",
+            "keywords": [
+              "feature-rich",
+              "feature-rich showcase",
+              "features",
+              "showcase",
+              "product showcase"
+            ],
+            "section_order": [
+              "1. Hero (value prop)",
+              "2. Feature grid/cards (4-6)",
+              "3. Use cases or benefits",
+              "4. Social proof or logos",
+              "5. CTA"
+            ],
+            "primary_cta_placement": "Hero (sticky) + After features + Bottom",
+            "color_strategy": "Brand primary + card bg #FAFAFA. Feature icons accent. CTA contrasting.",
+            "recommended_effects": [
+              "Feature card hover lift",
+              "scroll reveal",
+              "icon micro-interactions"
+            ],
+            "conversion_optimization": "Clear feature hierarchy. One key message per card. Strong CTA repetition.",
+            "source_row": 31,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 8.5
+          },
+          {
+            "id": "enterprise-gateway",
+            "pattern_name": "Enterprise Gateway",
+            "keywords": [
+              "enterprise",
+              "corporate",
+              "gateway",
+              "solutions",
+              "portal",
+              "trust",
+              "authority",
+              "trust & authority"
+            ],
+            "section_order": [
+              "1. Hero (Video/Mission)",
+              "2. Solutions by Industry",
+              "3. Solutions by Role",
+              "4. Client Logos",
+              "5. Contact Sales"
+            ],
+            "primary_cta_placement": "Contact Sales (Primary) + Login (Secondary)",
+            "color_strategy": "Corporate: Navy/Grey. High integrity. Conservative accents.",
+            "recommended_effects": [
+              "Slow video background",
+              "logo carousel",
+              "tab switching for industries"
+            ],
+            "conversion_optimization": "Path selection (I am a...). Mega menu navigation. Trust signals prominent.",
+            "source_row": 25,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 8.36
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Landing pattern: AI Personalization Landing. CTA placement: Context-aware placement based on user segment. 20%+ conversion with personalization. Requires analytics integration. Fallback for new users."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "query": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "bold-typography-mobile-inter-tight-poster",
+            "pairing_name": "Bold Typography Mobile (Inter-Tight Poster)",
+            "category": "Sans + Serif (Display) + Mono",
+            "heading_font": "Inter",
+            "body_font": "Playfair Display",
+            "mood_keywords": [
+              "bold typography",
+              "editorial",
+              "poster",
+              "near-black",
+              "vermillion",
+              "luxury",
+              "type-as-hero",
+              "manifesto",
+              "high-contrast"
+            ],
+            "best_for": [
+              "Creative brand flagships",
+              "reading platforms",
+              "event apps",
+              "flash pages",
+              "luxury mobile experiences"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400|JetBrains+Mono:wght@400|Playfair+Display:ital@1",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital@1&display=swap');",
+            "tailwind_config": "fontFamily: { display: ['Inter', 'sans-serif'], quote: ['Playfair Display', 'serif'], mono: ['JetBrains Mono', 'monospace'] }",
+            "notes": "Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mono for labels and stats. Scale: 12px labels, 16px body, 22px sub, 32px section, 40px H2, 56px H1, 72px Hero Statement. 5:1 ratio H1:Body is mandatory. lineHeight 1.1 headlines, 1.6 body. Underlines (2–3pt accent) replace buttons for interactions.",
+            "source_row": 66,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 9.22
+          },
+          {
+            "id": "flat-design-mobile-system-bold",
+            "pairing_name": "Flat Design Mobile (System Bold)",
+            "category": "Sans + Sans",
+            "heading_font": "Inter",
+            "body_font": "Inter",
+            "mood_keywords": [
+              "flat",
+              "clean",
+              "system",
+              "bold",
+              "geometric",
+              "cross-platform",
+              "icon",
+              "poster",
+              "minimal",
+              "functional",
+              "responsive"
+            ],
+            "best_for": [
+              "Cross-platform apps",
+              "dashboards",
+              "system UI",
+              "onboarding",
+              "marketing pages",
+              "informational apps",
+              "icon-heavy interfaces"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@400;600;700;800",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Inter', 'sans-serif'] }",
+            "notes": "System-first strategy: Inter as primary, falls back to system SF/Roboto on iOS/Android. Scale: Headlines fontWeight 800 letterSpacing -0.5; Subheadings fontWeight 600 fontSize 18; Body fontWeight 400 lineHeight 24; Labels fontWeight 700 uppercase letterSpacing 1. Thick weights carry all hierarchy since there are no shadows. Use aggressive size contrast (poster rule: body 16pt vs headline 40pt+). Avoid italic.",
+            "source_row": 63,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 7.82
+          },
+          {
+            "id": "enterprise-saas-mobile-plus-jakarta-sans",
+            "pairing_name": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+            "category": "Geometric Sans (Single Family)",
+            "heading_font": "Plus Jakarta Sans",
+            "body_font": "Plus Jakarta Sans",
+            "mood_keywords": [
+              "enterprise",
+              "saas",
+              "b2b",
+              "professional",
+              "indigo",
+              "modern",
+              "approachable",
+              "legible",
+              "ios dynamic type",
+              "android scaling"
+            ],
+            "best_for": [
+              "B2B SaaS apps",
+              "productivity tools",
+              "government and finance mobile apps",
+              "admin dashboards",
+              "enterprise onboarding"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+            "notes": "Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability. Weight scale: ExtraBold 800 for screen titles/hero (line height 1.1–1.2). Bold 700 for section headers. SemiBold 600 for card titles and buttons. Regular 400 for body text (line height 1.4–1.5). Must support iOS Dynamic Type and Android font scaling — never hardcode pixel sizes without respecting system font scale. Button text: uppercase, letterSpacing 0.5. Caption: 12px Regular. Muted: Slate 500 #64748B.",
+            "source_row": 71,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 6.33
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Typography pairing: Bold Typography Mobile (Inter-Tight Poster). Best for Creative brand flagships, reading platforms, event apps. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Pl..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "query": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "social-media-app",
+            "product_type": "Social Media App",
+            "primary": "#E11D48",
+            "on_primary": "#FFFFFF",
+            "secondary": "#FB7185",
+            "on_secondary": "#0F172A",
+            "accent": "#2563EB",
+            "on_accent": "#FFFFFF",
+            "background": "#FFF1F2",
+            "foreground": "#881337",
+            "card": "#FFFFFF",
+            "card_foreground": "#881337",
+            "muted": "#F0ECF2",
+            "muted_foreground": "#64748B",
+            "border": "#FECDD3",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#E11D48",
+            "notes": "Vibrant rose + engagement blue",
+            "source_row": 15,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 6.86
+          },
+          {
+            "id": "luxury-premium-brand",
+            "product_type": "Luxury/Premium Brand",
+            "primary": "#1C1917",
+            "on_primary": "#FFFFFF",
+            "secondary": "#44403C",
+            "on_secondary": "#FFFFFF",
+            "accent": "#A16207",
+            "on_accent": "#FFFFFF",
+            "background": "#FAFAF9",
+            "foreground": "#0C0A09",
+            "card": "#FFFFFF",
+            "card_foreground": "#0C0A09",
+            "muted": "#E8ECF0",
+            "muted_foreground": "#64748B",
+            "border": "#D6D3D1",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#1C1917",
+            "notes": "Premium black + gold accent [Accent adjusted from #CA8A04 for WCAG 3:1]",
+            "source_row": 33,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 6.81
+          },
+          {
+            "id": "design-system-component-library",
+            "product_type": "Design System/Component Library",
+            "primary": "#4F46E5",
+            "on_primary": "#FFFFFF",
+            "secondary": "#6366F1",
+            "on_secondary": "#FFFFFF",
+            "accent": "#EA580C",
+            "on_accent": "#FFFFFF",
+            "background": "#EEF2FF",
+            "foreground": "#312E81",
+            "card": "#FFFFFF",
+            "card_foreground": "#312E81",
+            "muted": "#EBEEF8",
+            "muted_foreground": "#64748B",
+            "border": "#C7D2FE",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#4F46E5",
+            "notes": "Indigo brand + doc hierarchy [Accent adjusted from #F97316 for WCAG 3:1]",
+            "source_row": 17,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 5.35
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Color system: Social Media App. Use accent #2563EB against background #FFF1F2. Vibrant rose + engagement blue"
+      }
+    ],
+    "guidance": "UI style reference: Conversion-Optimized. Best for E-commerce product pages, free trial signups, lead generation. Accessibility note: ✓ WCAG AA. UX guidance: Input Labels (All). Use Always show label above or beside input. Avoid Placeholder as only label. Landing pattern: AI Personalization Landing. CTA placement: Context-aware placement based on user segment. 20%+ conversion with personalization. Requires analytics integration. Fallback for new users. Typography pairing: Bold Typography Mobile (Inter-Tight Poster). Best for Creative brand flagships, reading platforms, event apps. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Pl... Color system: Social Media App. Use accent #2563EB against background #FFF1F2. Vibrant rose + engagement blue Build the layout around one dominant product hero with confident negative space and a CTA rail that reads immediately. Reserve a high-contrast text zone with low visual noise behind body copy. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mon... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Vibrant rose + engagement blue",
+    "material_influences": [
+      {
+        "tool_name": "search_ui_styles",
+        "consult_kind": "lookup_tool",
+        "record_id": "conversion-optimized",
+        "label": "Conversion-Optimized",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ui_styles",
+        "why_it_matters": "Sets the overall visual direction. Single primary CTA visible, Form fields minimal (3-5), Trust badges present"
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "consult_kind": "lookup_tool",
+        "record_id": "forms-input-labels-all",
+        "label": "Input Labels",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ux_guidelines",
+        "why_it_matters": "Always show label above or beside input Avoid: Placeholder as only label"
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "consult_kind": "dataset_probe",
+        "record_id": "ai-personalization-landing",
+        "label": "AI Personalization Landing",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "landing_patterns",
+        "why_it_matters": "Shapes CTA placement and section flow. Context-aware placement based on user segment 20%+ conversion with personalization. Requires analytics integration. Fallback for new users."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "consult_kind": "dataset_probe",
+        "record_id": "bold-typography-mobile-inter-tight-poster",
+        "label": "Bold Typography Mobile (Inter-Tight Poster)",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "typography_pairings",
+        "why_it_matters": "Sharpens headline/body hierarchy. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mon..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "consult_kind": "dataset_probe",
+        "record_id": "social-media-app",
+        "label": "Social Media App",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "color_systems",
+        "why_it_matters": "Biases contrast and premium color separation. Vibrant rose + engagement blue"
+      }
+    ],
+    "metadata": {
+      "headline": "",
+      "body": "",
+      "image_prompt": "",
+      "brand_name": "",
+      "brief": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.\n",
+      "style_hint": ""
+    },
+    "art_direction": {
+      "composition_mode": "product_hero",
+      "template_candidates": [
+        "center-stage-square",
+        "hero-bottom-text-square",
+        "floating-card-square"
+      ],
+      "template_reason": "Product-launch cues favor one dominant object hero with a clear purchase-ready CTA rail.",
+      "composition": "Build the layout around one dominant product hero with confident negative space and a CTA rail that reads immediately.",
+      "hero": "Let the product occupy roughly half the frame with polished lighting, clean edges, and protected negative space around the CTA block.",
+      "readability": "Reserve a high-contrast text zone with low visual noise behind body copy. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mon...",
+      "cta": "Give the CTA one dominant action zone and avoid burying it under secondary decoration.",
+      "copy": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+      "polish": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Vibrant rose + engagement blue",
+      "recommended_fonts": {
+        "heading_font": "Inter",
+        "body_font": "Playfair Display",
+        "pairing_name": "Bold Typography Mobile (Inter-Tight Poster)"
+      },
+      "recommended_colors": {
+        "primary": "#E11D48",
+        "secondary": "#FB7185",
+        "accent": "#2563EB",
+        "background": "#FFF1F2",
+        "foreground": "#881337"
+      },
+      "supporting_references": {
+        "style": "Conversion-Optimized",
+        "ux": "Input Labels",
+        "landing": "AI Personalization Landing",
+        "typography": "Bold Typography Mobile (Inter-Tight Poster)",
+        "color": "Social Media App"
+      }
+    }
+  },
+  "art_direction_plan": {
+    "composition_mode": "product_hero",
+    "template_reason": "Product-launch cues favor one dominant object hero with a clear purchase-ready CTA rail.",
+    "template_profile": {
+      "template_name": "center-stage-square",
+      "composition_mode": "centered_hero",
+      "hero_emphasis": 4,
+      "headline_emphasis": 4,
+      "body_readability": 3,
+      "cta_emphasis": 4,
+      "prompt_guardrail": "Place the hero centrally with darker edges and enough negative space that centered copy still reads crisply.",
+      "rationale": "Centered product/hero frame with a clean, brand-led stage feel."
+    },
+    "composition_instruction": "Build the layout around one dominant product hero with confident negative space and a CTA rail that reads immediately.",
+    "hero_instruction": "Let the product occupy roughly half the frame with polished lighting, clean edges, and protected negative space around the CTA block.",
+    "readability_instruction": "Reserve a high-contrast text zone with low visual noise behind body copy. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mon...",
+    "cta_instruction": "Give the CTA one dominant action zone and avoid burying it under secondary decoration.",
+    "copy_instruction": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+    "polish_instruction": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Vibrant rose + engagement blue",
+    "campaign_angle": "Limited drop with a premium cafe feel",
+    "visual_direction": "Hero-forward premium product poster with clean lighting and clear CTA hierarchy",
+    "hero_focus": "Large iced coffee product hero with glossy highlights and negative space"
+  },
+  "template_reason": "Product-launch cues favor one dominant object hero with a clear purchase-ready CTA rail.",
+  "prompt_trace": {
+    "effective_prompt": "Premium iced coffee hero, polished lighting, no text, no logos Build the layout around one dominant product hero with confident negative space and a CTA rail that reads immediately. Let the product occupy roughly half the frame with polished lighting, clean edges, and protected negative space around the CTA block. Reserve a high-contrast text zone with low visual noise behind body copy. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mon... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Place the hero centrally with darker edges and enough negative space that centered copy still reads crisply. Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Vibrant rose + engagement blue Avoid tiny hero subject; flat muddy background.",
+    "prompt_prefix_parts": [
+      "Limited drop with a premium cafe feel",
+      "Hero-forward premium product poster with clean lighting and clear CTA hierarchy",
+      "Large iced coffee product hero with glossy highlights and negative space"
+    ],
+    "quality_guardrail_parts": [
+      "Build the layout around one dominant product hero with confident negative space and a CTA rail that reads immediately.",
+      "Let the product occupy roughly half the frame with polished lighting, clean edges, and protected negative space around the CTA block.",
+      "Reserve a high-contrast text zone with low visual noise behind body copy. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mon...",
+      "Give the CTA one dominant action zone and avoid burying it under secondary decoration.",
+      "Place the hero centrally with darker edges and enough negative space that centered copy still reads crisply.",
+      "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Vibrant rose + engagement blue"
+    ],
+    "avoid_parts": [
+      "tiny hero subject; flat muddy background"
+    ]
+  },
+  "artifact": {
+    "poster_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v2-artifacts/premium_product_drop/poster.png",
+    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-100919/hero.png",
+    "template_used": "center-stage-square",
+    "image_mode": "falai"
+  }
+}

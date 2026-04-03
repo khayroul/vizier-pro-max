@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "suite_id": "poster_ui_manual_review_v1",
+  "generated_at": "2026-04-03T02:15:28+00:00",
+  "evaluator": "human",
+  "source_report": {
+    "label": "ui-ux-loop-after-v3",
+    "git_ref": "WORKTREE",
+    "resolved_ref": "a236e69d0dfe1b51cd3c09148af3a1ce44ab437a+working-tree",
+    "generated_at": "2026-04-03T02:14:27+00:00"
+  },
+  "results": [
+    {
+      "prompt_id": "swiss_analytics_hero",
+      "family": "visual",
+      "title": "Swiss analytics hero",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/swiss_analytics_hero/poster.png",
+      "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/swiss_analytics_hero/poster.trace.json",
+      "template_used": "floating-card-square",
+      "objective_score_100": 93.8,
+      "focus": [
+        "Check whether the composition feels deliberately grid-led instead of generic SaaS.",
+        "Check whether the CTA reads clearly without overpowering the trust tone."
+      ],
+      "notes": "",
+      "dimension_scores": {
+        "composition_choice": null,
+        "hero_prominence": null,
+        "hierarchy_readability": null,
+        "cta_emphasis": null,
+        "copy_sharpness": null,
+        "visual_polish": null,
+        "reference_utilization": null
+      }
+    },
+    {
+      "prompt_id": "retro_event_poster",
+      "family": "visual",
+      "title": "Retro event poster",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/retro_event_poster/poster.png",
+      "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/retro_event_poster/poster.trace.json",
+      "template_used": "bold-knockout-square",
+      "objective_score_100": 93.5,
+      "focus": [
+        "Check whether the poster is still readable instead of becoming pure moodboard material.",
+        "Check whether the headline feels intentionally oversized and premium."
+      ],
+      "notes": "",
+      "dimension_scores": {
+        "composition_choice": null,
+        "hero_prominence": null,
+        "hierarchy_readability": null,
+        "cta_emphasis": null,
+        "copy_sharpness": null,
+        "visual_polish": null,
+        "reference_utilization": null
+      }
+    },
+    {
+      "prompt_id": "donation_trust_landing",
+      "family": "visual",
+      "title": "Donation trust landing",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/donation_trust_landing/poster.png",
+      "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/donation_trust_landing/poster.trace.json",
+      "template_used": "hero-bottom-text-square",
+      "objective_score_100": 93.3,
+      "focus": [
+        "Check whether the tone feels trustworthy rather than generic or melodramatic.",
+        "Check whether the CTA is obvious and the body copy remains easy to read."
+      ],
+      "notes": "",
+      "dimension_scores": {
+        "composition_choice": null,
+        "hero_prominence": null,
+        "hierarchy_readability": null,
+        "cta_emphasis": null,
+        "copy_sharpness": null,
+        "visual_polish": null,
+        "reference_utilization": null
+      }
+    },
+    {
+      "prompt_id": "premium_product_drop",
+      "family": "visual",
+      "title": "Premium product drop",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/premium_product_drop/poster.png",
+      "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/premium_product_drop/poster.trace.json",
+      "template_used": "center-stage-square",
+      "objective_score_100": 94.9,
+      "focus": [
+        "Check whether the hero subject feels dominant rather than thumbnail-sized.",
+        "Check whether the CTA has enough presence in the final hierarchy."
+      ],
+      "notes": "",
+      "dimension_scores": {
+        "composition_choice": null,
+        "hero_prominence": null,
+        "hierarchy_readability": null,
+        "cta_emphasis": null,
+        "copy_sharpness": null,
+        "visual_polish": null,
+        "reference_utilization": null
+      }
+    }
+  ]
+}

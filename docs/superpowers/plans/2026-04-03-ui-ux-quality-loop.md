@@ -53,6 +53,15 @@ The poster/UI path now:
 - recommends templates from poster/UI composition cues instead of defaulting to `social-post`
 - sharpens freeform and model-produced poster briefs toward shorter headlines and stronger CTA language
 - injects art-direction guardrails into prompt assembly for composition, hero scale, readability, CTA emphasis, and color discipline
+- filters noisy reference guidance so off-target UX/search hits do not leak directly into poster prompts
+- bridges palette/font theming into the actual Pro-Max poster CSS tokens instead of only legacy color variables
+- adds subject-clarity guardrails so product, UI, event, and relief prompts explicitly reject abstract placeholder shapes
+- strengthens the square poster templates that were underperforming on first pass:
+  - `floating-card-square`
+  - `hero-bottom-text-square`
+  - `center-stage-square`
+  - `stacked-type-square`
+- updates poster eval crop windows to match the actual CTA/text placements in the strengthened templates
 - runs through a poster artifact suite with stable before/after reports and comparison output
 
 ## Evidence
@@ -61,34 +70,47 @@ Poster artifact suite comparison recorded in:
 
 - `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-report.json`
 - `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-report.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v2-report.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-report.json`
 - `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/comparison.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/comparison-v2.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/comparison-v3.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/incremental-comparison.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/incremental-comparison-v3.json`
 - `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-manual-scorecard.template.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-manual-scorecard.template.json`
 
-Objective delta after adding render-aware checks:
+Objective delta from the original baseline to the current strongest packet (`after-v3`):
 
-- average objective score: `14.2` -> `88.3`
+- average objective score: `14.2` -> `93.9`
 - `reference_usage`: `0.0` -> `100.0`
 - `copy_discipline`: `75.0` -> `100.0`
-- `template_fit`: `20.0` -> `88.8`
+- `template_fit`: `20.0` -> `100.0`
 - `prompt_guardrails`: `0.0` -> `81.2`
 - `trace_persistence`: `0.0` -> `100.0`
-- `hero_presence`: `0.0` -> `67.1`
-- `text_zone_readability`: `0.0` -> `77.2`
-- `cta_salience`: `0.0` -> `70.2`
+- `hero_presence`: `0.0` -> `100.0`
+- `text_zone_readability`: `0.0` -> `72.8`
+- `cta_salience`: `0.0` -> `83.7`
 
-Case-level template shifts:
+Incremental delta from `after-v2` to `after-v3`:
+
+- average objective score: `90.8` -> `93.9`
+- `cta_salience`: `39.0` -> `83.7`
+- `hero_presence`: held at `100.0`
+- `template_fit`: held at `100.0`
+- `reference_usage`: held at `100.0`
+
+Current case-level template shifts versus the original baseline:
 
 - `swiss_analytics_hero`: `social-post` -> `floating-card-square`
-- `retro_event_poster`: `social-post` -> `stacked-type-square`
+- `retro_event_poster`: `social-post` -> `bold-knockout-square`
 - `donation_trust_landing`: `social-post` -> `hero-bottom-text-square`
-- `premium_product_drop`: `social-post` -> `stacked-type-square`
+- `premium_product_drop`: `social-post` -> `center-stage-square`
 
-Render-aware follow-up signals from the current run:
+Current strongest packet (`after-v3`) still surfaces two honest remaining weaknesses:
 
-- `retro_event_poster`: hero presence is still weak at `25.6`
-- `premium_product_drop`: hero presence is still weak at `42.7`
-- `donation_trust_landing`: text-zone readability is still middling at `57.2`
-- `swiss_analytics_hero`: CTA salience is still middling at `46.5`
+- `premium_product_drop`: the layout and CTA are stronger, but the generated hero still reads like an abstract lit frame instead of a convincing coffee product
+- `donation_trust_landing`: the CTA and readability improved, but the hero image still trends toward an abstract shape instead of a grounded relief scene
 
 ## Still Manual / Approximate
 
@@ -101,6 +123,7 @@ Still manual or approximate:
 - whether composition feels intentional to a design reviewer
 - whether reference usage is genuinely well-distilled or only mechanically present
 - whether rendered outputs consistently avoid abstract or under-specified hero imagery
+- whether the hero subject is actually recognizable when the image generator returns premium-looking but semantically vague forms
 
 This follow-up direction also adds a poster-specific manual-review scorecard flow so the artifact reports can be turned into stable human review templates instead of ad hoc comments.
 
@@ -109,6 +132,7 @@ This follow-up direction also adds a poster-specific manual-review scorecard flo
 The next follow-up packet should focus on:
 
 - human scorecards across 12-20 poster/UI artifacts using the manual dimensions above
+- reviewer-supplied preferred sample posters tied to each weak case so composition upgrades are grounded in explicit reference examples
+- subject-recognition checks or stronger manual gates for hero fidelity, especially for product and relief prompts
 - tighter distillation of local reference matches into art-direction-ready guidance
-- render-aware checks for hero occupancy, text-zone contrast, and CTA salience
 - a small frozen gallery of accepted high-quality poster/UI outputs for regression review

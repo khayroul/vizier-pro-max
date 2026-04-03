@@ -1,0 +1,984 @@
+{
+  "schema_version": 1,
+  "generated_at": "20260403-101425",
+  "inputs": {
+    "headline": "",
+    "body": "",
+    "cta": "",
+    "brief": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.\n",
+    "image_prompt": "",
+    "template_name": "",
+    "image_mode": "",
+    "brand_name": "",
+    "client_id": "",
+    "style_reference": "",
+    "reference_image_path": ""
+  },
+  "creative_brief": {
+    "raw_brief": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.",
+    "campaign_angle": "Fast relief with visible trust",
+    "audience": "Donors who want clear impact without hype",
+    "visual_direction": "Minimal trust-led donation hero with calm premium contrast and obvious action hierarchy",
+    "hero_focus": "One calm symbolic relief scene with protected copy space",
+    "headline": "Relief That Reaches Faster",
+    "body": "Help families access shelter, food, and clean water without delay.",
+    "cta": "Donate Now",
+    "image_prompt": "Calm relief-focused visual, trustworthy lighting, protected text zone, no text, no logos",
+    "template_name": "",
+    "avoid": [
+      "exploitative imagery",
+      "low-contrast body text"
+    ]
+  },
+  "reference_trace": {
+    "task_family": "visual",
+    "auto_consulted": true,
+    "query_count": 1,
+    "tool_names": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "auxiliary_tool_names": [
+      "search_landing_patterns",
+      "search_typography_pairings",
+      "search_color_systems"
+    ],
+    "route_description": "visual/UI/poster -> search_ui_styles + search_ux_guidelines, plus landing-pattern, typography-pairing, and color-system probes",
+    "lookup_tools_used": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "dataset_searches_used": [
+      "search_color_systems",
+      "search_landing_patterns",
+      "search_typography_pairings"
+    ],
+    "reference_families_consulted": [
+      "ui_ux_pro_max"
+    ],
+    "datasets_consulted": [
+      "color_systems",
+      "landing_patterns",
+      "typography_pairings",
+      "ui_styles",
+      "ux_guidelines"
+    ],
+    "searches": [
+      {
+        "tool_name": "search_ui_styles",
+        "query": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "minimal-direct",
+            "name": "Minimal & Direct",
+            "type": "Landing Page",
+            "keywords": [
+              "Minimal text",
+              "white space heavy",
+              "single column layout",
+              "direct messaging",
+              "clean typography",
+              "visual-centric",
+              "fast-loading"
+            ],
+            "best_for": [
+              "Simple service landing pages",
+              "indie products",
+              "consulting services",
+              "micro SaaS",
+              "freelancer portfolios"
+            ],
+            "avoid_for": [
+              "Feature-heavy products",
+              "complex explanations",
+              "multi-product showcases"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "✓ Full",
+            "performance": "⚡ Excellent",
+            "accessibility": "✓ WCAG AAA",
+            "mobile_friendly": "✓ Full",
+            "conversion_focused": "✓ High",
+            "framework_compatibility": [
+              "Tailwind 10/10",
+              "Bootstrap 9/10"
+            ],
+            "era_origin": "2020s Modern",
+            "complexity": "Medium",
+            "source_row": 23,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "minimal-direct",
+              "style_name": "Minimal & Direct",
+              "primary_colors": [
+                "Monochromatic primary",
+                "white background",
+                "single accent color for CTA",
+                "black/dark grey text"
+              ],
+              "secondary_colors": [
+                "Minimal secondary colors",
+                "reserved for critical CTAs only",
+                "neutral supporting elements"
+              ],
+              "effects_animations": [
+                "Very subtle hover effects",
+                "minimal animations",
+                "fast page load (no heavy animations)",
+                "smooth scroll"
+              ],
+              "ai_prompt_keywords": [
+                "Design a minimal direct landing page. Use: single column layout",
+                "maximum white space",
+                "essential content only",
+                "one CTA",
+                "clean typography",
+                "no decorative elements",
+                "fast loading",
+                "direct messaging."
+              ],
+              "css_keywords": [
+                "max-width: 680px",
+                "margin: 0 auto",
+                "padding: 4rem 2rem",
+                "font-size: 18-20px",
+                "line-height: 1.6",
+                "minimal animations",
+                "no box-shadow",
+                "clean borders only"
+              ],
+              "implementation_checklist": [
+                "Single column centered",
+                "White space generous",
+                "One primary CTA only",
+                "No decorative images",
+                "Page weight < 500KB",
+                "Load time < 2s"
+              ],
+              "design_system_variables": [
+                "--content-max-width: 680px",
+                "--spacing-large: 4rem",
+                "--font-size-body: 18px",
+                "--line-height: 1.6",
+                "--color-text: #1a1a1a",
+                "--color-bg: #ffffff"
+              ]
+            },
+            "score": 13.77
+          },
+          {
+            "id": "enterprise-saas-mobile",
+            "name": "Enterprise SaaS (Mobile)",
+            "type": "Mobile",
+            "keywords": [
+              "enterprise",
+              "saas",
+              "b2b",
+              "professional",
+              "indigo",
+              "violet",
+              "gradient",
+              "polished",
+              "trustworthy",
+              "clean",
+              "approachable",
+              "spring",
+              "haptic"
+            ],
+            "best_for": [
+              "B2B backend management",
+              "productivity tools",
+              "government and finance mobile apps",
+              "SaaS companion apps",
+              "enterprise dashboards"
+            ],
+            "avoid_for": [
+              "Pure consumer entertainment",
+              "Gen-Z youth apps",
+              "gaming UI",
+              "ultra-minimal editorial"
+            ],
+            "light_mode": "✓ Light",
+            "dark_mode": "✓ Dark-ready (token inversion)",
+            "performance": "✓ Performant",
+            "accessibility": "✓ WCAG AA",
+            "mobile_friendly": "✓ Mobile-First (Safe Area strict)",
+            "conversion_focused": "✓ High",
+            "framework_compatibility": [
+              "React Native 10/10",
+              "Reanimated 10/10",
+              "NativeWind 9/10"
+            ],
+            "era_origin": "Enterprise/SaaS",
+            "complexity": "High",
+            "source_row": 83,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "enterprise-saas-mobile",
+              "style_name": "Enterprise SaaS (Mobile)",
+              "primary_colors": [
+                "Indigo #4F46E5",
+                "Violet #7C3AED"
+              ],
+              "secondary_colors": [
+                "Slate 50 #F8FAFC",
+                "White #FFFFFF",
+                "Slate 900 #0F172A",
+                "Slate 500 #64748B",
+                "Emerald #10B981",
+                "Slate 200 #E2E8F0"
+              ],
+              "effects_animations": [
+                "Indigo→Violet gradient primary CTAs + active tab highlights",
+                "colored card shadows rgba(79",
+                "70",
+                "229",
+                "0.08)",
+                "pill buttons or 12pt radius",
+                "full-width CTA at screen bottom",
+                "spring press scale 0.97",
+                "floating label inputs with animated focus border",
+                "skeletal loading pulses (Indigo/Slate tint)",
+                "Bottom Sheets with drag dismiss",
+                "swipe-to-action list cards",
+                "scroll-linked title collapse"
+              ],
+              "ai_prompt_keywords": [
+                "Design a Modern Enterprise SaaS mobile app. Background #F8FAFC",
+                "surfaces #FFFFFF",
+                "primary #4F46E5 (Indigo)",
+                "secondary #7C3AED (Violet). Typography: Plus Jakarta Sans",
+                "ExtraBold 800 for screen titles",
+                "Bold 700 for section headers",
+                "SemiBold 600 for buttons",
+                "Regular 400 for body. Line height 1.1–1.2 for titles",
+                "1.4–1.5 for body. Primary button: full-width",
+                "LinearGradient Indigo→Violet",
+                "pill-shaped or radius 12",
+                "scale 0.95 on press with medium haptic. Cards: white bg",
+                "16pt radius",
+                "hairline border",
+                "shadow rgba(79",
+                "70",
+                "229",
+                "0.08). Inputs: white bg",
+                "8pt radius",
+                "floating label",
+                "Indigo border on focus. Bottom Tab Navigation (3–5 items)",
+                "gradient active tab icon. Screen padding 16–20pt. Vertical rhythm 24pt between sections",
+                "12pt between items. Shared Element Transition for hero cards opening to detail."
+              ],
+              "css_keywords": [
+                "backgroundColor: '#F8FAFC'",
+                "surfaceBg: '#FFFFFF'",
+                "textPrimary: '#0F172A'",
+                "textMuted: '#64748B'",
+                "primary: '#4F46E5'",
+                "secondary: '#7C3AED'",
+                "success: '#10B981'",
+                "border: '#E2E8F0'",
+                "radiusCard: 16",
+                "radiusButton: 999",
+                "radiusInput: 8",
+                "shadowCard: 'rgba(79",
+                "70",
+                "229",
+                "0.08)'",
+                "gradientPrimary: ['#4F46E5'",
+                "'#7C3AED']",
+                "screenPadding: 20"
+              ],
+              "implementation_checklist": [
+                "Background #F8FAFC applied",
+                "Indigo→Violet gradient on primary CTA",
+                "Colored card shadows (not gray)",
+                "Plus Jakarta Sans typography",
+                "Floating label inputs with Indigo focus",
+                "Scale 0.97 press with haptic Medium",
+                "Bottom Tab Navigation implemented",
+                "Safe Area strict compliance",
+                "Skeletal loading placeholders",
+                "Reduced Motion fallback"
+              ],
+              "design_system_variables": [
+                "--bg: #F8FAFC",
+                "--surface: #FFFFFF",
+                "--text: #0F172A",
+                "--muted: #64748B",
+                "--primary: #4F46E5",
+                "--secondary: #7C3AED",
+                "--success: #10B981",
+                "--border: #E2E8F0",
+                "--radius-card: 16px",
+                "--radius-pill: 999px",
+                "--radius-input: 8px",
+                "--shadow-card: rgba(79",
+                "70",
+                "229",
+                "0.08)",
+                "--font: Plus Jakarta Sans"
+              ]
+            },
+            "score": 9.1
+          },
+          {
+            "id": "minimalist-monochrome",
+            "name": "Minimalist Monochrome",
+            "type": "Mobile",
+            "keywords": [
+              "monochrome",
+              "black white",
+              "editorial",
+              "austere",
+              "typographic",
+              "sharp",
+              "zero radius",
+              "high contrast",
+              "brutalist",
+              "pocket editorial",
+              "serif",
+              "mechanical"
+            ],
+            "best_for": [
+              "Luxury fashion e-commerce mobile",
+              "editorial publications",
+              "high-end portfolio apps",
+              "experimental/avant-garde brands",
+              "digital exhibitions"
+            ],
+            "avoid_for": [
+              "Entertainment",
+              "colorful brands",
+              "friendly consumer apps",
+              "anything requiring visual warmth or gradient"
+            ],
+            "light_mode": "✓ Full (Light Mode Enforced)",
+            "dark_mode": "◐ Dark by section only (inverted sections)",
+            "performance": "⚡ Excellent",
+            "accessibility": "✓ WCAG AAA (pure black/white)",
+            "mobile_friendly": "✓ Mobile-First",
+            "conversion_focused": "◐ Medium",
+            "framework_compatibility": [
+              "React Native 10/10",
+              "Expo 10/10",
+              "SwiftUI 9/10",
+              "Tailwind 9/10"
+            ],
+            "era_origin": "2020s Editorial Mobile",
+            "complexity": "Medium",
+            "source_row": 70,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "minimalist-monochrome",
+              "style_name": "Minimalist Monochrome",
+              "primary_colors": [
+                "Pure Black #000000",
+                "Pure White #FFFFFF"
+              ],
+              "secondary_colors": [
+                "Muted #F5F5F5",
+                "Dark Gray #525252",
+                "Border Light #E5E5E5"
+              ],
+              "effects_animations": [
+                "Instant inversion active state (tap → bg-black text-white",
+                "zero transition-none)",
+                "no shadows (strictly 2D)",
+                "full-bleed horizontal rules (4px black section dividers)",
+                "subtle paper noise texture (opacity: 0.03)",
+                "slide-in page transitions with hard edge"
+              ],
+              "ai_prompt_keywords": [
+                "Design a minimalist monochrome mobile app. Use ONLY black (#000000) and white (#FFFFFF). Zero border-radius on every element. No shadows — depth is created by 1–4px black borders and color inversion only. Typography is the primary visual: Playfair Display for heroes (text-5xl–text-6xl",
+                "tracking-tighter",
+                "leading-[0.9])",
+                "Source Serif 4 for body",
+                "JetBrains Mono for labels/tags. Tap states instantly invert (bg-black text-white). Full-width horizontal rules separate sections. Use the word 'MENU' instead of hamburger icon."
+              ],
+              "css_keywords": [
+                "border-radius: 0px (ALL elements including modals)",
+                "box-shadow: none",
+                "active:bg-black active:text-white transition-none",
+                "border-b-4 border-black (section dividers)",
+                "divide-y divide-black (lists)",
+                "font-family: Playfair Display (headers) + Source Serif 4 (body) + JetBrains Mono (labels)",
+                "background-image: noise SVG opacity-[0.03]"
+              ],
+              "implementation_checklist": [
+                "0px border-radius on ALL elements",
+                "No shadows anywhere",
+                "Instant inversion on every tap (transition-none)",
+                "4px black line separates hero from content",
+                "Safe area respected (pt-safe pb-safe)",
+                "h-14 touch targets",
+                "Sticky section headers with border-b",
+                "Typography hero: word spans full screen width",
+                "Paper noise texture on backgrounds",
+                "Menu word-label instead of icon"
+              ],
+              "design_system_variables": [
+                "--color-bg: #FFFFFF",
+                "--color-fg: #000000",
+                "--color-muted: #F5F5F5",
+                "--color-muted-fg: #525252",
+                "--color-border: #000000",
+                "--color-border-light: #E5E5E5",
+                "--radius: 0px",
+                "--shadow: none",
+                "--border-hairline: 1px solid #E5E5E5",
+                "--border-thin: 1px solid #000000",
+                "--border-thick: 2px solid #000000",
+                "--border-heavy: 4px solid #000000",
+                "--font-display: Playfair Display",
+                "--font-body: Source Serif 4",
+                "--font-mono: JetBrains Mono"
+              ]
+            },
+            "score": 8.33
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UI style reference: Minimal & Direct. Best for Simple service landing pages, indie products, consulting services. Accessibility note: ✓ WCAG AAA."
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "query": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "navigation-smooth-scroll-web",
+            "category": "Navigation",
+            "issue": "Smooth Scroll",
+            "platform": "Web",
+            "description": "Anchor links should scroll smoothly to target section",
+            "recommended_practice": "Use scroll-behavior: smooth on html element",
+            "avoid": "Jump directly without transition",
+            "code_example_good": "html { scroll-behavior: smooth; }",
+            "code_example_bad": "<a href='#section'> without CSS",
+            "severity": "High",
+            "source_row": 1,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 12.52
+          },
+          {
+            "id": "animation-excessive-motion-all",
+            "category": "Animation",
+            "issue": "Excessive Motion",
+            "platform": "All",
+            "description": "Too many animations cause distraction and motion sickness",
+            "recommended_practice": "Animate 1-2 key elements per view maximum",
+            "avoid": "Animate everything that moves",
+            "code_example_good": "Single hero animation",
+            "code_example_bad": "animate-bounce on 5+ elements",
+            "severity": "High",
+            "source_row": 7,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 8.81
+          },
+          {
+            "id": "feedback-empty-states-all",
+            "category": "Feedback",
+            "issue": "Empty States",
+            "platform": "All",
+            "description": "Guide users when no content exists",
+            "recommended_practice": "Show helpful message and action",
+            "avoid": "Blank empty screens",
+            "code_example_good": "No items yet. Create one!",
+            "code_example_bad": "Empty white space",
+            "severity": "Medium",
+            "source_row": 79,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 8.56
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UX guidance: Smooth Scroll (Web). Use Use scroll-behavior: smooth on html element. Avoid Jump directly without transition."
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "query": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "marketplace-directory",
+            "pattern_name": "Marketplace / Directory",
+            "keywords": [
+              "marketplace",
+              "directory",
+              "search",
+              "listing"
+            ],
+            "section_order": [
+              "1. Hero (Search focused)",
+              "2. Categories",
+              "3. Featured Listings",
+              "4. Trust/Safety",
+              "5. CTA (Become a host/seller)"
+            ],
+            "primary_cta_placement": "Hero Search Bar + Navbar 'List your item'",
+            "color_strategy": "Search: High contrast. Categories: Visual icons. Trust: Blue/Green.",
+            "recommended_effects": [
+              "Search autocomplete animation",
+              "map hover pins",
+              "card carousel"
+            ],
+            "conversion_optimization": "Search bar is the CTA. Reduce friction to search. Popular searches suggestions.",
+            "source_row": 22,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 9.87
+          },
+          {
+            "id": "bento-grid-showcase",
+            "pattern_name": "Bento Grid Showcase",
+            "keywords": [
+              "bento",
+              "grid",
+              "features",
+              "modular",
+              "apple-style",
+              "showcase",
+              "feature-rich showcase"
+            ],
+            "section_order": [
+              "1. Hero",
+              "2. Bento Grid (Key Features)",
+              "3. Detail Cards",
+              "4. Tech Specs",
+              "5. CTA"
+            ],
+            "primary_cta_placement": "Floating Action Button or Bottom of Grid",
+            "color_strategy": "Card backgrounds: #F5F5F7 or Glass. Icons: Vibrant brand colors. Text: Dark.",
+            "recommended_effects": [
+              "Hover card scale (1.02)",
+              "video inside cards",
+              "tilt effect",
+              "staggered reveal"
+            ],
+            "conversion_optimization": "Scannable value props. High information density without clutter. Mobile stack.",
+            "source_row": 28,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 8.15
+          },
+          {
+            "id": "minimal-single-column",
+            "pattern_name": "Minimal Single Column",
+            "keywords": [
+              "minimal",
+              "simple",
+              "direct",
+              "minimal & direct",
+              "minimal-direct",
+              "single-column",
+              "clean"
+            ],
+            "section_order": [
+              "1. Hero headline",
+              "2. Short description",
+              "3. Benefit bullets (3 max)",
+              "4. CTA",
+              "5. Footer"
+            ],
+            "primary_cta_placement": "Center, large CTA button",
+            "color_strategy": "Minimalist: Brand + white #FFFFFF + accent. Buttons: High contrast 7:1+. Text: Black/Dark grey",
+            "recommended_effects": [
+              "Minimal hover effects. Smooth scroll. CTA scale on hover (subtle)"
+            ],
+            "conversion_optimization": "Single CTA focus. Large typography. Lots of whitespace. No nav clutter. Mobile-first.",
+            "source_row": 4,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 6.53
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Landing pattern: Marketplace / Directory. CTA placement: Hero Search Bar + Navbar 'List your item'. Search bar is the CTA. Reduce friction to search. Popular searches suggestions."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "query": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "neumorphism-mobile-plus-jakarta-sans-system",
+            "pairing_name": "Neumorphism Mobile (Plus Jakarta Sans + System)",
+            "category": "Geometric Sans (System Fallback)",
+            "heading_font": "Plus Jakarta Sans",
+            "body_font": "Plus Jakarta Sans",
+            "mood_keywords": [
+              "neumorphism",
+              "soft ui",
+              "monochromatic",
+              "cool grey",
+              "minimal",
+              "physical",
+              "depth",
+              "ceramic",
+              "system font",
+              "utility"
+            ],
+            "best_for": [
+              "Smart home controls",
+              "minimal tools",
+              "aesthetic dashboards",
+              "health monitors",
+              "brand showcase pages"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;1,400",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+            "notes": "Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry without competing with the depth effect. Heading: 24–32px Bold (700), letterSpacing -0.5 for modern premium feel. Body: 16px Medium (500), lineHeight 1.4. Caption: 12px Regular (400). Use Text Primary #3D4852 (7.5:1 contrast against #E0E5EC) for all primary text. Use Text Muted #6B7280 (4.6:1 contrast) for secondary text. Accent color #6C63FF only on active labels or focus indicators. Never use italic or thin weights — they lose legibility against the embossed background. System (SF Pro / Roboto) is an acceptable fallback for performance-sensitive implementations.",
+            "source_row": 73,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 8.12
+          },
+          {
+            "id": "vietnamese-friendly",
+            "pairing_name": "Vietnamese Friendly",
+            "category": "Sans + Sans",
+            "heading_font": "Be Vietnam Pro",
+            "body_font": "Noto Sans",
+            "mood_keywords": [
+              "vietnamese",
+              "international",
+              "readable",
+              "clean",
+              "multilingual",
+              "accessible"
+            ],
+            "best_for": [
+              "Vietnamese sites",
+              "multilingual apps",
+              "international products"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Be+Vietnam+Pro:wght@300;400;500;600;700|Noto+Sans:wght@300;400;500;600;700",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;600;700&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Be Vietnam Pro', 'Noto Sans', 'sans-serif'] }",
+            "notes": "Be Vietnam Pro excellent Vietnamese support. Noto as fallback.",
+            "source_row": 21,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 7.58
+          },
+          {
+            "id": "enterprise-saas-mobile-plus-jakarta-sans",
+            "pairing_name": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+            "category": "Geometric Sans (Single Family)",
+            "heading_font": "Plus Jakarta Sans",
+            "body_font": "Plus Jakarta Sans",
+            "mood_keywords": [
+              "enterprise",
+              "saas",
+              "b2b",
+              "professional",
+              "indigo",
+              "modern",
+              "approachable",
+              "legible",
+              "ios dynamic type",
+              "android scaling"
+            ],
+            "best_for": [
+              "B2B SaaS apps",
+              "productivity tools",
+              "government and finance mobile apps",
+              "admin dashboards",
+              "enterprise onboarding"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+            "notes": "Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability. Weight scale: ExtraBold 800 for screen titles/hero (line height 1.1–1.2). Bold 700 for section headers. SemiBold 600 for card titles and buttons. Regular 400 for body text (line height 1.4–1.5). Must support iOS Dynamic Type and Android font scaling — never hardcode pixel sizes without respecting system font scale. Button text: uppercase, letterSpacing 0.5. Caption: 12px Regular. Muted: Slate 500 #64748B.",
+            "source_row": 71,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 7.25
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Typography pairing: Neumorphism Mobile (Plus Jakarta Sans + System). Best for Smart home controls, minimal tools, aesthetic dashboards. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "query": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "senior-care-elderly",
+            "product_type": "Senior Care/Elderly",
+            "primary": "#0369A1",
+            "on_primary": "#FFFFFF",
+            "secondary": "#38BDF8",
+            "on_secondary": "#0F172A",
+            "accent": "#16A34A",
+            "on_accent": "#FFFFFF",
+            "background": "#F0F9FF",
+            "foreground": "#0C4A6E",
+            "card": "#FFFFFF",
+            "card_foreground": "#0C4A6E",
+            "muted": "#E7EFF5",
+            "muted_foreground": "#64748B",
+            "border": "#E0F2FE",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#0369A1",
+            "notes": "Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1]",
+            "source_row": 57,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 4.22
+          },
+          {
+            "id": "productivity-tool",
+            "product_type": "Productivity Tool",
+            "primary": "#0D9488",
+            "on_primary": "#FFFFFF",
+            "secondary": "#14B8A6",
+            "on_secondary": "#0F172A",
+            "accent": "#EA580C",
+            "on_accent": "#FFFFFF",
+            "background": "#F0FDFA",
+            "foreground": "#134E4A",
+            "card": "#FFFFFF",
+            "card_foreground": "#134E4A",
+            "muted": "#E8F1F4",
+            "muted_foreground": "#64748B",
+            "border": "#99F6E4",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#0D9488",
+            "notes": "Teal focus + action orange [Accent adjusted from #F97316 for WCAG 3:1]",
+            "source_row": 16,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 4.15
+          },
+          {
+            "id": "hyperlocal-services",
+            "product_type": "Hyperlocal Services",
+            "primary": "#059669",
+            "on_primary": "#FFFFFF",
+            "secondary": "#10B981",
+            "on_secondary": "#0F172A",
+            "accent": "#EA580C",
+            "on_accent": "#FFFFFF",
+            "background": "#ECFDF5",
+            "foreground": "#064E3B",
+            "card": "#FFFFFF",
+            "card_foreground": "#064E3B",
+            "muted": "#E8F1F3",
+            "muted_foreground": "#64748B",
+            "border": "#A7F3D0",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#059669",
+            "notes": "Location green + action orange [Accent adjusted from #F97316 for WCAG 3:1]",
+            "source_row": 31,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 4.15
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Color system: Senior Care/Elderly. Use accent #16A34A against background #F0F9FF. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1]"
+      }
+    ],
+    "guidance": "UI style reference: Minimal & Direct. Best for Simple service landing pages, indie products, consulting services. Accessibility note: ✓ WCAG AAA. UX guidance: Smooth Scroll (Web). Use Use scroll-behavior: smooth on html element. Avoid Jump directly without transition. Landing pattern: Marketplace / Directory. CTA placement: Hero Search Bar + Navbar 'List your item'. Search bar is the CTA. Reduce friction to search. Popular searches suggestions. Typography pairing: Neumorphism Mobile (Plus Jakarta Sans + System). Best for Smart home controls, minimal tools, aesthetic dashboards. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully... Color system: Senior Care/Elderly. Use accent #16A34A against background #F0F9FF. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1] Keep the composition spare and premium, with one focal move and generous whitespace around the message. Reserve a high-contrast text zone with low visual noise behind body copy. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry with... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Hero Search Bar + Navbar 'List your item' Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1]",
+    "material_influences": [
+      {
+        "tool_name": "search_ui_styles",
+        "consult_kind": "lookup_tool",
+        "record_id": "minimal-direct",
+        "label": "Minimal & Direct",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ui_styles",
+        "why_it_matters": "Sets the overall visual direction. Single column centered, White space generous, One primary CTA only"
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "consult_kind": "lookup_tool",
+        "record_id": "navigation-smooth-scroll-web",
+        "label": "Smooth Scroll",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ux_guidelines",
+        "why_it_matters": "Use scroll-behavior: smooth on html element Avoid: Jump directly without transition"
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "consult_kind": "dataset_probe",
+        "record_id": "marketplace-directory",
+        "label": "Marketplace / Directory",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "landing_patterns",
+        "why_it_matters": "Shapes CTA placement and section flow. Hero Search Bar + Navbar 'List your item' Search bar is the CTA. Reduce friction to search. Popular searches suggestions."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "consult_kind": "dataset_probe",
+        "record_id": "neumorphism-mobile-plus-jakarta-sans-system",
+        "label": "Neumorphism Mobile (Plus Jakarta Sans + System)",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "typography_pairings",
+        "why_it_matters": "Sharpens headline/body hierarchy. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry with..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "consult_kind": "dataset_probe",
+        "record_id": "senior-care-elderly",
+        "label": "Senior Care/Elderly",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "color_systems",
+        "why_it_matters": "Biases contrast and premium color separation. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1]"
+      }
+    ],
+    "metadata": {
+      "headline": "",
+      "body": "",
+      "image_prompt": "",
+      "brand_name": "",
+      "brief": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.\n",
+      "style_hint": ""
+    },
+    "art_direction": {
+      "composition_mode": "minimal_direct",
+      "template_candidates": [
+        "hero-bottom-text-square",
+        "editorial-split-square",
+        "social-post"
+      ],
+      "template_reason": "Trust-sensitive/minimal cues favor a restrained, whitespace-heavy composition.",
+      "composition": "Keep the composition spare and premium, with one focal move and generous whitespace around the message.",
+      "hero": "Use one calm hero subject with minimal clutter and no muddy background textures behind the text zone.",
+      "readability": "Reserve a high-contrast text zone with low visual noise behind body copy. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry with...",
+      "cta": "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Hero Search Bar + Navbar 'List your item'",
+      "copy": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+      "polish": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1]",
+      "recommended_fonts": {
+        "heading_font": "Plus Jakarta Sans",
+        "body_font": "Plus Jakarta Sans",
+        "pairing_name": "Neumorphism Mobile (Plus Jakarta Sans + System)"
+      },
+      "recommended_colors": {
+        "primary": "#0369A1",
+        "secondary": "#38BDF8",
+        "accent": "#16A34A",
+        "background": "#F0F9FF",
+        "foreground": "#0C4A6E"
+      },
+      "supporting_references": {
+        "style": "Minimal & Direct",
+        "ux": "Smooth Scroll",
+        "landing": "Marketplace / Directory",
+        "typography": "Neumorphism Mobile (Plus Jakarta Sans + System)",
+        "color": "Senior Care/Elderly"
+      }
+    }
+  },
+  "art_direction_plan": {
+    "composition_mode": "minimal_direct",
+    "template_reason": "Trust-sensitive/minimal cues favor a restrained, whitespace-heavy composition.",
+    "template_profile": {
+      "template_name": "hero-bottom-text-square",
+      "composition_mode": "hero_dominant",
+      "hero_emphasis": 5,
+      "headline_emphasis": 5,
+      "body_readability": 4,
+      "cta_emphasis": 5,
+      "prompt_guardrail": "Keep the upper two-thirds visually dramatic and let the lower third stay calmer for the headline, body, and CTA.",
+      "rationale": "Full-bleed hero composition with a strong lower-third hierarchy block."
+    },
+    "composition_instruction": "Keep the composition spare and premium, with one focal move and generous whitespace around the message.",
+    "hero_instruction": "Use one calm hero subject with minimal clutter and no muddy background textures behind the text zone.",
+    "readability_instruction": "Reserve a high-contrast text zone with low visual noise behind body copy. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry with...",
+    "cta_instruction": "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Hero Search Bar + Navbar 'List your item'",
+    "copy_instruction": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+    "polish_instruction": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1]",
+    "campaign_angle": "Fast relief with visible trust",
+    "visual_direction": "Minimal trust-led donation hero with calm premium contrast and obvious action hierarchy",
+    "hero_focus": "One calm symbolic relief scene with protected copy space"
+  },
+  "template_reason": "Trust-sensitive/minimal cues favor a restrained, whitespace-heavy composition.",
+  "prompt_trace": {
+    "effective_prompt": "Calm relief-focused visual, trustworthy lighting, protected text zone, no text, no logos Keep the composition spare and premium, with one focal move and generous whitespace around the message. Use one calm hero subject with minimal clutter and no muddy background textures behind the text zone. Show a recognizable relief scene or trust-building symbol with real-world texture and emotional clarity. Do not use abstract polygons or generic glowing shapes. Reserve a high-contrast text zone with low visual noise behind body copy. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry with... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Hero Search Bar + Navbar 'List your item' Keep the upper two-thirds visually dramatic and let the lower third stay calmer for the headline, body, and CTA. Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1] Avoid exploitative imagery; low-contrast body text.",
+    "prompt_prefix_parts": [
+      "Fast relief with visible trust",
+      "Minimal trust-led donation hero with calm premium contrast and obvious action hierarchy",
+      "One calm symbolic relief scene with protected copy space"
+    ],
+    "quality_guardrail_parts": [
+      "Keep the composition spare and premium, with one focal move and generous whitespace around the message.",
+      "Use one calm hero subject with minimal clutter and no muddy background textures behind the text zone.",
+      "Show a recognizable relief scene or trust-building symbol with real-world texture and emotional clarity. Do not use abstract polygons or generic glowing shapes.",
+      "Reserve a high-contrast text zone with low visual noise behind body copy. Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry with...",
+      "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Hero Search Bar + Navbar 'List your item'",
+      "Keep the upper two-thirds visually dramatic and let the lower third stay calmer for the headline, body, and CTA.",
+      "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Calm blue + reassuring green [Accent adjusted from #22C55E for WCAG 3:1]"
+    ],
+    "avoid_parts": [
+      "exploitative imagery; low-contrast body text"
+    ]
+  },
+  "artifact": {
+    "poster_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-v3-artifacts/donation_trust_landing/poster.png",
+    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-101425/hero.png",
+    "template_used": "hero-bottom-text-square",
+    "image_mode": "falai"
+  }
+}

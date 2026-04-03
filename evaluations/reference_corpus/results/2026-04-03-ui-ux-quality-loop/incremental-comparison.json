@@ -1,0 +1,87 @@
+{
+  "runs": [
+    {
+      "label": "ui-ux-loop-after",
+      "git_ref": "WORKTREE",
+      "resolved_ref": "87b50c15b8d59f9b2826b7bea84ff4ae507f4205+working-tree",
+      "average_objective_score_100": 88.3,
+      "check_averages": {
+        "reference_usage": 100.0,
+        "copy_discipline": 100.0,
+        "template_fit": 88.8,
+        "prompt_guardrails": 81.2,
+        "trace_persistence": 100.0,
+        "hero_presence": 67.1,
+        "text_zone_readability": 77.2,
+        "cta_salience": 70.2
+      }
+    },
+    {
+      "label": "ui-ux-loop-after-v2",
+      "git_ref": "WORKTREE",
+      "resolved_ref": "a236e69d0dfe1b51cd3c09148af3a1ce44ab437a+working-tree",
+      "average_objective_score_100": 90.8,
+      "check_averages": {
+        "reference_usage": 100.0,
+        "copy_discipline": 100.0,
+        "template_fit": 100.0,
+        "prompt_guardrails": 81.2,
+        "trace_persistence": 100.0,
+        "hero_presence": 100.0,
+        "text_zone_readability": 73.0,
+        "cta_salience": 39.0
+      }
+    }
+  ],
+  "deltas": [
+    {
+      "from": "ui-ux-loop-after",
+      "to": "ui-ux-loop-after-v2",
+      "objective_delta_100": 2.5,
+      "check_deltas": {
+        "reference_usage": 0.0,
+        "copy_discipline": 0.0,
+        "template_fit": 11.2,
+        "prompt_guardrails": 0.0,
+        "trace_persistence": 0.0,
+        "hero_presence": 32.9,
+        "text_zone_readability": -4.2,
+        "cta_salience": -31.2
+      }
+    }
+  ],
+  "case_deltas": [
+    {
+      "prompt_id": "swiss_analytics_hero",
+      "from_label": "ui-ux-loop-after",
+      "to_label": "ui-ux-loop-after-v2",
+      "objective_delta_100": -2.4,
+      "template_before": "floating-card-square",
+      "template_after": "floating-card-square"
+    },
+    {
+      "prompt_id": "retro_event_poster",
+      "from_label": "ui-ux-loop-after",
+      "to_label": "ui-ux-loop-after-v2",
+      "objective_delta_100": -0.1,
+      "template_before": "stacked-type-square",
+      "template_after": "bold-knockout-square"
+    },
+    {
+      "prompt_id": "donation_trust_landing",
+      "from_label": "ui-ux-loop-after",
+      "to_label": "ui-ux-loop-after-v2",
+      "objective_delta_100": 3.4,
+      "template_before": "hero-bottom-text-square",
+      "template_after": "hero-bottom-text-square"
+    },
+    {
+      "prompt_id": "premium_product_drop",
+      "from_label": "ui-ux-loop-after",
+      "to_label": "ui-ux-loop-after-v2",
+      "objective_delta_100": 8.7,
+      "template_before": "stacked-type-square",
+      "template_after": "center-stage-square"
+    }
+  ]
+}

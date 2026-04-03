@@ -21,6 +21,7 @@ from pipelines.poster_generate import (
     PosterRequest,
     PosterResult,
     TemplateConfig,
+    _build_subject_clarity_guardrail,
     _build_design_css,
     _build_font_link,
     _generate_hero_openai,
@@ -228,6 +229,22 @@ class TestDataclasses:
         assert req.fonts is None
 
 
+class TestSubjectClarityGuardrail:
+    def test_product_prompts_forbid_abstract_placeholders(self) -> None:
+        brief = SimpleNamespace(
+            raw_brief="Create a premium poster for a limited-edition iced coffee drop.",
+            campaign_angle="Limited drop with a premium cafe feel",
+            visual_direction="Hero-forward premium product poster",
+            hero_focus="Large iced coffee product hero with glossy highlights and negative space",
+            image_prompt="Premium iced coffee hero, polished lighting, no text, no logos",
+        )
+
+        guardrail = _build_subject_clarity_guardrail(brief)
+
+        assert "recognizable physical product hero" in guardrail
+        assert "abstract geometric stand-ins" in guardrail
+
+
 # ---------------------------------------------------------------------------
 # Palette validation
 # ---------------------------------------------------------------------------
@@ -350,7 +367,8 @@ class TestInjectDesign:
         designed = _inject_design(html, SAMPLE_PALETTE, SAMPLE_FONTS)
         slotted = re.sub(r"\{\{(\w+)\}\}", lambda m: "REPLACED", designed)
         # CSS custom properties should still be intact
-        assert "--color-accent: #E07A5F" in slotted
+        assert "--accent-color: #81B29A" in slotted
+        assert "--color-accent: #81B29A" in slotted
 
 
 class TestInjectBrandCss:

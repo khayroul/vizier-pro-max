@@ -34,6 +34,34 @@ class TestAmbientReferences:
         assert context["art_direction"]["template_candidates"]
         assert context["guidance"]
 
+    def test_visual_context_prefers_product_hero_templates_for_launch_posters(self) -> None:
+        context = build_visual_reference_context(
+            headline="The Cold Brew Drop",
+            body="Limited release. Bright citrus notes, silky finish, and launch-day energy.",
+            image_prompt="Premium iced coffee hero, polished lighting, no text, no logos",
+            brief=(
+                "Create a premium poster for a limited-edition iced coffee drop "
+                "with a strong product hero, polished lighting, and social-ready hierarchy."
+            ),
+        )
+
+        assert context["art_direction"]["composition_mode"] == "product_hero"
+        assert context["art_direction"]["template_candidates"][0] == "center-stage-square"
+
+    def test_visual_context_filters_irrelevant_ux_prompt_noise(self) -> None:
+        context = build_visual_reference_context(
+            headline="Finance Without Noise",
+            body="Help CFOs scan runway, risk, and forecast health in seconds.",
+            image_prompt="Crisp analytics surface, swiss grid, controlled light, no text, no logos",
+            brief=(
+                "Create a premium hero for a CFO analytics platform that helps finance "
+                "teams see runway, forecast risk, and cash health without clutter."
+            ),
+        )
+
+        assert "scroll-behavior" not in context["art_direction"]["readability"].lower()
+        assert "placeholder as only label" not in context["art_direction"]["readability"].lower()
+
     def test_builds_chart_reference_context_per_chart(self) -> None:
         context = build_chart_reference_context(
             title="Executive KPI Report",

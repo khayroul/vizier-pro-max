@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="reactor-width" content="1080">
   <meta name="reactor-height" content="1080">
-  <meta name="reactor-slots" content="headline,body,cta,brand_name,logo_mark">
+  <meta name="reactor-slots" content="headline,body,cta,image_url,brand_name,logo_mark">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -12,17 +12,19 @@
       width: 1080px;
       height: 1080px;
       overflow: hidden;
-      background: var(--bg-color);
+      background:
+        radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--accent-color, #e8c87a) 12%, transparent) 0%, transparent 26%),
+        var(--bg-color, #0a0a0f);
       position: relative;
       font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
       font-weight: var(--font-body-weight, 400);
     }
 
-    /* Solid background — pure typography, no hero image */
+    /* Solid background — stage for the type-first composition */
     .bg-solid {
       position: absolute;
       inset: 0;
-      background: var(--bg-color);
+      background: var(--bg-color, #0a0a0f);
     }
 
     /* Noise texture — film grain on the solid bg */
@@ -43,9 +45,54 @@
       width: 700px;
       height: 700px;
       border-radius: 50%;
-      background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+      background: color-mix(in srgb, var(--accent-color, #e8c87a) 10%, transparent);
       pointer-events: none;
       z-index: 1;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 106px;
+      right: 104px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--accent-color, #e8c87a) 18%, transparent);
+      filter: blur(28px);
+      opacity: 0.9;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-visual {
+      position: absolute;
+      top: 86px;
+      right: 54px;
+      width: 474px;
+      height: 520px;
+      border-radius: 56px 56px 210px 56px;
+      overflow: hidden;
+      z-index: 2;
+      box-shadow: 0 28px 72px rgba(0, 0, 0, 0.34);
+      border: 1.5px solid color-mix(in srgb, var(--text-color, #ffffff) 16%, transparent);
+      transform: rotate(4deg);
+    }
+
+    .hero-image {
+      position: absolute;
+      inset: 0;
+      background-image: url('{{image_url}}');
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1.08) contrast(1.04);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.26) 100%),
+        radial-gradient(circle at 28% 24%, color-mix(in srgb, var(--accent-color, #e8c87a) 16%, transparent) 0%, transparent 34%);
     }
 
     /* Brand whisper — top-left */
@@ -86,7 +133,7 @@
     .stage {
       position: absolute;
       inset: 0;
-      z-index: 2;
+      z-index: 3;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -102,9 +149,11 @@
       text-transform: uppercase;
       line-height: 0.85;
       letter-spacing: -4px;
-      color: var(--text-color);
-      max-width: 940px;
+      color: var(--text-color, #ffffff);
+      max-width: 760px;
       flex-shrink: 0;
+      text-wrap: balance;
+      text-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
     }
 
     /* Bottom panel — body + CTA anchored below headline */
@@ -117,16 +166,16 @@
       flex-direction: column;
       align-items: flex-start;
       padding: 0 72px 72px;
-      z-index: 3;
+      z-index: 4;
     }
 
     /* Accent line — separates headline from body copy */
     .accent-line {
-      width: 48px;
+      width: 58px;
       height: 3px;
-      background: var(--accent-color);
+      background: var(--accent-color, #e8c87a);
       margin-bottom: 20px;
-      box-shadow: 0 0 16px color-mix(in srgb, var(--accent-color) 50%, transparent);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--accent-color, #e8c87a) 50%, transparent);
       flex-shrink: 0;
     }
 
@@ -135,11 +184,11 @@
       font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
       font-weight: var(--font-body-weight, 400);
       font-size: 18px;
-      color: var(--text-muted);
+      color: var(--text-muted, rgba(255, 255, 255, 0.72));
       line-height: 1.55;
       letter-spacing: 0.1px;
-      max-width: 500px;
-      margin-bottom: 32px;
+      max-width: 460px;
+      margin-bottom: 28px;
     }
 
     /* CTA pill button — accent bg, bg-color text */
@@ -147,15 +196,17 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      background: var(--accent-color);
-      color: var(--bg-color);
+      background: var(--accent-color, #e8c87a);
+      color: var(--bg-color, #0a0a0f);
       font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 15px;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      padding: 15px 34px;
+      letter-spacing: 1.8px;
+      padding: 16px 34px;
       border-radius: 100px;
+      border: 1px solid color-mix(in srgb, var(--bg-color, #0a0a0f) 30%, transparent);
+      box-shadow: 0 18px 30px color-mix(in srgb, var(--accent-color, #e8c87a) 24%, transparent);
     }
 
     .cta-arrow {
@@ -169,6 +220,11 @@
   <div class="bg-solid"></div>
   <div class="noise"></div>
   <div class="accent-orb"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-visual">
+    <div class="hero-image"></div>
+    <div class="hero-overlay"></div>
+  </div>
 
   <div class="brand-whisper">{{brand_name}}</div>
   <div class="logo-mark">{{logo_mark}}</div>

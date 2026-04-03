@@ -12,20 +12,24 @@
       width: 1080px;
       height: 1080px;
       overflow: hidden;
-      background: var(--bg-color);
+      background:
+        radial-gradient(circle at 50% 8%, color-mix(in srgb, var(--accent-color, #e8c87a) 12%, transparent) 0%, transparent 34%),
+        var(--bg-color, #0a0a0f);
       position: relative;
       font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
       font-weight: var(--font-body-weight, 400);
     }
 
-    /* Hero image — low opacity, content is the star */
+    /* Hero image — visible enough to read as a product/scene, but still framed */
     .hero-bg {
       position: absolute;
       inset: 0;
       background-image: url('{{image_url}}');
       background-size: cover;
-      background-position: center;
-      opacity: 0.2;
+      background-position: center 42%;
+      opacity: 0.42;
+      filter: saturate(1.06) contrast(1.03);
+      transform: scale(1.03);
     }
 
     /* Radial vignette — transparent center, dark edges */
@@ -39,6 +43,14 @@
         rgba(0, 0, 0, 0.35) 65%,
         rgba(0, 0, 0, 0.75) 100%
       );
+    }
+
+    .hero-halo {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent-color, #e8c87a) 14%, transparent) 0%, transparent 24%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, transparent 24%, transparent 58%, rgba(0, 0, 0, 0.24) 100%);
     }
 
     /* Noise texture — film grain depth */
@@ -89,15 +101,20 @@
       align-items: center;
       text-align: center;
       gap: 0;
+      padding: 38px 44px 42px;
+      border-radius: 30px;
+      background: color-mix(in srgb, var(--bg-color, #0a0a0f) 82%, rgba(255, 255, 255, 0.08));
+      border: 1px solid color-mix(in srgb, var(--text-color, #ffffff) 10%, transparent);
+      box-shadow: 0 24px 46px rgba(0, 0, 0, 0.28);
     }
 
     /* Accent line — electric, centered entry point */
     .accent-line {
-      width: 40px;
+      width: 54px;
       height: 3px;
-      background: var(--accent-color);
+      background: var(--accent-color, #e8c87a);
       margin-bottom: 28px;
-      box-shadow: 0 0 14px color-mix(in srgb, var(--accent-color) 40%, transparent);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--accent-color, #e8c87a) 40%, transparent);
     }
 
     /* Headline — uppercase, tight, commanding */
@@ -118,10 +135,10 @@
       font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
       font-weight: var(--font-body-weight, 400);
       font-size: 20px;
-      color: var(--text-muted);
+      color: var(--text-muted, rgba(255, 255, 255, 0.72));
       line-height: 1.5;
       letter-spacing: 0.2px;
-      margin-bottom: 40px;
+      margin-bottom: 34px;
       max-width: 500px;
     }
 
@@ -130,15 +147,17 @@
       display: inline-flex;
       align-items: center;
       gap: 9px;
-      background: var(--accent-color);
-      color: var(--bg-color);
+      background: var(--accent-color, #e8c87a);
+      color: var(--bg-color, #0a0a0f);
       font-family: var(--font-body), 'Helvetica Neue', Arial, sans-serif;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 16px;
       text-transform: uppercase;
-      letter-spacing: 1.8px;
-      padding: 15px 36px;
+      letter-spacing: 1.9px;
+      padding: 16px 38px;
       border-radius: 100px;
+      border: 1px solid color-mix(in srgb, var(--bg-color, #0a0a0f) 28%, transparent);
+      box-shadow: 0 18px 30px color-mix(in srgb, var(--accent-color, #e8c87a) 24%, transparent);
     }
 
     .cta-arrow {
@@ -167,6 +186,7 @@
 <body>
   <div class="hero-bg"></div>
   <div class="vignette"></div>
+  <div class="hero-halo"></div>
   <div class="noise"></div>
 
   <div class="logo-mark">{{logo_mark}}</div>

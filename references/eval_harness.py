@@ -55,9 +55,9 @@ _POSTER_REGION_PROFILES: dict[str, dict[str, tuple[float, float, float, float]]]
     },
     "center-stage-square": {
         "hero": (0.18, 0.10, 0.82, 0.62),
-        "text": (0.16, 0.62, 0.84, 0.92),
-        "body": (0.16, 0.74, 0.74, 0.88),
-        "cta": (0.16, 0.84, 0.44, 0.93),
+        "text": (0.18, 0.46, 0.82, 0.82),
+        "body": (0.24, 0.60, 0.76, 0.72),
+        "cta": (0.30, 0.66, 0.70, 0.81),
     },
     "editorial-split-square": {
         "hero": (0.48, 0.08, 0.95, 0.72),
@@ -67,9 +67,9 @@ _POSTER_REGION_PROFILES: dict[str, dict[str, tuple[float, float, float, float]]]
     },
     "floating-card-square": {
         "hero": (0.08, 0.08, 0.92, 0.52),
-        "text": (0.08, 0.56, 0.78, 0.92),
-        "body": (0.08, 0.66, 0.70, 0.84),
-        "cta": (0.08, 0.76, 0.34, 0.88),
+        "text": (0.08, 0.54, 0.92, 0.84),
+        "body": (0.10, 0.66, 0.72, 0.76),
+        "cta": (0.10, 0.72, 0.40, 0.83),
     },
     "stacked-type-square": {
         "hero": (0.52, 0.08, 0.96, 0.56),
@@ -79,9 +79,9 @@ _POSTER_REGION_PROFILES: dict[str, dict[str, tuple[float, float, float, float]]]
     },
     "bold-knockout-square": {
         "hero": (0.10, 0.08, 0.90, 0.66),
-        "text": (0.08, 0.60, 0.84, 0.92),
-        "body": (0.08, 0.74, 0.75, 0.88),
-        "cta": (0.08, 0.84, 0.36, 0.93),
+        "text": (0.05, 0.22, 0.94, 0.80),
+        "body": (0.05, 0.56, 0.66, 0.70),
+        "cta": (0.05, 0.66, 0.34, 0.80),
     },
 }
 _LOOKUP_RUNNER_CODE = """
