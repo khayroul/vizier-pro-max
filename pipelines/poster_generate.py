@@ -28,6 +28,7 @@ from adapter.env_loader import ensure_env
 from adapter.llm_client import chat as llm_chat
 from middleware.deliverable_context import build_gateway_headers
 from pipelines.poster_brief import as_payload as creative_brief_payload
+from pipelines.poster_brief import compile_poster_revision_plan
 from pipelines.poster_brief import normalize_poster_brief
 from references.ambient import build_visual_reference_context
 
@@ -79,6 +80,7 @@ class PosterRequest:
     reference_image_path: str = ""
     palette: dict[str, str] | None = None
     fonts: dict[str, str] | None = None
+    hero_image_path: str = ""
 
 
 @dataclass(frozen=True)
@@ -344,6 +346,115 @@ def _write_generation_trace(trace_path: str, payload: dict[str, Any]) -> None:
     )
 
 
+def _read_generation_trace(trace_path: str) -> dict[str, Any]:
+    """Load and validate a prior poster generation trace."""
+    path = Path(trace_path)
+    if not path.exists():
+        raise FileNotFoundError(f"Poster trace not found: {trace_path}")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Poster trace must be a JSON object: {trace_path}")
+    return payload
+
+
+def _derive_logo_mark(brand_name: str, logo_mark: str) -> str:
+    """Prefer explicit logo marks, otherwise derive a compact brand token."""
+    compact_logo = " ".join(logo_mark.split()).strip()
+    if compact_logo:
+        return compact_logo
+    compact_brand = " ".join(brand_name.split()).strip()
+    if not compact_brand:
+        return ""
+
+    words = [re.sub(r"[^A-Za-z0-9]", "", part) for part in compact_brand.split()]
+    words = [part for part in words if part]
+    if not words:
+        return ""
+    if len(words) == 1:
+        return words[0][:3].upper()
+    return "".join(part[0] for part in words[:3]).upper()
+
+
+def _build_revision_self_check(
+    *,
+    revision_plan: Any,
+    reused_hero: bool,
+    template_used: str,
+    logo_mark: str,
+    brand_name: str,
+) -> list[dict[str, str]]:
+    """Return a practical, non-overclaiming checklist for revision results."""
+    checks: list[dict[str, str]] = []
+
+    if any("headline" in goal.lower() for goal in revision_plan.change_goals):
+        if reused_hero:
+            checks.append(
+                {
+                    "goal": "Only one main headline treatment",
+                    "status": "partially_addressed",
+                    "basis": "Overlay copy is singular, but the previous hero image was reused so background lettering was not re-verified.",
+                }
+            )
+        else:
+            checks.append(
+                {
+                    "goal": "Only one main headline treatment",
+                    "status": "addressed",
+                    "basis": "The revision used a fresh no-text hero prompt and a single overlay headline.",
+                }
+            )
+
+    if revision_plan.requires_logo_emphasis:
+        if logo_mark or brand_name:
+            checks.append(
+                {
+                    "goal": "Brand or logo visibility improved",
+                    "status": "addressed",
+                    "basis": f"The revision uses the {template_used} template with an explicit brand mark slot and brand content.",
+                }
+            )
+        else:
+            checks.append(
+                {
+                    "goal": "Brand or logo visibility improved",
+                    "status": "partially_addressed",
+                    "basis": "The layout was adjusted, but no explicit brand mark text was available to strengthen visibly.",
+                }
+            )
+
+    if revision_plan.requires_layout_cleanup:
+        checks.append(
+            {
+                "goal": "Cleaner layout hierarchy",
+                "status": "addressed" if template_used != "social-post" else "partially_addressed",
+                "basis": (
+                    f"The revision tightened hierarchy using the {template_used} template."
+                    if template_used != "social-post"
+                    else "The revision kept the existing template, so hierarchy cleanup depends mainly on copy and spacing."
+                ),
+            }
+        )
+
+    if revision_plan.requires_readability_boost:
+        checks.append(
+            {
+                "goal": "Mobile readability held or improved",
+                "status": "partially_addressed",
+                "basis": "The revision favored a structured template and preserved shorter copy, but readability was not visually verified automatically.",
+            }
+        )
+
+    if not checks:
+        checks.append(
+            {
+                "goal": "Requested poster revision applied",
+                "status": "partially_addressed",
+                "basis": "The revision plan was applied, but visual success still depends on a human check.",
+            }
+        )
+    return checks
+
+
 def _encode_image_as_data_uri(image_path: str) -> str:
     """Read an image file and return a base64 data URI."""
     path = Path(image_path)
@@ -454,6 +565,10 @@ def _extract_reference_brand_css(reference_image_path: str) -> dict[str, str]:
     """Derive CSS variables from the dominant colors of a reference image."""
     from PIL import Image
 
+    fallback_css = _default_brand_css()
+    if not reference_image_path:
+        return fallback_css
+
     image = Image.open(reference_image_path).convert("RGB")
     image.thumbnail((96, 96))
     quantized = image.quantize(colors=5)
@@ -461,28 +576,7 @@ def _extract_reference_brand_css(reference_image_path: str) -> dict[str, str]:
     color_counts = quantized.getcolors() or []
 
     if not color_counts:
-        return {
-            "--bg-color": "#111111",
-            "--accent-color": "#D1A054",
-            "--font-headline": "Georgia",
-            "--font-body": "Inter",
-            "--font-headline-weight": "700",
-            "--font-body-weight": "400",
-            "--text-color": "#ffffff",
-            "--text-muted": "rgba(255, 255, 255, 0.72)",
-            "--color-accent": "#D1A054",
-            "--color-accent-end": "#F5F5F5",
-            "--color-accent-glow": "#D1A054",
-            "--color-bg": "#111111",
-            "--color-text": "#ffffff",
-            "--font-heading": "Georgia",
-            "--font-weight-heading": "700",
-            "--font-weight-body": "400",
-            "--letter-spacing-heading": "-0.02em",
-            "--letter-spacing-body": "0em",
-            "--line-height-heading": "1.1",
-            "--line-height-body": "1.5",
-        }
+        return fallback_css
 
     swatches: list[tuple[int, tuple[int, int, int]]] = []
     for count, index in color_counts:
@@ -512,6 +606,32 @@ def _extract_reference_brand_css(reference_image_path: str) -> dict[str, str]:
         "--color-accent-glow": _rgb_to_hex(accent_rgb),
         "--color-bg": _rgb_to_hex(background_rgb),
         "--color-text": text_hex,
+        "--font-heading": "Georgia",
+        "--font-weight-heading": "700",
+        "--font-weight-body": "400",
+        "--letter-spacing-heading": "-0.02em",
+        "--letter-spacing-body": "0em",
+        "--line-height-heading": "1.1",
+        "--line-height-body": "1.5",
+    }
+
+
+def _default_brand_css() -> dict[str, str]:
+    """Return a safe fallback theme when no prior theming is available."""
+    return {
+        "--bg-color": "#111111",
+        "--accent-color": "#D1A054",
+        "--font-headline": "Georgia",
+        "--font-body": "Inter",
+        "--font-headline-weight": "700",
+        "--font-body-weight": "400",
+        "--text-color": "#ffffff",
+        "--text-muted": "rgba(255, 255, 255, 0.72)",
+        "--color-accent": "#D1A054",
+        "--color-accent-end": "#F5F5F5",
+        "--color-accent-glow": "#D1A054",
+        "--color-bg": "#111111",
+        "--color-text": "#ffffff",
         "--font-heading": "Georgia",
         "--font-weight-heading": "700",
         "--font-weight-body": "400",
@@ -763,6 +883,7 @@ def run(
     reference_image_path: str = "",
     palette: dict[str, str] | None = None,
     fonts: dict[str, str] | None = None,
+    hero_image_path: str = "",
 ) -> dict[str, Any]:
     """Generate a two-layer poster: AI background + HTML text overlay.
 
@@ -793,6 +914,9 @@ def run(
             background, text hex values.
         fonts: Font pairing dict with heading_font, body_font, weights,
             spacing, and line heights.
+        hero_image_path: Optional local path to a previously generated hero
+            image. When present, the pipeline reuses it instead of creating
+            a fresh background.
 
     Returns:
         Dict with poster_path, hero_path, template_used, width, height,
@@ -818,8 +942,12 @@ def run(
     style_reference_avoid = ""
     effective_style_reference = style_reference.strip()
     effective_reference_image_path = reference_image_path.strip()
+    effective_hero_image_path = hero_image_path.strip()
     reference_image_hint = ""
     reference_image_avoid = ""
+
+    if effective_hero_image_path and not Path(effective_hero_image_path).exists():
+        raise FileNotFoundError(f"Hero image not found: {effective_hero_image_path}")
 
     if client_id:
         from config.client_loader import brand_to_css_vars, load_client
@@ -1017,7 +1145,11 @@ def run(
             "controlled lighting, and clean negative space for overlay copy. "
             f"{avoid_sentence}"
         ).strip()
-    hero_file = _generate_hero(effective_prompt, hero_path, effective_image_mode)
+    hero_file = (
+        effective_hero_image_path
+        if effective_hero_image_path
+        else _generate_hero(effective_prompt, hero_path, effective_image_mode)
+    )
 
     # Layer 2: Render template with text + hero as background
     image_uri = _to_data_uri(Path(hero_file))
@@ -1081,6 +1213,10 @@ def run(
                 "client_id": client_id,
                 "style_reference": style_reference,
                 "reference_image_path": reference_image_path,
+                "hero_image_path": hero_image_path,
+                "brand_css": brand_css,
+                "palette": palette,
+                "fonts": fonts,
             },
             "creative_brief": payload["creative_brief"],
             "reference_trace": payload["reference_trace"],
@@ -1092,7 +1228,154 @@ def run(
                 "hero_path": hero_file,
                 "template_used": template.name,
                 "image_mode": effective_image_mode,
+                "reused_hero": bool(effective_hero_image_path),
             },
         },
+    )
+    return payload
+
+
+def revise(
+    *,
+    feedback: str,
+    poster_path: str = "",
+    trace_path: str = "",
+    reference_image_path: str = "",
+    output_path: str = "",
+    brand_name: str = "",
+    logo_mark: str = "",
+    template_name: str = "",
+) -> dict[str, Any]:
+    """Revise a poster using its prior trace and an explicit change plan."""
+    compact_feedback = " ".join(feedback.split()).strip()
+    if not compact_feedback:
+        raise ValueError("feedback is required for poster revisions")
+
+    resolved_trace_path = trace_path.strip()
+    if not resolved_trace_path and poster_path.strip():
+        resolved_trace_path = _derive_trace_path(poster_path.strip())
+    if not resolved_trace_path:
+        raise ValueError("trace_path or poster_path is required for poster revisions")
+
+    previous_trace = _read_generation_trace(resolved_trace_path)
+    prior_inputs = dict(previous_trace.get("inputs") or {})
+    prior_creative_brief = dict(previous_trace.get("creative_brief") or {})
+    prior_artifact = dict(previous_trace.get("artifact") or {})
+    prior_template = str(prior_artifact.get("template_used") or prior_inputs.get("template_name") or "")
+    prior_hero_path = str(prior_artifact.get("hero_path") or "")
+
+    effective_reference_image_path = reference_image_path.strip() or str(
+        prior_inputs.get("reference_image_path", "")
+    ).strip()
+    effective_brand_name = brand_name.strip() or str(prior_inputs.get("brand_name", "")).strip()
+    effective_logo_mark = _derive_logo_mark(
+        effective_brand_name,
+        logo_mark.strip() or str(prior_inputs.get("logo_mark", "")).strip(),
+    )
+
+    revision_plan = compile_poster_revision_plan(
+        compact_feedback,
+        prior_creative_brief=prior_creative_brief,
+        prior_template_name=prior_template,
+        reference_image_path=effective_reference_image_path,
+        brand_name=effective_brand_name,
+        logo_mark=effective_logo_mark,
+    )
+
+    chosen_template = (
+        template_name.strip()
+        or revision_plan.preferred_template_name
+        or prior_template
+    )
+    if not chosen_template:
+        chosen_template = str(prior_inputs.get("template_name", "")).strip() or "social-post"
+
+    reused_hero = bool(
+        prior_hero_path
+        and Path(prior_hero_path).exists()
+        and not revision_plan.requires_hero_refresh
+    )
+
+    prior_prompt = str(
+        (previous_trace.get("prompt_trace") or {}).get("effective_prompt", "")
+    ).strip()
+    revision_prompt_parts = [
+        part
+        for part in (
+            prior_prompt,
+            "Revision goals: " + "; ".join(revision_plan.change_goals),
+            "Preserve: " + "; ".join(revision_plan.preserve_goals),
+            "Keep all accidental letters, duplicate text, and decorative words out of the background."
+            if any("headline" in goal.lower() for goal in revision_plan.change_goals)
+            else "",
+        )
+        if part
+    ]
+    revision_image_prompt = " ".join(revision_prompt_parts).strip()
+    effective_brand_css = prior_inputs.get("brand_css") if isinstance(prior_inputs.get("brand_css"), dict) else None
+    effective_palette = prior_inputs.get("palette") if isinstance(prior_inputs.get("palette"), dict) else None
+    effective_fonts = prior_inputs.get("fonts") if isinstance(prior_inputs.get("fonts"), dict) else None
+    if effective_brand_css is None and effective_palette is None and effective_fonts is None:
+        if effective_reference_image_path and Path(effective_reference_image_path).exists():
+            effective_brand_css = _extract_reference_brand_css(effective_reference_image_path)
+        else:
+            effective_brand_css = _default_brand_css()
+
+    payload = run(
+        headline=str(prior_creative_brief.get("headline", "")).strip(),
+        body=str(prior_creative_brief.get("body", "")).strip(),
+        cta=str(prior_creative_brief.get("cta", "")).strip(),
+        brief="",
+        image_prompt=revision_image_prompt,
+        template_name=chosen_template,
+        image_mode=str(prior_inputs.get("image_mode", "")).strip(),
+        output_path=output_path,
+        brand_name=effective_brand_name,
+        logo_mark=effective_logo_mark,
+        brand_css=effective_brand_css,
+        client_id=str(prior_inputs.get("client_id", "")).strip(),
+        style_reference=str(prior_inputs.get("style_reference", "")).strip(),
+        reference_image_path=effective_reference_image_path,
+        palette=effective_palette,
+        fonts=effective_fonts,
+        hero_image_path=prior_hero_path if reused_hero else "",
+    )
+
+    self_check = _build_revision_self_check(
+        revision_plan=revision_plan,
+        reused_hero=reused_hero,
+        template_used=str(payload.get("template_used", "")),
+        logo_mark=effective_logo_mark,
+        brand_name=effective_brand_name,
+    )
+    payload["revision_plan"] = {
+        "feedback": revision_plan.feedback,
+        "summary": revision_plan.summary,
+        "change_goals": revision_plan.change_goals,
+        "preserve_goals": revision_plan.preserve_goals,
+        "self_check_items": revision_plan.self_check_items,
+        "requires_hero_refresh": revision_plan.requires_hero_refresh,
+        "requires_logo_emphasis": revision_plan.requires_logo_emphasis,
+        "requires_layout_cleanup": revision_plan.requires_layout_cleanup,
+        "requires_readability_boost": revision_plan.requires_readability_boost,
+        "preferred_template_name": revision_plan.preferred_template_name,
+    }
+    payload["revision_source"] = {
+        "prior_trace_path": resolved_trace_path,
+        "prior_poster_path": str(prior_artifact.get("poster_path", "")),
+        "prior_hero_path": prior_hero_path,
+        "reused_hero": reused_hero,
+        "reference_image_path": effective_reference_image_path,
+    }
+    payload["user_facing_plan"] = revision_plan.summary
+    payload["user_facing_changes"] = [
+        *revision_plan.change_goals,
+        *revision_plan.preserve_goals,
+    ]
+    payload["self_check"] = self_check
+    payload["claim_safe"] = all(item["status"] == "addressed" for item in self_check)
+    payload["user_response_guidance"] = (
+        "Summarize what changed and cite the self_check. "
+        "Do not say 'Fixed' unless every requested goal is marked addressed."
     )
     return payload

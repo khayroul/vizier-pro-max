@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import logging
+import os
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -205,7 +206,7 @@ def _register_repo_plugin(ctx: Any, module_name: str) -> None:
 
 
 def _vizier_turn_context(**_: Any) -> str:
-    return (
+    base = (
         "Vizier project tools are loaded in this repo.\n"
         "- Use run_pipeline for deterministic production workflows. Call "
         "run_pipeline with action='list' if you need to inspect names.\n"
@@ -216,13 +217,31 @@ def _vizier_turn_context(**_: Any) -> str:
         "- For posters and social creatives, call search_palettes, then "
         "search_fonts, then generate_poster. generate_poster accepts either "
         "a raw brief or explicit headline/body copy and will normalize a "
-        "freeform brief before rendering.\n"
+        "freeform brief before rendering. For feedback on an existing poster, "
+        "prefer revise_poster so the revision stays anchored to the prior trace.\n"
         "- When a tool or pipeline returns client-facing files, include "
         "MEDIA:/absolute/path for the PDFs or images you want Hermes to send "
         "back as attachments.\n"
         "- Do not send internal manifest/json/md support files to clients "
         "unless the user explicitly asks for them."
     )
+    latest_poster = os.getenv("HERMES_TELEGRAM_POSTER_PATH", "").strip()
+    latest_reference = os.getenv("HERMES_TELEGRAM_REFERENCE_IMAGE_PATH", "").strip()
+    if not latest_poster and not latest_reference:
+        return base
+    lines = [base, "", "Telegram poster session state is available for this turn."]
+    if latest_poster:
+        lines.append(f"- Latest poster path: {latest_poster}")
+    if latest_reference:
+        lines.append(f"- Latest reference image path: {latest_reference}")
+    lines.extend(
+        [
+            "- For poster feedback on the latest generated poster, use revise_poster instead of loosely regenerating from scratch.",
+            "- Before revising, give one short sentence summarizing the planned deltas.",
+            "- After revising, summarize what changed and cite the self_check. Do not say 'Fixed' unless every requested goal is marked addressed.",
+        ]
+    )
+    return "\n".join(lines)
 
 
 def register(ctx: Any) -> None:

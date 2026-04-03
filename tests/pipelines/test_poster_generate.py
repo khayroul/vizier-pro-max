@@ -32,6 +32,7 @@ from pipelines.poster_generate import (
     _to_data_uri,
     _validate_palette,
     list_templates,
+    revise,
     run,
 )
 
@@ -766,6 +767,113 @@ class TestRunPipeline:
             )
 
 
+class TestRevisePipeline:
+    @patch("pipelines.poster_generate.run")
+    def test_revise_reuses_previous_hero_for_layout_feedback(
+        self,
+        mock_run: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        trace_path = tmp_path / "poster.trace.json"
+        hero_path = tmp_path / "hero.png"
+        hero_path.write_bytes(b"\x89PNG" + b"\x00" * 20)
+        trace_path.write_text(
+            json.dumps(
+                {
+                    "inputs": {
+                        "image_mode": "openai",
+                        "client_id": "",
+                        "style_reference": "",
+                        "reference_image_path": "",
+                        "brand_css": {"--bg-color": "#111111"},
+                    },
+                    "creative_brief": {
+                        "headline": "Selamat Hari Raya",
+                        "body": "Celebrate together.",
+                        "cta": "Learn More",
+                        "raw_brief": "Premium Raya campaign poster",
+                        "visual_direction": "Festive premium poster",
+                        "hero_focus": "crescent lantern hero",
+                    },
+                    "prompt_trace": {"effective_prompt": "Festive premium lantern scene"},
+                    "artifact": {
+                        "poster_path": str(tmp_path / "poster.png"),
+                        "hero_path": str(hero_path),
+                        "template_used": "social-post",
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        mock_run.return_value = {
+            "poster_path": str(tmp_path / "revised.png"),
+            "template_used": "editorial-split-square",
+        }
+
+        payload = revise(
+            feedback="Layout is not good. Make the hierarchy cleaner.",
+            trace_path=str(trace_path),
+        )
+
+        assert mock_run.call_args.kwargs["hero_image_path"] == str(hero_path)
+        assert mock_run.call_args.kwargs["template_name"] == "editorial-split-square"
+        assert payload["revision_plan"]["requires_layout_cleanup"] is True
+        assert payload["self_check"][0]["status"] in {"addressed", "partially_addressed"}
+
+    @patch("pipelines.poster_generate.run")
+    def test_revise_refreshes_hero_for_duplicate_headline_feedback(
+        self,
+        mock_run: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        trace_path = tmp_path / "poster.trace.json"
+        hero_path = tmp_path / "hero.png"
+        hero_path.write_bytes(b"\x89PNG" + b"\x00" * 20)
+        trace_path.write_text(
+            json.dumps(
+                {
+                    "inputs": {
+                        "image_mode": "openai",
+                        "client_id": "",
+                        "style_reference": "",
+                        "reference_image_path": "",
+                        "palette": SAMPLE_PALETTE,
+                        "fonts": SAMPLE_FONTS,
+                    },
+                    "creative_brief": {
+                        "headline": "Selamat Hari Raya",
+                        "body": "Celebrate together.",
+                        "cta": "Learn More",
+                        "raw_brief": "Premium Raya campaign poster",
+                        "visual_direction": "Festive premium poster",
+                        "hero_focus": "crescent lantern hero",
+                    },
+                    "prompt_trace": {"effective_prompt": "Festive premium lantern scene"},
+                    "artifact": {
+                        "poster_path": str(tmp_path / "poster.png"),
+                        "hero_path": str(hero_path),
+                        "template_used": "hero-bottom-text-square",
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        mock_run.return_value = {
+            "poster_path": str(tmp_path / "revised.png"),
+            "template_used": "hero-bottom-text-square",
+        }
+
+        payload = revise(
+            feedback="There are two text of Selamat Hari Raya. Keep only one main headline.",
+            trace_path=str(trace_path),
+        )
+
+        assert mock_run.call_args.kwargs["hero_image_path"] == ""
+        assert "duplicate text" in mock_run.call_args.kwargs["image_prompt"].lower()
+        headline_check = next(item for item in payload["self_check"] if "headline" in item["goal"].lower())
+        assert headline_check["status"] == "addressed"
+
+
 # ---------------------------------------------------------------------------
 # Plugin registration
 # ---------------------------------------------------------------------------
@@ -773,20 +881,24 @@ class TestRunPipeline:
 
 class TestPluginRegistration:
     def test_plugin_registers_tool(self) -> None:
-        """plugins/poster_tool.py registers generate_poster via ctx."""
+        """plugins/poster_tool.py registers generate/revise poster tools via ctx."""
         from plugins.poster_tool import register
 
         ctx = MagicMock()
         register(ctx)
 
-        ctx.register_tool.assert_called_once()
-        call_kwargs = ctx.register_tool.call_args[1]
-        assert call_kwargs["name"] == "generate_poster"
-        assert call_kwargs["toolset"] == "vizier-visual"
-        assert "headline" in call_kwargs["schema"]["properties"]
-        assert "body" in call_kwargs["schema"]["properties"]
-        assert "palette" in call_kwargs["schema"]["properties"]
-        assert "fonts" in call_kwargs["schema"]["properties"]
+        assert ctx.register_tool.call_count == 2
+        tool_defs = {
+            call.kwargs["name"]: call.kwargs for call in ctx.register_tool.call_args_list
+        }
+        assert set(tool_defs) == {"generate_poster", "revise_poster"}
+        assert tool_defs["generate_poster"]["toolset"] == "vizier-visual"
+        assert "headline" in tool_defs["generate_poster"]["schema"]["properties"]
+        assert "body" in tool_defs["generate_poster"]["schema"]["properties"]
+        assert "palette" in tool_defs["generate_poster"]["schema"]["properties"]
+        assert "fonts" in tool_defs["generate_poster"]["schema"]["properties"]
+        assert "feedback" in tool_defs["revise_poster"]["schema"]["properties"]
+        assert "trace_path" in tool_defs["revise_poster"]["schema"]["properties"]
 
         ctx.register_hook.assert_called_once()
         hook_args = ctx.register_hook.call_args[0]
@@ -822,12 +934,15 @@ class TestPluginRegistration:
         ctx = MagicMock()
         register(ctx)
 
-        call_kwargs = ctx.register_tool.call_args[1]
-        assert call_kwargs["name"] == "generate_poster"
-        assert call_kwargs["check_fn"]() is False
+        tool_defs = {
+            call.kwargs["name"]: call.kwargs for call in ctx.register_tool.call_args_list
+        }
+        assert tool_defs["generate_poster"]["check_fn"]() is False
+        assert tool_defs["revise_poster"]["check_fn"]() is False
 
         set_telegram_mode(platform="telegram", mode="vizier_work")
-        assert call_kwargs["check_fn"]() is True
+        assert tool_defs["generate_poster"]["check_fn"]() is True
+        assert tool_defs["revise_poster"]["check_fn"]() is True
 
     @patch("pipelines.poster_generate.run")
     def test_handler_accepts_freeform_brief(
@@ -858,3 +973,51 @@ class TestPluginRegistration:
         assert mock_run.call_args.kwargs["brief"] == "Apple New Year Mac mini M4 poster"
         assert mock_run.call_args.kwargs["headline"] == ""
         assert mock_run.call_args.kwargs["body"] == ""
+
+    @patch("pipelines.poster_generate.run")
+    def test_generate_handler_uses_session_reference_image_env(
+        self,
+        mock_run: MagicMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        from plugins.poster_tool import _handle_generate_poster
+
+        mock_run.return_value = {"poster_path": "/tmp/poster.png"}
+        monkeypatch.setenv("HERMES_TELEGRAM_REFERENCE_IMAGE_PATH", "/tmp/reference.jpg")
+
+        payload = json.loads(
+            _handle_generate_poster(
+                {
+                    "headline": "Launch",
+                    "body": "Poster body",
+                    "palette": SAMPLE_PALETTE,
+                    "fonts": SAMPLE_FONTS,
+                },
+                None,
+            )
+        )
+
+        assert payload["poster_path"] == "/tmp/poster.png"
+        assert payload["media_tag"] == "MEDIA:/tmp/poster.png"
+        assert mock_run.call_args.kwargs["reference_image_path"] == "/tmp/reference.jpg"
+
+    @patch("pipelines.poster_generate.revise")
+    def test_revise_handler_uses_session_defaults(
+        self,
+        mock_revise: MagicMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        from plugins.poster_tool import _handle_revise_poster
+
+        mock_revise.return_value = {"poster_path": "/tmp/revised.png", "claim_safe": False}
+        monkeypatch.setenv("HERMES_TELEGRAM_POSTER_PATH", "/tmp/poster.png")
+        monkeypatch.setenv("HERMES_TELEGRAM_POSTER_TRACE_PATH", "/tmp/poster.trace.json")
+        monkeypatch.setenv("HERMES_TELEGRAM_REFERENCE_IMAGE_PATH", "/tmp/reference.jpg")
+
+        payload = json.loads(_handle_revise_poster({"feedback": "Make the logo bigger"}, None))
+
+        assert payload["poster_path"] == "/tmp/revised.png"
+        assert payload["media_tag"] == "MEDIA:/tmp/revised.png"
+        assert mock_revise.call_args.kwargs["poster_path"] == "/tmp/poster.png"
+        assert mock_revise.call_args.kwargs["trace_path"] == "/tmp/poster.trace.json"
+        assert mock_revise.call_args.kwargs["reference_image_path"] == "/tmp/reference.jpg"

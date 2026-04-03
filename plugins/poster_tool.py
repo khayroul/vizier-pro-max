@@ -7,11 +7,16 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from typing import Any
 
 from plugins.telegram_tool_policy import telegram_tool_allows
 
 logger = logging.getLogger(__name__)
+
+_SESSION_POSTER_PATH_ENV = "HERMES_TELEGRAM_POSTER_PATH"
+_SESSION_POSTER_TRACE_ENV = "HERMES_TELEGRAM_POSTER_TRACE_PATH"
+_SESSION_REFERENCE_IMAGE_ENV = "HERMES_TELEGRAM_REFERENCE_IMAGE_PATH"
 
 GENERATE_POSTER_SCHEMA = {
     "type": "object",
@@ -151,6 +156,69 @@ GENERATE_POSTER_SCHEMA = {
     ],
 }
 
+REVISE_POSTER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "feedback": {
+            "type": "string",
+            "description": (
+                "Explicit revision feedback for the latest poster, such as "
+                "'make the logo bigger', 'remove duplicate headline text', "
+                "or 'clean up the layout'."
+            ),
+        },
+        "poster_path": {
+            "type": "string",
+            "description": (
+                "Optional local path to the poster being revised. If omitted, "
+                "the current Telegram poster-session state is used when available."
+            ),
+            "default": "",
+        },
+        "trace_path": {
+            "type": "string",
+            "description": (
+                "Optional local path to the poster trace JSON. If omitted, the "
+                "Telegram poster-session trace is used when available."
+            ),
+            "default": "",
+        },
+        "reference_image_path": {
+            "type": "string",
+            "description": (
+                "Optional local path to the latest sample/reference poster image. "
+                "If omitted, the Telegram poster-session reference image is used when available."
+            ),
+            "default": "",
+        },
+        "template_name": {
+            "type": "string",
+            "description": "Optional explicit template override for the revision.",
+            "default": "",
+        },
+        "brand_name": {
+            "type": "string",
+            "description": "Optional brand name override for the revision.",
+            "default": "",
+        },
+        "logo_mark": {
+            "type": "string",
+            "description": "Optional logo mark override for the revision.",
+            "default": "",
+        },
+        "output_path": {
+            "type": "string",
+            "description": "Custom output path for the revised poster PNG (auto-generated if empty).",
+            "default": "",
+        },
+    },
+    "required": ["feedback"],
+}
+
+
+def _session_env_default(name: str) -> str:
+    return str(os.getenv(name, "")).strip()
+
 
 def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
     """Generate a two-layer poster and return the file path."""
@@ -170,6 +238,9 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
 
     palette = args.get("palette")
     fonts = args.get("fonts")
+    reference_image_path = str(args.get("reference_image_path", "")).strip()
+    if not reference_image_path:
+        reference_image_path = _session_env_default(_SESSION_REFERENCE_IMAGE_ENV)
     try:
         result = run(
             headline=headline,
@@ -185,13 +256,62 @@ def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
             brand_css=args.get("brand_css") if isinstance(args.get("brand_css"), dict) else None,
             client_id=str(args.get("client_id", "")),
             style_reference=str(args.get("style_reference", "")),
-            reference_image_path=str(args.get("reference_image_path", "")),
+            reference_image_path=reference_image_path,
             palette=palette,
             fonts=fonts,
         )
+        if result.get("poster_path"):
+            result["media_tag"] = f"MEDIA:{result['poster_path']}"
         return json.dumps(result, default=str)
     except Exception as exc:
         logger.exception("generate_poster failed")
+        return json.dumps({"error": str(exc)})
+
+
+def _handle_revise_poster(args: dict[str, Any], agent: Any) -> str:
+    """Revise the current poster using prior session state when available."""
+    from pipelines.poster_generate import revise
+
+    feedback = str(args.get("feedback", "")).strip()
+    if not feedback:
+        return json.dumps({"error": "feedback is required"})
+
+    poster_path = str(args.get("poster_path", "")).strip() or _session_env_default(
+        _SESSION_POSTER_PATH_ENV
+    )
+    trace_path = str(args.get("trace_path", "")).strip() or _session_env_default(
+        _SESSION_POSTER_TRACE_ENV
+    )
+    reference_image_path = str(args.get("reference_image_path", "")).strip() or _session_env_default(
+        _SESSION_REFERENCE_IMAGE_ENV
+    )
+
+    if not poster_path and not trace_path:
+        return json.dumps(
+            {
+                "error": (
+                    "No prior poster is available to revise yet. Generate a poster "
+                    "first, or pass poster_path/trace_path explicitly."
+                )
+            }
+        )
+
+    try:
+        result = revise(
+            feedback=feedback,
+            poster_path=poster_path,
+            trace_path=trace_path,
+            reference_image_path=reference_image_path,
+            output_path=str(args.get("output_path", "")),
+            brand_name=str(args.get("brand_name", "")),
+            logo_mark=str(args.get("logo_mark", "")),
+            template_name=str(args.get("template_name", "")),
+        )
+        if result.get("poster_path"):
+            result["media_tag"] = f"MEDIA:{result['poster_path']}"
+        return json.dumps(result, default=str)
+    except Exception as exc:
+        logger.exception("revise_poster failed")
         return json.dumps({"error": str(exc)})
 
 
@@ -210,9 +330,22 @@ def register(ctx: Any) -> None:
             "ALWAYS use this for poster/flyer/banner requests instead of execute_code."
         ),
     )
+    ctx.register_tool(
+        name="revise_poster",
+        toolset="vizier-visual",
+        schema=REVISE_POSTER_SCHEMA,
+        handler=lambda args, **kw: _handle_revise_poster(args, None),
+        check_fn=lambda: telegram_tool_allows("revise_poster"),
+        description=(
+            "Revise the latest poster using explicit feedback, the previous poster trace, "
+            "and any Telegram session reference image. Prefer this over loosely regenerating "
+            "when the user is reacting to an existing poster."
+        ),
+    )
 
     def on_agent_ready(agent: Any, **kwargs: Any) -> None:
         agent._custom_agent_tools["generate_poster"] = _handle_generate_poster
-        logger.info("generate_poster registered as agent-level tool")
+        agent._custom_agent_tools["revise_poster"] = _handle_revise_poster
+        logger.info("generate_poster and revise_poster registered as agent-level tools")
 
     ctx.register_hook("on_agent_ready", on_agent_ready)

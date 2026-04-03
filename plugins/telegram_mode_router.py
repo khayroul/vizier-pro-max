@@ -1,6 +1,7 @@
 """Telegram mode router for personal assistant, Vizier work, and operator turns."""
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
 from typing import Any, Iterable
@@ -98,6 +99,21 @@ _PRODUCTION_WORKFLOW_PATTERNS = (
     r"\brun\b.*\bpipeline\b",
     r"\bproduction workflow\b",
     r"\bgenerate a client deliverable\b",
+)
+
+_POSTER_FEEDBACK_PATTERNS = (
+    r"\brev(?:ise|ision)\b",
+    r"\bfeedback\b",
+    r"\blogo\b",
+    r"\bbrand mark\b",
+    r"\bduplicate\b",
+    r"\bheadline\b",
+    r"\blayout\b",
+    r"\bhierarchy\b",
+    r"\bthere are 2 text\b",
+    r"\btwo text\b",
+    r"\bclean(?:er| up)?\b",
+    r"\bcan'?t see\b",
 )
 
 _SUPPORT_PATTERNS = (
@@ -221,6 +237,14 @@ def _looks_like_vizier_work_request(text: str) -> bool:
     return _matches_any(text, _DELIVERABLE_REQUEST_PATTERNS)
 
 
+def _has_active_poster_session() -> bool:
+    return bool(os.getenv("HERMES_TELEGRAM_POSTER_PATH", "").strip())
+
+
+def _looks_like_poster_feedback_request(text: str) -> bool:
+    return _matches_any(text, _POSTER_FEEDBACK_PATTERNS)
+
+
 def _auto_activate_workflow_toolset(
     *,
     decision: TelegramModeDecision,
@@ -277,6 +301,13 @@ def classify_telegram_mode(
             mode="operator",
             source="keyword_inference",
             reason="The turn mentions engineering or repo-maintenance work.",
+        )
+    if _has_active_poster_session() and _looks_like_poster_feedback_request(current_text):
+        return TelegramModeDecision(
+            mode="vizier_work",
+            source="poster_session_feedback",
+            reason="The turn looks like feedback on the latest poster in this Telegram session.",
+            workflow_toolset="vizier-visual",
         )
     if _looks_like_vizier_work_request(current_text):
         return TelegramModeDecision(
@@ -367,6 +398,11 @@ def build_telegram_mode_context(
             "- If the request is truly ambiguous between personal help and deliverable work, ask one short clarification.\n"
         )
     if decision.mode == "vizier_work":
+        revision_line = (
+            "- If this is feedback on the latest poster in the Telegram session, explain the planned deltas in one short sentence and then use revise_poster.\n"
+            if decision.source == "poster_session_feedback"
+            else ""
+        )
         activation_line = (
             f"- The matching Vizier workflow surface should already be active for this turn: {decision.workflow_toolset}.\n"
             if decision.workflow_toolset
@@ -375,6 +411,7 @@ def build_telegram_mode_context(
         return (
             f"{shared}"
             "- Treat this as Vizier client or deliverable work.\n"
+            f"{revision_line}"
             f"{activation_line}"
             "- Use switch_toolset only if you intentionally want a different Vizier workflow surface than the one implied by the request.\n"
             "- Use Vizier tools, reference corpora, and artifact-specific brief normalization when relevant.\n"

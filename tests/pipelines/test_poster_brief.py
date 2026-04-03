@@ -2,9 +2,21 @@
 from __future__ import annotations
 
 import json
+import sys
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from pipelines.poster_brief import PosterCreativeBrief, as_payload, normalize_poster_brief
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
+
+from pipelines.poster_brief import (
+    PosterCreativeBrief,
+    as_payload,
+    compile_poster_revision_plan,
+    normalize_poster_brief,
+)
 
 
 def test_structured_inputs_skip_model_call() -> None:
@@ -135,3 +147,41 @@ def test_fallback_cta_infers_event_action_from_brief() -> None:
     )
 
     assert brief.cta == "Get Tickets"
+
+
+def test_compile_revision_plan_extracts_structured_goals() -> None:
+    plan = compile_poster_revision_plan(
+        "I can't see the logo and there are two text of Selamat Hari Raya. Layout is not good.",
+        prior_creative_brief=PosterCreativeBrief(
+            raw_brief="Premium Raya campaign poster",
+            visual_direction="Festive premium poster",
+            hero_focus="crescent lantern hero",
+        ),
+        prior_template_name="social-post",
+        brand_name="PETRONAS",
+        logo_mark="P",
+    )
+
+    assert "bigger logo mark" in plan.summary
+    assert "one main headline only" in plan.summary
+    assert plan.requires_hero_refresh is True
+    assert plan.requires_logo_emphasis is True
+    assert plan.requires_layout_cleanup is True
+    assert plan.preferred_template_name == "hero-bottom-text-square"
+    assert any("festive mood" in item.lower() for item in plan.preserve_goals)
+    assert any("premium feel" in item.lower() for item in plan.preserve_goals)
+
+
+def test_compile_revision_plan_uses_reference_image_as_change_signal() -> None:
+    plan = compile_poster_revision_plan(
+        "Please revise this with a cleaner hierarchy.",
+        prior_creative_brief=PosterCreativeBrief(
+            visual_direction="Premium editorial launch creative",
+            hero_focus="bottle hero",
+        ),
+        prior_template_name="social-post",
+        reference_image_path="/tmp/reference.jpg",
+    )
+
+    assert plan.requires_hero_refresh is True
+    assert any("reference image" in goal.lower() for goal in plan.change_goals)

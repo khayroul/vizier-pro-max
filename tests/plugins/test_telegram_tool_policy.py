@@ -18,6 +18,7 @@ from plugins.telegram_tool_policy import (
 def test_policy_classifies_each_project_local_tool_once() -> None:
     expected = {
         "generate_poster",
+        "revise_poster",
         "search_palettes",
         "search_fonts",
         "search_ui_styles",
@@ -42,6 +43,7 @@ def test_policy_groups_match_expected_surface() -> None:
     assert TOOLS_BY_CLASSIFICATION[WORK_ONLY] == frozenset(
         {
             "generate_poster",
+            "revise_poster",
             "search_palettes",
             "search_fonts",
             "search_ui_styles",
@@ -74,6 +76,8 @@ def test_allowed_modes_follow_classification() -> None:
     )
     assert telegram_tool_classification("generate_poster") == WORK_ONLY
     assert telegram_tool_allowed_modes("generate_poster") == ("vizier_work",)
+    assert telegram_tool_classification("revise_poster") == WORK_ONLY
+    assert telegram_tool_allowed_modes("revise_poster") == ("vizier_work",)
     assert telegram_tool_classification("query_logs") == OPERATOR_ONLY
     assert telegram_tool_allowed_modes("query_logs") == ("operator",)
     assert telegram_tool_classification("run_pipeline") == SHARED

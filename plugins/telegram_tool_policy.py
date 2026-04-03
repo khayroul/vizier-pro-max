@@ -27,6 +27,7 @@ TOOLS_BY_CLASSIFICATION: Final[dict[str, frozenset[str]]] = {
     WORK_ONLY: frozenset(
         {
             "generate_poster",
+            "revise_poster",
             "search_palettes",
             "search_fonts",
             "search_ui_styles",

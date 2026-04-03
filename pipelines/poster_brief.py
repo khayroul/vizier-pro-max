@@ -55,6 +55,22 @@ class PosterCreativeBrief:
     avoid: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class PosterRevisionPlan:
+    """Structured delta plan for revising an existing poster."""
+
+    feedback: str = ""
+    summary: str = ""
+    change_goals: tuple[str, ...] = ()
+    preserve_goals: tuple[str, ...] = ()
+    self_check_items: tuple[str, ...] = ()
+    requires_hero_refresh: bool = False
+    requires_logo_emphasis: bool = False
+    requires_layout_cleanup: bool = False
+    requires_readability_boost: bool = False
+    preferred_template_name: str = ""
+
+
 def _collapse_whitespace(text: str) -> str:
     return " ".join(text.split()).strip()
 
@@ -103,6 +119,50 @@ def _normalize_avoid(value: object) -> tuple[str, ...]:
             if part
         )
     return ()
+
+
+def _coerce_creative_brief(
+    value: PosterCreativeBrief | dict[str, Any] | None,
+) -> PosterCreativeBrief:
+    """Return a ``PosterCreativeBrief`` from a payload or instance."""
+    if isinstance(value, PosterCreativeBrief):
+        return value
+    if isinstance(value, dict):
+        return PosterCreativeBrief(
+            raw_brief=_collapse_whitespace(str(value.get("raw_brief", ""))),
+            campaign_angle=_collapse_whitespace(str(value.get("campaign_angle", ""))),
+            audience=_collapse_whitespace(str(value.get("audience", ""))),
+            visual_direction=_collapse_whitespace(str(value.get("visual_direction", ""))),
+            hero_focus=_collapse_whitespace(str(value.get("hero_focus", ""))),
+            headline=_collapse_whitespace(str(value.get("headline", ""))),
+            body=_collapse_whitespace(str(value.get("body", ""))),
+            cta=_collapse_whitespace(str(value.get("cta", ""))) or _CTA_FALLBACK,
+            image_prompt=_collapse_whitespace(str(value.get("image_prompt", ""))),
+            template_name=_collapse_whitespace(str(value.get("template_name", ""))),
+            avoid=_normalize_avoid(value.get("avoid")),
+        )
+    return PosterCreativeBrief()
+
+
+def _matches_any(text: str, patterns: tuple[str, ...]) -> bool:
+    normalized = text.lower()
+    return any(re.search(pattern, normalized) for pattern in patterns)
+
+
+def _variant_for_template(
+    template_name: str,
+    *,
+    square: str,
+    facebook: str,
+    story: str,
+) -> str:
+    """Map a replacement template to the current aspect-ratio family."""
+    lowered = template_name.lower()
+    if lowered.endswith("-facebook"):
+        return facebook
+    if lowered.endswith("-story"):
+        return story
+    return square
 
 
 def _fallback_headline(brief: str) -> str:
@@ -364,6 +424,154 @@ def normalize_poster_brief(
         ),
         template_name=template_name,
         avoid=_normalize_avoid(payload.get("avoid")),
+    )
+
+
+def compile_poster_revision_plan(
+    feedback: str,
+    *,
+    prior_creative_brief: PosterCreativeBrief | dict[str, Any] | None = None,
+    prior_template_name: str = "",
+    reference_image_path: str = "",
+    brand_name: str = "",
+    logo_mark: str = "",
+) -> PosterRevisionPlan:
+    """Turn revision feedback into explicit, reusable poster change goals."""
+    compact_feedback = _collapse_whitespace(feedback)
+    prior = _coerce_creative_brief(prior_creative_brief)
+    haystack = " ".join(
+        part for part in (
+            compact_feedback,
+            prior.raw_brief,
+            prior.campaign_angle,
+            prior.visual_direction,
+        ) if part
+    ).lower()
+
+    change_goals: list[str] = []
+    preserve_goals: list[str] = []
+    self_check_items: list[str] = []
+    summary_parts: list[str] = []
+
+    duplicate_requested = _matches_any(
+        compact_feedback,
+        (
+            r"\bduplicate\b",
+            r"\brepeated\b",
+            r"\bheadline twice\b",
+            r"\btwo text\b",
+            r"\b2 text\b",
+            r"\bdouble text\b",
+            r"\bdouble headline\b",
+            r"\bone main headline\b",
+        ),
+    )
+    logo_requested = _matches_any(
+        compact_feedback,
+        (
+            r"\blogo\b",
+            r"\bbrand mark\b",
+            r"\bbrandmark\b",
+            r"\bcan'?t see\b.*\blogo\b",
+            r"\bnot clearly visible\b",
+            r"\bmore visible\b",
+        ),
+    )
+    layout_requested = _matches_any(
+        compact_feedback,
+        (
+            r"\blayout\b",
+            r"\bhierarchy\b",
+            r"\bclean(?:er| up)?\b",
+            r"\bempty\b",
+            r"\bemptier\b",
+            r"\bspacing\b",
+            r"\bdead space\b",
+            r"\bcomposition\b",
+        ),
+    )
+    readability_requested = _matches_any(
+        compact_feedback,
+        (
+            r"\breadability\b",
+            r"\breadable\b",
+            r"\bmobile\b",
+            r"\bsmall\b",
+            r"\btiny\b",
+            r"\bclearer\b",
+        ),
+    )
+
+    if logo_requested:
+        change_goals.append("Make the logo or brand mark more prominent and easier to notice at a glance.")
+        self_check_items.append("Brand or logo visibility should be stronger than before.")
+        summary_parts.append("bigger logo mark")
+
+    if duplicate_requested:
+        change_goals.append("Show the main headline only once and remove duplicate or decorative headline text from the composition.")
+        self_check_items.append("There should be only one main headline treatment.")
+        summary_parts.append("one main headline only")
+
+    if layout_requested:
+        change_goals.append("Tighten the layout hierarchy, reduce wasted space, and avoid making the composition feel emptier.")
+        self_check_items.append("Layout hierarchy should look cleaner without losing useful density.")
+        summary_parts.append("cleaner hierarchy")
+
+    if readability_requested:
+        change_goals.append("Improve headline and body readability for mobile viewing without flattening the overall mood.")
+        self_check_items.append("Mobile readability should not be worse than before.")
+        summary_parts.append("better mobile readability")
+
+    if reference_image_path:
+        change_goals.append("Use the latest sample/reference image to guide hierarchy and overall feel without copying it literally.")
+        summary_parts.append("closer to the sample reference")
+
+    if not change_goals:
+        change_goals.append(
+            "Apply the user's requested poster revision while preserving the strongest parts of the current composition."
+        )
+        self_check_items.append("The requested revision delta should be visible in the new poster.")
+        summary_parts.append("the requested revision delta")
+
+    if _matches_any(haystack, (r"\braya\b", r"\bfestive\b", r"\bramadan\b", r"\bcelebration\b")):
+        preserve_goals.append("Preserve the festive mood.")
+    if _matches_any(
+        haystack,
+        (r"\bpremium\b", r"\bluxury\b", r"\belegant\b", r"\beditorial\b", r"\bpolished\b"),
+    ):
+        preserve_goals.append("Preserve the premium feel.")
+    if prior.hero_focus:
+        preserve_goals.append(f"Keep the main hero focus on {prior.hero_focus}.")
+    if not preserve_goals:
+        preserve_goals.append("Preserve the strongest parts of the current composition.")
+
+    preferred_template_name = ""
+    if logo_requested:
+        preferred_template_name = _variant_for_template(
+            prior_template_name,
+            square="hero-bottom-text-square",
+            facebook="hero-bottom-text-facebook",
+            story="hero-bottom-text-story",
+        )
+    elif layout_requested and prior_template_name.lower().startswith(("social-post", "bold-knockout")):
+        preferred_template_name = _variant_for_template(
+            prior_template_name,
+            square="editorial-split-square",
+            facebook="editorial-split-facebook",
+            story="floating-card-story",
+        )
+
+    return PosterRevisionPlan(
+        feedback=compact_feedback,
+        summary=", ".join(summary_parts[:4]),
+        change_goals=tuple(change_goals),
+        preserve_goals=tuple(dict.fromkeys(preserve_goals)),
+        self_check_items=tuple(dict.fromkeys(self_check_items)),
+        requires_hero_refresh=duplicate_requested or bool(reference_image_path),
+        requires_logo_emphasis=logo_requested and bool(logo_mark or brand_name),
+        requires_layout_cleanup=layout_requested,
+        requires_readability_boost=readability_requested,
+        preferred_template_name=preferred_template_name,
     )
 
 

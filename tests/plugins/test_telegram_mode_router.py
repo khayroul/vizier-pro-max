@@ -25,6 +25,7 @@ def _clear_mode_state(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("VIZIER_TELEGRAM_FRONT_DOOR", raising=False)
     monkeypatch.delenv("MESSAGING_CWD", raising=False)
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    monkeypatch.delenv("HERMES_TELEGRAM_POSTER_PATH", raising=False)
     clear_telegram_mode()
 
 
@@ -71,6 +72,22 @@ def test_operator_inference_for_repo_request() -> None:
 
     assert decision.mode == "operator"
     assert decision.source == "keyword_inference"
+
+
+def test_poster_feedback_in_active_session_routes_to_vizier_work(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HERMES_TELEGRAM_POSTER_PATH", "/tmp/poster.png")
+
+    decision = classify_telegram_mode(
+        user_message="I can't see the logo and the layout still feels empty.",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    assert decision.mode == "vizier_work"
+    assert decision.source == "poster_session_feedback"
+    assert decision.workflow_toolset == "vizier-visual"
 
 
 def test_sticky_mode_uses_recent_override_when_current_turn_is_ambiguous() -> None:
