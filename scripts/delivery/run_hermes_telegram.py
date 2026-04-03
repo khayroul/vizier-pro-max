@@ -184,6 +184,7 @@ def build_gateway_env() -> dict[str, str]:
     env.setdefault("HERMES_HOME", str(DEFAULT_HERMES_HOME))
     env.setdefault("HERMES_ENABLE_PROJECT_PLUGINS", "true")
     env.setdefault("MESSAGING_CWD", str(PROJECT_ROOT))
+    env.setdefault("HERMES_TOOL_PROGRESS_MODE", "off")
     env.setdefault("HERMES_MODEL", load_default_model())
     env.setdefault("HERMES_INFERENCE_PROVIDER", provider)
     env.setdefault("VIRTUAL_ENV", str(PROJECT_ROOT / ".venv"))

@@ -54,6 +54,7 @@ def test_register_exposes_expected_tools_and_hooks() -> None:
         "search_report_layouts",
         "search_quarto_layouts",
         "generate_poster",
+        "revise_poster",
     } <= tool_names
     assert {"switch_toolset", "decompose_task", "merge_results"} <= tool_names
 
@@ -61,6 +62,7 @@ def test_register_exposes_expected_tools_and_hooks() -> None:
     assert "pre_tool_resolution" in hook_names
     assert "pre_llm_call" in hook_names
     assert "post_llm_call" in hook_names
+    assert "post_tool_call" in hook_names
     assert "on_session_start" in hook_names
     assert "on_agent_ready" in hook_names
 

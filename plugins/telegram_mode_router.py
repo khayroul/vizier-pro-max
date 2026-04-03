@@ -5,6 +5,10 @@ import re
 from dataclasses import dataclass
 from typing import Any, Iterable
 
+from plugins.telegram_poster_session import (
+    get_current_poster_turn_signals,
+    observe_telegram_poster_turn,
+)
 from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
 
 
@@ -161,6 +165,26 @@ def classify_telegram_mode(
             reason=f"User explicitly selected {explicit} mode.",
         )
 
+    poster_turn = get_current_poster_turn_signals()
+    if poster_turn and poster_turn.critique_only:
+        return TelegramModeDecision(
+            mode="assistant",
+            source="poster_critique",
+            reason="The turn looks like poster critique only, without an explicit change request.",
+        )
+    if poster_turn and poster_turn.revision_candidate:
+        return TelegramModeDecision(
+            mode="vizier_work",
+            source="poster_revision",
+            reason="The turn looks like poster revision feedback tied to the latest session poster.",
+        )
+    if poster_turn and poster_turn.reference_request:
+        return TelegramModeDecision(
+            mode="vizier_work",
+            source="reference_request",
+            reason="The turn asks to use the current sample/reference image for poster work.",
+        )
+
     operator_score = _score_patterns(current_text, _OPERATOR_PATTERNS)
     vizier_score = _score_patterns(current_text, _VIZIER_PATTERNS)
     assistant_score = _score_patterns(current_text, _ASSISTANT_PATTERNS)
@@ -210,6 +234,11 @@ def prime_telegram_mode(
 ) -> TelegramModeDecision | None:
     """Prime turn-scoped Telegram mode state before tools are resolved."""
     normalized_platform = platform.strip().lower()
+    observe_telegram_poster_turn(
+        user_message=user_message,
+        conversation_history=conversation_history,
+        platform=normalized_platform,
+    )
     if not normalized_platform:
         clear_telegram_mode()
         return None

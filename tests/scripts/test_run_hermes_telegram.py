@@ -27,6 +27,7 @@ def test_build_gateway_env_sets_project_defaults(
 
     assert env["HERMES_ENABLE_PROJECT_PLUGINS"] == "true"
     assert env["MESSAGING_CWD"] == str(run_hermes_telegram.PROJECT_ROOT)
+    assert env["HERMES_TOOL_PROGRESS_MODE"] == "off"
     assert env["HERMES_MODEL"] == "gpt-5.4-mini"
     assert env["HERMES_INFERENCE_PROVIDER"] == "custom"
 

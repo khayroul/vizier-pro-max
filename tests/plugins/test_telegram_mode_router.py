@@ -1,12 +1,16 @@
 """Tests for Telegram mode routing."""
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from plugins.telegram_mode_router import (
     build_telegram_mode_context,
     classify_telegram_mode,
+    prime_telegram_mode,
 )
+from plugins.telegram_poster_session import record_poster_result
 from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode, telegram_mode_allows
 
 
@@ -15,6 +19,9 @@ def _clear_mode_state(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("VIZIER_TELEGRAM_FRONT_DOOR", raising=False)
     monkeypatch.delenv("MESSAGING_CWD", raising=False)
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    monkeypatch.delenv("HERMES_HOME", raising=False)
+    monkeypatch.delenv("HERMES_SESSION_KEY", raising=False)
+    monkeypatch.delenv("HERMES_SESSION_PLATFORM", raising=False)
     clear_telegram_mode()
 
 
@@ -139,6 +146,64 @@ def test_work_mode_context_mentions_switch_toolset() -> None:
 
     assert "Current mode: vizier_work" in context
     assert "first call switch_toolset" in context
+
+
+def test_poster_critique_can_remain_assistant(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("HERMES_SESSION_KEY", "telegram-poster")
+    monkeypatch.setenv("HERMES_SESSION_PLATFORM", "telegram")
+
+    record_poster_result(
+        tool_name="generate_poster",
+        tool_args={"brief": "PETRONAS Raya poster"},
+        result_payload={"poster_path": "/tmp/poster.png"},
+    )
+    prime_telegram_mode(
+        user_message="Give feedback on this poster only.",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    decision = classify_telegram_mode(
+        user_message="Give feedback on this poster only.",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    assert decision.mode == "assistant"
+    assert decision.source == "poster_critique"
+
+
+def test_poster_feedback_with_prior_poster_routes_to_vizier_work(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("HERMES_SESSION_KEY", "telegram-poster")
+    monkeypatch.setenv("HERMES_SESSION_PLATFORM", "telegram")
+
+    record_poster_result(
+        tool_name="generate_poster",
+        tool_args={"brief": "PETRONAS Raya poster"},
+        result_payload={"poster_path": "/tmp/poster.png"},
+    )
+    prime_telegram_mode(
+        user_message="Make the logo more visible and clean up the layout.",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    decision = classify_telegram_mode(
+        user_message="Make the logo more visible and clean up the layout.",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    assert decision.mode == "vizier_work"
+    assert decision.source == "poster_revision"
 
 
 def test_front_door_defaults_to_assistant_gating_until_mode_is_set(

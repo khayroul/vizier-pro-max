@@ -212,9 +212,11 @@ def _vizier_turn_context(**_: Any) -> str:
         "- Prefer structured_nonfiction_generate for proposals, reports, content "
         "calendars, technical documents, and other nonfiction packages.\n"
         "- For posters and social creatives, call search_palettes, then "
-        "search_fonts, then generate_poster. generate_poster accepts either "
-        "a raw brief or explicit headline/body copy and will normalize a "
-        "freeform brief before rendering.\n"
+        "search_fonts, then generate_poster for first-pass work. Use "
+        "revise_poster for feedback-driven poster revisions tied to the latest "
+        "session poster state. generate_poster accepts either a raw brief or "
+        "explicit headline/body copy and will normalize a freeform brief "
+        "before rendering.\n"
         "- When a tool or pipeline returns client-facing files, include "
         "MEDIA:/absolute/path for the PDFs or images you want Hermes to send "
         "back as attachments.\n"
@@ -245,6 +247,10 @@ def register(ctx: Any) -> None:
     _safe_register(
         "poster generation tool",
         lambda: _register_repo_plugin(ctx, "plugins.poster_tool"),
+    )
+    _safe_register(
+        "telegram poster session hooks",
+        lambda: _register_repo_plugin(ctx, "plugins.telegram_poster_session"),
     )
     _safe_register(
         "switch_toolset tool",

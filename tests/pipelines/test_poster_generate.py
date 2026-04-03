@@ -801,20 +801,24 @@ class TestRunPipeline:
 
 class TestPluginRegistration:
     def test_plugin_registers_tool(self) -> None:
-        """plugins/poster_tool.py registers generate_poster via ctx."""
+        """plugins/poster_tool.py registers poster tools via ctx."""
         from plugins.poster_tool import register
 
         ctx = MagicMock()
         register(ctx)
 
-        ctx.register_tool.assert_called_once()
-        call_kwargs = ctx.register_tool.call_args[1]
-        assert call_kwargs["name"] == "generate_poster"
-        assert call_kwargs["toolset"] == "vizier-visual"
-        assert "headline" in call_kwargs["schema"]["properties"]
-        assert "body" in call_kwargs["schema"]["properties"]
-        assert "palette" in call_kwargs["schema"]["properties"]
-        assert "fonts" in call_kwargs["schema"]["properties"]
+        assert ctx.register_tool.call_count == 2
+        generate_kwargs = ctx.register_tool.call_args_list[0][1]
+        revise_kwargs = ctx.register_tool.call_args_list[1][1]
+        assert generate_kwargs["name"] == "generate_poster"
+        assert generate_kwargs["toolset"] == "vizier-visual"
+        assert "headline" in generate_kwargs["schema"]["properties"]
+        assert "body" in generate_kwargs["schema"]["properties"]
+        assert "palette" in generate_kwargs["schema"]["properties"]
+        assert "fonts" in generate_kwargs["schema"]["properties"]
+        assert revise_kwargs["name"] == "revise_poster"
+        assert revise_kwargs["toolset"] == "vizier-visual"
+        assert "feedback" in revise_kwargs["schema"]["properties"]
 
         ctx.register_hook.assert_called_once()
         hook_args = ctx.register_hook.call_args[0]
@@ -839,7 +843,7 @@ class TestPluginRegistration:
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Telegram assistant mode should hide generate_poster until work mode is active."""
+        """Telegram assistant mode should hide poster tools until work mode is active."""
         from plugins.poster_tool import register
         from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
 
@@ -850,12 +854,47 @@ class TestPluginRegistration:
         ctx = MagicMock()
         register(ctx)
 
-        call_kwargs = ctx.register_tool.call_args[1]
-        assert call_kwargs["name"] == "generate_poster"
-        assert call_kwargs["check_fn"]() is False
+        generate_kwargs = ctx.register_tool.call_args_list[0][1]
+        revise_kwargs = ctx.register_tool.call_args_list[1][1]
+        assert generate_kwargs["name"] == "generate_poster"
+        assert revise_kwargs["name"] == "revise_poster"
+        assert generate_kwargs["check_fn"]() is False
+        assert revise_kwargs["check_fn"]() is False
 
         set_telegram_mode(platform="telegram", mode="vizier_work")
-        assert call_kwargs["check_fn"]() is True
+        assert generate_kwargs["check_fn"]() is True
+        assert revise_kwargs["check_fn"]() is False
+
+    def test_revise_poster_becomes_available_once_session_has_prior_poster(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+    ) -> None:
+        """revise_poster should only appear once the session has a tracked poster."""
+        from plugins.poster_tool import register
+        from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
+        from plugins.telegram_poster_session import record_poster_result
+
+        monkeypatch.setenv("MESSAGING_CWD", "/Users/Executor/vizier-pro-max")
+        monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+        monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+        monkeypatch.setenv("HERMES_SESSION_KEY", "telegram-session")
+        monkeypatch.setenv("HERMES_SESSION_PLATFORM", "telegram")
+        clear_telegram_mode()
+        set_telegram_mode(platform="telegram", mode="vizier_work")
+
+        ctx = MagicMock()
+        register(ctx)
+        revise_kwargs = ctx.register_tool.call_args_list[1][1]
+        assert revise_kwargs["check_fn"]() is False
+
+        record_poster_result(
+            tool_name="generate_poster",
+            tool_args={"brief": "PETRONAS poster"},
+            result_payload={"poster_path": "/tmp/poster.png"},
+        )
+
+        assert revise_kwargs["check_fn"]() is True
 
     @patch("pipelines.poster_generate.run")
     def test_handler_accepts_freeform_brief(
@@ -886,3 +925,99 @@ class TestPluginRegistration:
         assert mock_run.call_args.kwargs["brief"] == "Apple New Year Mac mini M4 poster"
         assert mock_run.call_args.kwargs["headline"] == ""
         assert mock_run.call_args.kwargs["body"] == ""
+
+    @patch("plugins.poster_tool.record_poster_result")
+    @patch("pipelines.poster_generate.run")
+    def test_generate_handler_uses_session_reference_image_when_missing(
+        self,
+        mock_run: MagicMock,
+        mock_record: MagicMock,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+    ) -> None:
+        """generate_poster reuses the active session reference image when available."""
+        from plugins.poster_tool import _handle_generate_poster
+
+        monkeypatch.setenv("HERMES_SESSION_KEY", "telegram-session")
+        monkeypatch.setenv("HERMES_SESSION_PLATFORM", "telegram")
+        monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+
+        from plugins.telegram_poster_session import record_reference_image
+
+        record_reference_image("/tmp/reference-sample.png", source="telegram_photo")
+        mock_run.return_value = {"poster_path": "/tmp/poster.png"}
+
+        payload = json.loads(
+            _handle_generate_poster(
+                {
+                    "brief": "Make a poster using the current sample",
+                    "palette": SAMPLE_PALETTE,
+                    "fonts": SAMPLE_FONTS,
+                },
+                None,
+            )
+        )
+
+        assert payload["poster_path"] == "/tmp/poster.png"
+        assert mock_run.call_args.kwargs["reference_image_path"] == "/tmp/reference-sample.png"
+        assert mock_record.called
+
+    @patch("plugins.poster_tool.record_poster_result")
+    @patch("plugins.poster_tool.record_feedback_note")
+    @patch("pipelines.poster_revision.run")
+    def test_revise_handler_uses_latest_session_poster_and_reference_state(
+        self,
+        mock_revision_run: MagicMock,
+        mock_feedback: MagicMock,
+        mock_record: MagicMock,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+    ) -> None:
+        """revise_poster pulls prior poster and reference image state from the session."""
+        from plugins.poster_tool import _handle_revise_poster
+        from plugins.telegram_poster_session import record_poster_result, record_reference_image
+
+        monkeypatch.setenv("HERMES_SESSION_KEY", "telegram-session")
+        monkeypatch.setenv("HERMES_SESSION_PLATFORM", "telegram")
+        monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+
+        record_reference_image("/tmp/reference-sample.png", source="telegram_photo")
+        record_poster_result(
+            tool_name="generate_poster",
+            tool_args={
+                "brief": "PETRONAS Raya poster",
+                "template_name": "social-post",
+                "palette": SAMPLE_PALETTE,
+                "fonts": SAMPLE_FONTS,
+            },
+            result_payload={
+                "poster_path": "/tmp/original-poster.png",
+                "trace_path": "/tmp/original-poster.trace.json",
+                "creative_brief": {
+                    "raw_brief": "PETRONAS Raya poster",
+                    "headline": "Selamat Hari Raya",
+                    "body": "Celebrate together.",
+                    "cta": "Learn more",
+                    "image_prompt": "Festive premium background",
+                },
+            },
+        )
+        mock_revision_run.return_value = {
+            "poster_path": "/tmp/revised-poster.png",
+            "revision_plan": {"change_goals": [{"key": "brand_visibility"}]},
+        }
+
+        payload = json.loads(
+            _handle_revise_poster(
+                {"feedback": "Make the logo bigger and keep it premium."},
+                None,
+            )
+        )
+
+        assert payload["poster_path"] == "/tmp/revised-poster.png"
+        assert mock_revision_run.call_args.kwargs["reference_image_path"] == "/tmp/reference-sample.png"
+        latest_state = mock_revision_run.call_args.kwargs["latest_poster_state"]
+        assert latest_state["latest_generated_poster_path"] == "/tmp/original-poster.png"
+        assert latest_state["latest_poster_args"]["brief"] == "PETRONAS Raya poster"
+        assert mock_feedback.called
+        assert mock_record.called
