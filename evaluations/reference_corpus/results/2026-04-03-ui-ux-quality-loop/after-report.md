@@ -1,22 +1,22 @@
 # Poster/UI Artifact Eval
 
 Label: ui-ux-loop-after
-Git ref: `WORKTREE` (`942ab6e4`)
-Generated at: 2026-04-03T01:17:57+00:00
+Git ref: `WORKTREE` (`87b50c15`)
+Generated at: 2026-04-03T01:38:06+00:00
 
 ## Summary
 
-- Average objective score: 94.0/100
-- Check averages: {'reference_usage': 100.0, 'copy_discipline': 100.0, 'template_fit': 88.8, 'prompt_guardrails': 81.2, 'trace_persistence': 100.0}
+- Average objective score: 88.3/100
+- Check averages: {'reference_usage': 100.0, 'copy_discipline': 100.0, 'template_fit': 88.8, 'prompt_guardrails': 81.2, 'trace_persistence': 100.0, 'hero_presence': 67.1, 'text_zone_readability': 77.2, 'cta_salience': 70.2}
 
 ## Cases
 
-| Prompt | Template | Objective | Reference Tools |
-| --- | --- | ---: | --- |
-| swiss_analytics_hero | floating-card-square | 95.0 | search_ui_styles, search_ux_guidelines |
-| retro_event_poster | stacked-type-square | 95.0 | search_ui_styles, search_ux_guidelines |
-| donation_trust_landing | hero-bottom-text-square | 95.0 | search_ui_styles, search_ux_guidelines |
-| premium_product_drop | stacked-type-square | 91.0 | search_ui_styles, search_ux_guidelines |
+| Prompt | Template | Objective | Hero | Readability | CTA | Reference Tools |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| swiss_analytics_hero | floating-card-square | 91.4 | 100.0 | 85.7 | 46.5 | search_ui_styles, search_ux_guidelines |
+| retro_event_poster | stacked-type-square | 87.3 | 25.6 | 83.1 | 97.1 | search_ui_styles, search_ux_guidelines |
+| donation_trust_landing | hero-bottom-text-square | 89.9 | 100.0 | 57.2 | 57.5 | search_ui_styles, search_ux_guidelines |
+| premium_product_drop | stacked-type-square | 84.8 | 42.7 | 83.0 | 79.9 | search_ui_styles, search_ux_guidelines |
 
 ## Notes
 

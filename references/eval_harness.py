@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Iterator
 
 import yaml
+from PIL import Image, ImageFilter, ImageStat
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -28,6 +29,61 @@ POSTER_MANUAL_DIMENSIONS = (
     "visual_polish",
     "reference_utilization",
 )
+POSTER_OBJECTIVE_CHECK_WEIGHTS = {
+    "reference_usage": 0.22,
+    "copy_discipline": 0.15,
+    "template_fit": 0.15,
+    "prompt_guardrails": 0.15,
+    "trace_persistence": 0.08,
+    "hero_presence": 0.10,
+    "text_zone_readability": 0.08,
+    "cta_salience": 0.07,
+}
+_DEFAULT_POSTER_REGION_PROFILE = {
+    "hero": (0.10, 0.08, 0.90, 0.58),
+    "text": (0.08, 0.56, 0.80, 0.92),
+    "body": (0.08, 0.68, 0.72, 0.86),
+    "cta": (0.08, 0.80, 0.34, 0.92),
+}
+_POSTER_REGION_PROFILES: dict[str, dict[str, tuple[float, float, float, float]]] = {
+    "social-post": _DEFAULT_POSTER_REGION_PROFILE,
+    "hero-bottom-text-square": {
+        "hero": (0.00, 0.00, 1.00, 0.70),
+        "text": (0.06, 0.63, 0.82, 0.95),
+        "body": (0.06, 0.76, 0.74, 0.90),
+        "cta": (0.06, 0.86, 0.34, 0.95),
+    },
+    "center-stage-square": {
+        "hero": (0.18, 0.10, 0.82, 0.62),
+        "text": (0.16, 0.62, 0.84, 0.92),
+        "body": (0.16, 0.74, 0.74, 0.88),
+        "cta": (0.16, 0.84, 0.44, 0.93),
+    },
+    "editorial-split-square": {
+        "hero": (0.48, 0.08, 0.95, 0.72),
+        "text": (0.05, 0.08, 0.46, 0.92),
+        "body": (0.07, 0.56, 0.43, 0.86),
+        "cta": (0.07, 0.83, 0.30, 0.92),
+    },
+    "floating-card-square": {
+        "hero": (0.08, 0.08, 0.92, 0.52),
+        "text": (0.08, 0.56, 0.78, 0.92),
+        "body": (0.08, 0.66, 0.70, 0.84),
+        "cta": (0.08, 0.76, 0.34, 0.88),
+    },
+    "stacked-type-square": {
+        "hero": (0.52, 0.08, 0.96, 0.56),
+        "text": (0.05, 0.28, 0.72, 0.92),
+        "body": (0.06, 0.70, 0.78, 0.90),
+        "cta": (0.06, 0.84, 0.30, 0.95),
+    },
+    "bold-knockout-square": {
+        "hero": (0.10, 0.08, 0.90, 0.66),
+        "text": (0.08, 0.60, 0.84, 0.92),
+        "body": (0.08, 0.74, 0.75, 0.88),
+        "cta": (0.08, 0.84, 0.36, 0.93),
+    },
+}
 _LOOKUP_RUNNER_CODE = """
 from __future__ import annotations
 import json
@@ -1033,6 +1089,242 @@ def _contains_generic_cta(cta: str) -> bool:
     return cta.strip().lower() in {"", "learn more", "discover more", "find out more"}
 
 
+def _poster_region_profile(template_used: str) -> dict[str, tuple[float, float, float, float]]:
+    return _POSTER_REGION_PROFILES.get(template_used, _DEFAULT_POSTER_REGION_PROFILE)
+
+
+def _relative_crop(
+    image: Image.Image,
+    box: tuple[float, float, float, float],
+) -> Image.Image:
+    width, height = image.size
+    left = max(0, min(width - 1, round(box[0] * width)))
+    top = max(0, min(height - 1, round(box[1] * height)))
+    right = max(left + 1, min(width, round(box[2] * width)))
+    bottom = max(top + 1, min(height, round(box[3] * height)))
+    return image.crop((left, top, right, bottom))
+
+
+def _hist_percentile(histogram: list[int], percentile: float) -> int:
+    total = sum(histogram)
+    if total <= 0:
+        return 0
+    target = total * percentile
+    cumulative = 0
+    for value, count in enumerate(histogram):
+        cumulative += count
+        if cumulative >= target:
+            return value
+    return len(histogram) - 1
+
+
+def _hist_fraction_between(histogram: list[int], low: int, high: int) -> float:
+    total = sum(histogram)
+    if total <= 0:
+        return 0.0
+    clipped_low = max(0, low)
+    clipped_high = min(len(histogram) - 1, high)
+    if clipped_low > clipped_high:
+        return 0.0
+    return sum(histogram[clipped_low : clipped_high + 1]) / total
+
+
+def _region_stats(region: Image.Image) -> dict[str, float]:
+    grayscale = region.convert("L")
+    histogram = grayscale.histogram()
+    mean_luma = float(ImageStat.Stat(grayscale).mean[0]) / 255.0
+    std_luma = float(ImageStat.Stat(grayscale).stddev[0]) / 255.0
+    p10 = _hist_percentile(histogram, 0.10)
+    p90 = _hist_percentile(histogram, 0.90)
+    edges = grayscale.filter(ImageFilter.FIND_EDGES)
+    edge_histogram = edges.histogram()
+    hsv = region.convert("HSV")
+    saturation = hsv.getchannel("S")
+    saturation_mean = float(ImageStat.Stat(saturation).mean[0]) / 255.0
+    dark_fraction = _hist_fraction_between(histogram, 0, 72)
+    light_fraction = _hist_fraction_between(histogram, 183, 255)
+    edge_density = _hist_fraction_between(edge_histogram, 64, 255)
+    return {
+        "mean_luma": mean_luma,
+        "std_luma": std_luma,
+        "contrast_span": max(0.0, float(p90 - p10) / 255.0),
+        "dark_fraction": dark_fraction,
+        "light_fraction": light_fraction,
+        "edge_density": edge_density,
+        "saturation_mean": saturation_mean,
+    }
+
+
+def _background_baseline(image: Image.Image) -> dict[str, float]:
+    patches = [
+        _relative_crop(image, (0.00, 0.00, 0.14, 0.14)),
+        _relative_crop(image, (0.86, 0.00, 1.00, 0.14)),
+        _relative_crop(image, (0.00, 0.86, 0.14, 1.00)),
+        _relative_crop(image, (0.86, 0.86, 1.00, 1.00)),
+    ]
+    stats = [_region_stats(patch) for patch in patches]
+    return {
+        key: round(sum(item[key] for item in stats) / len(stats), 4)
+        for key in stats[0]
+    }
+
+
+def _hero_expectation(case: PosterArtifactCase, result: dict[str, Any]) -> int:
+    art_direction = dict(result.get("art_direction_plan") or {})
+    profile = dict(art_direction.get("template_profile") or {})
+    hero_emphasis = int(profile.get("hero_emphasis") or 3)
+    prompt_text = " ".join(
+        [
+            case.prompt,
+            str((result.get("creative_brief") or {}).get("hero_focus", "")),
+            str((result.get("creative_brief") or {}).get("visual_direction", "")),
+        ]
+    ).lower()
+    if any(token in prompt_text for token in ("hero", "product", "dashboard", "analytics", "relief", "scene")):
+        hero_emphasis = max(hero_emphasis, 3)
+    return max(1, min(5, hero_emphasis))
+
+
+def _score_hero_presence(
+    case: PosterArtifactCase,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    artifact_path = str(result.get("poster_path") or result.get("artifact_path") or "")
+    if not artifact_path or not Path(artifact_path).exists():
+        return {
+            "score": 0.0,
+            "artifact_path": artifact_path,
+            "passed": False,
+            "reason": "artifact image missing",
+        }
+    with Image.open(artifact_path) as image:
+        image = image.convert("RGB")
+        profile = _poster_region_profile(str(result.get("template_used", "")))
+        hero_region = _relative_crop(image, profile["hero"])
+        hero_stats = _region_stats(hero_region)
+        baseline = _background_baseline(image)
+    hero_emphasis = _hero_expectation(case, result)
+    baseline_band = int(round(baseline["mean_luma"] * 255.0))
+    hero_gray_hist = hero_region.convert("L").histogram()
+    diff_fraction = 1.0 - _hist_fraction_between(
+        hero_gray_hist,
+        baseline_band - 18,
+        baseline_band + 18,
+    )
+    visual_mass = max(
+        diff_fraction,
+        hero_stats["edge_density"] * 2.4,
+        hero_stats["saturation_mean"] * 1.8,
+    )
+    target_mass = {
+        1: 0.10,
+        2: 0.13,
+        3: 0.17,
+        4: 0.21,
+        5: 0.25,
+    }[hero_emphasis]
+    score = round(min(1.0, visual_mass / target_mass) * 100.0, 1)
+    return {
+        "score": score,
+        "hero_emphasis": hero_emphasis,
+        "visual_mass": round(visual_mass, 3),
+        "diff_fraction": round(diff_fraction, 3),
+        "edge_density": round(hero_stats["edge_density"], 3),
+        "saturation_mean": round(hero_stats["saturation_mean"], 3),
+        "passed": score >= 70.0,
+    }
+
+
+def _score_text_zone_readability(result: dict[str, Any]) -> dict[str, Any]:
+    artifact_path = str(result.get("poster_path") or result.get("artifact_path") or "")
+    if not artifact_path or not Path(artifact_path).exists():
+        return {
+            "score": 0.0,
+            "artifact_path": artifact_path,
+            "passed": False,
+            "reason": "artifact image missing",
+        }
+    with Image.open(artifact_path) as image:
+        image = image.convert("RGB")
+        profile = _poster_region_profile(str(result.get("template_used", "")))
+        text_region = _relative_crop(image, profile["text"])
+        stats = _region_stats(text_region)
+    tonal_dominance = max(stats["dark_fraction"], stats["light_fraction"])
+    calmness = max(
+        0.0,
+        1.0 - ((stats["edge_density"] * 2.2) + (stats["saturation_mean"] * 0.9)),
+    )
+    contrast = min(1.0, stats["contrast_span"] / 0.18)
+    score = round(
+        max(
+            0.0,
+            min(
+                1.0,
+                (tonal_dominance * 0.55) + (calmness * 0.35) + (contrast * 0.10),
+            ),
+        )
+        * 100.0,
+        1,
+    )
+    return {
+        "score": score,
+        "tonal_dominance": round(tonal_dominance, 3),
+        "contrast_span": round(stats["contrast_span"], 3),
+        "edge_density": round(stats["edge_density"], 3),
+        "saturation_mean": round(stats["saturation_mean"], 3),
+        "passed": score >= 60.0,
+    }
+
+
+def _score_cta_salience(result: dict[str, Any]) -> dict[str, Any]:
+    artifact_path = str(result.get("poster_path") or result.get("artifact_path") or "")
+    if not artifact_path or not Path(artifact_path).exists():
+        return {
+            "score": 0.0,
+            "artifact_path": artifact_path,
+            "passed": False,
+            "reason": "artifact image missing",
+        }
+    with Image.open(artifact_path) as image:
+        image = image.convert("RGB")
+        profile = _poster_region_profile(str(result.get("template_used", "")))
+        cta_region = _relative_crop(image, profile["cta"])
+        body_region = _relative_crop(image, profile["body"])
+        cta_stats = _region_stats(cta_region)
+        body_stats = _region_stats(body_region)
+    cta_ink = min(cta_stats["dark_fraction"], cta_stats["light_fraction"])
+    body_ink = min(body_stats["dark_fraction"], body_stats["light_fraction"])
+    salience_signal = max(
+        cta_ink * 18.0,
+        cta_stats["edge_density"] * 7.0,
+        cta_stats["contrast_span"] * 2.0,
+    )
+    relative_signal = salience_signal / max(
+        0.1,
+        max(body_ink * 14.0, body_stats["edge_density"] * 5.0),
+    )
+    score = round(
+        max(
+            0.0,
+            min(
+                1.0,
+                (min(1.0, salience_signal / 0.55) * 0.75)
+                + (min(1.0, relative_signal / 1.25) * 0.25),
+            ),
+        )
+        * 100.0,
+        1,
+    )
+    return {
+        "score": score,
+        "cta_ink": round(cta_ink, 3),
+        "cta_edge_density": round(cta_stats["edge_density"], 3),
+        "cta_contrast_span": round(cta_stats["contrast_span"], 3),
+        "body_ink": round(body_ink, 3),
+        "passed": score >= 60.0,
+    }
+
+
 def _score_reference_usage(
     case: PosterArtifactCase,
     result: dict[str, Any],
@@ -1156,13 +1448,13 @@ def score_poster_artifact_result(
         "template_fit": _score_template_fit(case, result),
         "prompt_guardrails": _score_prompt_guardrails(case, result),
         "trace_persistence": _score_trace_persistence(result),
+        "hero_presence": _score_hero_presence(case, result),
+        "text_zone_readability": _score_text_zone_readability(result),
+        "cta_salience": _score_cta_salience(result),
     }
-    weighted_score = (
-        checks["reference_usage"]["score"] * 0.30
-        + checks["copy_discipline"]["score"] * 0.20
-        + checks["template_fit"]["score"] * 0.20
-        + checks["prompt_guardrails"]["score"] * 0.20
-        + checks["trace_persistence"]["score"] * 0.10
+    weighted_score = sum(
+        float(checks[check_name]["score"]) * weight
+        for check_name, weight in POSTER_OBJECTIVE_CHECK_WEIGHTS.items()
     )
     return {
         "objective_checks": checks,
@@ -1184,14 +1476,9 @@ def summarize_poster_suite_run(report: dict[str, Any]) -> dict[str, Any]:
             "average_objective_score_100": 0.0,
             "check_averages": {},
         }
+    check_names = list(dict(cases[0].get("objective_checks", {})).keys())
     check_averages: dict[str, float] = {}
-    for check_name in (
-        "reference_usage",
-        "copy_discipline",
-        "template_fit",
-        "prompt_guardrails",
-        "trace_persistence",
-    ):
+    for check_name in check_names:
         check_averages[check_name] = round(
             sum(
                 float(case["objective_checks"][check_name]["score"])
@@ -1207,6 +1494,188 @@ def summarize_poster_suite_run(report: dict[str, Any]) -> dict[str, Any]:
             1,
         ),
         "check_averages": check_averages,
+    }
+
+
+def build_blank_poster_manual_scorecard(
+    report: dict[str, Any],
+    *,
+    evaluator: str = "human",
+) -> dict[str, Any]:
+    """Create a blank manual scorecard for a poster/UI artifact report."""
+    cases = list(report.get("cases", []))
+    return {
+        "schema_version": 1,
+        "suite_id": "poster_ui_manual_review_v1",
+        "generated_at": _utc_now(),
+        "evaluator": evaluator,
+        "source_report": {
+            "label": report.get("label"),
+            "git_ref": report.get("git_ref"),
+            "resolved_ref": report.get("resolved_ref"),
+            "generated_at": report.get("generated_at"),
+        },
+        "results": [
+            {
+                "prompt_id": case["prompt_id"],
+                "family": case["family"],
+                "title": case["title"],
+                "artifact_path": case.get("artifact_path", ""),
+                "trace_path": case.get("trace_path", ""),
+                "template_used": case.get("template_used", ""),
+                "objective_score_100": case.get("objective_score_100"),
+                "focus": list((case.get("manual_review") or {}).get("focus", [])),
+                "notes": "",
+                "dimension_scores": {
+                    dimension: None for dimension in POSTER_MANUAL_DIMENSIONS
+                },
+            }
+            for case in cases
+        ],
+    }
+
+
+def validate_poster_manual_scorecard(
+    scorecard: dict[str, Any],
+    report: dict[str, Any],
+    *,
+    allow_unscored: bool = False,
+) -> None:
+    """Validate a poster manual-review scorecard against a specific report."""
+    cases = list(report.get("cases", []))
+    expected_prompt_ids = {str(case["prompt_id"]) for case in cases}
+    case_map = {str(case["prompt_id"]): case for case in cases}
+    results = scorecard.get("results")
+    if not isinstance(results, list):
+        msg = "Poster scorecard results must be a list"
+        raise ValueError(msg)
+    seen_prompt_ids: set[str] = set()
+    for entry in results:
+        if not isinstance(entry, dict):
+            msg = "Poster scorecard entries must be mappings"
+            raise ValueError(msg)
+        prompt_id = str(entry.get("prompt_id", ""))
+        if prompt_id not in case_map:
+            msg = f"Unknown poster prompt_id in scorecard: {prompt_id}"
+            raise ValueError(msg)
+        if prompt_id in seen_prompt_ids:
+            msg = f"Duplicate poster prompt_id in scorecard: {prompt_id}"
+            raise ValueError(msg)
+        seen_prompt_ids.add(prompt_id)
+        dimension_scores = dict(entry.get("dimension_scores", {}))
+        if set(dimension_scores) != set(POSTER_MANUAL_DIMENSIONS):
+            msg = (
+                f"Poster scorecard dimensions for {prompt_id} must match "
+                f"{list(POSTER_MANUAL_DIMENSIONS)}"
+            )
+            raise ValueError(msg)
+        for dimension_id, score in dimension_scores.items():
+            if score is None:
+                if allow_unscored:
+                    continue
+                msg = f"Poster score for {prompt_id}/{dimension_id} is missing"
+                raise ValueError(msg)
+            if not isinstance(score, int):
+                msg = f"Poster score for {prompt_id}/{dimension_id} must be an int"
+                raise ValueError(msg)
+            if score < SCORE_MIN or score > SCORE_MAX:
+                msg = (
+                    f"Poster score for {prompt_id}/{dimension_id} must be between "
+                    f"{SCORE_MIN} and {SCORE_MAX}"
+                )
+                raise ValueError(msg)
+    if seen_prompt_ids != expected_prompt_ids:
+        missing = sorted(expected_prompt_ids - seen_prompt_ids)
+        msg = f"Poster scorecard is missing prompts: {missing}"
+        raise ValueError(msg)
+
+
+def summarize_poster_manual_scorecard(
+    scorecard: dict[str, Any],
+    report: dict[str, Any],
+) -> dict[str, Any]:
+    """Summarize a completed poster manual-review scorecard."""
+    validate_poster_manual_scorecard(scorecard, report, allow_unscored=False)
+    results = list(scorecard["results"])
+    per_prompt = []
+    by_dimension: dict[str, list[int]] = {dimension: [] for dimension in POSTER_MANUAL_DIMENSIONS}
+    by_family: dict[str, list[float]] = {}
+    for entry in results:
+        dimension_scores = {key: int(value) for key, value in dict(entry["dimension_scores"]).items()}
+        manual_score_5 = round(
+            sum(dimension_scores.values()) / len(POSTER_MANUAL_DIMENSIONS),
+            3,
+        )
+        per_prompt.append(
+            {
+                "prompt_id": entry["prompt_id"],
+                "family": entry["family"],
+                "manual_score_5": manual_score_5,
+                "manual_score_100": round(manual_score_5 * 20.0, 1),
+                "objective_score_100": entry.get("objective_score_100"),
+            }
+        )
+        by_family.setdefault(str(entry["family"]), []).append(manual_score_5)
+        for dimension, score in dimension_scores.items():
+            by_dimension[dimension].append(score)
+    overall_score_5 = round(
+        sum(item["manual_score_5"] for item in per_prompt) / len(per_prompt),
+        3,
+    )
+    return {
+        "prompt_count": len(per_prompt),
+        "overall_manual_score_5": overall_score_5,
+        "overall_manual_score_100": round(overall_score_5 * 20.0, 1),
+        "family_scores_5": {
+            family: round(sum(scores) / len(scores), 3)
+            for family, scores in by_family.items()
+        },
+        "dimension_scores": {
+            dimension: round(sum(scores) / len(scores), 3)
+            for dimension, scores in by_dimension.items()
+        },
+        "per_prompt": per_prompt,
+    }
+
+
+def compare_poster_manual_scorecards(
+    scorecards: list[dict[str, Any]],
+    reports: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Compare multiple completed poster manual-review scorecards."""
+    if len(scorecards) != len(reports):
+        msg = "Poster scorecard/report counts must match"
+        raise ValueError(msg)
+    milestones = []
+    for scorecard, report in zip(scorecards, reports):
+        summary = summarize_poster_manual_scorecard(scorecard, report)
+        source = dict(scorecard.get("source_report", {}))
+        milestones.append(
+            {
+                "label": source.get("label"),
+                "git_ref": source.get("git_ref"),
+                "resolved_ref": source.get("resolved_ref"),
+                "overall_manual_score_5": summary["overall_manual_score_5"],
+                "overall_manual_score_100": summary["overall_manual_score_100"],
+                "family_scores_5": summary["family_scores_5"],
+            }
+        )
+    deltas: list[dict[str, Any]] = []
+    for previous, current in zip(milestones, milestones[1:]):
+        deltas.append(
+            {
+                "from": previous["label"],
+                "to": current["label"],
+                "overall_manual_delta_5": round(
+                    float(current["overall_manual_score_5"])
+                    - float(previous["overall_manual_score_5"]),
+                    3,
+                ),
+            }
+        )
+    return {
+        "milestones": milestones,
+        "deltas": deltas,
     }
 
 
@@ -1359,6 +1828,7 @@ def compare_poster_suite_runs(reports: list[dict[str, Any]]) -> dict[str, Any]:
 
 def render_poster_suite_markdown(report: dict[str, Any]) -> str:
     """Render a concise markdown summary for one poster artifact report."""
+    check_averages = report["summary"]["check_averages"]
     lines = [
         "# Poster/UI Artifact Eval",
         "",
@@ -1369,18 +1839,26 @@ def render_poster_suite_markdown(report: dict[str, Any]) -> str:
         "## Summary",
         "",
         f"- Average objective score: {report['summary']['average_objective_score_100']:.1f}/100",
-        f"- Check averages: {report['summary']['check_averages']}",
+        f"- Check averages: {check_averages}",
         "",
         "## Cases",
         "",
-        "| Prompt | Template | Objective | Reference Tools |",
-        "| --- | --- | ---: | --- |",
+        "| Prompt | Template | Objective | Hero | Readability | CTA | Reference Tools |",
+        "| --- | --- | ---: | ---: | ---: | ---: | --- |",
     ]
     for case in report["cases"]:
         tools = ", ".join(case["reference_trace"].get("lookup_tools_used", []))
+        hero_score = case["objective_checks"].get("hero_presence", {}).get("score", 0.0)
+        readability_score = case["objective_checks"].get(
+            "text_zone_readability",
+            {},
+        ).get("score", 0.0)
+        cta_score = case["objective_checks"].get("cta_salience", {}).get("score", 0.0)
         lines.append(
             f"| {case['prompt_id']} | {case['template_used']} | "
-            f"{case['objective_score_100']:.1f} | {tools or 'none'} |"
+            f"{case['objective_score_100']:.1f} | "
+            f"{hero_score:.1f} | {readability_score:.1f} | {cta_score:.1f} | "
+            f"{tools or 'none'} |"
         )
     lines.extend(["", "## Notes", ""])
     for case in report["cases"]:

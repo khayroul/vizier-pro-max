@@ -2,21 +2,21 @@
 
 Label: ui-ux-loop-before
 Git ref: `06bf1e424cfbb55da46fb3d73522bad451701055` (`06bf1e42`)
-Generated at: 2026-04-03T01:17:46+00:00
+Generated at: 2026-04-03T01:38:06+00:00
 
 ## Summary
 
-- Average objective score: 19.0/100
-- Check averages: {'reference_usage': 0.0, 'copy_discipline': 75.0, 'template_fit': 20.0, 'prompt_guardrails': 0.0, 'trace_persistence': 0.0}
+- Average objective score: 14.2/100
+- Check averages: {'reference_usage': 0.0, 'copy_discipline': 75.0, 'template_fit': 20.0, 'prompt_guardrails': 0.0, 'trace_persistence': 0.0, 'hero_presence': 0.0, 'text_zone_readability': 0.0, 'cta_salience': 0.0}
 
 ## Cases
 
-| Prompt | Template | Objective | Reference Tools |
-| --- | --- | ---: | --- |
-| swiss_analytics_hero | social-post | 19.0 | none |
-| retro_event_poster | social-post | 19.0 | none |
-| donation_trust_landing | social-post | 19.0 | none |
-| premium_product_drop | social-post | 19.0 | none |
+| Prompt | Template | Objective | Hero | Readability | CTA | Reference Tools |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| swiss_analytics_hero | social-post | 14.2 | 0.0 | 0.0 | 0.0 | none |
+| retro_event_poster | social-post | 14.2 | 0.0 | 0.0 | 0.0 | none |
+| donation_trust_landing | social-post | 14.2 | 0.0 | 0.0 | 0.0 | none |
+| premium_product_drop | social-post | 14.2 | 0.0 | 0.0 | 0.0 | none |
 
 ## Notes
 

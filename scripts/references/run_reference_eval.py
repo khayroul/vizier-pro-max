@@ -15,7 +15,9 @@ if str(ROOT) not in sys.path:
 from references.eval_harness import (
     REPO_ROOT,
     build_blank_scorecard,
+    build_blank_poster_manual_scorecard,
     compare_poster_suite_runs,
+    compare_poster_manual_scorecards,
     compare_scorecards,
     load_milestones,
     probe_milestones,
@@ -23,7 +25,9 @@ from references.eval_harness import (
     render_probe_report_markdown,
     resolve_git_ref,
     run_poster_artifact_suite,
+    summarize_poster_manual_scorecard,
     summarize_scorecard,
+    validate_poster_manual_scorecard,
     validate_scorecard,
 )
 
@@ -142,6 +146,54 @@ def command_compare_poster_runs(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_prepare_poster_scorecard(args: argparse.Namespace) -> int:
+    report = _read_json(Path(args.report))
+    scorecard = build_blank_poster_manual_scorecard(
+        report,
+        evaluator=args.evaluator,
+    )
+    _write_json(scorecard, Path(args.output))
+    return 0
+
+
+def command_validate_poster_scorecard(args: argparse.Namespace) -> int:
+    scorecard = _read_json(Path(args.path))
+    report = _read_json(Path(args.report))
+    validate_poster_manual_scorecard(
+        scorecard,
+        report,
+        allow_unscored=args.allow_unscored,
+    )
+    print(
+        json.dumps(
+            {
+                "status": "ok",
+                "path": args.path,
+                "report": args.report,
+                "allow_unscored": bool(args.allow_unscored),
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
+def command_summarize_poster_scorecard(args: argparse.Namespace) -> int:
+    scorecard = _read_json(Path(args.path))
+    report = _read_json(Path(args.report))
+    summary = summarize_poster_manual_scorecard(scorecard, report)
+    _write_json(summary, Path(args.output) if args.output else None)
+    return 0
+
+
+def command_compare_poster_scorecards(args: argparse.Namespace) -> int:
+    scorecards = [_read_json(Path(path)) for path in args.paths]
+    reports = [_read_json(Path(path)) for path in args.reports]
+    comparison = compare_poster_manual_scorecards(scorecards, reports)
+    _write_json(comparison, Path(args.output) if args.output else None)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Run the reference-corpus evaluation harness."
@@ -246,6 +298,89 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional output path for the comparison JSON.",
     )
     compare_poster_parser.set_defaults(func=command_compare_poster_runs)
+
+    prepare_poster_scorecard_parser = subparsers.add_parser(
+        "prepare-poster-scorecard",
+        help="Generate a blank manual scorecard from a poster/UI artifact report.",
+    )
+    prepare_poster_scorecard_parser.add_argument(
+        "--report",
+        required=True,
+        help="Poster artifact report JSON to turn into a review template.",
+    )
+    prepare_poster_scorecard_parser.add_argument(
+        "--output",
+        required=True,
+        help="Where to write the blank poster scorecard JSON.",
+    )
+    prepare_poster_scorecard_parser.add_argument(
+        "--evaluator",
+        default="human",
+        help="Who will score the poster artifacts. Defaults to 'human'.",
+    )
+    prepare_poster_scorecard_parser.set_defaults(func=command_prepare_poster_scorecard)
+
+    validate_poster_scorecard_parser = subparsers.add_parser(
+        "validate-poster-scorecard",
+        help="Validate a poster manual-review scorecard against a poster report.",
+    )
+    validate_poster_scorecard_parser.add_argument(
+        "--path",
+        required=True,
+        help="Path to the poster scorecard JSON file.",
+    )
+    validate_poster_scorecard_parser.add_argument(
+        "--report",
+        required=True,
+        help="Poster artifact report JSON used to seed the scorecard.",
+    )
+    validate_poster_scorecard_parser.add_argument(
+        "--allow-unscored",
+        action="store_true",
+        help="Allow blank dimension scores in templates.",
+    )
+    validate_poster_scorecard_parser.set_defaults(func=command_validate_poster_scorecard)
+
+    summarize_poster_scorecard_parser = subparsers.add_parser(
+        "summarize-poster-scorecard",
+        help="Summarize a completed poster manual-review scorecard.",
+    )
+    summarize_poster_scorecard_parser.add_argument(
+        "--path",
+        required=True,
+        help="Path to the poster scorecard JSON file.",
+    )
+    summarize_poster_scorecard_parser.add_argument(
+        "--report",
+        required=True,
+        help="Poster artifact report JSON used to seed the scorecard.",
+    )
+    summarize_poster_scorecard_parser.add_argument(
+        "--output",
+        help="Optional output path for the summary JSON.",
+    )
+    summarize_poster_scorecard_parser.set_defaults(func=command_summarize_poster_scorecard)
+
+    compare_poster_scorecards_parser = subparsers.add_parser(
+        "compare-poster-scorecards",
+        help="Compare multiple completed poster manual-review scorecards.",
+    )
+    compare_poster_scorecards_parser.add_argument(
+        "paths",
+        nargs="+",
+        help="Poster scorecard JSON files to compare.",
+    )
+    compare_poster_scorecards_parser.add_argument(
+        "--reports",
+        nargs="+",
+        required=True,
+        help="Poster artifact reports corresponding to the scorecards, in the same order.",
+    )
+    compare_poster_scorecards_parser.add_argument(
+        "--output",
+        help="Optional output path for the comparison JSON.",
+    )
+    compare_poster_scorecards_parser.set_defaults(func=command_compare_poster_scorecards)
 
     return parser
 

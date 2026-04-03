@@ -4,13 +4,16 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from PIL import Image, ImageDraw
 
 from references.eval_harness import (
     POSTER_MANUAL_DIMENSIONS,
     REPO_ROOT,
     LookupProbeSpec,
     build_blank_scorecard,
+    build_blank_poster_manual_scorecard,
     build_capability_snapshot,
+    compare_poster_manual_scorecards,
     compare_poster_suite_runs,
     compare_scorecards,
     evaluate_lookup_probe,
@@ -19,7 +22,9 @@ from references.eval_harness import (
     load_prompt_suite,
     load_rubric,
     score_poster_artifact_result,
+    summarize_poster_manual_scorecard,
     summarize_scorecard,
+    validate_poster_manual_scorecard,
     validate_scorecard,
 )
 
@@ -38,6 +43,33 @@ def _filled_scorecard(score: int) -> dict[str, object]:
             dimension_scores[dimension_id] = score
         entry["dimension_scores"] = dimension_scores
     return scorecard
+
+
+def _write_synthetic_poster(
+    path: Path,
+    *,
+    hero: bool = True,
+    calm_text_zone: bool = True,
+    cta: bool = True,
+) -> Path:
+    image = Image.new("RGB", (1080, 1080), "white")
+    draw = ImageDraw.Draw(image)
+    if hero:
+        draw.rounded_rectangle((90, 80, 990, 520), radius=28, fill="#41506A")
+        draw.rounded_rectangle((210, 120, 640, 480), radius=22, outline="#A9B4C5", width=10)
+        draw.ellipse((170, 110, 610, 470), fill="#45A9E6")
+    if not calm_text_zone:
+        for index in range(12):
+            top = 620 + (index * 28)
+            color = "#A34EF1" if index % 2 else "#F08C3A"
+            draw.rectangle((60, top, 960, top + 20), fill=color)
+    draw.rectangle((80, 620, 760, 690), fill="black")
+    draw.rectangle((80, 720, 560, 756), fill="#333333")
+    if cta:
+        draw.rounded_rectangle((78, 830, 320, 886), radius=10, fill="black")
+        draw.rectangle((262, 850, 298, 864), fill="white")
+    image.save(path)
+    return path
 
 
 def test_prompt_suite_covers_visual_chart_and_report() -> None:
@@ -166,6 +198,7 @@ def test_score_poster_artifact_result_rewards_trace_copy_and_template_fit(
     case = load_poster_artifact_suite()[0]
     trace_path = tmp_path / "poster.trace.json"
     trace_path.write_text("{}", encoding="utf-8")
+    poster_path = _write_synthetic_poster(tmp_path / "poster.png")
 
     scored = score_poster_artifact_result(
         case,
@@ -179,7 +212,13 @@ def test_score_poster_artifact_result_rewards_trace_copy_and_template_fit(
                 "lookup_tools_used": ["search_ui_styles", "search_ux_guidelines"],
                 "material_influences": [{}, {}, {}],
             },
-            "template_used": "editorial-split-square",
+            "poster_path": str(poster_path),
+            "template_used": "floating-card-square",
+            "art_direction_plan": {
+                "template_profile": {
+                    "hero_emphasis": 4,
+                }
+            },
             "prompt_trace": {
                 "effective_prompt": "grid contrast negative space cta premium hero",
             },
@@ -189,6 +228,82 @@ def test_score_poster_artifact_result_rewards_trace_copy_and_template_fit(
 
     assert scored["objective_score_100"] >= 90.0
     assert set(scored["manual_review"]["dimensions"]) == set(POSTER_MANUAL_DIMENSIONS)
+    assert scored["objective_checks"]["hero_presence"]["score"] >= 70.0
+    assert scored["objective_checks"]["text_zone_readability"]["score"] >= 55.0
+    assert scored["objective_checks"]["cta_salience"]["score"] >= 60.0
+
+
+def test_score_poster_artifact_result_penalizes_blank_hero_region(
+    tmp_path: Path,
+) -> None:
+    case = load_poster_artifact_suite()[3]
+    trace_path = tmp_path / "poster.trace.json"
+    trace_path.write_text("{}", encoding="utf-8")
+    poster_path = _write_synthetic_poster(tmp_path / "poster.png", hero=False)
+
+    scored = score_poster_artifact_result(
+        case,
+        {
+            "creative_brief": {
+                "headline": "The Cold Brew Drop",
+                "body": "Limited release. Bright citrus notes, silky finish, and launch-day energy.",
+                "cta": "Shop Now",
+            },
+            "reference_trace": {
+                "lookup_tools_used": ["search_ui_styles", "search_ux_guidelines"],
+                "material_influences": [{}, {}, {}],
+            },
+            "poster_path": str(poster_path),
+            "template_used": "center-stage-square",
+            "art_direction_plan": {
+                "template_profile": {
+                    "hero_emphasis": 5,
+                }
+            },
+            "prompt_trace": {
+                "effective_prompt": "hero contrast cta premium product lighting",
+            },
+            "trace_path": str(trace_path),
+        },
+    )
+
+    assert scored["objective_checks"]["hero_presence"]["score"] < 45.0
+
+
+def test_poster_manual_scorecard_round_trip() -> None:
+    report = {
+        "label": "after",
+        "git_ref": "WORKTREE",
+        "resolved_ref": "b" * 40,
+        "generated_at": "2026-04-03T00:00:00+00:00",
+        "cases": [
+            {
+                "prompt_id": "swiss_analytics_hero",
+                "family": "visual",
+                "title": "Swiss analytics hero",
+                "artifact_path": "out/poster.png",
+                "trace_path": "out/poster.trace.json",
+                "template_used": "floating-card-square",
+                "objective_score_100": 88.0,
+                "manual_review": {
+                    "focus": ["Check hero scale."],
+                },
+            }
+        ],
+    }
+    scorecard = build_blank_poster_manual_scorecard(report)
+
+    validate_poster_manual_scorecard(scorecard, report, allow_unscored=True)
+    scorecard["results"][0]["dimension_scores"] = {
+        dimension: 4 for dimension in POSTER_MANUAL_DIMENSIONS
+    }
+    summary = summarize_poster_manual_scorecard(scorecard, report)
+    comparison = compare_poster_manual_scorecards([scorecard], [report])
+
+    assert scorecard["results"][0]["focus"] == ["Check hero scale."]
+    assert summary["overall_manual_score_5"] == 4.0
+    assert summary["per_prompt"][0]["objective_score_100"] == 88.0
+    assert comparison["milestones"][0]["overall_manual_score_100"] == 80.0
 
 
 def test_compare_poster_suite_runs_reports_case_and_overall_deltas() -> None:

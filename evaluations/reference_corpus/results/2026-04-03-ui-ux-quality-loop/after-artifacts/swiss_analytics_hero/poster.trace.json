@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "20260403-091752",
+  "generated_at": "20260403-093801",
   "inputs": {
     "headline": "",
     "body": "",
@@ -941,7 +941,7 @@
   },
   "artifact": {
     "poster_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/swiss_analytics_hero/poster.png",
-    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-091752/hero.png",
+    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-093801/hero.png",
     "template_used": "floating-card-square",
     "image_mode": "openai"
   }

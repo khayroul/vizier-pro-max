@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "20260403-091755",
+  "generated_at": "20260403-093804",
   "inputs": {
     "headline": "",
     "body": "",
@@ -976,7 +976,7 @@
   },
   "artifact": {
     "poster_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/donation_trust_landing/poster.png",
-    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-091755/hero.png",
+    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-093804/hero.png",
     "template_used": "hero-bottom-text-square",
     "image_mode": "openai"
   }

@@ -19,6 +19,9 @@ Objective checks in the poster suite:
 - `template_fit`: did the selected template match the prompt family instead of defaulting to a generic poster?
 - `prompt_guardrails`: did the generated image prompt carry hierarchy, contrast, composition, and CTA guidance?
 - `trace_persistence`: did the run persist a generation trace that future sessions can inspect?
+- `hero_presence`: does the rendered hero region contain enough visual mass for the requested composition?
+- `text_zone_readability`: does the rendered text zone stay calm and high-contrast enough for overlay copy?
+- `cta_salience`: does the rendered CTA zone show enough visible signal to avoid disappearing into the layout?
 
 Manual review remains required for:
 
@@ -59,15 +62,19 @@ Poster artifact suite comparison recorded in:
 - `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-report.json`
 - `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-report.json`
 - `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/comparison.json`
+- `evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-manual-scorecard.template.json`
 
-Objective delta:
+Objective delta after adding render-aware checks:
 
-- average objective score: `19.0` -> `94.0`
+- average objective score: `14.2` -> `88.3`
 - `reference_usage`: `0.0` -> `100.0`
 - `copy_discipline`: `75.0` -> `100.0`
 - `template_fit`: `20.0` -> `88.8`
 - `prompt_guardrails`: `0.0` -> `81.2`
 - `trace_persistence`: `0.0` -> `100.0`
+- `hero_presence`: `0.0` -> `67.1`
+- `text_zone_readability`: `0.0` -> `77.2`
+- `cta_salience`: `0.0` -> `70.2`
 
 Case-level template shifts:
 
@@ -75,6 +82,13 @@ Case-level template shifts:
 - `retro_event_poster`: `social-post` -> `stacked-type-square`
 - `donation_trust_landing`: `social-post` -> `hero-bottom-text-square`
 - `premium_product_drop`: `social-post` -> `stacked-type-square`
+
+Render-aware follow-up signals from the current run:
+
+- `retro_event_poster`: hero presence is still weak at `25.6`
+- `premium_product_drop`: hero presence is still weak at `42.7`
+- `donation_trust_landing`: text-zone readability is still middling at `57.2`
+- `swiss_analytics_hero`: CTA salience is still middling at `46.5`
 
 ## Still Manual / Approximate
 
@@ -87,6 +101,8 @@ Still manual or approximate:
 - whether composition feels intentional to a design reviewer
 - whether reference usage is genuinely well-distilled or only mechanically present
 - whether rendered outputs consistently avoid abstract or under-specified hero imagery
+
+This follow-up direction also adds a poster-specific manual-review scorecard flow so the artifact reports can be turned into stable human review templates instead of ad hoc comments.
 
 ## Recommended Next Packet
 

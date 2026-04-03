@@ -21,6 +21,9 @@ local reference corpora only.
   - template fit
   - copy discipline
   - prompt guardrail coverage
+  - hero-region visual presence
+  - text-zone readability calmness
+  - CTA-region salience
 
 ## What It Still Measures Poorly
 
@@ -62,4 +65,5 @@ for:
    - template choice improved
    - copy/CTA discipline improved
    - prompt guardrails became more explicit
-4. Use the built-in manual review fields for the subjective visual call.
+4. Generate a poster review template with `prepare-poster-scorecard`.
+5. Use the poster scorecard for the subjective visual call and compare completed reviews with `compare-poster-scorecards`.

@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-04-03T01:17:57+00:00",
+  "generated_at": "2026-04-03T01:38:06+00:00",
   "kind": "poster_ui_artifact_eval",
   "label": "ui-ux-loop-after",
   "git_ref": "WORKTREE",
-  "resolved_ref": "942ab6e4ac7e09fb0b44433fa4cd9d2b84b2ad38+working-tree",
+  "resolved_ref": "87b50c15b8d59f9b2826b7bea84ff4ae507f4205+working-tree",
   "output_root": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts",
   "cases": [
     {
@@ -992,9 +992,34 @@
           "score": 100.0,
           "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/swiss_analytics_hero/poster.trace.json",
           "passed": true
+        },
+        "hero_presence": {
+          "score": 100.0,
+          "hero_emphasis": 4,
+          "visual_mass": 0.97,
+          "diff_fraction": 0.97,
+          "edge_density": 0.018,
+          "saturation_mean": 0.309,
+          "passed": true
+        },
+        "text_zone_readability": {
+          "score": 85.7,
+          "tonal_dominance": 0.968,
+          "contrast_span": 0.004,
+          "edge_density": 0.034,
+          "saturation_mean": 0.005,
+          "passed": true
+        },
+        "cta_salience": {
+          "score": 46.5,
+          "cta_ink": 0.0,
+          "cta_edge_density": 0.023,
+          "cta_contrast_span": 0.004,
+          "body_ink": 0.002,
+          "passed": false
         }
       },
-      "objective_score_100": 95.0,
+      "objective_score_100": 91.4,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -2018,9 +2043,34 @@
           "score": 100.0,
           "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/retro_event_poster/poster.trace.json",
           "passed": true
+        },
+        "hero_presence": {
+          "score": 25.6,
+          "hero_emphasis": 1,
+          "visual_mass": 0.026,
+          "diff_fraction": 0.017,
+          "edge_density": 0.011,
+          "saturation_mean": 0.002,
+          "passed": false
+        },
+        "text_zone_readability": {
+          "score": 83.1,
+          "tonal_dominance": 0.905,
+          "contrast_span": 0.012,
+          "edge_density": 0.03,
+          "saturation_mean": 0.002,
+          "passed": true
+        },
+        "cta_salience": {
+          "score": 97.1,
+          "cta_ink": 0.026,
+          "cta_edge_density": 0.076,
+          "cta_contrast_span": 0.004,
+          "body_ink": 0.014,
+          "passed": true
         }
       },
-      "objective_score_100": 95.0,
+      "objective_score_100": 87.3,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -3058,9 +3108,34 @@
           "score": 100.0,
           "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/donation_trust_landing/poster.trace.json",
           "passed": true
+        },
+        "hero_presence": {
+          "score": 100.0,
+          "hero_emphasis": 5,
+          "visual_mass": 0.468,
+          "diff_fraction": 0.468,
+          "edge_density": 0.006,
+          "saturation_mean": 0.249,
+          "passed": true
+        },
+        "text_zone_readability": {
+          "score": 57.2,
+          "tonal_dominance": 0.407,
+          "contrast_span": 0.122,
+          "edge_density": 0.048,
+          "saturation_mean": 0.101,
+          "passed": false
+        },
+        "cta_salience": {
+          "score": 57.5,
+          "cta_ink": 0.012,
+          "cta_edge_density": 0.052,
+          "cta_contrast_span": 0.031,
+          "body_ink": 0.068,
+          "passed": false
         }
       },
-      "objective_score_100": 95.0,
+      "objective_score_100": 89.9,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -4033,9 +4108,34 @@
           "score": 100.0,
           "trace_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/premium_product_drop/poster.trace.json",
           "passed": true
+        },
+        "hero_presence": {
+          "score": 42.7,
+          "hero_emphasis": 3,
+          "visual_mass": 0.073,
+          "diff_fraction": 0.073,
+          "edge_density": 0.023,
+          "saturation_mean": 0.002,
+          "passed": false
+        },
+        "text_zone_readability": {
+          "score": 83.0,
+          "tonal_dominance": 0.914,
+          "contrast_span": 0.004,
+          "edge_density": 0.032,
+          "saturation_mean": 0.002,
+          "passed": true
+        },
+        "cta_salience": {
+          "score": 79.9,
+          "cta_ink": 0.009,
+          "cta_edge_density": 0.057,
+          "cta_contrast_span": 0.004,
+          "body_ink": 0.01,
+          "passed": true
         }
       },
-      "objective_score_100": 91.0,
+      "objective_score_100": 84.8,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -4056,13 +4156,16 @@
   ],
   "summary": {
     "case_count": 4,
-    "average_objective_score_100": 94.0,
+    "average_objective_score_100": 88.3,
     "check_averages": {
       "reference_usage": 100.0,
       "copy_discipline": 100.0,
       "template_fit": 88.8,
       "prompt_guardrails": 81.2,
-      "trace_persistence": 100.0
+      "trace_persistence": 100.0,
+      "hero_presence": 67.1,
+      "text_zone_readability": 77.2,
+      "cta_salience": 70.2
     }
   }
 }

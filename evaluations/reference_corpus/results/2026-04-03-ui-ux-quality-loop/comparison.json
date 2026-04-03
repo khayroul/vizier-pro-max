@@ -4,26 +4,32 @@
       "label": "ui-ux-loop-before",
       "git_ref": "06bf1e424cfbb55da46fb3d73522bad451701055",
       "resolved_ref": "06bf1e424cfbb55da46fb3d73522bad451701055",
-      "average_objective_score_100": 19.0,
+      "average_objective_score_100": 14.2,
       "check_averages": {
         "reference_usage": 0.0,
         "copy_discipline": 75.0,
         "template_fit": 20.0,
         "prompt_guardrails": 0.0,
-        "trace_persistence": 0.0
+        "trace_persistence": 0.0,
+        "hero_presence": 0.0,
+        "text_zone_readability": 0.0,
+        "cta_salience": 0.0
       }
     },
     {
       "label": "ui-ux-loop-after",
       "git_ref": "WORKTREE",
-      "resolved_ref": "942ab6e4ac7e09fb0b44433fa4cd9d2b84b2ad38+working-tree",
-      "average_objective_score_100": 94.0,
+      "resolved_ref": "87b50c15b8d59f9b2826b7bea84ff4ae507f4205+working-tree",
+      "average_objective_score_100": 88.3,
       "check_averages": {
         "reference_usage": 100.0,
         "copy_discipline": 100.0,
         "template_fit": 88.8,
         "prompt_guardrails": 81.2,
-        "trace_persistence": 100.0
+        "trace_persistence": 100.0,
+        "hero_presence": 67.1,
+        "text_zone_readability": 77.2,
+        "cta_salience": 70.2
       }
     }
   ],
@@ -31,13 +37,16 @@
     {
       "from": "ui-ux-loop-before",
       "to": "ui-ux-loop-after",
-      "objective_delta_100": 75.0,
+      "objective_delta_100": 74.1,
       "check_deltas": {
         "reference_usage": 100.0,
         "copy_discipline": 25.0,
         "template_fit": 68.8,
         "prompt_guardrails": 81.2,
-        "trace_persistence": 100.0
+        "trace_persistence": 100.0,
+        "hero_presence": 67.1,
+        "text_zone_readability": 77.2,
+        "cta_salience": 70.2
       }
     }
   ],
@@ -46,7 +55,7 @@
       "prompt_id": "swiss_analytics_hero",
       "from_label": "ui-ux-loop-before",
       "to_label": "ui-ux-loop-after",
-      "objective_delta_100": 76.0,
+      "objective_delta_100": 77.2,
       "template_before": "social-post",
       "template_after": "floating-card-square"
     },
@@ -54,7 +63,7 @@
       "prompt_id": "retro_event_poster",
       "from_label": "ui-ux-loop-before",
       "to_label": "ui-ux-loop-after",
-      "objective_delta_100": 76.0,
+      "objective_delta_100": 73.1,
       "template_before": "social-post",
       "template_after": "stacked-type-square"
     },
@@ -62,7 +71,7 @@
       "prompt_id": "donation_trust_landing",
       "from_label": "ui-ux-loop-before",
       "to_label": "ui-ux-loop-after",
-      "objective_delta_100": 76.0,
+      "objective_delta_100": 75.7,
       "template_before": "social-post",
       "template_after": "hero-bottom-text-square"
     },
@@ -70,7 +79,7 @@
       "prompt_id": "premium_product_drop",
       "from_label": "ui-ux-loop-before",
       "to_label": "ui-ux-loop-after",
-      "objective_delta_100": 72.0,
+      "objective_delta_100": 70.6,
       "template_before": "social-post",
       "template_after": "stacked-type-square"
     }

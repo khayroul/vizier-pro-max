@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-04-03T01:17:46+00:00",
+  "generated_at": "2026-04-03T01:38:06+00:00",
   "kind": "poster_ui_artifact_eval",
   "label": "ui-ux-loop-before",
   "git_ref": "06bf1e424cfbb55da46fb3d73522bad451701055",
@@ -83,9 +83,27 @@
           "score": 0.0,
           "trace_path": "",
           "passed": false
+        },
+        "hero_presence": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/swiss_analytics_hero/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "text_zone_readability": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/swiss_analytics_hero/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "cta_salience": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/swiss_analytics_hero/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
         }
       },
-      "objective_score_100": 19.0,
+      "objective_score_100": 14.2,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -179,9 +197,27 @@
           "score": 0.0,
           "trace_path": "",
           "passed": false
+        },
+        "hero_presence": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/retro_event_poster/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "text_zone_readability": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/retro_event_poster/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "cta_salience": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/retro_event_poster/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
         }
       },
-      "objective_score_100": 19.0,
+      "objective_score_100": 14.2,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -275,9 +311,27 @@
           "score": 0.0,
           "trace_path": "",
           "passed": false
+        },
+        "hero_presence": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/donation_trust_landing/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "text_zone_readability": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/donation_trust_landing/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "cta_salience": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/donation_trust_landing/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
         }
       },
-      "objective_score_100": 19.0,
+      "objective_score_100": 14.2,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -371,9 +425,27 @@
           "score": 0.0,
           "trace_path": "",
           "passed": false
+        },
+        "hero_presence": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/premium_product_drop/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "text_zone_readability": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/premium_product_drop/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
+        },
+        "cta_salience": {
+          "score": 0.0,
+          "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/premium_product_drop/poster.png",
+          "passed": false,
+          "reason": "artifact image missing"
         }
       },
-      "objective_score_100": 19.0,
+      "objective_score_100": 14.2,
       "manual_review": {
         "status": "required",
         "dimensions": {
@@ -394,13 +466,16 @@
   ],
   "summary": {
     "case_count": 4,
-    "average_objective_score_100": 19.0,
+    "average_objective_score_100": 14.2,
     "check_averages": {
       "reference_usage": 0.0,
       "copy_discipline": 75.0,
       "template_fit": 20.0,
       "prompt_guardrails": 0.0,
-      "trace_persistence": 0.0
+      "trace_persistence": 0.0,
+      "hero_presence": 0.0,
+      "text_zone_readability": 0.0,
+      "cta_salience": 0.0
     }
   }
 }
