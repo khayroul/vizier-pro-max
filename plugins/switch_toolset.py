@@ -29,19 +29,36 @@ SWITCH_TOOLSET_SCHEMA = {
 }
 
 
+def build_switched_toolsets(
+    enabled_toolsets: list[str],
+    workflow_toolset: str,
+) -> list[str]:
+    """Return the post-switch toolset list for a Vizier workflow surface."""
+    if workflow_toolset not in VIZIER_WORKFLOW_TOOLSETS:
+        raise ValueError(f"Unknown workflow toolset: {workflow_toolset}")
+
+    base = [t for t in enabled_toolsets if t not in VIZIER_WORKFLOW_TOOLSETS]
+    return base + [workflow_toolset]
+
+
 def _handle_switch_toolset(args: dict[str, Any], agent: Any) -> str:
     """Set the pending rebuild — main loop applies it between turns."""
     new_ts = args.get("toolset_name", "")
     if new_ts not in VIZIER_WORKFLOW_TOOLSETS:
         return json.dumps({"error": f"Unknown toolset: {new_ts}"})
 
-    base = [t for t in agent.enabled_toolsets if t not in VIZIER_WORKFLOW_TOOLSETS]
-    agent._pending_toolsets_rebuild = base + [new_ts]
+    agent._pending_toolsets_rebuild = build_switched_toolsets(
+        list(agent.enabled_toolsets),
+        new_ts,
+    )
 
     return json.dumps({
         "status": "pending",
         "switching_to": new_ts,
-        "keeping": base,
+        "keeping": [
+            t for t in agent._pending_toolsets_rebuild
+            if t not in VIZIER_WORKFLOW_TOOLSETS
+        ],
         "message": f"Switching to '{new_ts}' after this turn completes.",
     })
 

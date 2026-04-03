@@ -19,48 +19,102 @@ _MODE_ALIASES = {
 
 _OPERATOR_PATTERNS = (
     r"\bpytest\b",
+    r"\bfailing test\b",
     r"\btest failure\b",
     r"\btraceback\b",
     r"\bstack trace\b",
     r"\bdebug\b",
+    r"\binspect logs?\b",
+    r"\blogs?\b",
     r"\bfix\b",
     r"\brefactor\b",
-    r"\bimplement\b",
     r"\bplugin\b",
-    r"\bpipeline\b",
+    r"\bmaintenance\b",
     r"\brepo\b",
     r"\bbranch\b",
     r"\bcommit\b",
     r"\bgit\b",
-    r"\bfile\b",
     r"\bline\s+\d+\b",
     r"/users/executor/",
 )
 
-_VIZIER_PATTERNS = (
-    r"\bposter\b",
-    r"\bflyer\b",
-    r"\bbanner\b",
-    r"\bcreative\b",
-    r"\bcampaign\b",
-    r"\bproposal\b",
-    r"\breport\b",
-    r"\bdocument\b",
-    r"\bdeck\b",
-    r"\bslides\b",
-    r"\bpresentation\b",
-    r"\binfographic\b",
-    r"\bchart\b",
-    r"\bmarketing plan\b",
-    r"\bcontent calendar\b",
-    r"\bbrand\b",
-    r"\bclient\b",
-    r"\bpalette\b",
-    r"\bfonts?\b",
-    r"\bcta\b",
+_WORKFLOW_TOOLSET_PATTERNS = (
+    ("vizier-visual", (
+        r"\bposter\b",
+        r"\bflyer\b",
+        r"\bbanner\b",
+        r"\bcreative\b",
+        r"\binfographic\b",
+        r"\bchart\b",
+        r"\bpalette\b",
+        r"\bfonts?\b",
+        r"\bcta\b",
+        r"\bbrand\b",
+    )),
+    ("vizier-document", (
+        r"\bproposal\b",
+        r"\breport\b",
+        r"\bdocument\b",
+        r"\bdeck\b",
+        r"\bslides\b",
+        r"\bpresentation\b",
+        r"\binvoice\b",
+        r"\bpdf\b",
+    )),
+    ("vizier-content", (
+        r"\bmarketing plan\b",
+        r"\bcontent calendar\b",
+        r"\bcontent package\b",
+        r"\bnewsletter\b",
+        r"\bbrief\b",
+    )),
+    ("vizier-research", (
+        r"\bcompetitor analysis\b",
+        r"\bmarket research\b",
+        r"\bresearch brief\b",
+        r"\bresearch report\b",
+    )),
+)
+
+_DELIVERABLE_REQUEST_PATTERNS = (
+    r"\bmake\b",
+    r"\bcreate\b",
+    r"\bgenerate\b",
+    r"\bdraft\b",
+    r"\bwrite\b",
+    r"\bbuild\b",
+    r"\bproduce\b",
+    r"\bassemble\b",
+    r"\brender\b",
+    r"\bi need\b",
+    r"\bi want\b",
+    r"\bneed a\b",
+    r"\bwant a\b",
+    r"\bhelp me (?:make|create|generate|draft|write|build)\b",
+)
+
+_PRODUCTION_WORKFLOW_PATTERNS = (
+    r"\brun\b.*\bworkflow\b",
+    r"\brun\b.*\bpipeline\b",
+    r"\bproduction workflow\b",
+    r"\bgenerate a client deliverable\b",
+)
+
+_SUPPORT_PATTERNS = (
+    r"\bhelp me think\b",
+    r"\bthink through\b",
+    r"\bwhat should i focus on\b",
+    r"\bfocus on this week\b",
+    r"\bprioriti[sz]e\b",
+    r"\bbusiness decision\b",
+    r"\badvice\b",
+    r"\bfeedback\b",
+    r"\bhelp me decide\b",
+    r"\bprepare for a meeting\b",
 )
 
 _ASSISTANT_PATTERNS = (
+    *_SUPPORT_PATTERNS,
     r"\bremind\b",
     r"\breminder\b",
     r"\bschedule\b",
@@ -86,6 +140,7 @@ class TelegramModeDecision:
     mode: str
     source: str
     reason: str
+    workflow_toolset: str = ""
 
 
 def _collapse_whitespace(text: str) -> str:
@@ -125,17 +180,71 @@ def _extract_user_messages(history: Iterable[Any]) -> list[str]:
     return messages
 
 
-def _explicit_mode(text: str) -> str:
+def _explicit_mode(text: str) -> tuple[str, str]:
     normalized = _collapse_whitespace(text).lower()
     for command, mode in _MODE_ALIASES.items():
         if normalized.startswith(command):
-            return mode
-    return ""
+            return mode, normalized[len(command):].strip()
+    return "", normalized
 
 
 def _score_patterns(text: str, patterns: tuple[str, ...]) -> int:
     normalized = text.lower()
     return sum(1 for pattern in patterns if re.search(pattern, normalized))
+
+
+def _matches_any(text: str, patterns: tuple[str, ...]) -> bool:
+    normalized = text.lower()
+    return any(re.search(pattern, normalized) for pattern in patterns)
+
+
+def _infer_workflow_toolset(text: str) -> str:
+    normalized = text.lower()
+    for toolset_name, patterns in _WORKFLOW_TOOLSET_PATTERNS:
+        if any(re.search(pattern, normalized) for pattern in patterns):
+            return toolset_name
+    return ""
+
+
+def _looks_like_support_request(text: str) -> bool:
+    return _matches_any(text, _ASSISTANT_PATTERNS)
+
+
+def _looks_like_vizier_work_request(text: str) -> bool:
+    workflow_toolset = _infer_workflow_toolset(text)
+    if not workflow_toolset:
+        return False
+    if _matches_any(text, _PRODUCTION_WORKFLOW_PATTERNS):
+        return True
+    if _looks_like_support_request(text):
+        return False
+    return _matches_any(text, _DELIVERABLE_REQUEST_PATTERNS)
+
+
+def _auto_activate_workflow_toolset(
+    *,
+    decision: TelegramModeDecision,
+    agent: Any | None,
+) -> None:
+    if decision.mode != "vizier_work" or not decision.workflow_toolset:
+        return
+    if agent is None:
+        return
+
+    enabled_toolsets = getattr(agent, "enabled_toolsets", None)
+    if enabled_toolsets is None:
+        return
+
+    current_toolsets = list(enabled_toolsets)
+    if decision.workflow_toolset in current_toolsets:
+        return
+
+    from plugins.switch_toolset import build_switched_toolsets
+
+    agent.enabled_toolsets = build_switched_toolsets(
+        current_toolsets,
+        decision.workflow_toolset,
+    )
 
 
 def classify_telegram_mode(
@@ -153,40 +262,39 @@ def classify_telegram_mode(
         )
 
     current_text = _collapse_whitespace(user_message)
-    explicit = _explicit_mode(current_text)
+    explicit, explicit_remainder = _explicit_mode(current_text)
     if explicit:
         return TelegramModeDecision(
             mode=explicit,
             source="explicit_command",
             reason=f"User explicitly selected {explicit} mode.",
+            workflow_toolset=_infer_workflow_toolset(explicit_remainder),
         )
 
     operator_score = _score_patterns(current_text, _OPERATOR_PATTERNS)
-    vizier_score = _score_patterns(current_text, _VIZIER_PATTERNS)
-    assistant_score = _score_patterns(current_text, _ASSISTANT_PATTERNS)
-
-    if operator_score >= 1 and operator_score >= vizier_score:
+    if operator_score >= 1:
         return TelegramModeDecision(
             mode="operator",
             source="keyword_inference",
             reason="The turn mentions engineering or repo-maintenance work.",
         )
-    if vizier_score >= 1 and vizier_score > assistant_score:
+    if _looks_like_vizier_work_request(current_text):
         return TelegramModeDecision(
             mode="vizier_work",
             source="keyword_inference",
-            reason="The turn looks like a client or deliverable request.",
+            reason="The turn is clearly asking for a polished deliverable or Vizier workflow run.",
+            workflow_toolset=_infer_workflow_toolset(current_text),
         )
-    if assistant_score >= 1:
+    if _looks_like_support_request(current_text):
         return TelegramModeDecision(
             mode="assistant",
             source="keyword_inference",
-            reason="The turn looks like a personal-assistant request.",
+            reason="The turn is asking for support, planning, thinking, or drafting help.",
         )
 
     recent_user_messages = _extract_user_messages(conversation_history or [])
     for prior_message in reversed(recent_user_messages[-_STICKY_LOOKBACK_USER_MESSAGES:]):
-        prior_explicit = _explicit_mode(prior_message)
+        prior_explicit, _ = _explicit_mode(prior_message)
         if prior_explicit:
             return TelegramModeDecision(
                 mode=prior_explicit,
@@ -197,7 +305,7 @@ def classify_telegram_mode(
     return TelegramModeDecision(
         mode="assistant",
         source="default",
-        reason="Defaulting to personal assistant mode when the turn is ambiguous.",
+        reason="Defaulting to assistant mode for ambiguous life or work support requests.",
     )
 
 
@@ -206,6 +314,7 @@ def prime_telegram_mode(
     user_message: str,
     conversation_history: list[dict[str, Any]] | None = None,
     platform: str = "",
+    agent: Any | None = None,
     **_: Any,
 ) -> TelegramModeDecision | None:
     """Prime turn-scoped Telegram mode state before tools are resolved."""
@@ -223,6 +332,7 @@ def prime_telegram_mode(
         platform=normalized_platform,
     )
     set_telegram_mode(platform=normalized_platform, mode=decision.mode)
+    _auto_activate_workflow_toolset(decision=decision, agent=agent)
     return decision
 
 
@@ -252,15 +362,21 @@ def build_telegram_mode_context(
     if decision.mode == "assistant":
         return (
             f"{shared}"
-            "- Behave as a personal assistant first: help with planning, drafting replies, reminders, and everyday questions.\n"
+            "- Behave as an assistant for both personal life and professional life: help with planning, prioritization, drafting replies, thinking through decisions, reminders, and everyday questions.\n"
             "- Vizier workflow tools are intentionally hidden in this mode; do not jump into deliverable generation or repo maintenance unless the user clearly asks for it.\n"
             "- If the request is truly ambiguous between personal help and deliverable work, ask one short clarification.\n"
         )
     if decision.mode == "vizier_work":
+        activation_line = (
+            f"- The matching Vizier workflow surface should already be active for this turn: {decision.workflow_toolset}.\n"
+            if decision.workflow_toolset
+            else "- When the target deliverable is clear, the matching Vizier workflow surface can activate automatically; otherwise use switch_toolset to choose the right workflow surface.\n"
+        )
         return (
             f"{shared}"
             "- Treat this as Vizier client or deliverable work.\n"
-            "- If Vizier workflow tools are not currently visible, first call switch_toolset to the closest workflow toolset: vizier-visual for posters/graphics, vizier-document for reports/proposals, vizier-content for plans/content packages, or vizier-research when the task is mainly research.\n"
+            f"{activation_line}"
+            "- Use switch_toolset only if you intentionally want a different Vizier workflow surface than the one implied by the request.\n"
             "- Use Vizier tools, reference corpora, and artifact-specific brief normalization when relevant.\n"
             "- Prefer deliverable-ready outputs over generic chatty assistance.\n"
         )

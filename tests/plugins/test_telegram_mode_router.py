@@ -1,11 +1,21 @@
 """Tests for Telegram mode routing."""
 from __future__ import annotations
 
+import sys
+from types import SimpleNamespace
+from unittest.mock import MagicMock
+
 import pytest
+
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
 
 from plugins.telegram_mode_router import (
     build_telegram_mode_context,
     classify_telegram_mode,
+    prime_telegram_mode,
 )
 from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode, telegram_mode_allows
 
@@ -31,12 +41,24 @@ def test_explicit_assist_override_wins() -> None:
 
 def test_vizier_work_inference_for_deliverable_request() -> None:
     decision = classify_telegram_mode(
-        user_message="Make a proposal and poster for our client launch next week.",
+        user_message="Make me a poster for our client launch next week.",
         conversation_history=[],
         platform="telegram",
     )
 
     assert decision.mode == "vizier_work"
+    assert decision.source == "keyword_inference"
+    assert decision.workflow_toolset == "vizier-visual"
+
+
+def test_professional_support_request_stays_in_assistant_mode() -> None:
+    decision = classify_telegram_mode(
+        user_message="Help me think through a business decision for next quarter.",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    assert decision.mode == "assistant"
     assert decision.source == "keyword_inference"
 
 
@@ -138,7 +160,27 @@ def test_work_mode_context_mentions_switch_toolset() -> None:
     )
 
     assert "Current mode: vizier_work" in context
-    assert "first call switch_toolset" in context
+    assert "workflow surface should already be active" in context
+    assert "vizier-visual" in context
+
+
+def test_prime_telegram_mode_auto_activates_matching_workflow_toolset() -> None:
+    agent = type("Agent", (), {"enabled_toolsets": ["vizier-core", "code_execution"]})()
+
+    decision = prime_telegram_mode(
+        user_message="Make me a poster for our launch",
+        conversation_history=[],
+        platform="telegram",
+        agent=agent,
+    )
+
+    assert decision is not None
+    assert decision.workflow_toolset == "vizier-visual"
+    assert agent.enabled_toolsets == [
+        "vizier-core",
+        "code_execution",
+        "vizier-visual",
+    ]
 
 
 def test_front_door_defaults_to_assistant_gating_until_mode_is_set(

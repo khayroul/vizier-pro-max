@@ -17,6 +17,7 @@ from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
 from plugins.switch_toolset import (
     VIZIER_WORKFLOW_TOOLSETS,
     _handle_switch_toolset,
+    build_switched_toolsets,
 )
 
 
@@ -39,6 +40,14 @@ def mock_agent() -> SimpleNamespace:
 
 
 class TestHandleSwitchToolset:
+    def test_build_switched_toolsets_replaces_existing_workflow_surface(self) -> None:
+        toolsets = build_switched_toolsets(
+            ["vizier-core", "code_execution", "vizier-content"],
+            "vizier-visual",
+        )
+
+        assert toolsets == ["vizier-core", "code_execution", "vizier-visual"]
+
     def test_switch_to_valid_toolset(self, mock_agent: SimpleNamespace) -> None:
         result = json.loads(_handle_switch_toolset({"toolset_name": "vizier-visual"}, mock_agent))
         assert result["status"] == "pending"

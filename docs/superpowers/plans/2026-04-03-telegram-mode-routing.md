@@ -10,7 +10,7 @@ Use one Telegram entry point as a front door for three distinct operating modes 
 
 ## Behavior
 
-The Telegram mode router runs as a Hermes `pre_llm_call` hook and only applies when `platform="telegram"`.
+The Telegram mode router primes state in the Hermes `pre_tool_resolution` hook and adds mode guidance in `pre_llm_call`. It only applies when `platform="telegram"`.
 
 It chooses a mode in this order:
 
@@ -19,27 +19,31 @@ It chooses a mode in this order:
    - `/work`
    - `/ops`
 2. Keyword inference from the current message:
-   - personal-assistant cues -> `assistant`
-   - deliverable/client cues -> `vizier_work`
-   - repo/debug/code cues -> `operator`
+   - support, planning, thinking, or drafting cues -> `assistant`
+   - clear deliverable or Vizier workflow cues -> `vizier_work`
+   - repo/debug/maintenance cues -> `operator`
 3. Sticky override from recent user history if the current turn is ambiguous
 4. Default fallback -> `assistant`
 
 ## Mode Intent
 
 - `assistant`
-  - personal help, reminders, drafting replies, planning, everyday questions
+  - support for personal life and professional life
+  - reminders, planning, prioritization, drafting replies, decision support, everyday questions
 - `vizier_work`
-  - posters, reports, proposals, campaigns, charts, deliverables
+  - polished deliverables and Vizier production workflows
+  - posters, reports, proposals, campaigns, charts, content packages
 - `operator`
-  - code changes, debugging, tests, pipeline maintenance, repo operations
+  - system and repo maintenance
+  - code changes, debugging, tests, logs, pipeline maintenance, repo operations
 
 ## Boundaries
 
 - This routing layer injects mode-specific guidance.
 - It also gates key Vizier tools by mode for the Telegram front door:
   - `assistant` starts with Vizier workflow tools hidden
-  - `vizier_work` can intentionally open the right workflow surface with `switch_toolset`
+  - clear `vizier_work` requests can auto-activate the matching workflow surface for the turn when the deliverable type is obvious
+  - `switch_toolset` remains available when the user intentionally wants a different Vizier workflow surface
   - `operator` keeps repo-oriented guidance active without automatically exposing marketing-style tools
 - It reduces confusion by steering Hermes before tool choice and generation planning.
 - Artifact-specific brief normalization should only trigger after the turn is in `vizier_work`.
