@@ -20,6 +20,7 @@ import re
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 import httpx
 
@@ -28,6 +29,7 @@ from adapter.llm_client import chat as llm_chat
 from middleware.deliverable_context import build_gateway_headers
 from pipelines.poster_brief import as_payload as creative_brief_payload
 from pipelines.poster_brief import normalize_poster_brief
+from references.ambient import build_visual_reference_context
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +104,110 @@ class ReferenceStyleGuidance:
     template_name: str = ""
 
 
+@dataclass(frozen=True)
+class TemplateProfile:
+    """Authorial traits for a poster template."""
+
+    template_name: str
+    composition_mode: str
+    hero_emphasis: int
+    headline_emphasis: int
+    body_readability: int
+    cta_emphasis: int
+    prompt_guardrail: str
+    rationale: str
+
+
+_DEFAULT_TEMPLATE_PROFILE = TemplateProfile(
+    template_name="social-post",
+    composition_mode="balanced_overlay",
+    hero_emphasis=3,
+    headline_emphasis=4,
+    body_readability=3,
+    cta_emphasis=4,
+    prompt_guardrail=(
+        "Leave the lower-left portion of the frame calmer and darker so the text overlay keeps clear hierarchy."
+    ),
+    rationale="Balanced full-bleed poster with a readable overlay block.",
+)
+
+_TEMPLATE_PROFILES: dict[str, TemplateProfile] = {
+    "social-post": _DEFAULT_TEMPLATE_PROFILE,
+    "hero-bottom-text-square": TemplateProfile(
+        template_name="hero-bottom-text-square",
+        composition_mode="hero_dominant",
+        hero_emphasis=5,
+        headline_emphasis=5,
+        body_readability=4,
+        cta_emphasis=5,
+        prompt_guardrail=(
+            "Keep the upper two-thirds visually dramatic and let the lower third stay calmer for the headline, body, and CTA."
+        ),
+        rationale="Full-bleed hero composition with a strong lower-third hierarchy block.",
+    ),
+    "center-stage-square": TemplateProfile(
+        template_name="center-stage-square",
+        composition_mode="centered_hero",
+        hero_emphasis=4,
+        headline_emphasis=4,
+        body_readability=3,
+        cta_emphasis=4,
+        prompt_guardrail=(
+            "Place the hero centrally with darker edges and enough negative space that centered copy still reads crisply."
+        ),
+        rationale="Centered product/hero frame with a clean, brand-led stage feel.",
+    ),
+    "editorial-split-square": TemplateProfile(
+        template_name="editorial-split-square",
+        composition_mode="editorial_split",
+        hero_emphasis=4,
+        headline_emphasis=4,
+        body_readability=4,
+        cta_emphasis=3,
+        prompt_guardrail=(
+            "Bias the hero to the image panel side and preserve a quieter, lower-noise panel for text."
+        ),
+        rationale="Grid-led editorial split for disciplined hierarchy and premium composition.",
+    ),
+    "floating-card-square": TemplateProfile(
+        template_name="floating-card-square",
+        composition_mode="card_showcase",
+        hero_emphasis=4,
+        headline_emphasis=4,
+        body_readability=4,
+        cta_emphasis=4,
+        prompt_guardrail=(
+            "Create one crisp focal asset that can read cleanly inside a framed card with calmer space below."
+        ),
+        rationale="Framed card showcase for UI/product surfaces and intentional premium layouts.",
+    ),
+    "stacked-type-square": TemplateProfile(
+        template_name="stacked-type-square",
+        composition_mode="type_driven",
+        hero_emphasis=1,
+        headline_emphasis=5,
+        body_readability=4,
+        cta_emphasis=4,
+        prompt_guardrail=(
+            "Keep the background controlled and uncluttered because the typography needs to dominate the composition."
+        ),
+        rationale="Type-first poster treatment with oversized headline hierarchy.",
+    ),
+    "bold-knockout-square": TemplateProfile(
+        template_name="bold-knockout-square",
+        composition_mode="type_driven",
+        hero_emphasis=4,
+        headline_emphasis=5,
+        body_readability=3,
+        cta_emphasis=4,
+        prompt_guardrail=(
+            "Use bold, high-contrast texture and lighting so the image can read cleanly through knockout letterforms."
+        ),
+        rationale="High-energy knockout type poster for bold launches and event creative.",
+    ),
+}
+
+
 # ---------------------------------------------------------------------------
 # Template resolution
 # ---------------------------------------------------------------------------
@@ -149,6 +255,93 @@ def list_templates() -> list[TemplateConfig]:
         _parse_template(html_file)
         for html_file in sorted(_TEMPLATES_DIR.glob("*.html"))
     ]
+
+
+def _get_template_profile(template_name: str) -> TemplateProfile:
+    """Return a qualitative profile for a template."""
+    return _TEMPLATE_PROFILES.get(template_name, _DEFAULT_TEMPLATE_PROFILE)
+
+
+def _recommend_template(
+    *,
+    creative_brief: Any,
+    reference_context: dict[str, Any],
+    available_templates: list[str],
+) -> tuple[str, str]:
+    """Choose a stronger template when the caller did not pin one explicitly."""
+    art_direction = dict(reference_context.get("art_direction") or {})
+    candidates = [
+        str(candidate)
+        for candidate in art_direction.get("template_candidates", [])
+        if str(candidate)
+    ]
+    visual_haystack = " ".join(
+        part
+        for part in (
+            getattr(creative_brief, "visual_direction", ""),
+            getattr(creative_brief, "hero_focus", ""),
+            getattr(creative_brief, "campaign_angle", ""),
+        )
+        if part
+    ).lower()
+    if not candidates:
+        if any(token in visual_haystack for token in ("center", "product", "launch")):
+            candidates = ["center-stage-square", "hero-bottom-text-square"]
+        elif any(token in visual_haystack for token in ("editorial", "grid", "split")):
+            candidates = ["editorial-split-square", "floating-card-square"]
+        elif any(token in visual_haystack for token in ("poster", "typography", "event")):
+            candidates = ["stacked-type-square", "bold-knockout-square"]
+        else:
+            candidates = ["hero-bottom-text-square", "social-post"]
+    for candidate in candidates:
+        if candidate in available_templates:
+            reason = str(
+                art_direction.get("template_reason")
+                or f"Selected {candidate} to reinforce a less generic composition."
+            )
+            return candidate, reason
+    return "social-post", "Fallback poster template."
+
+
+def _build_art_direction_plan(
+    *,
+    template_name: str,
+    creative_brief: Any,
+    reference_context: dict[str, Any],
+) -> dict[str, Any]:
+    """Build the prompt-facing art-direction plan for one run."""
+    profile = _get_template_profile(template_name)
+    art_direction = dict(reference_context.get("art_direction") or {})
+    return {
+        "composition_mode": art_direction.get("composition_mode") or profile.composition_mode,
+        "template_reason": art_direction.get("template_reason") or profile.rationale,
+        "template_profile": asdict(profile),
+        "composition_instruction": art_direction.get("composition", ""),
+        "hero_instruction": art_direction.get("hero", ""),
+        "readability_instruction": art_direction.get("readability", ""),
+        "cta_instruction": art_direction.get("cta", ""),
+        "copy_instruction": art_direction.get("copy", ""),
+        "polish_instruction": art_direction.get("polish", ""),
+        "campaign_angle": getattr(creative_brief, "campaign_angle", ""),
+        "visual_direction": getattr(creative_brief, "visual_direction", ""),
+        "hero_focus": getattr(creative_brief, "hero_focus", ""),
+    }
+
+
+def _derive_trace_path(poster_path: str) -> str:
+    """Place the trace next to the final poster artifact."""
+    path = Path(poster_path)
+    return str(path.with_suffix(".trace.json"))
+
+
+def _write_generation_trace(trace_path: str, payload: dict[str, Any]) -> None:
+    """Persist one poster generation trace for later eval and diagnosis."""
+    path = Path(trace_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
 
 def _encode_image_as_data_uri(image_path: str) -> str:
@@ -699,6 +892,23 @@ def run(
         raise ValueError(msg)
 
     available_templates = [template.name for template in list_templates()]
+    reference_context = build_visual_reference_context(
+        headline=headline,
+        body=body,
+        image_prompt=image_prompt,
+        brand_name=effective_brand_name,
+        brief=brief,
+        style_hint=". ".join(
+            part
+            for part in (
+                reference_image_hint,
+                style_reference_hint,
+                client_style_hint,
+            )
+            if part
+        ),
+    )
+    ambient_reference_guidance = str(reference_context.get("guidance", "")).strip()
     creative_brief = normalize_poster_brief(
         brief=brief,
         headline=headline,
@@ -709,6 +919,7 @@ def run(
         style_hint=". ".join(
             part for part in (reference_image_hint, style_reference_hint, client_style_hint) if part
         ),
+        ambient_guidance=ambient_reference_guidance,
         available_templates=available_templates,
     )
 
@@ -716,12 +927,25 @@ def run(
     effective_body = creative_brief.body or body
     effective_cta = creative_brief.cta or cta
     effective_image_prompt = image_prompt.strip() or creative_brief.image_prompt
+    template_reason = ""
     if not template_name and not effective_style_reference and not effective_reference_image_path:
         if creative_brief.template_name:
             effective_template_name = creative_brief.template_name
+            template_reason = "Template selected by creative brief normalization."
+        elif not effective_template_name or effective_template_name == "social-post":
+            effective_template_name, template_reason = _recommend_template(
+                creative_brief=creative_brief,
+                reference_context=reference_context,
+                available_templates=available_templates,
+            )
 
     # Resolve template
     template = _resolve_template(effective_template_name)
+    art_direction_plan = _build_art_direction_plan(
+        template_name=template.name,
+        creative_brief=creative_brief,
+        reference_context=reference_context,
+    )
 
     # Build output paths
     stamp = time.strftime("%Y%m%d-%H%M%S")
@@ -747,6 +971,15 @@ def run(
     prompt_prefix = ". ".join(prompt_prefix_parts)
     if prompt_prefix:
         prompt_prefix += ". "
+    quality_guardrail_parts = [
+        art_direction_plan["composition_instruction"],
+        art_direction_plan["hero_instruction"],
+        art_direction_plan["readability_instruction"],
+        art_direction_plan["cta_instruction"],
+        art_direction_plan["template_profile"]["prompt_guardrail"],
+        art_direction_plan["polish_instruction"],
+    ]
+    quality_guardrails = " ".join(part for part in quality_guardrail_parts if part).strip()
     avoid_parts = [
         part
         for part in (
@@ -762,15 +995,28 @@ def run(
         if effective_reference_image_path
         else ""
     )
-    effective_prompt = effective_image_prompt or (
-        f"{prompt_prefix}"
-        f"{reference_sentence}"
-        f"Create a premium visual background for a poster about: "
-        f"{effective_headline}. {effective_body}. "
-        "No text, no logos, no letters, clean composition, "
-        "vibrant colors, social-media ready lighting, high quality. "
-        f"{avoid_sentence}"
-    ).strip()
+    if effective_image_prompt:
+        effective_prompt = " ".join(
+            part
+            for part in (
+                effective_image_prompt.rstrip(". "),
+                quality_guardrails,
+                reference_sentence.strip(),
+                avoid_sentence.strip(),
+            )
+            if part
+        ).strip()
+    else:
+        effective_prompt = (
+            f"{prompt_prefix}"
+            f"{reference_sentence}"
+            f"{quality_guardrails} "
+            "Create a premium visual background for a poster about: "
+            f"{effective_headline}. {effective_body}. "
+            "No text, no logos, no letters, premium hierarchy, intentional contrast, "
+            "controlled lighting, and clean negative space for overlay copy. "
+            f"{avoid_sentence}"
+        ).strip()
     hero_file = _generate_hero(effective_prompt, hero_path, effective_image_mode)
 
     # Layer 2: Render template with text + hero as background
@@ -807,4 +1053,46 @@ def run(
     )
     payload: dict[str, Any] = {k: v for k, v in asdict(result).items()}
     payload["creative_brief"] = creative_brief_payload(creative_brief)
+    payload["reference_trace"] = reference_context
+    payload["art_direction_plan"] = art_direction_plan
+    payload["template_reason"] = template_reason or art_direction_plan["template_reason"]
+    payload["prompt_trace"] = {
+        "effective_prompt": effective_prompt,
+        "prompt_prefix_parts": prompt_prefix_parts,
+        "quality_guardrail_parts": quality_guardrail_parts,
+        "avoid_parts": avoid_parts,
+    }
+    trace_path = _derive_trace_path(poster_path)
+    payload["trace_path"] = trace_path
+    _write_generation_trace(
+        trace_path,
+        {
+            "schema_version": 1,
+            "generated_at": stamp,
+            "inputs": {
+                "headline": headline,
+                "body": body,
+                "cta": cta,
+                "brief": brief,
+                "image_prompt": image_prompt,
+                "template_name": template_name,
+                "image_mode": image_mode,
+                "brand_name": brand_name,
+                "client_id": client_id,
+                "style_reference": style_reference,
+                "reference_image_path": reference_image_path,
+            },
+            "creative_brief": payload["creative_brief"],
+            "reference_trace": payload["reference_trace"],
+            "art_direction_plan": payload["art_direction_plan"],
+            "template_reason": payload["template_reason"],
+            "prompt_trace": payload["prompt_trace"],
+            "artifact": {
+                "poster_path": poster_path,
+                "hero_path": hero_file,
+                "template_used": template.name,
+                "image_mode": effective_image_mode,
+            },
+        },
+    )
     return payload

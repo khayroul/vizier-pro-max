@@ -1,0 +1,406 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-04-03T01:17:46+00:00",
+  "kind": "poster_ui_artifact_eval",
+  "label": "ui-ux-loop-before",
+  "git_ref": "06bf1e424cfbb55da46fb3d73522bad451701055",
+  "resolved_ref": "06bf1e424cfbb55da46fb3d73522bad451701055",
+  "output_root": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts",
+  "cases": [
+    {
+      "prompt_id": "swiss_analytics_hero",
+      "family": "visual",
+      "title": "Swiss analytics hero",
+      "prompt": "Create the hero direction for a CFO analytics landing page. It should feel precise, premium, and grid-led, with obvious hierarchy and a CTA that feels high-conviction rather than generic.",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/swiss_analytics_hero/poster.png",
+      "trace_path": "",
+      "template_used": "social-post",
+      "creative_brief": {
+        "raw_brief": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.",
+        "campaign_angle": "Sharper finance signal for decision-makers",
+        "audience": "CFOs and finance leaders",
+        "visual_direction": "Swiss grid enterprise hero with disciplined whitespace and a premium dashboard focal plane",
+        "hero_focus": "Large analytics surface showing runway and risk insights",
+        "headline": "Introducing Finance Without Noise",
+        "body": "Help CFOs scan runway, risk, and forecast health in seconds.",
+        "cta": "Learn More",
+        "image_prompt": "Crisp analytics surface, swiss grid, controlled light, no text, no logos",
+        "template_name": "",
+        "avoid": [
+          "generic SaaS blobs",
+          "muddy gradients"
+        ]
+      },
+      "reference_trace": {},
+      "art_direction_plan": {},
+      "template_reason": "",
+      "prompt_trace": {},
+      "objective_checks": {
+        "reference_usage": {
+          "score": 0.0,
+          "expected_tools": [
+            "search_ui_styles",
+            "search_ux_guidelines"
+          ],
+          "used_tools": [],
+          "material_influence_count": 0,
+          "passed": false
+        },
+        "copy_discipline": {
+          "score": 75.0,
+          "headline_words": 4,
+          "body_chars": 60,
+          "cta_words": 2,
+          "headline": "Introducing Finance Without Noise",
+          "body": "Help CFOs scan runway, risk, and forecast health in seconds.",
+          "cta": "Learn More",
+          "passed": false
+        },
+        "template_fit": {
+          "score": 20.0,
+          "template_used": "social-post",
+          "preferred_templates": [
+            "editorial-split-square",
+            "floating-card-square"
+          ],
+          "discouraged_templates": [
+            "social-post"
+          ],
+          "passed": false
+        },
+        "prompt_guardrails": {
+          "score": 0.0,
+          "matched_terms": [],
+          "missing_terms": [
+            "grid",
+            "contrast",
+            "negative space",
+            "cta"
+          ],
+          "passed": false
+        },
+        "trace_persistence": {
+          "score": 0.0,
+          "trace_path": "",
+          "passed": false
+        }
+      },
+      "objective_score_100": 19.0,
+      "manual_review": {
+        "status": "required",
+        "dimensions": {
+          "composition_choice": null,
+          "hero_prominence": null,
+          "hierarchy_readability": null,
+          "cta_emphasis": null,
+          "copy_sharpness": null,
+          "visual_polish": null,
+          "reference_utilization": null
+        },
+        "focus": [
+          "Check whether the composition feels deliberately grid-led instead of generic SaaS.",
+          "Check whether the CTA reads clearly without overpowering the trust tone."
+        ]
+      }
+    },
+    {
+      "prompt_id": "retro_event_poster",
+      "family": "visual",
+      "title": "Retro event poster",
+      "prompt": "Design a synthwave event poster that feels high-energy and premium, but the hierarchy must still make the headline, date, venue, and CTA easy to read at a glance.",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/retro_event_poster/poster.png",
+      "trace_path": "",
+      "template_used": "social-post",
+      "creative_brief": {
+        "raw_brief": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.",
+        "campaign_angle": "Late-night analog energy",
+        "audience": "Music fans looking for a memorable night out",
+        "visual_direction": "Bold retro-futurist poster with giant headline treatment and controlled neon atmosphere",
+        "hero_focus": "One glowing central light form with room for stacked typography",
+        "headline": "Introducing Neon Afterglow",
+        "body": "One night only. Synthwave sets, immersive lights, and midnight energy.",
+        "cta": "Learn More",
+        "image_prompt": "Retro-futurist neon atmosphere, dramatic glow, no text, no logos",
+        "template_name": "",
+        "avoid": [
+          "tiny copy",
+          "muddy purple haze"
+        ]
+      },
+      "reference_trace": {},
+      "art_direction_plan": {},
+      "template_reason": "",
+      "prompt_trace": {},
+      "objective_checks": {
+        "reference_usage": {
+          "score": 0.0,
+          "expected_tools": [
+            "search_ui_styles",
+            "search_ux_guidelines"
+          ],
+          "used_tools": [],
+          "material_influence_count": 0,
+          "passed": false
+        },
+        "copy_discipline": {
+          "score": 75.0,
+          "headline_words": 3,
+          "body_chars": 70,
+          "cta_words": 2,
+          "headline": "Introducing Neon Afterglow",
+          "body": "One night only. Synthwave sets, immersive lights, and midnight energy.",
+          "cta": "Learn More",
+          "passed": false
+        },
+        "template_fit": {
+          "score": 20.0,
+          "template_used": "social-post",
+          "preferred_templates": [
+            "stacked-type-square",
+            "bold-knockout-square"
+          ],
+          "discouraged_templates": [
+            "social-post"
+          ],
+          "passed": false
+        },
+        "prompt_guardrails": {
+          "score": 0.0,
+          "matched_terms": [],
+          "missing_terms": [
+            "contrast",
+            "headline",
+            "hero",
+            "negative space"
+          ],
+          "passed": false
+        },
+        "trace_persistence": {
+          "score": 0.0,
+          "trace_path": "",
+          "passed": false
+        }
+      },
+      "objective_score_100": 19.0,
+      "manual_review": {
+        "status": "required",
+        "dimensions": {
+          "composition_choice": null,
+          "hero_prominence": null,
+          "hierarchy_readability": null,
+          "cta_emphasis": null,
+          "copy_sharpness": null,
+          "visual_polish": null,
+          "reference_utilization": null
+        },
+        "focus": [
+          "Check whether the poster is still readable instead of becoming pure moodboard material.",
+          "Check whether the headline feels intentionally oversized and premium."
+        ]
+      }
+    },
+    {
+      "prompt_id": "donation_trust_landing",
+      "family": "visual",
+      "title": "Donation trust landing",
+      "prompt": "Create a trustworthy disaster-relief donation hero with strong hierarchy, clear readability, and a CTA that feels urgent but not exploitative.",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/donation_trust_landing/poster.png",
+      "trace_path": "",
+      "template_used": "social-post",
+      "creative_brief": {
+        "raw_brief": "Create a focused hero for a disaster-relief fundraiser that feels calm, trustworthy, and direct. The donation action should be obvious without decorative clutter.",
+        "campaign_angle": "Fast relief with visible trust",
+        "audience": "Donors who want clear impact without hype",
+        "visual_direction": "Minimal trust-led donation hero with calm premium contrast and obvious action hierarchy",
+        "hero_focus": "One calm symbolic relief scene with protected copy space",
+        "headline": "Introducing Relief That Reaches Faster",
+        "body": "Help families access shelter, food, and clean water without delay.",
+        "cta": "Learn More",
+        "image_prompt": "Calm relief-focused visual, trustworthy lighting, protected text zone, no text, no logos",
+        "template_name": "",
+        "avoid": [
+          "exploitative imagery",
+          "low-contrast body text"
+        ]
+      },
+      "reference_trace": {},
+      "art_direction_plan": {},
+      "template_reason": "",
+      "prompt_trace": {},
+      "objective_checks": {
+        "reference_usage": {
+          "score": 0.0,
+          "expected_tools": [
+            "search_ui_styles",
+            "search_ux_guidelines"
+          ],
+          "used_tools": [],
+          "material_influence_count": 0,
+          "passed": false
+        },
+        "copy_discipline": {
+          "score": 75.0,
+          "headline_words": 5,
+          "body_chars": 66,
+          "cta_words": 2,
+          "headline": "Introducing Relief That Reaches Faster",
+          "body": "Help families access shelter, food, and clean water without delay.",
+          "cta": "Learn More",
+          "passed": false
+        },
+        "template_fit": {
+          "score": 20.0,
+          "template_used": "social-post",
+          "preferred_templates": [
+            "hero-bottom-text-square",
+            "editorial-split-square"
+          ],
+          "discouraged_templates": [
+            "social-post"
+          ],
+          "passed": false
+        },
+        "prompt_guardrails": {
+          "score": 0.0,
+          "matched_terms": [],
+          "missing_terms": [
+            "contrast",
+            "calm",
+            "cta",
+            "hierarchy"
+          ],
+          "passed": false
+        },
+        "trace_persistence": {
+          "score": 0.0,
+          "trace_path": "",
+          "passed": false
+        }
+      },
+      "objective_score_100": 19.0,
+      "manual_review": {
+        "status": "required",
+        "dimensions": {
+          "composition_choice": null,
+          "hero_prominence": null,
+          "hierarchy_readability": null,
+          "cta_emphasis": null,
+          "copy_sharpness": null,
+          "visual_polish": null,
+          "reference_utilization": null
+        },
+        "focus": [
+          "Check whether the tone feels trustworthy rather than generic or melodramatic.",
+          "Check whether the CTA is obvious and the body copy remains easy to read."
+        ]
+      }
+    },
+    {
+      "prompt_id": "premium_product_drop",
+      "family": "visual",
+      "title": "Premium product drop",
+      "prompt": "Create a premium launch poster for a coffee product drop. The hero should feel intentionally art-directed, the product must dominate the frame, and the CTA should feel present rather than decorative.",
+      "artifact_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/before-artifacts/premium_product_drop/poster.png",
+      "trace_path": "",
+      "template_used": "social-post",
+      "creative_brief": {
+        "raw_brief": "Create a premium poster for a limited-edition iced coffee drop with a strong product hero, polished lighting, and social-ready hierarchy.",
+        "campaign_angle": "Limited drop with a premium cafe feel",
+        "audience": "Coffee fans ready for a launch-day purchase",
+        "visual_direction": "Hero-forward premium product poster with clean lighting and clear CTA hierarchy",
+        "hero_focus": "Large iced coffee product hero with glossy highlights and negative space",
+        "headline": "Introducing The Cold Brew Drop",
+        "body": "Limited release. Bright citrus notes, silky finish, and launch-day energy.",
+        "cta": "Learn More",
+        "image_prompt": "Premium iced coffee hero, polished lighting, no text, no logos",
+        "template_name": "",
+        "avoid": [
+          "tiny hero subject",
+          "flat muddy background"
+        ]
+      },
+      "reference_trace": {},
+      "art_direction_plan": {},
+      "template_reason": "",
+      "prompt_trace": {},
+      "objective_checks": {
+        "reference_usage": {
+          "score": 0.0,
+          "expected_tools": [
+            "search_ui_styles",
+            "search_ux_guidelines"
+          ],
+          "used_tools": [],
+          "material_influence_count": 0,
+          "passed": false
+        },
+        "copy_discipline": {
+          "score": 75.0,
+          "headline_words": 5,
+          "body_chars": 74,
+          "cta_words": 2,
+          "headline": "Introducing The Cold Brew Drop",
+          "body": "Limited release. Bright citrus notes, silky finish, and launch-day energy.",
+          "cta": "Learn More",
+          "passed": false
+        },
+        "template_fit": {
+          "score": 20.0,
+          "template_used": "social-post",
+          "preferred_templates": [
+            "center-stage-square",
+            "hero-bottom-text-square"
+          ],
+          "discouraged_templates": [
+            "social-post"
+          ],
+          "passed": false
+        },
+        "prompt_guardrails": {
+          "score": 0.0,
+          "matched_terms": [],
+          "missing_terms": [
+            "hero",
+            "contrast",
+            "cta",
+            "premium"
+          ],
+          "passed": false
+        },
+        "trace_persistence": {
+          "score": 0.0,
+          "trace_path": "",
+          "passed": false
+        }
+      },
+      "objective_score_100": 19.0,
+      "manual_review": {
+        "status": "required",
+        "dimensions": {
+          "composition_choice": null,
+          "hero_prominence": null,
+          "hierarchy_readability": null,
+          "cta_emphasis": null,
+          "copy_sharpness": null,
+          "visual_polish": null,
+          "reference_utilization": null
+        },
+        "focus": [
+          "Check whether the hero subject feels dominant rather than thumbnail-sized.",
+          "Check whether the CTA has enough presence in the final hierarchy."
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "case_count": 4,
+    "average_objective_score_100": 19.0,
+    "check_averages": {
+      "reference_usage": 0.0,
+      "copy_discipline": 75.0,
+      "template_fit": 20.0,
+      "prompt_guardrails": 0.0,
+      "trace_persistence": 0.0
+    }
+  }
+}

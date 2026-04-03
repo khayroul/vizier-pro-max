@@ -1,0 +1,64 @@
+rubric_id: reference_corpus_quality_v2
+name: Reference Corpus Quality Rubric
+scale:
+  minimum: 1
+  maximum: 5
+  interpretation:
+    1: Poor
+    2: Weak
+    3: Adequate
+    4: Strong
+    5: Excellent
+thresholds:
+  strong_score_5: 4.0
+  meaningful_delta_5: 0.4
+dimensions:
+  - id: style_coherence
+    label: Style coherence
+    description: Visual direction and component choices feel deliberate and match the requested aesthetic.
+    anchors:
+      1: Style is generic, muddy, or visibly misaligned with the brief.
+      3: Style is serviceable but inconsistent or only partly aligned.
+      5: Style is intentional, premium, and clearly strengthened by the references.
+  - id: ux_appropriateness
+    label: UX appropriateness
+    description: The hierarchy, navigation, CTA treatment, and interaction framing fit the use case.
+    anchors:
+      1: UX choices hinder the task or ignore core heuristics.
+      3: UX is usable but misses important hierarchy or affordance details.
+      5: UX choices fit the scenario well and show clear heuristic discipline.
+  - id: chart_choice_correctness
+    label: Chart choice correctness
+    description: The selected chart family and encoding logic fit the analytic question.
+    anchors:
+      1: The chart type is misleading or clearly wrong.
+      3: The chart works but is not the clearest option.
+      5: The chart choice is clearly appropriate and well justified.
+  - id: report_layout_quality
+    label: Report/layout quality
+    description: Document structure and figure/table handling support reading flow.
+    anchors:
+      1: Structure is disorganized or readability would clearly suffer.
+      3: Layout is acceptable but generic or missing conventions.
+      5: Structure is strong and layout decisions are deliberate.
+  - id: readability_clarity
+    label: Readability/clarity
+    description: The artifact is easy to scan, with clear hierarchy and concise wording.
+    anchors:
+      1: Hard to scan, noisy, or ambiguous.
+      3: Readable overall, with avoidable clutter or weak hierarchy.
+      5: Clear, concise, and easy to scan.
+  - id: instruction_adherence
+    label: Instruction adherence
+    description: The output follows the explicit brief, constraints, and deliverable shape.
+    anchors:
+      1: Major parts of the brief are ignored or contradicted.
+      3: Most instructions are followed, with some drift or omissions.
+      5: The output follows the brief closely while still making strong design choices.
+  - id: reference_usage
+    label: Reference usage
+    description: The output appears to use the local reference substrate meaningfully rather than superficially.
+    anchors:
+      1: References are absent or have no visible effect.
+      3: References are consulted but only weakly reflected in the result.
+      5: References clearly shape the structure, hierarchy, or art direction.

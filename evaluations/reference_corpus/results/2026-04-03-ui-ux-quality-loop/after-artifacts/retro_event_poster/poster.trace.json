@@ -1,0 +1,969 @@
+{
+  "schema_version": 1,
+  "generated_at": "20260403-091754",
+  "inputs": {
+    "headline": "",
+    "body": "",
+    "cta": "",
+    "brief": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.\n",
+    "image_prompt": "",
+    "template_name": "",
+    "image_mode": "",
+    "brand_name": "",
+    "client_id": "",
+    "style_reference": "",
+    "reference_image_path": ""
+  },
+  "creative_brief": {
+    "raw_brief": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.",
+    "campaign_angle": "Late-night analog energy",
+    "audience": "Music fans looking for a memorable night out",
+    "visual_direction": "Bold retro-futurist poster with giant headline treatment and controlled neon atmosphere",
+    "hero_focus": "One glowing central light form with room for stacked typography",
+    "headline": "Neon Afterglow",
+    "body": "One night only. Synthwave sets, immersive lights, and midnight energy.",
+    "cta": "Get Tickets",
+    "image_prompt": "Retro-futurist neon atmosphere, dramatic glow, no text, no logos",
+    "template_name": "",
+    "avoid": [
+      "tiny copy",
+      "muddy purple haze"
+    ]
+  },
+  "reference_trace": {
+    "task_family": "visual",
+    "auto_consulted": true,
+    "query_count": 1,
+    "tool_names": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "auxiliary_tool_names": [
+      "search_landing_patterns",
+      "search_typography_pairings",
+      "search_color_systems"
+    ],
+    "route_description": "visual/UI/poster -> search_ui_styles + search_ux_guidelines, plus landing-pattern, typography-pairing, and color-system probes",
+    "lookup_tools_used": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "dataset_searches_used": [
+      "search_color_systems",
+      "search_landing_patterns",
+      "search_typography_pairings"
+    ],
+    "reference_families_consulted": [
+      "ui_ux_pro_max"
+    ],
+    "datasets_consulted": [
+      "color_systems",
+      "landing_patterns",
+      "typography_pairings",
+      "ui_styles",
+      "ux_guidelines"
+    ],
+    "searches": [
+      {
+        "tool_name": "search_ui_styles",
+        "query": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "vaporwave",
+            "name": "Vaporwave",
+            "type": "General",
+            "keywords": [
+              "Synthwave",
+              "retro-futuristic",
+              "80s-90s",
+              "neon",
+              "glitch",
+              "nostalgic",
+              "sunset gradient",
+              "dreamy",
+              "aesthetic"
+            ],
+            "best_for": [
+              "Music platforms",
+              "gaming",
+              "creative portfolios",
+              "tech startups",
+              "entertainment",
+              "artistic projects"
+            ],
+            "avoid_for": [
+              "Business apps",
+              "e-commerce",
+              "education",
+              "healthcare",
+              "enterprise software"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "✓ Dark focused",
+            "performance": "⚠ Moderate",
+            "accessibility": "⚠ Poor (motion)",
+            "mobile_friendly": "◐ Medium",
+            "conversion_focused": "◐ Medium",
+            "framework_compatibility": [
+              "Tailwind 8/10",
+              "CSS-in-JS 9/10"
+            ],
+            "era_origin": "1980s-90s Retro",
+            "complexity": "Medium",
+            "source_row": 45,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "vaporwave",
+              "style_name": "Vaporwave",
+              "primary_colors": [
+                "#FF71CE (Pink)",
+                "#01CDFE (Cyan)",
+                "#05FFA1 (Mint)",
+                "#B967FF (Purple)"
+              ],
+              "secondary_colors": [
+                "Sunset gradients",
+                "glitch overlays",
+                "VHS effects",
+                "neon accents",
+                "pastel variations"
+              ],
+              "effects_animations": [
+                "text-shadow glow",
+                "linear-gradient",
+                "filter: hue-rotate()",
+                "glitch animations",
+                "retro scan lines"
+              ],
+              "ai_prompt_keywords": [
+                "Design a vaporwave aesthetic interface. Use: sunset gradients (pink/cyan/purple)",
+                "80s-90s nostalgia",
+                "glitch effects",
+                "Greek statue imagery",
+                "palm trees",
+                "grid patterns",
+                "neon glow",
+                "retro-futuristic feel",
+                "dreamy atmosphere."
+              ],
+              "css_keywords": [
+                "background: linear-gradient(180deg",
+                "#FF71CE",
+                "#01CDFE",
+                "#B967FF)",
+                "filter: hue-rotate()",
+                "text-shadow: neon glow",
+                "retro grid (perspective + linear-gradient)",
+                "VHS scanlines"
+              ],
+              "implementation_checklist": [
+                "Sunset gradient present",
+                "Neon glow applied",
+                "Retro grid visible",
+                "Glitch effects subtle",
+                "Dreamy atmosphere",
+                "80s-90s aesthetic"
+              ],
+              "design_system_variables": [
+                "--vapor-pink: #FF71CE",
+                "--vapor-cyan: #01CDFE",
+                "--vapor-mint: #05FFA1",
+                "--vapor-purple: #B967FF",
+                "--grid-color: rgba(255",
+                "255",
+                "255",
+                "0.1)",
+                "--glow-intensity: 15px"
+              ]
+            },
+            "score": 21.94
+          },
+          {
+            "id": "bold-typography-mobile-poster",
+            "name": "Bold Typography (Mobile Poster)",
+            "type": "Mobile",
+            "keywords": [
+              "bold typography",
+              "editorial",
+              "poster",
+              "broadsheet",
+              "vermillion",
+              "negative space",
+              "edge-to-edge type",
+              "underline CTA",
+              "near-black",
+              "warm white"
+            ],
+            "best_for": [
+              "Creative brand heroes",
+              "reading-focused apps",
+              "event/exhibition pages",
+              "editorial mobile experiences",
+              "landing hero sections"
+            ],
+            "avoid_for": [
+              "Utility dashboards",
+              "kids apps",
+              "playful consumer products",
+              "contexts needing many icons or heavy imagery"
+            ],
+            "light_mode": "✓ Dark Mode Primary",
+            "dark_mode": "◐ Light sections optional",
+            "performance": "⚡ Excellent",
+            "accessibility": "✓ Contrast 18:1 achievable",
+            "mobile_friendly": "✓ Mobile-First",
+            "conversion_focused": "✓ High",
+            "framework_compatibility": [
+              "React Native 10/10",
+              "Expo 10/10"
+            ],
+            "era_origin": "Editorial 2020s",
+            "complexity": "Medium",
+            "source_row": 78,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "bold-typography-mobile-poster",
+              "style_name": "Bold Typography (Mobile Poster)",
+              "primary_colors": [
+                "Near Black #0A0A0A",
+                "Warm White #FAFAFA"
+              ],
+              "secondary_colors": [
+                "Muted #1A1A1A",
+                "Secondary Text #737373",
+                "Accent Vermillion #FF3D00",
+                "Border #262626"
+              ],
+              "effects_animations": [
+                "Hero headlines 48–72px (5:1 vs body size)",
+                "tight tracking (-1.5px)",
+                "edge-to-edge type",
+                "massive vertical spacing (60px+)",
+                "underline CTAs (2–3px accent line)",
+                "instant 200ms transitions (no bounce)",
+                "strictly 0px radius containers",
+                "color shifts for active state instead of elevation"
+              ],
+              "ai_prompt_keywords": [
+                "Design a Bold Typography mobile screen. Background #0A0A0A",
+                "text #FAFAFA",
+                "accent #FF3D00. Use Inter Tight/Inter 600+ for all type; JetBrains Mono for labels. Headline: 56–72px",
+                "tracking -1.5",
+                "lineHeight 1.1",
+                "full-bleed width with slight bleed off-screen. Body: 16–18px",
+                "leading 1.6. Buttons: underline CTA (accent text + 2px underline block)",
+                "or inverted box with 0 radius. No shadows",
+                "no rounded corners. Layout: single column",
+                "paddingHorizontal 24",
+                "vertical gaps 64 between sections. Animation: 200ms",
+                "Easing.bezier(0.25",
+                "0",
+                "0",
+                "1)",
+                "slight slide-up 10px + fade on mount."
+              ],
+              "css_keywords": [
+                "backgroundColor: '#0A0A0A'",
+                "color: '#FAFAFA'",
+                "accent: '#FF3D00'",
+                "borderColor: '#262626'",
+                "borderRadius: 0",
+                "paddingHorizontal: 24",
+                "headline style: fontSize:56–72",
+                "fontWeight:'700/800'",
+                "letterSpacing:-1.5",
+                "lineHeight:1.1*fontSize",
+                "body: fontSize:16–18",
+                "lineHeight:1.6*fontSize",
+                "underline CTA: 2–3px height View under text",
+                "transition: 200ms cubic-bezier(0.25",
+                "0",
+                "0",
+                "1)"
+              ],
+              "implementation_checklist": [
+                "H1 at least 4–5× body size",
+                "All containers 0 radius",
+                "Underline CTA pattern used",
+                "Large vertical gaps between sections",
+                "No shadows or soft corners",
+                "Accent used only for interaction",
+                "Text bleeds to/over screen edges",
+                "Animation timings 200ms",
+                "Accessible contrast ≥ 18:1",
+                "Body text never below 16px"
+              ],
+              "design_system_variables": [
+                "--bg: #0A0A0A",
+                "--fg: #FAFAFA",
+                "--muted: #1A1A1A",
+                "--muted-fg: #737373",
+                "--accent: #FF3D00",
+                "--accent-fg: #0A0A0A",
+                "--border: #262626",
+                "--font-primary: Inter Tight",
+                "--font-display: Playfair Display Italic",
+                "--font-mono: JetBrains Mono"
+              ]
+            },
+            "score": 18.7
+          },
+          {
+            "id": "retro-futurism",
+            "name": "Retro-Futurism",
+            "type": "General",
+            "keywords": [
+              "Vintage sci-fi",
+              "80s aesthetic",
+              "neon glow",
+              "geometric patterns",
+              "CRT scanlines",
+              "pixel art",
+              "cyberpunk",
+              "synthwave"
+            ],
+            "best_for": [
+              "Gaming",
+              "entertainment",
+              "music platforms",
+              "tech brands",
+              "artistic projects",
+              "nostalgic",
+              "cyberpunk"
+            ],
+            "avoid_for": [
+              "Conservative industries",
+              "critical accessibility",
+              "professional/corporate",
+              "elderly",
+              "legal/finance"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "✓ Dark focused",
+            "performance": "⚠ Moderate",
+            "accessibility": "⚠ High contrast/strain",
+            "mobile_friendly": "◐ Medium",
+            "conversion_focused": "◐ Medium",
+            "framework_compatibility": [
+              "Tailwind 8/10",
+              "CSS-in-JS 9/10"
+            ],
+            "era_origin": "1980s Retro",
+            "complexity": "Medium",
+            "source_row": 11,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "retro-futurism",
+              "style_name": "Retro-Futurism",
+              "primary_colors": [
+                "Neon Blue #0080FF",
+                "Hot Pink #FF006E",
+                "Cyan #00FFFF",
+                "Deep Black #1A1A2E",
+                "Purple #5D34D0"
+              ],
+              "secondary_colors": [
+                "Metallic Silver #C0C0C0",
+                "Gold #FFD700",
+                "duotone",
+                "80s Pink #FF10F0",
+                "neon accents"
+              ],
+              "effects_animations": [
+                "CRT scanlines (::before overlay)",
+                "neon glow (text-shadow+box-shadow)",
+                "glitch effects (skew/offset keyframes)"
+              ],
+              "ai_prompt_keywords": [
+                "Build a retro-futuristic (cyberpunk/vaporwave) interface with neon colors (blue",
+                "pink",
+                "cyan)",
+                "deep black background",
+                "80s aesthetic",
+                "CRT scanlines",
+                "glitch effects",
+                "neon glow text/borders",
+                "monospace fonts",
+                "geometric patterns. Use neon text-shadow and animated glitch effects."
+              ],
+              "css_keywords": [
+                "color: neon colors (#0080FF",
+                "#FF006E",
+                "#00FFFF)",
+                "text-shadow: 0 0 10px neon",
+                "background: #000 or #1A1A2E",
+                "font-family: monospace",
+                "animation: glitch (skew+offset)",
+                "filter: hue-rotate"
+              ],
+              "implementation_checklist": [
+                "Neon colors used",
+                "CRT scanlines effect",
+                "Glitch animations active",
+                "Monospace font",
+                "Deep black background",
+                "Glow effects applied",
+                "80s patterns present"
+              ],
+              "design_system_variables": [
+                "--neon-colors: #0080FF #FF006E #00FFFF",
+                "--background: #000000",
+                "--font-family: monospace",
+                "--effect: glitch+glow",
+                "--scanline-opacity: 0.3",
+                "--crt-effect: true"
+              ]
+            },
+            "score": 17.47
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UI style reference: Vaporwave. Best for Music platforms, gaming, creative portfolios. Accessibility note: ⚠ Poor (motion)."
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "query": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "typography-heading-clarity-all",
+            "category": "Typography",
+            "issue": "Heading Clarity",
+            "platform": "All",
+            "description": "Headings should stand out from body",
+            "recommended_practice": "Clear size/weight difference",
+            "avoid": "Headings similar to body text",
+            "code_example_good": "Bold + larger size",
+            "code_example_bad": "Same size as body",
+            "severity": "Medium",
+            "source_row": 77,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 7.68
+          },
+          {
+            "id": "forms-input-labels-all",
+            "category": "Forms",
+            "issue": "Input Labels",
+            "platform": "All",
+            "description": "Every input needs a visible label",
+            "recommended_practice": "Always show label above or beside input",
+            "avoid": "Placeholder as only label",
+            "code_example_good": "<label>Email</label><input>",
+            "code_example_bad": "placeholder='Email' only",
+            "severity": "High",
+            "source_row": 54,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 7.35
+          },
+          {
+            "id": "navigation-smooth-scroll-web",
+            "category": "Navigation",
+            "issue": "Smooth Scroll",
+            "platform": "Web",
+            "description": "Anchor links should scroll smoothly to target section",
+            "recommended_practice": "Use scroll-behavior: smooth on html element",
+            "avoid": "Jump directly without transition",
+            "code_example_good": "html { scroll-behavior: smooth; }",
+            "code_example_bad": "<a href='#section'> without CSS",
+            "severity": "High",
+            "source_row": 1,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 7.07
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UX guidance: Heading Clarity (All). Use Clear size/weight difference. Avoid Headings similar to body text."
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "query": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "event-conference-landing",
+            "pattern_name": "Event/Conference Landing",
+            "keywords": [
+              "event",
+              "conference",
+              "meetup",
+              "registration",
+              "schedule",
+              "hero-centric design",
+              "hero-centric"
+            ],
+            "section_order": [
+              "1. Hero (date/location/countdown)",
+              "2. Speakers grid",
+              "3. Agenda/schedule",
+              "4. Sponsors",
+              "5. Register CTA"
+            ],
+            "primary_cta_placement": "Register CTA sticky + After speakers + Bottom",
+            "color_strategy": "Urgency colors (countdown). Event branding. Speaker cards professional. Sponsor logos neutral.",
+            "recommended_effects": [
+              "Countdown timer",
+              "speaker hover cards with bio",
+              "agenda tabs",
+              "early bird countdown"
+            ],
+            "conversion_optimization": "Early bird pricing with deadline. Social proof (past attendees). Speaker credibility. Multi-ticket discounts.",
+            "source_row": 18,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 13.64
+          },
+          {
+            "id": "ai-personalization-landing",
+            "pattern_name": "AI Personalization Landing",
+            "keywords": [
+              "ai",
+              "personalization",
+              "smart",
+              "recommendation",
+              "dynamic"
+            ],
+            "section_order": [
+              "1. Dynamic hero (personalized)",
+              "2. Relevant features",
+              "3. Tailored testimonials",
+              "4. Smart CTA"
+            ],
+            "primary_cta_placement": "Context-aware placement based on user segment",
+            "color_strategy": "Adaptive based on user data. A/B test color variations per segment.",
+            "recommended_effects": [
+              "Dynamic content swap",
+              "fade transitions",
+              "personalized product recommendations"
+            ],
+            "conversion_optimization": "20%+ conversion with personalization. Requires analytics integration. Fallback for new users.",
+            "source_row": 11,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 7.5
+          },
+          {
+            "id": "faq-documentation-landing",
+            "pattern_name": "FAQ/Documentation Landing",
+            "keywords": [
+              "faq",
+              "documentation",
+              "help",
+              "support",
+              "questions",
+              "faq/documentation",
+              "knowledge base"
+            ],
+            "section_order": [
+              "1. Hero with search bar",
+              "2. Popular categories",
+              "3. FAQ accordion",
+              "4. Contact/support CTA"
+            ],
+            "primary_cta_placement": "Search bar prominent + Contact CTA for unresolved questions",
+            "color_strategy": "Clean, high readability. Minimal color. Category icons in brand color. Success green for resolved.",
+            "recommended_effects": [
+              "Search autocomplete",
+              "smooth accordion open/close",
+              "category hover",
+              "helpful feedback buttons"
+            ],
+            "conversion_optimization": "Reduce support tickets. Track search analytics. Show related articles. Contact escalation path.",
+            "source_row": 16,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 6.01
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Landing pattern: Event/Conference Landing. CTA placement: Register CTA sticky + After speakers + Bottom. Early bird pricing with deadline. Social proof (past attendees). Speaker credibility. Multi-ticket discounts."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "query": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "bold-typography-mobile-inter-tight-poster",
+            "pairing_name": "Bold Typography Mobile (Inter-Tight Poster)",
+            "category": "Sans + Serif (Display) + Mono",
+            "heading_font": "Inter",
+            "body_font": "Playfair Display",
+            "mood_keywords": [
+              "bold typography",
+              "editorial",
+              "poster",
+              "near-black",
+              "vermillion",
+              "luxury",
+              "type-as-hero",
+              "manifesto",
+              "high-contrast"
+            ],
+            "best_for": [
+              "Creative brand flagships",
+              "reading platforms",
+              "event apps",
+              "flash pages",
+              "luxury mobile experiences"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400|JetBrains+Mono:wght@400|Playfair+Display:ital@1",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital@1&display=swap');",
+            "tailwind_config": "fontFamily: { display: ['Inter', 'sans-serif'], quote: ['Playfair Display', 'serif'], mono: ['JetBrains Mono', 'monospace'] }",
+            "notes": "Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mono for labels and stats. Scale: 12px labels, 16px body, 22px sub, 32px section, 40px H2, 56px H1, 72px Hero Statement. 5:1 ratio H1:Body is mandatory. lineHeight 1.1 headlines, 1.6 body. Underlines (2–3pt accent) replace buttons for interactions.",
+            "source_row": 66,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 15.55
+          },
+          {
+            "id": "bold-statement",
+            "pairing_name": "Bold Statement",
+            "category": "Display + Sans",
+            "heading_font": "Bebas Neue",
+            "body_font": "Source Sans 3",
+            "mood_keywords": [
+              "bold",
+              "impactful",
+              "strong",
+              "dramatic",
+              "modern",
+              "headlines"
+            ],
+            "best_for": [
+              "Marketing sites",
+              "portfolios",
+              "agencies",
+              "event pages",
+              "sports"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Bebas+Neue|Source+Sans+3:wght@300;400;500;600;700",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');",
+            "tailwind_config": "fontFamily: { display: ['Bebas Neue', 'sans-serif'], body: ['Source Sans 3', 'sans-serif'] }",
+            "notes": "Bebas Neue for large headlines only. All-caps display font.",
+            "source_row": 7,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 9.79
+          },
+          {
+            "id": "flat-design-mobile-system-bold",
+            "pairing_name": "Flat Design Mobile (System Bold)",
+            "category": "Sans + Sans",
+            "heading_font": "Inter",
+            "body_font": "Inter",
+            "mood_keywords": [
+              "flat",
+              "clean",
+              "system",
+              "bold",
+              "geometric",
+              "cross-platform",
+              "icon",
+              "poster",
+              "minimal",
+              "functional",
+              "responsive"
+            ],
+            "best_for": [
+              "Cross-platform apps",
+              "dashboards",
+              "system UI",
+              "onboarding",
+              "marketing pages",
+              "informational apps",
+              "icon-heavy interfaces"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Inter:wght@400;600;700;800",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Inter', 'sans-serif'] }",
+            "notes": "System-first strategy: Inter as primary, falls back to system SF/Roboto on iOS/Android. Scale: Headlines fontWeight 800 letterSpacing -0.5; Subheadings fontWeight 600 fontSize 18; Body fontWeight 400 lineHeight 24; Labels fontWeight 700 uppercase letterSpacing 1. Thick weights carry all hierarchy since there are no shadows. Use aggressive size contrast (poster rule: body 16pt vs headline 40pt+). Avoid italic.",
+            "source_row": 63,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 9.43
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Typography pairing: Bold Typography Mobile (Inter-Tight Poster). Best for Creative brand flagships, reading platforms, event apps. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Pl..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "query": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "event-management",
+            "product_type": "Event Management",
+            "primary": "#7C3AED",
+            "on_primary": "#FFFFFF",
+            "secondary": "#A78BFA",
+            "on_secondary": "#0F172A",
+            "accent": "#EA580C",
+            "on_accent": "#FFFFFF",
+            "background": "#FAF5FF",
+            "foreground": "#4C1D95",
+            "card": "#FFFFFF",
+            "card_foreground": "#4C1D95",
+            "muted": "#ECEEF9",
+            "muted_foreground": "#64748B",
+            "border": "#DDD6FE",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#7C3AED",
+            "notes": "Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1]",
+            "source_row": 70,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 11.05
+          },
+          {
+            "id": "wedding-event-planning",
+            "product_type": "Wedding/Event Planning",
+            "primary": "#DB2777",
+            "on_primary": "#FFFFFF",
+            "secondary": "#F472B6",
+            "on_secondary": "#0F172A",
+            "accent": "#A16207",
+            "on_accent": "#FFFFFF",
+            "background": "#FDF2F8",
+            "foreground": "#831843",
+            "card": "#FFFFFF",
+            "card_foreground": "#831843",
+            "muted": "#F0EDF4",
+            "muted_foreground": "#64748B",
+            "border": "#FBCFE8",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#DB2777",
+            "notes": "Romantic pink + elegant gold [Accent adjusted from #CA8A04 for WCAG 3:1]",
+            "source_row": 39,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 10.88
+          },
+          {
+            "id": "arcade-retro-game",
+            "product_type": "Arcade & Retro Game",
+            "primary": "#DC2626",
+            "on_primary": "#FFFFFF",
+            "secondary": "#2563EB",
+            "on_secondary": "#FFFFFF",
+            "accent": "#22C55E",
+            "on_accent": "#0F172A",
+            "background": "#0F172A",
+            "foreground": "#FFFFFF",
+            "card": "#192134",
+            "card_foreground": "#FFFFFF",
+            "muted": "#1F1829",
+            "muted_foreground": "#94A3B8",
+            "border": "rgba(255,255,255,0.08)",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#DC2626",
+            "notes": "Neon red+blue on dark + score green",
+            "source_row": 125,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 10.42
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Color system: Event Management. Use accent #EA580C against background #FAF5FF. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1]"
+      }
+    ],
+    "guidance": "UI style reference: Vaporwave. Best for Music platforms, gaming, creative portfolios. Accessibility note: ⚠ Poor (motion). UX guidance: Heading Clarity (All). Use Clear size/weight difference. Avoid Headings similar to body text. Landing pattern: Event/Conference Landing. CTA placement: Register CTA sticky + After speakers + Bottom. Early bird pricing with deadline. Social proof (past attendees). Speaker credibility. Multi-ticket discounts. Typography pairing: Bold Typography Mobile (Inter-Tight Poster). Best for Creative brand flagships, reading platforms, event apps. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Pl... Color system: Event Management. Use accent #EA580C against background #FAF5FF. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1] Treat the headline as a graphic element and keep one dramatic supporting visual or texture behind it, not a busy collage. Reserve a high-contrast text zone with low visual noise behind body copy. Clear size/weight difference Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY f... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Register CTA sticky + After speakers + Bottom Early bird pricing with deadline. Social proof (past attendees). Speaker credibility... Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1]",
+    "material_influences": [
+      {
+        "tool_name": "search_ui_styles",
+        "consult_kind": "lookup_tool",
+        "record_id": "vaporwave",
+        "label": "Vaporwave",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ui_styles",
+        "why_it_matters": "Sets the overall visual direction. Sunset gradient present, Neon glow applied, Retro grid visible"
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "consult_kind": "lookup_tool",
+        "record_id": "typography-heading-clarity-all",
+        "label": "Heading Clarity",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ux_guidelines",
+        "why_it_matters": "Clear size/weight difference Avoid: Headings similar to body text"
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "consult_kind": "dataset_probe",
+        "record_id": "event-conference-landing",
+        "label": "Event/Conference Landing",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "landing_patterns",
+        "why_it_matters": "Shapes CTA placement and section flow. Register CTA sticky + After speakers + Bottom Early bird pricing with deadline. Social proof (past attendees). Speaker credibility. Multi-..."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "consult_kind": "dataset_probe",
+        "record_id": "bold-typography-mobile-inter-tight-poster",
+        "label": "Bold Typography Mobile (Inter-Tight Poster)",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "typography_pairings",
+        "why_it_matters": "Sharpens headline/body hierarchy. Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY for pull quotes. JetBrains Mon..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "consult_kind": "dataset_probe",
+        "record_id": "event-management",
+        "label": "Event Management",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "color_systems",
+        "why_it_matters": "Biases contrast and premium color separation. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1]"
+      }
+    ],
+    "metadata": {
+      "headline": "",
+      "body": "",
+      "image_prompt": "",
+      "brand_name": "",
+      "brief": "Design a retro-futurist synthwave poster for a midnight music event with bold type, neon atmosphere, and clear event readability.\n",
+      "style_hint": ""
+    },
+    "art_direction": {
+      "composition_mode": "type_driven",
+      "template_candidates": [
+        "stacked-type-square",
+        "bold-knockout-square",
+        "hero-bottom-text-square"
+      ],
+      "template_reason": "Type-led/event signals favor a bold headline-first poster composition.",
+      "composition": "Treat the headline as a graphic element and keep one dramatic supporting visual or texture behind it, not a busy collage.",
+      "hero": "Keep the hero element large and graphic, but reserve enough quiet space that big typography still feels clean and premium.",
+      "readability": "Reserve a high-contrast text zone with low visual noise behind body copy. Clear size/weight difference Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY f...",
+      "cta": "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Register CTA sticky + After speakers + Bottom Early bird pricing with deadline. Social proof (past attendees). Speaker credibility...",
+      "copy": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+      "polish": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1]",
+      "recommended_fonts": {
+        "heading_font": "Inter",
+        "body_font": "Playfair Display",
+        "pairing_name": "Bold Typography Mobile (Inter-Tight Poster)"
+      },
+      "recommended_colors": {
+        "primary": "#7C3AED",
+        "secondary": "#A78BFA",
+        "accent": "#EA580C",
+        "background": "#FAF5FF",
+        "foreground": "#4C1D95"
+      },
+      "supporting_references": {
+        "style": "Vaporwave",
+        "ux": "Heading Clarity",
+        "landing": "Event/Conference Landing",
+        "typography": "Bold Typography Mobile (Inter-Tight Poster)",
+        "color": "Event Management"
+      }
+    }
+  },
+  "art_direction_plan": {
+    "composition_mode": "type_driven",
+    "template_reason": "Type-led/event signals favor a bold headline-first poster composition.",
+    "template_profile": {
+      "template_name": "stacked-type-square",
+      "composition_mode": "type_driven",
+      "hero_emphasis": 1,
+      "headline_emphasis": 5,
+      "body_readability": 4,
+      "cta_emphasis": 4,
+      "prompt_guardrail": "Keep the background controlled and uncluttered because the typography needs to dominate the composition.",
+      "rationale": "Type-first poster treatment with oversized headline hierarchy."
+    },
+    "composition_instruction": "Treat the headline as a graphic element and keep one dramatic supporting visual or texture behind it, not a busy collage.",
+    "hero_instruction": "Keep the hero element large and graphic, but reserve enough quiet space that big typography still feels clean and premium.",
+    "readability_instruction": "Reserve a high-contrast text zone with low visual noise behind body copy. Clear size/weight difference Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY f...",
+    "cta_instruction": "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Register CTA sticky + After speakers + Bottom Early bird pricing with deadline. Social proof (past attendees). Speaker credibility...",
+    "copy_instruction": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+    "polish_instruction": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1]",
+    "campaign_angle": "Late-night analog energy",
+    "visual_direction": "Bold retro-futurist poster with giant headline treatment and controlled neon atmosphere",
+    "hero_focus": "One glowing central light form with room for stacked typography"
+  },
+  "template_reason": "Type-led/event signals favor a bold headline-first poster composition.",
+  "prompt_trace": {
+    "effective_prompt": "Retro-futurist neon atmosphere, dramatic glow, no text, no logos Treat the headline as a graphic element and keep one dramatic supporting visual or texture behind it, not a busy collage. Keep the hero element large and graphic, but reserve enough quiet space that big typography still feels clean and premium. Reserve a high-contrast text zone with low visual noise behind body copy. Clear size/weight difference Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY f... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Register CTA sticky + After speakers + Bottom Early bird pricing with deadline. Social proof (past attendees). Speaker credibility... Keep the background controlled and uncluttered because the typography needs to dominate the composition. Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1] Avoid tiny copy; muddy purple haze.",
+    "prompt_prefix_parts": [
+      "Late-night analog energy",
+      "Bold retro-futurist poster with giant headline treatment and controlled neon atmosphere",
+      "One glowing central light form with room for stacked typography"
+    ],
+    "quality_guardrail_parts": [
+      "Treat the headline as a graphic element and keep one dramatic supporting visual or texture behind it, not a busy collage.",
+      "Keep the hero element large and graphic, but reserve enough quiet space that big typography still feels clean and premium.",
+      "Reserve a high-contrast text zone with low visual noise behind body copy. Clear size/weight difference Tri-stack: Inter 600–800 for all UI (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic ONLY f...",
+      "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Register CTA sticky + After speakers + Bottom Early bird pricing with deadline. Social proof (past attendees). Speaker credibility...",
+      "Keep the background controlled and uncluttered because the typography needs to dominate the composition.",
+      "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Excitement purple + action orange [Accent adjusted from #F97316 for WCAG 3:1]"
+    ],
+    "avoid_parts": [
+      "tiny copy; muddy purple haze"
+    ]
+  },
+  "artifact": {
+    "poster_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/retro_event_poster/poster.png",
+    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-091754/hero.png",
+    "template_used": "stacked-type-square",
+    "image_mode": "openai"
+  }
+}

@@ -54,7 +54,7 @@ def test_freeform_brief_normalizes_into_creative_fields(mock_llm: MagicMock) -> 
     assert brief.hero_focus == "Mac mini M4 in clean studio light"
     assert brief.headline == "New year. New power."
     assert brief.body == "Meet Mac mini with M4."
-    assert brief.cta == "Learn more"
+    assert brief.cta == "Learn More"
     assert brief.image_prompt == "Compact desktop hero, silver finish, premium lighting, no text"
     assert brief.template_name == "social-post"
     assert brief.avoid == ("dense copy", "busy confetti")
@@ -98,3 +98,40 @@ def test_as_payload_serializes_creative_brief() -> None:
     assert payload["headline"] == "Headline"
     assert payload["template_name"] == "social-post"
     assert payload["avoid"] == ("tiny copy", "muddy lighting")
+
+
+@patch("pipelines.poster_brief.llm_chat")
+def test_generic_model_cta_is_sharpened_from_context(mock_llm: MagicMock) -> None:
+    """Weak generic CTAs should become action-led when the scenario is obvious."""
+    mock_llm.return_value = json.dumps(
+        {
+            "campaign_angle": "Urgent relief support",
+            "audience": "Donors",
+            "visual_direction": "Minimal trust-led donation poster",
+            "hero_focus": "Calm relief scene",
+            "headline": "Introducing Relief That Reaches Faster",
+            "body": "Help families access food and shelter without delay.",
+            "cta": "Learn More",
+            "image_prompt": "Calm trust-led relief visual, no text, no logos",
+            "template_name": "",
+            "avoid": ["exploitative imagery"],
+        }
+    )
+
+    brief = normalize_poster_brief(
+        brief="Create a trustworthy disaster-relief fundraiser poster with a clear donation ask.",
+        available_templates=["social-post", "hero-bottom-text-square"],
+    )
+
+    assert brief.headline == "Relief That Reaches Faster"
+    assert brief.cta == "Donate Now"
+
+
+def test_fallback_cta_infers_event_action_from_brief() -> None:
+    """Fallback normalization should infer stronger event CTAs from the brief text."""
+    brief = normalize_poster_brief(
+        brief="Design a synthwave music festival poster with bold type and clear ticket action.",
+        available_templates=["social-post"],
+    )
+
+    assert brief.cta == "Get Tickets"

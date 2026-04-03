@@ -1,0 +1,21 @@
+milestones:
+  - id: baseline_pre_reference_corpora
+    label: Baseline pre-corpora
+    git_ref: d679581909c989776ab5c8738e48885240fb469e
+    description: Before the local reference corpora were imported.
+  - id: import_foundation
+    label: Import foundation
+    git_ref: 57675b54c867eae1c77cb7c42c44c2d68cf06ab6
+    description: Pinned local corpora and dataset inventory added.
+  - id: lookup_layer
+    label: Lookup layer
+    git_ref: 6e6839c46b16e223ad0ae797b1d3694578c53544
+    description: Hermes-native reference search helpers and tool registration added.
+  - id: ambient_reference_capability
+    label: Ambient reference capability
+    git_ref: 89401440fc683715aabd2b8ecb7abda2ced3d762
+    description: Automatic local-reference orchestration added to the main pipelines.
+  - id: current_head
+    label: Current head
+    git_ref: HEAD
+    description: Current repo state under evaluation.

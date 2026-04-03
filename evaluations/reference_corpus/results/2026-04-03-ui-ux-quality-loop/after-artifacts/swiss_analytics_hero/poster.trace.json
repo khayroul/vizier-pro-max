@@ -1,0 +1,948 @@
+{
+  "schema_version": 1,
+  "generated_at": "20260403-091752",
+  "inputs": {
+    "headline": "",
+    "body": "",
+    "cta": "",
+    "brief": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.\n",
+    "image_prompt": "",
+    "template_name": "",
+    "image_mode": "",
+    "brand_name": "",
+    "client_id": "",
+    "style_reference": "",
+    "reference_image_path": ""
+  },
+  "creative_brief": {
+    "raw_brief": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.",
+    "campaign_angle": "Sharper finance signal for decision-makers",
+    "audience": "CFOs and finance leaders",
+    "visual_direction": "Swiss grid enterprise hero with disciplined whitespace and a premium dashboard focal plane",
+    "hero_focus": "Large analytics surface showing runway and risk insights",
+    "headline": "Finance Without Noise",
+    "body": "Help CFOs scan runway, risk, and forecast health in seconds.",
+    "cta": "Book Demo",
+    "image_prompt": "Crisp analytics surface, swiss grid, controlled light, no text, no logos",
+    "template_name": "",
+    "avoid": [
+      "generic SaaS blobs",
+      "muddy gradients"
+    ]
+  },
+  "reference_trace": {
+    "task_family": "visual",
+    "auto_consulted": true,
+    "query_count": 1,
+    "tool_names": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "auxiliary_tool_names": [
+      "search_landing_patterns",
+      "search_typography_pairings",
+      "search_color_systems"
+    ],
+    "route_description": "visual/UI/poster -> search_ui_styles + search_ux_guidelines, plus landing-pattern, typography-pairing, and color-system probes",
+    "lookup_tools_used": [
+      "search_ui_styles",
+      "search_ux_guidelines"
+    ],
+    "dataset_searches_used": [
+      "search_color_systems",
+      "search_landing_patterns",
+      "search_typography_pairings"
+    ],
+    "reference_families_consulted": [
+      "ui_ux_pro_max"
+    ],
+    "datasets_consulted": [
+      "color_systems",
+      "landing_patterns",
+      "typography_pairings",
+      "ui_styles",
+      "ux_guidelines"
+    ],
+    "searches": [
+      {
+        "tool_name": "search_ui_styles",
+        "query": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "predictive-analytics",
+            "name": "Predictive Analytics",
+            "type": "BI/Analytics",
+            "keywords": [
+              "Forecast lines",
+              "confidence intervals",
+              "trend projections",
+              "scenario modeling",
+              "AI-driven insights",
+              "anomaly detection visualization"
+            ],
+            "best_for": [
+              "Forecasting dashboards",
+              "anomaly detection systems",
+              "trend prediction dashboards",
+              "AI-powered analytics",
+              "budget planning"
+            ],
+            "avoid_for": [
+              "Historical-only dashboards",
+              "simple reporting",
+              "real-time operational dashboards"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "✓ Full",
+            "performance": "⚠ Good (computation)",
+            "accessibility": "✓ WCAG AA",
+            "mobile_friendly": "◐ Medium",
+            "conversion_focused": "✗ Not applicable",
+            "framework_compatibility": [
+              "Recharts 9/10",
+              "Chart.js 9/10",
+              "D3.js 10/10"
+            ],
+            "era_origin": "2020s Modern",
+            "complexity": "Medium",
+            "source_row": 34,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "predictive-analytics",
+              "style_name": "Predictive Analytics",
+              "primary_colors": [
+                "Forecast line color (distinct from actual)",
+                "confidence interval shading",
+                "anomaly highlight (red alert)",
+                "trend colors"
+              ],
+              "secondary_colors": [
+                "High confidence (dark color)",
+                "low confidence (light color)",
+                "anomaly colors (red/orange)",
+                "normal trend (green/blue)"
+              ],
+              "effects_animations": [
+                "Forecast line animation on draw",
+                "confidence band fade-in",
+                "anomaly pulse alert",
+                "smoothing function animations"
+              ],
+              "ai_prompt_keywords": [
+                "Design a predictive analytics dashboard. Use: forecast lines (dashed)",
+                "confidence intervals (shaded bands)",
+                "trend projections",
+                "anomaly highlights",
+                "scenario toggles",
+                "AI insight cards",
+                "probability indicators."
+              ],
+              "css_keywords": [
+                "stroke-dasharray for forecast lines",
+                "fill-opacity for confidence bands",
+                "anomaly markers (circles)",
+                "tooltip for predictions",
+                "toggle switches for scenarios",
+                "gradient for probability"
+              ],
+              "implementation_checklist": [
+                "Forecast line distinct",
+                "Confidence bands visible",
+                "Anomalies highlighted",
+                "Scenarios switchable",
+                "Predictions dated",
+                "Accuracy shown"
+              ],
+              "design_system_variables": [
+                "--forecast-dash: 5 5",
+                "--confidence-opacity: 0.2",
+                "--anomaly-color: #F59E0B",
+                "--prediction-color: #8B5CF6",
+                "--scenario-toggle-width: 48px",
+                "--ai-accent: #6366F1"
+              ]
+            },
+            "score": 12.89
+          },
+          {
+            "id": "flat-design-mobile-touch-first",
+            "name": "Flat Design Mobile (Touch-First)",
+            "type": "Mobile",
+            "keywords": [
+              "flat",
+              "2D",
+              "no shadow",
+              "color blocking",
+              "geometric",
+              "bold",
+              "poster",
+              "icon",
+              "touch-first",
+              "minimal",
+              "clean",
+              "tailored",
+              "cross-platform"
+            ],
+            "best_for": [
+              "Cross-platform apps (iOS+Android parity)",
+              "information-dense dashboards",
+              "system UI",
+              "brand illustration",
+              "onboarding flows",
+              "marketing pages",
+              "icon design"
+            ],
+            "avoid_for": [
+              "Ultra-premium contexts needing depth/shadow",
+              "dark-mode-first products",
+              "contexts where flat design reads as unfinished or sterile"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "◐ Partial (Dark mode via color swap only)",
+            "performance": "⚡ Excellent (no GPU effects)",
+            "accessibility": "✓ WCAG AA (large bold type helps)",
+            "mobile_friendly": "✓ Mobile-First",
+            "conversion_focused": "✓ High",
+            "framework_compatibility": [
+              "React Native 10/10",
+              "Expo 10/10",
+              "NativeWind 10/10",
+              "Flutter 9/10",
+              "SwiftUI 9/10"
+            ],
+            "era_origin": "2010s–2020s Flat Mobile",
+            "complexity": "Low",
+            "source_row": 75,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "flat-design-mobile-touch-first",
+              "style_name": "Flat Design Mobile (Touch-First)",
+              "primary_colors": [
+                "Blue #3B82F6",
+                "Emerald #10B981"
+              ],
+              "secondary_colors": [
+                "Background #FFFFFF",
+                "Surface #F3F4F6",
+                "Text #111827",
+                "Amber #F59E0B",
+                "Border #E5E7EB"
+              ],
+              "effects_animations": [
+                "Immediate press feedback (scale 0.97",
+                "no delay)",
+                "color section blocking (full-width contrasting View)",
+                "zero elevation/shadow",
+                "solid icon containers (colored squares/circles)",
+                "geometric low-opacity shape overlays",
+                "bottom tabs solid fill (no floating)"
+              ],
+              "ai_prompt_keywords": [
+                "Design a Flat Mobile app. NO shadows (shadowOpacity: 0",
+                "elevation: 0). Color creates all hierarchy. Sections: full-width View blocks alternating contrasting bg colors (Blue Hero → White Content → Gray Block). Buttons: solid #3B82F6",
+                "borderRadius 8",
+                "height 56. Cards: backgroundColor #FFFFFF (on gray bg) or #DBEAFE (blue tint) — no shadow. Text: fontWeight 800 letterSpacing -0.5 (heads)",
+                "600 (sub)",
+                "400 (body). Inputs: #F3F4F6 bg",
+                "focused: borderWidth 2 borderColor #3B82F6. Icons: Lucide strokeWidth 2.5 inside solid colored square/circle. Press feedback: scale 0.97 Pressable. Use position absolute low-opacity geometric shapes (circles",
+                "rotated squares) as background decoration."
+              ],
+              "css_keywords": [
+                "shadowOpacity: 0",
+                "elevation: 0",
+                "borderRadius: 6/12/999",
+                "height: 48 minimum touch targets",
+                "spacing: 4/8/16/24/32/48 system",
+                "backgroundColor (section blocking)",
+                "Pressable scale: pressed ? 0.97 : 1",
+                "fontWeight: '800' heads / '600' sub / '400' body",
+                "letterSpacing: -0.5 heads / 1 labels",
+                "textTransform: 'uppercase' labels",
+                "strokeWidth={2.5} icons",
+                "borderWidth: 3/4 for featured CTAs"
+              ],
+              "implementation_checklist": [
+                "Zero elevation AND shadowOpacity on all elements",
+                "Color-blocking sections (not borders)",
+                "All touch targets ≥ 48×48",
+                "No gradients on flat elements",
+                "Icons inside solid colored containers",
+                "Pressable scale feedback",
+                "Geometric shapes as bg decoration",
+                "Bold flat bottom tabs (no floating)",
+                "Primary headlines much larger than body",
+                "4pt spacing system throughout"
+              ],
+              "design_system_variables": [
+                "--bg: #FFFFFF",
+                "--surface: #F3F4F6",
+                "--fg: #111827",
+                "--primary: #3B82F6",
+                "--secondary: #10B981",
+                "--accent: #F59E0B",
+                "--border: #E5E7EB",
+                "--radius-sm: 6px",
+                "--radius-md: 12px",
+                "--radius-pill: 999px",
+                "--shadow: none",
+                "--elevation: 0",
+                "--touch-target: 48px",
+                "--spacing: 4 8 16 24 32 48"
+              ]
+            },
+            "score": 11.22
+          },
+          {
+            "id": "financial-dashboard",
+            "name": "Financial Dashboard",
+            "type": "BI/Analytics",
+            "keywords": [
+              "Revenue metrics",
+              "profit/loss visualization",
+              "budget tracking",
+              "financial ratios",
+              "portfolio performance",
+              "cash flow",
+              "audit trail"
+            ],
+            "best_for": [
+              "Financial reporting",
+              "accounting dashboards",
+              "portfolio tracking",
+              "budget monitoring",
+              "banking analytics"
+            ],
+            "avoid_for": [
+              "Simple business dashboards",
+              "entertainment/social metrics",
+              "non-financial data"
+            ],
+            "light_mode": "✓ Full",
+            "dark_mode": "✓ Full",
+            "performance": "⚡ Excellent",
+            "accessibility": "✓ WCAG AAA",
+            "mobile_friendly": "✗ Low",
+            "conversion_focused": "✗ Not applicable",
+            "framework_compatibility": [
+              "Recharts 9/10",
+              "Chart.js 9/10",
+              "D3.js 10/10"
+            ],
+            "era_origin": "2020s Modern",
+            "complexity": "Medium",
+            "source_row": 36,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ui_styles",
+            "source_datasets": [
+              "ui_ux_pro_max/ui_styles",
+              "ui_ux_pro_max/visual_motifs"
+            ],
+            "visual_motif": {
+              "id": "financial-dashboard",
+              "style_name": "Financial Dashboard",
+              "primary_colors": [
+                "Financial colors: profit (green #22C55E)",
+                "loss (red #EF4444)",
+                "neutral (grey)",
+                "trust (dark blue #003366)"
+              ],
+              "secondary_colors": [
+                "Revenue highlight (green)",
+                "expenses (red)",
+                "budget variance (orange/red)",
+                "balance (grey)",
+                "accuracy (blue)"
+              ],
+              "effects_animations": [
+                "Number animations (count-up)",
+                "trend direction indicators",
+                "percentage change animations",
+                "profit/loss color transitions"
+              ],
+              "ai_prompt_keywords": [
+                "Design a financial dashboard. Use: revenue/expense charts",
+                "profit margins",
+                "budget vs actual",
+                "cash flow waterfall",
+                "financial ratios",
+                "audit trail table",
+                "currency formatting",
+                "period comparisons."
+              ],
+              "css_keywords": [
+                "number formatting (Intl.NumberFormat)",
+                "waterfall chart (positive/negative bars)",
+                "variance coloring",
+                "table with totals row",
+                "sparkline for trends",
+                "sticky column headers"
+              ],
+              "implementation_checklist": [
+                "Currency formatted",
+                "Decimals consistent",
+                "P&L clear",
+                "Budget variance shown",
+                "Audit trail complete",
+                "Export to Excel"
+              ],
+              "design_system_variables": [
+                "--currency-symbol: $",
+                "--decimal-places: 2",
+                "--profit-color: #22C55E",
+                "--loss-color: #EF4444",
+                "--variance-threshold: 10%",
+                "--table-header-bg: #F3F4F6"
+              ]
+            },
+            "score": 10.18
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UI style reference: Predictive Analytics. Best for Forecasting dashboards, anomaly detection systems, trend prediction dashboards. Accessibility note: ✓ WCAG AA."
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "query": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.",
+        "consult_kind": "lookup_tool",
+        "results": [
+          {
+            "id": "navigation-smooth-scroll-web",
+            "category": "Navigation",
+            "issue": "Smooth Scroll",
+            "platform": "Web",
+            "description": "Anchor links should scroll smoothly to target section",
+            "recommended_practice": "Use scroll-behavior: smooth on html element",
+            "avoid": "Jump directly without transition",
+            "code_example_good": "html { scroll-behavior: smooth; }",
+            "code_example_bad": "<a href='#section'> without CSS",
+            "severity": "High",
+            "source_row": 1,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 10.66
+          },
+          {
+            "id": "animation-excessive-motion-all",
+            "category": "Animation",
+            "issue": "Excessive Motion",
+            "platform": "All",
+            "description": "Too many animations cause distraction and motion sickness",
+            "recommended_practice": "Animate 1-2 key elements per view maximum",
+            "avoid": "Animate everything that moves",
+            "code_example_good": "Single hero animation",
+            "code_example_bad": "animate-bounce on 5+ elements",
+            "severity": "High",
+            "source_row": 7,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 8.81
+          },
+          {
+            "id": "forms-input-labels-all",
+            "category": "Forms",
+            "issue": "Input Labels",
+            "platform": "All",
+            "description": "Every input needs a visible label",
+            "recommended_practice": "Always show label above or beside input",
+            "avoid": "Placeholder as only label",
+            "code_example_good": "<label>Email</label><input>",
+            "code_example_bad": "placeholder='Email' only",
+            "severity": "High",
+            "source_row": 54,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "ux_guidelines",
+            "source_datasets": [
+              "ui_ux_pro_max/ux_guidelines"
+            ],
+            "score": 7.35
+          }
+        ],
+        "match_count": 3,
+        "guidance": "UX guidance: Smooth Scroll (Web). Use Use scroll-behavior: smooth on html element. Avoid Jump directly without transition."
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "query": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "ai-personalization-landing",
+            "pattern_name": "AI Personalization Landing",
+            "keywords": [
+              "ai",
+              "personalization",
+              "smart",
+              "recommendation",
+              "dynamic"
+            ],
+            "section_order": [
+              "1. Dynamic hero (personalized)",
+              "2. Relevant features",
+              "3. Tailored testimonials",
+              "4. Smart CTA"
+            ],
+            "primary_cta_placement": "Context-aware placement based on user segment",
+            "color_strategy": "Adaptive based on user data. A/B test color variations per segment.",
+            "recommended_effects": [
+              "Dynamic content swap",
+              "fade transitions",
+              "personalized product recommendations"
+            ],
+            "conversion_optimization": "20%+ conversion with personalization. Requires analytics integration. Fallback for new users.",
+            "source_row": 11,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 8.76
+          },
+          {
+            "id": "enterprise-gateway",
+            "pattern_name": "Enterprise Gateway",
+            "keywords": [
+              "enterprise",
+              "corporate",
+              "gateway",
+              "solutions",
+              "portal",
+              "trust",
+              "authority",
+              "trust & authority"
+            ],
+            "section_order": [
+              "1. Hero (Video/Mission)",
+              "2. Solutions by Industry",
+              "3. Solutions by Role",
+              "4. Client Logos",
+              "5. Contact Sales"
+            ],
+            "primary_cta_placement": "Contact Sales (Primary) + Login (Secondary)",
+            "color_strategy": "Corporate: Navy/Grey. High integrity. Conservative accents.",
+            "recommended_effects": [
+              "Slow video background",
+              "logo carousel",
+              "tab switching for industries"
+            ],
+            "conversion_optimization": "Path selection (I am a...). Mega menu navigation. Trust signals prominent.",
+            "source_row": 25,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 5.97
+          },
+          {
+            "id": "bento-grid-showcase",
+            "pattern_name": "Bento Grid Showcase",
+            "keywords": [
+              "bento",
+              "grid",
+              "features",
+              "modular",
+              "apple-style",
+              "showcase",
+              "feature-rich showcase"
+            ],
+            "section_order": [
+              "1. Hero",
+              "2. Bento Grid (Key Features)",
+              "3. Detail Cards",
+              "4. Tech Specs",
+              "5. CTA"
+            ],
+            "primary_cta_placement": "Floating Action Button or Bottom of Grid",
+            "color_strategy": "Card backgrounds: #F5F5F7 or Glass. Icons: Vibrant brand colors. Text: Dark.",
+            "recommended_effects": [
+              "Hover card scale (1.02)",
+              "video inside cards",
+              "tilt effect",
+              "staggered reveal"
+            ],
+            "conversion_optimization": "Scannable value props. High information density without clutter. Mobile stack.",
+            "source_row": 28,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "landing_patterns",
+            "source_datasets": [
+              "ui_ux_pro_max/landing_patterns"
+            ],
+            "score": 5.86
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Landing pattern: AI Personalization Landing. CTA placement: Context-aware placement based on user segment. 20%+ conversion with personalization. Requires analytics integration. Fallback for new users."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "query": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "enterprise-saas-mobile-plus-jakarta-sans",
+            "pairing_name": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+            "category": "Geometric Sans (Single Family)",
+            "heading_font": "Plus Jakarta Sans",
+            "body_font": "Plus Jakarta Sans",
+            "mood_keywords": [
+              "enterprise",
+              "saas",
+              "b2b",
+              "professional",
+              "indigo",
+              "modern",
+              "approachable",
+              "legible",
+              "ios dynamic type",
+              "android scaling"
+            ],
+            "best_for": [
+              "B2B SaaS apps",
+              "productivity tools",
+              "government and finance mobile apps",
+              "admin dashboards",
+              "enterprise onboarding"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+            "notes": "Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability. Weight scale: ExtraBold 800 for screen titles/hero (line height 1.1–1.2). Bold 700 for section headers. SemiBold 600 for card titles and buttons. Regular 400 for body text (line height 1.4–1.5). Must support iOS Dynamic Type and Android font scaling — never hardcode pixel sizes without respecting system font scale. Button text: uppercase, letterSpacing 0.5. Caption: 12px Regular. Muted: Slate 500 #64748B.",
+            "source_row": 71,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 9.54
+          },
+          {
+            "id": "saas-mobile-boutique-calistoga-inter",
+            "pairing_name": "SaaS Mobile Boutique (Calistoga + Inter)",
+            "category": "Display Serif + Sans + Mono",
+            "heading_font": "Calistoga",
+            "body_font": "Inter",
+            "mood_keywords": [
+              "saas",
+              "boutique",
+              "electric",
+              "warm",
+              "editorial",
+              "bold",
+              "premium",
+              "fintech",
+              "business",
+              "dual font",
+              "human warmth"
+            ],
+            "best_for": [
+              "B2B SaaS mobile",
+              "fintech apps",
+              "analytics dashboards",
+              "marketing tools",
+              "operations platforms"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Calistoga:ital@0;1|Inter:wght@300;400;500;600;700|JetBrains+Mono:wght@400;500",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Calistoga:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');",
+            "tailwind_config": "fontFamily: { display: ['Calistoga', 'serif'], body: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }",
+            "notes": "Tri-stack: Calistoga (adds human warmth) for heroes 36–42pt leading-1.1; Inter 400–600 for body/UI 16–18pt; JetBrains Mono 12pt uppercase tracking-[1.5] for data labels and section badges. Scale: Hero 36–42pt, Section H2 28–32pt, Body 16–18pt, Label 12pt. Avoid italic Calistoga except editorial callouts.",
+            "source_row": 60,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 8.36
+          },
+          {
+            "id": "neumorphism-mobile-plus-jakarta-sans-system",
+            "pairing_name": "Neumorphism Mobile (Plus Jakarta Sans + System)",
+            "category": "Geometric Sans (System Fallback)",
+            "heading_font": "Plus Jakarta Sans",
+            "body_font": "Plus Jakarta Sans",
+            "mood_keywords": [
+              "neumorphism",
+              "soft ui",
+              "monochromatic",
+              "cool grey",
+              "minimal",
+              "physical",
+              "depth",
+              "ceramic",
+              "system font",
+              "utility"
+            ],
+            "best_for": [
+              "Smart home controls",
+              "minimal tools",
+              "aesthetic dashboards",
+              "health monitors",
+              "brand showcase pages"
+            ],
+            "google_fonts_url": "https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;1,400",
+            "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');",
+            "tailwind_config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+            "notes": "Single-family or System fallback: Plus Jakarta Sans Bold/Medium pairs beautifully with the monochromatic #E0E5EC surface — subtle geometry without competing with the depth effect. Heading: 24–32px Bold (700), letterSpacing -0.5 for modern premium feel. Body: 16px Medium (500), lineHeight 1.4. Caption: 12px Regular (400). Use Text Primary #3D4852 (7.5:1 contrast against #E0E5EC) for all primary text. Use Text Muted #6B7280 (4.6:1 contrast) for secondary text. Accent color #6C63FF only on active labels or focus indicators. Never use italic or thin weights — they lose legibility against the embossed background. System (SF Pro / Roboto) is an acceptable fallback for performance-sensitive implementations.",
+            "source_row": 73,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "typography_pairings",
+            "source_datasets": [
+              "ui_ux_pro_max/typography_pairings"
+            ],
+            "score": 6.53
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Typography pairing: Enterprise SaaS Mobile (Plus Jakarta Sans). Best for B2B SaaS apps, productivity tools, government and finance mobile apps. Single-family system: Plus Jakarta Sans balances professional authority w..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "query": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.",
+        "consult_kind": "dataset_probe",
+        "results": [
+          {
+            "id": "banking-traditional-finance",
+            "product_type": "Banking/Traditional Finance",
+            "primary": "#0F172A",
+            "on_primary": "#FFFFFF",
+            "secondary": "#1E3A8A",
+            "on_secondary": "#FFFFFF",
+            "accent": "#A16207",
+            "on_accent": "#FFFFFF",
+            "background": "#F8FAFC",
+            "foreground": "#020617",
+            "card": "#FFFFFF",
+            "card_foreground": "#020617",
+            "muted": "#E8ECF1",
+            "muted_foreground": "#64748B",
+            "border": "#E2E8F0",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#0F172A",
+            "notes": "Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1]",
+            "source_row": 42,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 10.16
+          },
+          {
+            "id": "analytics-dashboard",
+            "product_type": "Analytics Dashboard",
+            "primary": "#1E40AF",
+            "on_primary": "#FFFFFF",
+            "secondary": "#3B82F6",
+            "on_secondary": "#FFFFFF",
+            "accent": "#D97706",
+            "on_accent": "#FFFFFF",
+            "background": "#F8FAFC",
+            "foreground": "#1E3A8A",
+            "card": "#FFFFFF",
+            "card_foreground": "#1E3A8A",
+            "muted": "#E9EEF6",
+            "muted_foreground": "#64748B",
+            "border": "#DBEAFE",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#1E40AF",
+            "notes": "Blue data + amber highlights [Accent adjusted from #F59E0B for WCAG 3:1]",
+            "source_row": 7,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 7.57
+          },
+          {
+            "id": "luxury-premium-brand",
+            "product_type": "Luxury/Premium Brand",
+            "primary": "#1C1917",
+            "on_primary": "#FFFFFF",
+            "secondary": "#44403C",
+            "on_secondary": "#FFFFFF",
+            "accent": "#A16207",
+            "on_accent": "#FFFFFF",
+            "background": "#FAFAF9",
+            "foreground": "#0C0A09",
+            "card": "#FFFFFF",
+            "card_foreground": "#0C0A09",
+            "muted": "#E8ECF0",
+            "muted_foreground": "#64748B",
+            "border": "#D6D3D1",
+            "destructive": "#DC2626",
+            "on_destructive": "#FFFFFF",
+            "ring": "#1C1917",
+            "notes": "Premium black + gold accent [Accent adjusted from #CA8A04 for WCAG 3:1]",
+            "source_row": 33,
+            "reference_family": "ui_ux_pro_max",
+            "dataset_id": "color_systems",
+            "source_datasets": [
+              "ui_ux_pro_max/color_systems"
+            ],
+            "score": 6.81
+          }
+        ],
+        "match_count": 3,
+        "guidance": "Color system: Banking/Traditional Finance. Use accent #A16207 against background #F8FAFC. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1]"
+      }
+    ],
+    "guidance": "UI style reference: Predictive Analytics. Best for Forecasting dashboards, anomaly detection systems, trend prediction dashboards. Accessibility note: ✓ WCAG AA. UX guidance: Smooth Scroll (Web). Use Use scroll-behavior: smooth on html element. Avoid Jump directly without transition. Landing pattern: AI Personalization Landing. CTA placement: Context-aware placement based on user segment. 20%+ conversion with personalization. Requires analytics integration. Fallback for new users. Typography pairing: Enterprise SaaS Mobile (Plus Jakarta Sans). Best for B2B SaaS apps, productivity tools, government and finance mobile apps. Single-family system: Plus Jakarta Sans balances professional authority w... Color system: Banking/Traditional Finance. Use accent #A16207 against background #F8FAFC. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1] Use a framed hero/product surface that occupies the visual center so the design feels intentional instead of generic. Reserve a high-contrast text zone with low visual noise behind body copy. Use scroll-behavior: smooth on html element Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Context-aware placement based on user segment 20%+ conversion with personalization. Requires analytics integration. Fallback for n... Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1]",
+    "material_influences": [
+      {
+        "tool_name": "search_ui_styles",
+        "consult_kind": "lookup_tool",
+        "record_id": "predictive-analytics",
+        "label": "Predictive Analytics",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ui_styles",
+        "why_it_matters": "Sets the overall visual direction. Forecast line distinct, Confidence bands visible, Anomalies highlighted"
+      },
+      {
+        "tool_name": "search_ux_guidelines",
+        "consult_kind": "lookup_tool",
+        "record_id": "navigation-smooth-scroll-web",
+        "label": "Smooth Scroll",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "ux_guidelines",
+        "why_it_matters": "Use scroll-behavior: smooth on html element Avoid: Jump directly without transition"
+      },
+      {
+        "tool_name": "search_landing_patterns",
+        "consult_kind": "dataset_probe",
+        "record_id": "ai-personalization-landing",
+        "label": "AI Personalization Landing",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "landing_patterns",
+        "why_it_matters": "Shapes CTA placement and section flow. Context-aware placement based on user segment 20%+ conversion with personalization. Requires analytics integration. Fallback for new users."
+      },
+      {
+        "tool_name": "search_typography_pairings",
+        "consult_kind": "dataset_probe",
+        "record_id": "enterprise-saas-mobile-plus-jakarta-sans",
+        "label": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "typography_pairings",
+        "why_it_matters": "Sharpens headline/body hierarchy. Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability. Weight scale: ExtraBold 800 for screen tit..."
+      },
+      {
+        "tool_name": "search_color_systems",
+        "consult_kind": "dataset_probe",
+        "record_id": "banking-traditional-finance",
+        "label": "Banking/Traditional Finance",
+        "reference_family": "ui_ux_pro_max",
+        "dataset_id": "color_systems",
+        "why_it_matters": "Biases contrast and premium color separation. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1]"
+      }
+    ],
+    "metadata": {
+      "headline": "",
+      "body": "",
+      "image_prompt": "",
+      "brand_name": "",
+      "brief": "Create a premium hero for a CFO analytics platform that helps finance teams see runway, forecast risk, and cash health without clutter.\n",
+      "style_hint": ""
+    },
+    "art_direction": {
+      "composition_mode": "card_showcase",
+      "template_candidates": [
+        "floating-card-square",
+        "center-stage-square",
+        "editorial-split-square"
+      ],
+      "template_reason": "UI/product-surface cues favor a framed hero or card-showcase composition.",
+      "composition": "Use a framed hero/product surface that occupies the visual center so the design feels intentional instead of generic.",
+      "hero": "Make the hero subject read at a glance with crisp edges and enough scale to feel premium, not thumbnail-sized.",
+      "readability": "Reserve a high-contrast text zone with low visual noise behind body copy. Use scroll-behavior: smooth on html element Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability...",
+      "cta": "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Context-aware placement based on user segment 20%+ conversion with personalization. Requires analytics integration. Fallback for n...",
+      "copy": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+      "polish": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1]",
+      "recommended_fonts": {
+        "heading_font": "Plus Jakarta Sans",
+        "body_font": "Plus Jakarta Sans",
+        "pairing_name": "Enterprise SaaS Mobile (Plus Jakarta Sans)"
+      },
+      "recommended_colors": {
+        "primary": "#0F172A",
+        "secondary": "#1E3A8A",
+        "accent": "#A16207",
+        "background": "#F8FAFC",
+        "foreground": "#020617"
+      },
+      "supporting_references": {
+        "style": "Predictive Analytics",
+        "ux": "Smooth Scroll",
+        "landing": "AI Personalization Landing",
+        "typography": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+        "color": "Banking/Traditional Finance"
+      }
+    }
+  },
+  "art_direction_plan": {
+    "composition_mode": "card_showcase",
+    "template_reason": "UI/product-surface cues favor a framed hero or card-showcase composition.",
+    "template_profile": {
+      "template_name": "floating-card-square",
+      "composition_mode": "card_showcase",
+      "hero_emphasis": 4,
+      "headline_emphasis": 4,
+      "body_readability": 4,
+      "cta_emphasis": 4,
+      "prompt_guardrail": "Create one crisp focal asset that can read cleanly inside a framed card with calmer space below.",
+      "rationale": "Framed card showcase for UI/product surfaces and intentional premium layouts."
+    },
+    "composition_instruction": "Use a framed hero/product surface that occupies the visual center so the design feels intentional instead of generic.",
+    "hero_instruction": "Make the hero subject read at a glance with crisp edges and enough scale to feel premium, not thumbnail-sized.",
+    "readability_instruction": "Reserve a high-contrast text zone with low visual noise behind body copy. Use scroll-behavior: smooth on html element Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability...",
+    "cta_instruction": "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Context-aware placement based on user segment 20%+ conversion with personalization. Requires analytics integration. Fallback for n...",
+    "copy_instruction": "Keep the headline concise, the body to one short supporting beat, and the CTA action-led.",
+    "polish_instruction": "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1]",
+    "campaign_angle": "Sharper finance signal for decision-makers",
+    "visual_direction": "Swiss grid enterprise hero with disciplined whitespace and a premium dashboard focal plane",
+    "hero_focus": "Large analytics surface showing runway and risk insights"
+  },
+  "template_reason": "UI/product-surface cues favor a framed hero or card-showcase composition.",
+  "prompt_trace": {
+    "effective_prompt": "Crisp analytics surface, swiss grid, controlled light, no text, no logos Use a framed hero/product surface that occupies the visual center so the design feels intentional instead of generic. Make the hero subject read at a glance with crisp edges and enough scale to feel premium, not thumbnail-sized. Reserve a high-contrast text zone with low visual noise behind body copy. Use scroll-behavior: smooth on html element Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability... Give the CTA one dominant action zone and avoid burying it under secondary decoration. Context-aware placement based on user segment 20%+ conversion with personalization. Requires analytics integration. Fallback for n... Create one crisp focal asset that can read cleanly inside a framed card with calmer space below. Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1] Avoid generic SaaS blobs; muddy gradients.",
+    "prompt_prefix_parts": [
+      "Sharper finance signal for decision-makers",
+      "Swiss grid enterprise hero with disciplined whitespace and a premium dashboard focal plane",
+      "Large analytics surface showing runway and risk insights"
+    ],
+    "quality_guardrail_parts": [
+      "Use a framed hero/product surface that occupies the visual center so the design feels intentional instead of generic.",
+      "Make the hero subject read at a glance with crisp edges and enough scale to feel premium, not thumbnail-sized.",
+      "Reserve a high-contrast text zone with low visual noise behind body copy. Use scroll-behavior: smooth on html element Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability...",
+      "Give the CTA one dominant action zone and avoid burying it under secondary decoration. Context-aware placement based on user segment 20%+ conversion with personalization. Requires analytics integration. Fallback for n...",
+      "Create one crisp focal asset that can read cleanly inside a framed card with calmer space below.",
+      "Keep the palette intentional with one accent doing the CTA work instead of multiple competing highlight colors. Trust navy + premium gold [Accent adjusted from #CA8A04 for WCAG 3:1]"
+    ],
+    "avoid_parts": [
+      "generic SaaS blobs; muddy gradients"
+    ]
+  },
+  "artifact": {
+    "poster_path": "evaluations/reference_corpus/results/2026-04-03-ui-ux-quality-loop/after-artifacts/swiss_analytics_hero/poster.png",
+    "hero_path": "/Users/Executor/vizier-pro-max/output/posters/20260403-091752/hero.png",
+    "template_used": "floating-card-square",
+    "image_mode": "openai"
+  }
+}
