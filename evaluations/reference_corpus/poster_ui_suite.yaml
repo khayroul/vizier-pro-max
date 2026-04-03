@@ -1,0 +1,235 @@
+suite_id: poster_ui_artifact_suite_v1
+name: Poster/UI Artifact Suite
+description: Frozen visual cases for deterministic poster runs with explicit manual review support.
+manual_dimensions:
+  - composition_choice
+  - hero_prominence
+  - hierarchy_readability
+  - cta_emphasis
+  - copy_sharpness
+  - visual_polish
+  - reference_utilization
+prompts:
+  - id: swiss_analytics_hero
+    family: visual
+    title: Swiss analytics hero
+    prompt: >
+      Create the hero direction for a CFO analytics landing page. It should
+      feel precise, premium, and grid-led, with obvious hierarchy and a CTA
+      that feels high-conviction rather than generic.
+    poster_inputs:
+      brief: >
+        Create a premium hero for a CFO analytics platform that helps finance
+        teams see runway, forecast risk, and cash health without clutter.
+      palette:
+        primary: "#0F172A"
+        secondary: "#E2E8F0"
+        accent: "#38BDF8"
+        background: "#0B1020"
+        text: "#F8FAFC"
+      fonts:
+        heading_font: "Space Grotesk"
+        heading_weight: "700"
+        body_font: "Inter"
+        body_weight: "400"
+        letter_spacing_heading: "-1px"
+        letter_spacing_body: "0px"
+        line_height_heading: "0.95"
+        line_height_body: "1.5"
+    mock_brief_response:
+      campaign_angle: "Sharper finance signal for decision-makers"
+      audience: "CFOs and finance leaders"
+      visual_direction: "Swiss grid enterprise hero with disciplined whitespace and a premium dashboard focal plane"
+      hero_focus: "Large analytics surface showing runway and risk insights"
+      headline: "Introducing Finance Without Noise"
+      body: "Help CFOs scan runway, risk, and forecast health in seconds."
+      cta: "Learn More"
+      image_prompt: "Crisp analytics surface, swiss grid, controlled light, no text, no logos"
+      template_name: ""
+      avoid:
+        - generic SaaS blobs
+        - muddy gradients
+    expected_reference_tools:
+      - search_ui_styles
+      - search_ux_guidelines
+    preferred_templates:
+      - editorial-split-square
+      - floating-card-square
+    discouraged_templates:
+      - social-post
+    required_prompt_terms:
+      - grid
+      - contrast
+      - negative space
+      - cta
+    manual_focus:
+      - Check whether the composition feels deliberately grid-led instead of generic SaaS.
+      - Check whether the CTA reads clearly without overpowering the trust tone.
+
+  - id: retro_event_poster
+    family: visual
+    title: Retro event poster
+    prompt: >
+      Design a synthwave event poster that feels high-energy and premium, but
+      the hierarchy must still make the headline, date, venue, and CTA easy to
+      read at a glance.
+    poster_inputs:
+      brief: >
+        Design a retro-futurist synthwave poster for a midnight music event
+        with bold type, neon atmosphere, and clear event readability.
+      palette:
+        primary: "#140A24"
+        secondary: "#3B1361"
+        accent: "#FF4D9D"
+        background: "#090412"
+        text: "#F8F3FF"
+      fonts:
+        heading_font: "Bebas Neue"
+        heading_weight: "700"
+        body_font: "Inter"
+        body_weight: "500"
+        letter_spacing_heading: "-1px"
+        letter_spacing_body: "0.2px"
+        line_height_heading: "0.88"
+        line_height_body: "1.45"
+    mock_brief_response:
+      campaign_angle: "Late-night analog energy"
+      audience: "Music fans looking for a memorable night out"
+      visual_direction: "Bold retro-futurist poster with giant headline treatment and controlled neon atmosphere"
+      hero_focus: "One glowing central light form with room for stacked typography"
+      headline: "Introducing Neon Afterglow"
+      body: "One night only. Synthwave sets, immersive lights, and midnight energy."
+      cta: "Learn More"
+      image_prompt: "Retro-futurist neon atmosphere, dramatic glow, no text, no logos"
+      template_name: ""
+      avoid:
+        - tiny copy
+        - muddy purple haze
+    expected_reference_tools:
+      - search_ui_styles
+      - search_ux_guidelines
+    preferred_templates:
+      - stacked-type-square
+      - bold-knockout-square
+    discouraged_templates:
+      - social-post
+    required_prompt_terms:
+      - contrast
+      - headline
+      - hero
+      - negative space
+    manual_focus:
+      - Check whether the poster is still readable instead of becoming pure moodboard material.
+      - Check whether the headline feels intentionally oversized and premium.
+
+  - id: donation_trust_landing
+    family: visual
+    title: Donation trust landing
+    prompt: >
+      Create a trustworthy disaster-relief donation hero with strong hierarchy,
+      clear readability, and a CTA that feels urgent but not exploitative.
+    poster_inputs:
+      brief: >
+        Create a focused hero for a disaster-relief fundraiser that feels calm,
+        trustworthy, and direct. The donation action should be obvious without
+        decorative clutter.
+      palette:
+        primary: "#123047"
+        secondary: "#E8F1F8"
+        accent: "#F97316"
+        background: "#0F2536"
+        text: "#F8FAFC"
+      fonts:
+        heading_font: "DM Serif Display"
+        heading_weight: "700"
+        body_font: "Inter"
+        body_weight: "400"
+        letter_spacing_heading: "-0.8px"
+        letter_spacing_body: "0px"
+        line_height_heading: "0.98"
+        line_height_body: "1.55"
+    mock_brief_response:
+      campaign_angle: "Fast relief with visible trust"
+      audience: "Donors who want clear impact without hype"
+      visual_direction: "Minimal trust-led donation hero with calm premium contrast and obvious action hierarchy"
+      hero_focus: "One calm symbolic relief scene with protected copy space"
+      headline: "Introducing Relief That Reaches Faster"
+      body: "Help families access shelter, food, and clean water without delay."
+      cta: "Learn More"
+      image_prompt: "Calm relief-focused visual, trustworthy lighting, protected text zone, no text, no logos"
+      template_name: ""
+      avoid:
+        - exploitative imagery
+        - low-contrast body text
+    expected_reference_tools:
+      - search_ui_styles
+      - search_ux_guidelines
+    preferred_templates:
+      - hero-bottom-text-square
+      - editorial-split-square
+    discouraged_templates:
+      - social-post
+    required_prompt_terms:
+      - contrast
+      - calm
+      - cta
+      - hierarchy
+    manual_focus:
+      - Check whether the tone feels trustworthy rather than generic or melodramatic.
+      - Check whether the CTA is obvious and the body copy remains easy to read.
+
+  - id: premium_product_drop
+    family: visual
+    title: Premium product drop
+    prompt: >
+      Create a premium launch poster for a coffee product drop. The hero should
+      feel intentionally art-directed, the product must dominate the frame, and
+      the CTA should feel present rather than decorative.
+    poster_inputs:
+      brief: >
+        Create a premium poster for a limited-edition iced coffee drop with a
+        strong product hero, polished lighting, and social-ready hierarchy.
+      palette:
+        primary: "#1E293B"
+        secondary: "#F8E7C9"
+        accent: "#D97706"
+        background: "#111827"
+        text: "#FFF8F1"
+      fonts:
+        heading_font: "Cormorant Garamond"
+        heading_weight: "700"
+        body_font: "Lato"
+        body_weight: "400"
+        letter_spacing_heading: "-0.6px"
+        letter_spacing_body: "0px"
+        line_height_heading: "0.95"
+        line_height_body: "1.5"
+    mock_brief_response:
+      campaign_angle: "Limited drop with a premium cafe feel"
+      audience: "Coffee fans ready for a launch-day purchase"
+      visual_direction: "Hero-forward premium product poster with clean lighting and clear CTA hierarchy"
+      hero_focus: "Large iced coffee product hero with glossy highlights and negative space"
+      headline: "Introducing The Cold Brew Drop"
+      body: "Limited release. Bright citrus notes, silky finish, and launch-day energy."
+      cta: "Learn More"
+      image_prompt: "Premium iced coffee hero, polished lighting, no text, no logos"
+      template_name: ""
+      avoid:
+        - tiny hero subject
+        - flat muddy background
+    expected_reference_tools:
+      - search_ui_styles
+      - search_ux_guidelines
+    preferred_templates:
+      - center-stage-square
+      - hero-bottom-text-square
+    discouraged_templates:
+      - social-post
+    required_prompt_terms:
+      - hero
+      - contrast
+      - cta
+      - premium
+    manual_focus:
+      - Check whether the hero subject feels dominant rather than thumbnail-sized.
+      - Check whether the CTA has enough presence in the final hierarchy.

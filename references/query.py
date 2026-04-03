@@ -18,6 +18,9 @@ REFERENCE_SEARCH_DATASETS: dict[str, tuple[tuple[str, str], ...]] = {
         ("ui_ux_pro_max", "visual_motifs"),
     ),
     "search_ux_guidelines": (("ui_ux_pro_max", "ux_guidelines"),),
+    "search_landing_patterns": (("ui_ux_pro_max", "landing_patterns"),),
+    "search_typography_pairings": (("ui_ux_pro_max", "typography_pairings"),),
+    "search_color_systems": (("ui_ux_pro_max", "color_systems"),),
     "search_chart_patterns": (
         ("ui_ux_pro_max", "chart_usage_patterns"),
         ("vega_lite", "chart_patterns"),
@@ -175,6 +178,15 @@ _INDEX_BUILDERS: dict[str, Callable[[], list[ReferenceSearchRecord]]] = {
     "search_ux_guidelines": lambda: _build_dataset_records(
         REFERENCE_SEARCH_DATASETS["search_ux_guidelines"]
     ),
+    "search_landing_patterns": lambda: _build_dataset_records(
+        REFERENCE_SEARCH_DATASETS["search_landing_patterns"]
+    ),
+    "search_typography_pairings": lambda: _build_dataset_records(
+        REFERENCE_SEARCH_DATASETS["search_typography_pairings"]
+    ),
+    "search_color_systems": lambda: _build_dataset_records(
+        REFERENCE_SEARCH_DATASETS["search_color_systems"]
+    ),
     "search_chart_patterns": lambda: _build_dataset_records(
         REFERENCE_SEARCH_DATASETS["search_chart_patterns"]
     ),
@@ -214,6 +226,28 @@ def search_ui_styles(query: str, *, top_k: int = _DEFAULT_TOP_K) -> list[dict[st
 def search_ux_guidelines(query: str, *, top_k: int = _DEFAULT_TOP_K) -> list[dict[str, Any]]:
     """Search local UX do/don't guidance from normalized corpora."""
     return get_reference_query_index("search_ux_guidelines").search(query, top_k=top_k)
+
+
+def search_landing_patterns(query: str, *, top_k: int = _DEFAULT_TOP_K) -> list[dict[str, Any]]:
+    """Search landing/hero CTA patterns from the local UI/UX corpus."""
+    return get_reference_query_index("search_landing_patterns").search(query, top_k=top_k)
+
+
+def search_typography_pairings(
+    query: str,
+    *,
+    top_k: int = _DEFAULT_TOP_K,
+) -> list[dict[str, Any]]:
+    """Search typography pairing references from the local UI/UX corpus."""
+    return get_reference_query_index("search_typography_pairings").search(
+        query,
+        top_k=top_k,
+    )
+
+
+def search_color_systems(query: str, *, top_k: int = _DEFAULT_TOP_K) -> list[dict[str, Any]]:
+    """Search color system references from the local UI/UX corpus."""
+    return get_reference_query_index("search_color_systems").search(query, top_k=top_k)
 
 
 def search_chart_patterns(query: str, *, top_k: int = _DEFAULT_TOP_K) -> list[dict[str, Any]]:

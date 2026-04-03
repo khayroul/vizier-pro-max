@@ -1,0 +1,183 @@
+suite_id: reference_corpus_quality_v2
+name: Reference Corpus Quality Suite
+description: Frozen prompt set for measuring whether local reference corpora improve lookups and artifact quality.
+prompts:
+  - id: visual_swiss_analytics_landing
+    family: visual
+    title: Swiss-style analytics landing hero
+    suggested_pipeline: poster_generate
+    artifact_prompt: >
+      Create the hero direction and above-the-fold layout for a B2B analytics
+      landing page aimed at CFOs. The page should feel precise, trustworthy,
+      and high-signal, with a strong grid and restrained palette.
+    output_expectation: Single landing-page concept or poster-style UI frame.
+    expected_quality_boosts:
+      - Stronger enterprise visual direction
+      - Better grid discipline and hierarchy
+      - Less generic SaaS styling
+    dimension_weights:
+      style_coherence: 0.25
+      ux_appropriateness: 0.20
+      readability_clarity: 0.15
+      instruction_adherence: 0.20
+      reference_usage: 0.20
+    lookup_probe:
+      tool: search_ui_styles
+      query: enterprise dashboard swiss grid
+      top_k: 5
+      required_patterns:
+        - ui_styles
+        - swiss
+        - dashboard
+      preferred_top_patterns:
+        - minimalism & swiss style
+    notes: Manual review should check CTA hierarchy and whether the layout feels intentional rather than safe.
+
+  - id: visual_retro_event_poster
+    family: visual
+    title: Retro-futurist event poster
+    suggested_pipeline: poster_generate
+    artifact_prompt: >
+      Design a poster concept for a synthwave music night. It should feel
+      energetic and nostalgic without becoming unreadable, and the headline,
+      date, and venue need to stay prominent.
+    output_expectation: Single poster concept with clear event hierarchy.
+    expected_quality_boosts:
+      - Clearer retro-futurist art direction
+      - Better balance between flair and readability
+      - Stronger motif selection for an entertainment poster
+    dimension_weights:
+      style_coherence: 0.30
+      readability_clarity: 0.20
+      instruction_adherence: 0.20
+      reference_usage: 0.30
+    lookup_probe:
+      tool: search_ui_styles
+      query: retro futurism music event poster neon
+      top_k: 5
+      required_patterns:
+        - ui_styles
+        - retro
+        - neon
+      preferred_top_patterns:
+        - retro-futurism
+    notes: Manual scoring should penalize outputs that become moodboards with weak event readability.
+
+  - id: visual_donation_landing_minimal_trust
+    family: visual
+    title: Minimal donation landing page
+    suggested_pipeline: poster_generate
+    artifact_prompt: >
+      Create a focused landing-page concept for a small disaster-relief
+      fundraiser. The layout should feel trustworthy, direct, and conversion
+      oriented without looking exploitative or cluttered.
+    output_expectation: One high-conviction landing-page concept.
+    expected_quality_boosts:
+      - Better conversion-first hierarchy
+      - Cleaner tone for a trust-sensitive use case
+      - Less decorative clutter
+    dimension_weights:
+      style_coherence: 0.15
+      ux_appropriateness: 0.25
+      readability_clarity: 0.20
+      instruction_adherence: 0.20
+      reference_usage: 0.20
+    lookup_probe:
+      tool: search_ui_styles
+      query: donation landing minimal trust direct
+      top_k: 5
+      required_patterns:
+        - ui_styles
+        - minimal
+        - conversion
+      preferred_top_patterns:
+        - minimal & direct
+    notes: Review should focus on trust signals, scannability, and CTA clarity.
+
+  - id: visual_onboarding_progress_flow
+    family: visual
+    title: Multi-step onboarding with progress state
+    suggested_pipeline: poster_generate
+    artifact_prompt: >
+      Create the UI direction for a four-step mobile onboarding flow for a
+      fintech budgeting app. The user should always know where they are in the
+      flow and what remains.
+    output_expectation: One or more frames showing progress treatment and flow hierarchy.
+    expected_quality_boosts:
+      - Better progress communication
+      - Clearer step hierarchy
+      - Fewer avoidable abandonment points
+    dimension_weights:
+      ux_appropriateness: 0.35
+      readability_clarity: 0.20
+      instruction_adherence: 0.20
+      reference_usage: 0.25
+    lookup_probe:
+      tool: search_ux_guidelines
+      query: multi step onboarding progress indicator
+      top_k: 5
+      required_patterns:
+        - ux_guidelines
+        - progress indicators
+        - step
+      preferred_top_patterns:
+        - progress indicators
+    notes: Review should check whether progress is explicit rather than implied.
+
+  - id: chart_confidence_band_growth
+    family: chart
+    title: Trend chart with confidence band
+    suggested_pipeline: competitive_analysis
+    artifact_prompt: >
+      Show weekly revenue growth over a quarter, including uncertainty around
+      the projected trend. The chart should emphasize the trend while making
+      the confidence interval legible.
+    output_expectation: Chart concept or analytic recommendation with rationale.
+    expected_quality_boosts:
+      - Better chart-family selection for uncertainty
+      - Stronger treatment of interval meaning
+      - Less misuse of simple line charts
+    dimension_weights:
+      chart_choice_correctness: 0.40
+      readability_clarity: 0.20
+      instruction_adherence: 0.20
+      reference_usage: 0.20
+    lookup_probe:
+      tool: search_chart_patterns
+      query: line chart confidence band uncertainty trend
+      top_k: 5
+      required_patterns:
+        - chart_patterns
+        - confidence
+        - line
+      preferred_top_patterns:
+        - trend with uncertainty band
+    notes: Manual review should look for explicit rationale, not just the chart label.
+
+  - id: report_layout_callout_handling
+    family: report
+    title: Report layout with figure conventions
+    suggested_pipeline: structured_nonfiction_generate
+    artifact_prompt: >
+      Create the layout guidance for a quarterly operations report that needs
+      callouts, figure width discipline, and a readable PDF-oriented flow.
+    output_expectation: Report layout recommendation or artifact with rationale.
+    expected_quality_boosts:
+      - Better figure and table conventions
+      - Stronger long-form reading flow
+      - Fewer generic document defaults
+    dimension_weights:
+      report_layout_quality: 0.40
+      readability_clarity: 0.20
+      instruction_adherence: 0.20
+      reference_usage: 0.20
+    lookup_probe:
+      tool: search_report_layouts
+      query: figure width pdf report
+      top_k: 5
+      required_patterns:
+        - table_figure_conventions
+        - fig-width
+      preferred_top_patterns:
+        - fig-width
+    notes: Review should check whether figure sizing and callout structure are explicit.

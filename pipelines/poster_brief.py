@@ -10,8 +10,32 @@ from adapter.llm_client import chat as llm_chat
 
 _CTA_FALLBACK = "Learn More"
 _HEADLINE_MAX_WORDS = 8
-_BODY_MAX_CHARS = 160
+_BODY_MAX_CHARS = 140
 _IMAGE_PROMPT_MAX_CHARS = 260
+_GENERIC_HEADLINE_PREFIXES = (
+    "introducing ",
+    "discover ",
+    "experience ",
+    "welcome to ",
+    "presenting ",
+)
+_GENERIC_CTA_VALUES = {
+    "",
+    "learn more",
+    "discover more",
+    "find out more",
+    "read more",
+    "click here",
+}
+_CTA_HINTS: tuple[tuple[tuple[str, ...], str], ...] = (
+    (("donate", "fundraiser", "relief", "charity", "zakat"), "Donate Now"),
+    (("event", "festival", "concert", "night", "tickets", "show"), "Get Tickets"),
+    (("register", "webinar", "workshop", "course", "class"), "Register Now"),
+    (("trial", "demo", "saas", "software", "analytics", "platform"), "Book Demo"),
+    (("shop", "sale", "drop", "launch", "coffee", "product", "order"), "Shop Now"),
+    (("join", "community", "member", "membership"), "Join Now"),
+    (("download", "app", "install"), "Download App"),
+)
 
 
 @dataclass(frozen=True)
@@ -107,6 +131,52 @@ def _fallback_body(brief: str) -> str:
     return _clip_text(compact, _BODY_MAX_CHARS)
 
 
+def _strip_generic_headline_prefix(text: str) -> str:
+    lowered = text.lower()
+    for prefix in _GENERIC_HEADLINE_PREFIXES:
+        if lowered.startswith(prefix):
+            return text[len(prefix):].strip()
+    return text
+
+
+def _normalize_headline_text(text: str) -> str:
+    compact = _strip_generic_headline_prefix(_collapse_whitespace(text))
+    return _clip_words(compact.strip(" -:"), _HEADLINE_MAX_WORDS)
+
+
+def _normalize_body_text(text: str) -> str:
+    compact = _collapse_whitespace(text)
+    sentences = [part.strip() for part in re.split(r"(?<=[.!?])\s+", compact) if part.strip()]
+    if len(sentences) > 2:
+        compact = " ".join(sentences[:2])
+    return _clip_text(compact, _BODY_MAX_CHARS)
+
+
+def _infer_cta_from_context(*parts: str) -> str:
+    context = " ".join(_collapse_whitespace(part) for part in parts if _collapse_whitespace(part))
+    tokens = set(re.findall(r"[a-z0-9]+", context.lower()))
+    for keywords, cta in _CTA_HINTS:
+        if any(keyword in tokens for keyword in keywords):
+            return cta
+    return _CTA_FALLBACK
+
+
+def _normalize_cta_text(
+    text: str,
+    *,
+    brief: str,
+    headline: str,
+    body: str,
+    explicit: bool,
+) -> str:
+    compact = _clip_words(_collapse_whitespace(text), 3)
+    if explicit:
+        return compact or _CTA_FALLBACK
+    if compact.lower() in _GENERIC_CTA_VALUES:
+        compact = _infer_cta_from_context(brief, headline, body)
+    return _clip_words(compact, 3) or _CTA_FALLBACK
+
+
 def _fallback_image_prompt(brief: str) -> str:
     if not brief:
         return ""
@@ -127,11 +197,23 @@ def _build_fallback_brief(
     cta: str,
     image_prompt: str,
 ) -> PosterCreativeBrief:
+    normalized_headline = _normalize_headline_text(
+        _collapse_whitespace(headline) or _fallback_headline(brief)
+    )
+    normalized_body = _normalize_body_text(
+        _collapse_whitespace(body) or _fallback_body(brief)
+    )
     return PosterCreativeBrief(
         raw_brief=_collapse_whitespace(brief),
-        headline=_clip_words(_collapse_whitespace(headline) or _fallback_headline(brief), _HEADLINE_MAX_WORDS),
-        body=_clip_text(_collapse_whitespace(body) or _fallback_body(brief), _BODY_MAX_CHARS),
-        cta=_clip_words(_collapse_whitespace(cta) or _CTA_FALLBACK, 3),
+        headline=normalized_headline,
+        body=normalized_body,
+        cta=_normalize_cta_text(
+            _collapse_whitespace(cta),
+            brief=brief,
+            headline=normalized_headline,
+            body=normalized_body,
+            explicit=bool(_collapse_whitespace(cta)),
+        ),
         image_prompt=_clip_text(
             _collapse_whitespace(image_prompt) or _fallback_image_prompt(brief),
             _IMAGE_PROMPT_MAX_CHARS,
@@ -240,6 +322,31 @@ def normalize_poster_brief(
         cta=cta,
         image_prompt=image_prompt,
     )
+    headline_value = _normalize_headline_text(
+        _coalesce_text(
+            headline,
+            str(payload.get("headline", "")) or fallback.headline,
+            words=_HEADLINE_MAX_WORDS,
+        )
+    )
+    body_value = _normalize_body_text(
+        _coalesce_text(
+            body,
+            str(payload.get("body", "")) or fallback.body,
+            chars=_BODY_MAX_CHARS,
+        )
+    )
+    cta_value = _normalize_cta_text(
+        _coalesce_text(
+            cta,
+            str(payload.get("cta", "")) or fallback.cta,
+            words=3,
+        ),
+        brief=compact_brief,
+        headline=headline_value,
+        body=body_value,
+        explicit=bool(_collapse_whitespace(cta)),
+    )
 
     return PosterCreativeBrief(
         raw_brief=compact_brief,
@@ -247,21 +354,9 @@ def normalize_poster_brief(
         audience=_clip_text(_collapse_whitespace(str(payload.get("audience", ""))), 120),
         visual_direction=_clip_text(_collapse_whitespace(str(payload.get("visual_direction", ""))), 180),
         hero_focus=_clip_text(_collapse_whitespace(str(payload.get("hero_focus", ""))), 120),
-        headline=_coalesce_text(
-            headline,
-            str(payload.get("headline", "")) or fallback.headline,
-            words=_HEADLINE_MAX_WORDS,
-        ),
-        body=_coalesce_text(
-            body,
-            str(payload.get("body", "")) or fallback.body,
-            chars=_BODY_MAX_CHARS,
-        ),
-        cta=_coalesce_text(
-            cta,
-            str(payload.get("cta", "")) or fallback.cta,
-            words=3,
-        ) or _CTA_FALLBACK,
+        headline=headline_value,
+        body=body_value,
+        cta=cta_value,
         image_prompt=_coalesce_text(
             image_prompt,
             str(payload.get("image_prompt", "")) or fallback.image_prompt,

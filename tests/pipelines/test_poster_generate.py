@@ -447,8 +447,18 @@ class TestRunPipeline:
             fonts=SAMPLE_FONTS,
         )
 
-        assert result["template_used"] == "social-post"
+        assert result["template_used"]
         assert result["width"] == 1080
+        assert result["reference_trace"]["lookup_tools_used"] == [
+            "search_ui_styles",
+            "search_ux_guidelines",
+        ]
+        assert result["art_direction_plan"]["composition_instruction"]
+        trace_payload = json.loads(Path(result["trace_path"]).read_text(encoding="utf-8"))
+        assert trace_payload["reference_trace"]["lookup_tools_used"] == [
+            "search_ui_styles",
+            "search_ux_guidelines",
+        ]
 
         # Verify screenshot was called with HTML containing CSS vars
         call_args = mock_screenshot.call_args
@@ -659,7 +669,7 @@ class TestRunPipeline:
         assert result["template_used"] == alternate_template
         assert result["creative_brief"]["campaign_angle"] == "New Year upgrade momentum"
         assert result["creative_brief"]["headline"] == "New year. New power."
-        assert result["creative_brief"]["cta"] == "Learn more"
+        assert result["creative_brief"]["cta"] == "Learn More"
 
         call_args = mock_screenshot.call_args
         html_arg = call_args[1]["html"] if "html" in call_args[1] else call_args[0][0]
@@ -692,7 +702,9 @@ class TestRunPipeline:
             fonts=SAMPLE_FONTS,
         )
 
-        assert result["template_used"] == "social-post"
+        assert result["template_used"]
+        assert result["template_reason"]
+        assert result["prompt_trace"]["quality_guardrail_parts"]
         mock_hero.assert_called_once()
 
     @patch("pipelines.poster_generate._screenshot")
