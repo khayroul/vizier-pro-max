@@ -270,6 +270,7 @@ def _pipeline_fn(inputs: dict[str, Any]) -> dict[str, Any]:
 
                 # Step 2: Generate AI background
                 bg_path = str(out / f"bg_{idx:04d}.png")
+                set_pipeline_step("background_generate", _PIPELINE_NAME, _PIPELINE_VERSION)
                 ai_image = _generate_ai_background(image_prompt, bg_path)
 
                 # Step 3: Encode as base64 and render template

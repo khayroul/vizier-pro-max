@@ -58,9 +58,24 @@ def default_openai_api_key() -> str:
     return os.environ.get("VIZIER_UPSTREAM_OPENAI_API_KEY", "").strip()
 
 
+def default_fal_base_url() -> str:
+    """Return the upstream fal.ai base URL."""
+    return os.environ.get("VIZIER_UPSTREAM_FAL_BASE_URL", "https://fal.run").rstrip("/")
+
+
+def default_fal_api_key() -> str:
+    """Return the upstream fal.ai API key."""
+    return os.environ.get("FAL_KEY", "").strip()
+
+
 def default_openai_model() -> str:
     """Return the primary cloud model name exposed by the gateway."""
     return os.environ.get("VIZIER_LLM_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
+
+
+def default_fal_model() -> str:
+    """Return the primary fal.ai model name exposed by the gateway."""
+    return os.environ.get("VIZIER_FAL_MODEL", "fal-ai/flux/schnell").strip() or "fal-ai/flux/schnell"
 
 
 def default_ollama_base_url() -> str:
@@ -80,6 +95,12 @@ def gateway_models_payload() -> dict[str, Any]:
         "data": [
             {
                 "id": default_openai_model(),
+                "object": "model",
+                "created": 0,
+                "owned_by": "vizier-gateway",
+            },
+            {
+                "id": default_fal_model(),
                 "object": "model",
                 "created": 0,
                 "owned_by": "vizier-gateway",
@@ -138,7 +159,7 @@ def _response_text_from_ollama_body(body: dict[str, Any]) -> str | None:
 
 def _image_response_summary(body: Mapping[str, Any]) -> str:
     """Return a compact, non-binary summary for image-generation ledger rows."""
-    data = body.get("data") or []
+    data = body.get("data") or body.get("images") or []
     first_item = data[0] if isinstance(data, list) and data else {}
     first_kind = "none"
     if isinstance(first_item, Mapping):
@@ -187,6 +208,13 @@ def _should_route_to_ollama(request_body: Mapping[str, Any]) -> bool:
     if not model:
         return False
     return model == default_ollama_model() or model.startswith("qwen")
+
+
+def _should_route_image_to_falai(request_body: Mapping[str, Any]) -> bool:
+    model = str(request_body.get("model") or "").strip()
+    if not model:
+        return False
+    return model == default_fal_model() or model.startswith("fal-") or model.startswith("fal.ai")
 
 
 def _should_fallback_to_ollama(metadata: GatewayMetadata, response: httpx.Response) -> bool:
@@ -342,6 +370,63 @@ def proxy_image_generation(
 ) -> httpx.Response:
     """Forward one image-generation request upstream and log usage."""
     metadata = extract_metadata(request_headers)
+    prompt_text = _safe_json(
+        {"prompt": request_body.get("prompt"), "size": request_body.get("size"), "model": request_body.get("model")}
+    )
+    image_size = request_body.get("image_size")
+    width = 1024
+    height = 1024
+    if isinstance(image_size, Mapping):
+        width = int(image_size.get("width", width) or width)
+        height = int(image_size.get("height", height) or height)
+    elif isinstance(request_body.get("size"), str) and "x" in str(request_body.get("size")):
+        raw_width, raw_height = str(request_body.get("size")).lower().split("x", 1)
+        width = int(raw_width or width)
+        height = int(raw_height or height)
+
+    if _should_route_image_to_falai(request_body):
+        start = time.monotonic()
+        api_key = default_fal_api_key()
+        if not api_key:
+            raise RuntimeError("FAL_KEY is required for gateway upstream access")
+
+        response = httpx.post(
+            f"{default_fal_base_url()}/{request_body.get('model') or default_fal_model()}",
+            headers={"Authorization": f"Key {api_key}"},
+            json={
+                "prompt": request_body.get("prompt"),
+                "image_size": {"width": width, "height": height},
+            },
+            timeout=timeout,
+        )
+        latency_ms = int((time.monotonic() - start) * 1000)
+        if response.status_code == 200:
+            body = response.json()
+            _log_attempt(
+                metadata=metadata,
+                provider_name="falai",
+                model=str(body.get("model") or request_body.get("model") or default_fal_model()),
+                prompt_text=prompt_text,
+                input_tokens=0,
+                output_tokens=0,
+                response_text=_image_response_summary(body),
+                latency_ms=latency_ms,
+                status="succeeded",
+            )
+            return response
+
+        _log_attempt(
+            metadata=metadata,
+            provider_name="falai",
+            model=str(request_body.get("model") or default_fal_model()),
+            prompt_text=prompt_text,
+            response_text=response.text,
+            latency_ms=latency_ms,
+            status="failed",
+            failure_reason=f"http_status:{response.status_code}",
+        )
+        return response
+
     start = time.monotonic()
     api_key = default_openai_api_key()
     if not api_key:
@@ -368,10 +453,10 @@ def proxy_image_generation(
         _log_attempt(
             metadata=metadata,
             provider_name="openai",
-            model=str(body.get("model") or request_body.get("model") or "gpt-image-1"),
-            prompt_text=prompt_text,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
+        model=str(body.get("model") or request_body.get("model") or "gpt-image-1"),
+        prompt_text=prompt_text,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
             response_text=_image_response_summary(body),
             latency_ms=latency_ms,
             status="succeeded",

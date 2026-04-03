@@ -47,6 +47,11 @@ def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     return row is not None
 
 
+def _table_columns(conn: sqlite3.Connection, name: str) -> set[str]:
+    rows = conn.execute(f"PRAGMA table_info({name})").fetchall()
+    return {str(row["name"]) for row in rows}
+
+
 def _time_clause(column: str, start_ts: float | None, end_ts: float | None) -> tuple[str, list[float]]:
     clauses: list[str] = []
     params: list[float] = []
@@ -142,9 +147,21 @@ def _cost_breakdown(
 def _cost_risk_buckets(
     conn: sqlite3.Connection,
     *,
+    cost_columns: set[str],
+    metered_totals: dict[str, int],
     start_ts: float | None,
     end_ts: float | None,
 ) -> dict[str, int]:
+    if "session_id" not in cost_columns:
+        return {
+            "metered_rows_missing_session_id": metered_totals["call_count"],
+            "metered_tokens_missing_session_id": metered_totals["total_tokens"],
+            "metered_rows_missing_deliverable_id": 0,
+            "metered_tokens_missing_deliverable_id": 0,
+            "metered_rows_missing_client_id": 0,
+            "metered_tokens_missing_client_id": 0,
+        }
+
     where_sql, params = _time_clause("timestamp", start_ts, end_ts)
     clauses = [where_sql[6:]] if where_sql else []
     clauses.insert(0, "provider_name IS NOT NULL")
@@ -238,11 +255,13 @@ def reconcile_usage(
         conn.row_factory = sqlite3.Row
 
         if _table_exists(conn, "cost_ledger"):
+            cost_columns = _table_columns(conn, "cost_ledger")
+            metered_cost = _cost_totals(
+                conn, start_ts=start_ts, end_ts=end_ts, extra_where="provider_name IS NOT NULL"
+            )
             report["cost_ledger"] = {
                 "all_rows": _cost_totals(conn, start_ts=start_ts, end_ts=end_ts),
-                "provider_metered_rows": _cost_totals(
-                    conn, start_ts=start_ts, end_ts=end_ts, extra_where="provider_name IS NOT NULL"
-                ),
+                "provider_metered_rows": metered_cost,
                 "openai_metered_rows": _cost_totals(
                     conn, start_ts=start_ts, end_ts=end_ts, extra_where="provider_name = ?", extra_params=["openai"]
                 ),
@@ -284,7 +303,13 @@ def reconcile_usage(
                     start_ts=start_ts,
                     end_ts=end_ts,
                 ),
-                "risk_buckets": _cost_risk_buckets(conn, start_ts=start_ts, end_ts=end_ts),
+                "risk_buckets": _cost_risk_buckets(
+                    conn,
+                    cost_columns=cost_columns,
+                    metered_totals=metered_cost,
+                    start_ts=start_ts,
+                    end_ts=end_ts,
+                ),
             }
         else:
             report["cost_ledger"] = {"missing": True}

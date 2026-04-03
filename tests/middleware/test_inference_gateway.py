@@ -1,9 +1,17 @@
 """Tests for the local Vizier inference gateway."""
 from __future__ import annotations
 
+import sys
 from typing import Any
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
+
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
 
 from middleware.inference_gateway import (
     extract_metadata,
@@ -44,6 +52,7 @@ def test_gateway_models_payload_lists_primary_and_fallback() -> None:
 
     ids = [entry["id"] for entry in payload["data"]]
     assert "gpt-5.4-mini" in ids
+    assert "fal-ai/flux/schnell" in ids
     assert "qwen3.5:9b" in ids
 
 
@@ -263,3 +272,94 @@ def test_proxy_image_generation_logs_openai_failure(
     assert logged[0]["provider_name"] == "openai"
     assert logged[0]["status"] == "failed"
     assert logged[0]["failure_reason"] == "http_status:500"
+
+
+def test_proxy_image_generation_logs_falai_success(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    logged: list[dict[str, Any]] = []
+    seen: dict[str, Any] = {}
+
+    def _fake_record(**kwargs: Any) -> int:
+        logged.append(kwargs)
+        return len(logged)
+
+    def _fake_post(url: str, **kwargs: Any) -> _MockResponse:
+        seen["url"] = url
+        seen["headers"] = kwargs.get("headers") or {}
+        seen["json"] = kwargs.get("json") or {}
+        assert "fal.run" in url
+        assert kwargs["headers"]["Authorization"] == "Key fal-test-key"
+        return _MockResponse(
+            200,
+            {
+                "model": "fal-ai/flux/schnell",
+                "images": [{"url": "https://fal.ai/output/abc.png"}],
+            },
+        )
+
+    monkeypatch.setattr("middleware.inference_gateway.record_external_usage", _fake_record)
+    monkeypatch.setattr("middleware.inference_gateway.httpx.post", _fake_post)
+    monkeypatch.setenv("FAL_KEY", "fal-test-key")
+
+    response = proxy_image_generation(
+        request_body={
+            "model": "fal-ai/flux/schnell",
+            "prompt": "coffee poster hero",
+            "size": "800x600",
+        },
+        request_headers={
+            "x-vizier-source": "pipeline",
+            "x-vizier-client-id": "client_a",
+            "x-vizier-deliverable-id": "d1",
+            "x-vizier-modality": "image_generation",
+        },
+    )
+
+    assert response.status_code == 200
+    assert seen["url"] == "https://fal.run/fal-ai/flux/schnell"
+    assert seen["json"] == {
+        "prompt": "coffee poster hero",
+        "image_size": {"width": 800, "height": 600},
+    }
+    assert len(logged) == 1
+    assert logged[0]["provider_name"] == "falai"
+    assert logged[0]["source"] == "pipeline"
+    assert logged[0]["modality"] == "image_generation"
+    assert logged[0]["client_id"] == "client_a"
+    assert logged[0]["status"] == "succeeded"
+    assert logged[0]["input_tokens"] == 0
+    assert logged[0]["output_tokens"] == 0
+    assert logged[0]["response_text"] == '{"image_count": 1, "first_kind": "url"}'
+
+
+def test_proxy_image_generation_logs_falai_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    logged: list[dict[str, Any]] = []
+
+    def _fake_record(**kwargs: Any) -> int:
+        logged.append(kwargs)
+        return len(logged)
+
+    def _fake_post(url: str, **kwargs: Any) -> _MockResponse:
+        return _MockResponse(503, {"error": "upstream unavailable"}, text='{"error":"upstream unavailable"}')
+
+    monkeypatch.setattr("middleware.inference_gateway.record_external_usage", _fake_record)
+    monkeypatch.setattr("middleware.inference_gateway.httpx.post", _fake_post)
+    monkeypatch.setenv("FAL_KEY", "fal-test-key")
+
+    response = proxy_image_generation(
+        request_body={
+            "model": "fal-ai/flux/schnell",
+            "prompt": "coffee poster hero",
+            "size": "1024x1024",
+        },
+        request_headers={"x-vizier-modality": "image_generation"},
+    )
+
+    assert response.status_code == 503
+    assert len(logged) == 1
+    assert logged[0]["provider_name"] == "falai"
+    assert logged[0]["status"] == "failed"
+    assert logged[0]["failure_reason"] == "http_status:503"

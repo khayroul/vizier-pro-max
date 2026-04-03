@@ -2,11 +2,20 @@
 from __future__ import annotations
 
 import inspect
+import sys
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
+
+from middleware.deliverable_context import get_step_name
 
 
 def test_screenshot_accepts_viewport_params() -> None:
@@ -195,3 +204,43 @@ def test_score_poster_batch_called_per_poster() -> None:
 
     # Called once per poster loop + once for final record_quality
     assert len(score_calls) >= 2
+
+
+def test_ai_background_sets_background_step_before_gateway_call() -> None:
+    """poster_batch must stamp a dedicated background step before image generation."""
+    from pipelines.poster_batch import _pipeline_fn
+
+    observed_steps: list[str | None] = []
+
+    def _fake_ai_background(prompt: str, output_path: str) -> None:
+        observed_steps.append(get_step_name())
+        return None
+
+    with (
+        patch("pipelines.poster_batch.screenshot_run", return_value={"file_path": "/tmp/out.png"}),
+        patch("pipelines.poster_batch._generate_ai_background", side_effect=_fake_ai_background),
+        patch("pipelines.poster_batch._generate_image_prompt", return_value="prompt"),
+        patch("pipelines.poster_batch.record_quality"),
+        patch("pipelines.poster_batch.check_anomalies", return_value={"is_anomaly": False, "reasons": []}),
+        patch("pipelines.poster_batch.score_poster_batch") as mock_score,
+    ):
+        fake_score = MagicMock()
+        fake_score.score = 8.0
+        fake_score.passed = True
+        mock_score.return_value = fake_score
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpl = Path(tmpdir) / "template.html"
+            tmpl.write_text("<body>{{ headline }}</body>")
+            data = Path(tmpdir) / "data.csv"
+            data.write_text("headline\nTest\n")
+
+            _pipeline_fn(
+                {
+                    "template_path": str(tmpl),
+                    "data_path": str(data),
+                    "output_dir": tmpdir,
+                }
+            )
+
+    assert observed_steps == ["background_generate"]
