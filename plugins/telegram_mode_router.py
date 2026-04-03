@@ -201,6 +201,31 @@ def classify_telegram_mode(
     )
 
 
+def prime_telegram_mode(
+    *,
+    user_message: str,
+    conversation_history: list[dict[str, Any]] | None = None,
+    platform: str = "",
+    **_: Any,
+) -> TelegramModeDecision | None:
+    """Prime turn-scoped Telegram mode state before tools are resolved."""
+    normalized_platform = platform.strip().lower()
+    if not normalized_platform:
+        clear_telegram_mode()
+        return None
+    if normalized_platform != "telegram":
+        set_telegram_mode(platform=normalized_platform, mode="")
+        return None
+
+    decision = classify_telegram_mode(
+        user_message=user_message,
+        conversation_history=conversation_history,
+        platform=normalized_platform,
+    )
+    set_telegram_mode(platform=normalized_platform, mode=decision.mode)
+    return decision
+
+
 def build_telegram_mode_context(
     *,
     user_message: str,
@@ -209,17 +234,13 @@ def build_telegram_mode_context(
     **_: Any,
 ) -> str:
     """Return mode-specific guidance for Telegram sessions."""
-    normalized_platform = platform.strip().lower()
-    if normalized_platform != "telegram":
-        clear_telegram_mode()
-        return ""
-
-    decision = classify_telegram_mode(
+    decision = prime_telegram_mode(
         user_message=user_message,
         conversation_history=conversation_history,
-        platform=normalized_platform,
+        platform=platform,
     )
-    set_telegram_mode(platform=normalized_platform, mode=decision.mode)
+    if decision is None:
+        return ""
 
     shared = (
         "Telegram front door mode routing is active.\n"
@@ -254,4 +275,5 @@ def build_telegram_mode_context(
 
 def register(ctx: Any) -> None:
     """Register the Telegram mode router hook."""
+    ctx.register_hook("pre_tool_resolution", prime_telegram_mode)
     ctx.register_hook("pre_llm_call", build_telegram_mode_context)

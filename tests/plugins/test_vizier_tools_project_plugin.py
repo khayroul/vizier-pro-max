@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 
@@ -15,7 +17,15 @@ PLUGIN_PATH = (
 )
 
 
+def _install_structlog_stub() -> None:
+    sys.modules.setdefault(
+        "structlog",
+        SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+    )
+
+
 def _load_plugin_module():
+    _install_structlog_stub()
     spec = importlib.util.spec_from_file_location(
         "test_vizier_tools_project_plugin",
         PLUGIN_PATH,
@@ -48,6 +58,7 @@ def test_register_exposes_expected_tools_and_hooks() -> None:
     assert {"switch_toolset", "decompose_task", "merge_results"} <= tool_names
 
     hook_names = [call.args[0] for call in ctx.register_hook.call_args_list]
+    assert "pre_tool_resolution" in hook_names
     assert "pre_llm_call" in hook_names
     assert "post_llm_call" in hook_names
     assert "on_session_start" in hook_names

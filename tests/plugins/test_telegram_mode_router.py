@@ -75,6 +75,23 @@ def test_context_is_empty_off_telegram() -> None:
     assert context == ""
 
 
+def test_non_telegram_platform_keeps_tool_gating_open(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("MESSAGING_CWD", "/Users/Executor/vizier-pro-max")
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+
+    context = build_telegram_mode_context(
+        user_message="Make a poster",
+        conversation_history=[],
+        platform="cli",
+    )
+
+    assert context == ""
+    assert telegram_mode_allows("vizier_work") is True
+    assert telegram_mode_allows("operator") is True
+
+
 def test_context_is_empty_when_platform_is_missing() -> None:
     context = build_telegram_mode_context(
         user_message="Make a poster",
