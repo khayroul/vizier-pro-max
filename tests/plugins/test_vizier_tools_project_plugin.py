@@ -40,6 +40,9 @@ def _clear_mode_state(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("VIZIER_TELEGRAM_FRONT_DOOR", raising=False)
     monkeypatch.delenv("MESSAGING_CWD", raising=False)
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    monkeypatch.delenv("HERMES_TELEGRAM_POSTER_PATH", raising=False)
+    monkeypatch.delenv("HERMES_TELEGRAM_POSTER_TRACE_PATH", raising=False)
+    monkeypatch.delenv("HERMES_TELEGRAM_REFERENCE_IMAGE_PATH", raising=False)
     clear_telegram_mode()
 
 
@@ -132,6 +135,13 @@ def test_registered_tool_surface_matches_telegram_policy(
     set_telegram_mode(platform="telegram", mode="vizier_work")
     assert visible_tools() == (
         set(TOOLS_BY_CLASSIFICATION[ASSISTANT_SAFE])
+        | (set(TOOLS_BY_CLASSIFICATION[WORK_ONLY]) - {"revise_poster"})
+        | set(TOOLS_BY_CLASSIFICATION[SHARED])
+    )
+
+    monkeypatch.setenv("HERMES_TELEGRAM_POSTER_PATH", "/tmp/poster.png")
+    assert visible_tools() == (
+        set(TOOLS_BY_CLASSIFICATION[ASSISTANT_SAFE])
         | set(TOOLS_BY_CLASSIFICATION[WORK_ONLY])
         | set(TOOLS_BY_CLASSIFICATION[SHARED])
     )
@@ -142,3 +152,16 @@ def test_registered_tool_surface_matches_telegram_policy(
         | set(TOOLS_BY_CLASSIFICATION[OPERATOR_ONLY])
         | set(TOOLS_BY_CLASSIFICATION[SHARED])
     )
+
+
+def test_turn_context_with_reference_only_mentions_generation_not_revision(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_plugin_module()
+    monkeypatch.setenv("HERMES_TELEGRAM_REFERENCE_IMAGE_PATH", "/tmp/reference.jpg")
+
+    context = module._vizier_turn_context()
+
+    assert "Latest reference image path: /tmp/reference.jpg" in context
+    assert "next poster generation" in context
+    assert "use revise_poster" not in context.lower()

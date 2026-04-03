@@ -90,6 +90,21 @@ def test_poster_feedback_in_active_session_routes_to_vizier_work(
     assert decision.workflow_toolset == "vizier-visual"
 
 
+def test_poster_critique_in_active_session_stays_in_assistant_mode(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HERMES_TELEGRAM_POSTER_PATH", "/tmp/poster.png")
+
+    decision = classify_telegram_mode(
+        user_message="Give feedback on this poster and tell me what you think.",
+        conversation_history=[],
+        platform="telegram",
+    )
+
+    assert decision.mode == "assistant"
+    assert decision.source == "poster_session_critique"
+
+
 def test_sticky_mode_uses_recent_override_when_current_turn_is_ambiguous() -> None:
     decision = classify_telegram_mode(
         user_message="Do the next one too.",

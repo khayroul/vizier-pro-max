@@ -923,7 +923,7 @@ class TestPluginRegistration:
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Telegram assistant mode should hide generate_poster until work mode is active."""
+        """Telegram should hide revise_poster until work mode and a tracked poster both exist."""
         from plugins.poster_tool import register
         from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
 
@@ -942,6 +942,9 @@ class TestPluginRegistration:
 
         set_telegram_mode(platform="telegram", mode="vizier_work")
         assert tool_defs["generate_poster"]["check_fn"]() is True
+        assert tool_defs["revise_poster"]["check_fn"]() is False
+
+        monkeypatch.setenv("HERMES_TELEGRAM_POSTER_TRACE_PATH", "/tmp/poster.trace.json")
         assert tool_defs["revise_poster"]["check_fn"]() is True
 
     @patch("pipelines.poster_generate.run")

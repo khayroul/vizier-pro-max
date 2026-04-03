@@ -234,13 +234,18 @@ def _vizier_turn_context(**_: Any) -> str:
         lines.append(f"- Latest poster path: {latest_poster}")
     if latest_reference:
         lines.append(f"- Latest reference image path: {latest_reference}")
-    lines.extend(
-        [
-            "- For poster feedback on the latest generated poster, use revise_poster instead of loosely regenerating from scratch.",
-            "- Before revising, give one short sentence summarizing the planned deltas.",
-            "- After revising, summarize what changed and cite the self_check. Do not say 'Fixed' unless every requested goal is marked addressed.",
-        ]
-    )
+    if latest_poster:
+        lines.extend(
+            [
+                "- For poster feedback on the latest generated poster, use revise_poster instead of loosely regenerating from scratch.",
+                "- Before revising, give one short sentence summarizing the planned deltas.",
+                "- After revising, summarize what changed and cite the self_check. Do not say 'Fixed' unless every requested goal is marked addressed.",
+            ]
+        )
+    elif latest_reference:
+        lines.append(
+            "- The latest reference image can guide the next poster generation even before a poster exists to revise."
+        )
     return "\n".join(lines)
 
 

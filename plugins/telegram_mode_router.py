@@ -116,6 +116,28 @@ _POSTER_FEEDBACK_PATTERNS = (
     r"\bcan'?t see\b",
 )
 
+_POSTER_CRITIQUE_PATTERNS = (
+    r"\bgive feedback\b",
+    r"\bfeedback on\b",
+    r"\bcritique\b",
+    r"\breview\b",
+    r"\bwhat do you think\b",
+    r"\bthoughts?\b",
+    r"\bgive notes\b",
+)
+
+_POSTER_CUE_PATTERNS = (
+    r"\bposter\b",
+    r"\bflyer\b",
+    r"\bbanner\b",
+    r"\bheadline\b",
+    r"\blogo\b",
+    r"\bbrand\b",
+    r"\bmark\b",
+    r"\blayout\b",
+    r"\bhierarchy\b",
+)
+
 _SUPPORT_PATTERNS = (
     r"\bhelp me think\b",
     r"\bthink through\b",
@@ -245,6 +267,13 @@ def _looks_like_poster_feedback_request(text: str) -> bool:
     return _matches_any(text, _POSTER_FEEDBACK_PATTERNS)
 
 
+def _looks_like_poster_critique_request(text: str) -> bool:
+    return _matches_any(text, _POSTER_CRITIQUE_PATTERNS) and _matches_any(
+        text,
+        _POSTER_CUE_PATTERNS,
+    )
+
+
 def _auto_activate_workflow_toolset(
     *,
     decision: TelegramModeDecision,
@@ -301,6 +330,12 @@ def classify_telegram_mode(
             mode="operator",
             source="keyword_inference",
             reason="The turn mentions engineering or repo-maintenance work.",
+        )
+    if _has_active_poster_session() and _looks_like_poster_critique_request(current_text):
+        return TelegramModeDecision(
+            mode="assistant",
+            source="poster_session_critique",
+            reason="The turn asks for critique on the current poster without clearly requesting changes.",
         )
     if _has_active_poster_session() and _looks_like_poster_feedback_request(current_text):
         return TelegramModeDecision(

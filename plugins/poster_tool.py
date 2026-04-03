@@ -220,6 +220,26 @@ def _session_env_default(name: str) -> str:
     return str(os.getenv(name, "")).strip()
 
 
+def _telegram_front_door_enabled() -> bool:
+    explicit = os.getenv("VIZIER_TELEGRAM_FRONT_DOOR", "").strip().lower()
+    if explicit in {"1", "true", "yes", "on"}:
+        return True
+    return bool(
+        os.getenv("MESSAGING_CWD", "").strip()
+        and os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    )
+
+
+def _revise_poster_available() -> bool:
+    """Hide revise_poster on Telegram until a poster session exists."""
+    if not _telegram_front_door_enabled():
+        return True
+    return bool(
+        _session_env_default(_SESSION_POSTER_PATH_ENV)
+        or _session_env_default(_SESSION_POSTER_TRACE_ENV)
+    )
+
+
 def _handle_generate_poster(args: dict[str, Any], agent: Any) -> str:
     """Generate a two-layer poster and return the file path."""
     from pipelines.poster_generate import run
@@ -335,7 +355,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-visual",
         schema=REVISE_POSTER_SCHEMA,
         handler=lambda args, **kw: _handle_revise_poster(args, None),
-        check_fn=lambda: telegram_tool_allows("revise_poster"),
+        check_fn=lambda: telegram_tool_allows("revise_poster") and _revise_poster_available(),
         description=(
             "Revise the latest poster using explicit feedback, the previous poster trace, "
             "and any Telegram session reference image. Prefer this over loosely regenerating "
