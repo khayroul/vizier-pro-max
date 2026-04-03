@@ -1,20 +1,16 @@
 """Tests for structured poster revision planning."""
 from __future__ import annotations
 
-import sys
 from unittest.mock import MagicMock, patch
-from types import SimpleNamespace
 
 import pytest
 
-sys.modules.setdefault(
-    "structlog",
-    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
-)
-
 from pipelines.poster_revision import (
     build_revision_generate_kwargs,
+    check_poster_revision,
     compile_revision_plan,
+    prepare_poster_revision,
+    resolve_brand_asset,
     run,
 )
 
@@ -30,6 +26,7 @@ SAMPLE_STATE = {
         "cta": "Learn more",
         "template_name": "social-post",
         "image_mode": "falai",
+        "brand_name": "PETRONAS",
         "logo_mark": "PETRONAS",
         "palette": {
             "primary": "#00A19A",
@@ -53,6 +50,8 @@ SAMPLE_STATE = {
         "poster_path": "/tmp/original-poster.png",
         "template_used": "social-post",
         "image_mode": "falai",
+        "brand_name": "PETRONAS",
+        "logo_mark": "PETRONAS",
         "creative_brief": {
             "raw_brief": "PETRONAS Raya premium festive poster",
             "campaign_angle": "Premium festive greeting",
@@ -111,6 +110,21 @@ def test_build_revision_generate_kwargs_preserves_prior_state() -> None:
     assert "Increase the logo or brand mark prominence" in kwargs["brief"]
 
 
+def test_prepare_poster_revision_returns_compact_summary_and_risks() -> None:
+    """Prepare returns caller-safe goals, summary text, and honest unresolved risks."""
+    payload = prepare_poster_revision(
+        feedback="Make the logo bigger, keep one greeting only, and clean the hierarchy.",
+        latest_poster_state=SAMPLE_STATE,
+        client_id="dmb",
+    )
+
+    assert payload["status"] == "ready"
+    assert payload["goals"]
+    assert payload["telegram_summary"].startswith("I’m revising")
+    assert payload["revision_plan"]["asset_status"]["status"] == "text_mark_only"
+    assert payload["unresolved_risks"]
+
+
 @patch("pipelines.poster_revision.generate_poster")
 def test_run_returns_revision_plan_and_self_check(
     mock_generate_poster: MagicMock,
@@ -120,6 +134,7 @@ def test_run_returns_revision_plan_and_self_check(
         "poster_path": "/tmp/revised-poster.png",
         "trace_path": "/tmp/revised-poster.trace.json",
         "creative_brief": {"headline": "Selamat Hari Raya"},
+        "logo_mark": "PETRONAS",
     }
 
     payload = run(
@@ -135,7 +150,56 @@ def test_run_returns_revision_plan_and_self_check(
     }
     assert payload["self_check"]
     assert payload["telegram_summary"]
+    assert payload["check_result"]["status"] == "checked"
     assert mock_generate_poster.called
+
+
+def test_check_poster_revision_returns_safe_summary() -> None:
+    """Check should report per-goal status without overclaiming visual success."""
+    payload = check_poster_revision(
+        revised_poster_result={
+            "revision_plan": {
+                "feedback": "Make the logo bigger and remove the duplicate headline.",
+                "change_goals": [
+                    {
+                        "key": "brand_visibility",
+                        "label": "Stronger brand visibility",
+                        "instruction": "Increase the logo.",
+                    },
+                    {
+                        "key": "single_main_headline",
+                        "label": "One main headline only",
+                        "instruction": "Use one main headline only.",
+                    },
+                ],
+                "asset_status": {
+                    "status": "text_mark_only",
+                    "logo_mark": "PETRONAS",
+                },
+            },
+            "logo_mark": "PETRONAS",
+            "creative_brief": {"headline": "Selamat Hari Raya"},
+            "claim_level": "soft",
+        },
+        latest_poster_state=SAMPLE_STATE,
+    )
+
+    assert payload["status"] == "checked"
+    assert payload["overall_status"] in {"supported_with_review", "needs_visual_review"}
+    assert payload["goal_statuses"]
+    assert "official logo" in payload["telegram_summary"].lower()
+
+
+def test_resolve_brand_asset_reports_text_mark_only_truthfully() -> None:
+    """Client config brand metadata should not be mistaken for a local official logo asset."""
+    payload = resolve_brand_asset(
+        latest_poster_state=SAMPLE_STATE,
+        client_id="dmb",
+    )
+
+    assert payload["status"] == "text_mark_only"
+    assert payload["asset_path"] == ""
+    assert "no local official logo asset" in " ".join(payload["notes"]).lower()
 
 
 def test_run_requires_prior_poster_state() -> None:

@@ -19,8 +19,9 @@ import os
 import re
 import time
 from dataclasses import asdict, dataclass
+from html import escape as html_escape
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import httpx
 
@@ -73,12 +74,16 @@ class PosterRequest:
     output_path: str = ""
     brand_name: str = ""
     logo_mark: str = ""
+    logo_image_path: str = ""
     brand_css: dict[str, str] | None = None
     client_id: str = ""
     style_reference: str = ""
     reference_image_path: str = ""
     palette: dict[str, str] | None = None
     fonts: dict[str, str] | None = None
+    revision_goals: list[dict[str, Any]] | None = None
+    preserve_goals: list[dict[str, Any]] | None = None
+    prior_poster_context: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -93,6 +98,8 @@ class PosterResult:
     image_mode: str
     brand_name: str = ""
     logo_mark: str = ""
+    logo_image_path: str = ""
+    logo_render_mode: str = "none"
 
 
 @dataclass(frozen=True)
@@ -635,7 +642,19 @@ def _generate_hero_falai(prompt: str, output_path: str) -> str:
     """Generate hero image via fal.ai FLUX."""
     from scripts.visual.generate_image import run as fal_run
 
-    result = fal_run(prompt=prompt, output_path=output_path, width=1024, height=1024)
+    result = fal_run(
+        prompt=prompt,
+        output_path=output_path,
+        width=1024,
+        height=1024,
+        gateway_headers=build_gateway_headers(
+            source="pipeline",
+            modality="image_generation",
+            default_pipeline_name="poster_generate",
+            default_pipeline_version="1.0",
+            default_step_name="hero_generate",
+        ),
+    )
     return result["file_path"]
 
 
@@ -761,6 +780,163 @@ def _inject_slots(html: str, content: dict[str, str]) -> str:
     )
 
 
+def _count_slot_occurrences(html: str, slot_name: str) -> int:
+    """Count how many times a given slot placeholder appears in a template."""
+    return html.count(f"{{{{{slot_name}}}}}")
+
+
+def _normalize_goal_items(goals: Any) -> list[dict[str, str]]:
+    """Coerce revision goal-like payloads into stable dict items."""
+    if not isinstance(goals, list):
+        return []
+    normalized: list[dict[str, str]] = []
+    for item in goals:
+        if not isinstance(item, Mapping):
+            continue
+        normalized.append(
+            {
+                "key": str(item.get("key", "")).strip(),
+                "category": str(item.get("category", "")).strip(),
+                "label": str(item.get("label", "")).strip(),
+                "instruction": str(item.get("instruction", "")).strip(),
+                "rationale": str(item.get("rationale", "")).strip(),
+            }
+        )
+    return [item for item in normalized if item["key"] or item["instruction"]]
+
+
+def _logo_overlay_inline_style(template_name: str) -> str:
+    """Return a placement style for a rendered logo asset overlay."""
+    name = template_name.lower()
+    if name.startswith("center-stage"):
+        return "top: 54px; left: 50%; transform: translateX(-50%); width: 220px; height: 84px;"
+    if name.startswith("stacked-type"):
+        return "top: 54px; left: 56px; width: 220px; height: 80px;"
+    if name.endswith("-story"):
+        return "top: 60px; right: 44px; width: 170px; height: 72px;"
+    return "top: 48px; right: 56px; width: 196px; height: 76px;"
+
+
+def _inject_logo_overlay(
+    html: str,
+    *,
+    logo_image_url: str,
+    brand_name: str,
+    template_name: str,
+) -> str:
+    """Render an explicit logo asset as a separate HTML overlay."""
+    if not logo_image_url:
+        return html
+
+    overlay_css = (
+        "\n<style>\n"
+        "  .reactor-logo-overlay {\n"
+        "    position: absolute;\n"
+        "    z-index: 6;\n"
+        "    display: flex;\n"
+        "    align-items: center;\n"
+        "    justify-content: center;\n"
+        "    padding: 12px 16px;\n"
+        "    border-radius: 24px;\n"
+        "    background: color-mix(in srgb, var(--color-bg, #0a0a0f) 68%, rgba(255, 255, 255, 0.16));\n"
+        "    border: 1px solid color-mix(in srgb, var(--color-text, #ffffff) 12%, transparent);\n"
+        "    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);\n"
+        "    backdrop-filter: blur(14px);\n"
+        "    pointer-events: none;\n"
+        "  }\n"
+        "  .reactor-logo-overlay img {\n"
+        "    display: block;\n"
+        "    width: 100%;\n"
+        "    height: 100%;\n"
+        "    object-fit: contain;\n"
+        "    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.24));\n"
+        "  }\n"
+        "  .logo-mark {\n"
+        "    display: none !important;\n"
+        "  }\n"
+        "</style>\n"
+    )
+    alt_text = html_escape((brand_name or "Brand").strip() + " logo")
+    overlay_html = (
+        f'<div class="reactor-logo-overlay" style="{_logo_overlay_inline_style(template_name)}">'
+        f'<img src="{logo_image_url}" alt="{alt_text}">'
+        "</div>\n"
+    )
+    html = html.replace("</head>", f"{overlay_css}</head>")
+    return html.replace("</body>", f"{overlay_html}</body>")
+
+
+def _build_revision_guardrails(
+    change_goals: list[dict[str, str]],
+    preserve_goals: list[dict[str, str]],
+    *,
+    logo_render_mode: str,
+    prior_poster_context: Mapping[str, Any] | None,
+) -> list[str]:
+    """Translate structured revision goals into explicit prompt guardrails."""
+    guardrails: list[str] = []
+    prior_context = prior_poster_context or {}
+    prior_template = str(prior_context.get("template_name", "")).strip()
+
+    if prior_template and change_goals:
+        guardrails.append(
+            f"Treat this as a revision of the existing {prior_template} composition, not a fresh unrelated poster."
+        )
+
+    for goal in change_goals:
+        key = goal.get("key", "")
+        instruction = goal.get("instruction", "")
+        if key == "increase_logo_visibility":
+            if logo_render_mode == "asset_overlay":
+                guardrails.append(
+                    "Reserve a clean, high-contrast area for the separate official logo overlay. Do not invent, redraw, or hide logos inside the generated hero."
+                )
+            elif logo_render_mode == "text_mark":
+                guardrails.append(
+                    "Keep a clean, high-contrast corner for the brand mark so it stays readable and intentional."
+                )
+            else:
+                guardrails.append(
+                    "Do not invent or hallucinate logos in the generated hero, because no official logo asset is available."
+                )
+        elif key == "remove_duplicate_main_headline":
+            guardrails.append(
+                "Only one clear primary headline in the final poster. No duplicate greeting treatments, repeated words, or text-like artifacts in the hero/background."
+            )
+        elif key == "clean_up_layout":
+            guardrails.append(
+                "Refine hierarchy and spacing so the poster feels cleaner and more intentional without losing visual presence."
+            )
+        elif key == "reduce_wasted_space":
+            guardrails.append(
+                "Reduce dead space and avoid sparse empty zones so the composition stays full and deliberate."
+            )
+        elif key == "improve_mobile_readability":
+            guardrails.append(
+                "Protect small-screen readability with strong contrast, clear focal hierarchy, and calm text placement."
+            )
+        elif instruction:
+            guardrails.append(instruction)
+
+    for goal in preserve_goals:
+        key = goal.get("key", "")
+        instruction = goal.get("instruction", "")
+        if key == "preserve_template_composition":
+            guardrails.append(instruction)
+        elif key == "preserve_working_cta_hierarchy":
+            guardrails.append("Keep the CTA hierarchy intact unless the feedback explicitly challenges it.")
+        elif key == "preserve_core_copy":
+            guardrails.append("Preserve the working headline and body unless the feedback explicitly requests copy changes.")
+        elif key == "preserve_festive_mood":
+            guardrails.append("Preserve the festive warmth and celebratory feel from the prior poster.")
+        elif key == "preserve_premium_feel":
+            guardrails.append("Preserve the premium finish, polish, and restrained tone from the prior poster.")
+        elif instruction:
+            guardrails.append(instruction)
+
+    return guardrails
+
+
 def _screenshot(html: str, output_path: str, width: int, height: int) -> None:
     """Render HTML to PNG via Playwright headless Chromium."""
     from playwright.sync_api import sync_playwright
@@ -786,6 +962,7 @@ def _render_poster(
     brand_css: dict[str, str] | None = None,
     palette: dict[str, str] | None = None,
     fonts: dict[str, str] | None = None,
+    logo_image_url: str = "",
 ) -> str:
     """Inject content into template and render via Playwright."""
     html_source = Path(template.path).read_text(encoding="utf-8")
@@ -797,6 +974,13 @@ def _render_poster(
     injected_html = _inject_slots(html_source, content)
     if brand_css is not None:
         injected_html = _inject_brand_css(injected_html, brand_css)
+    if logo_image_url:
+        injected_html = _inject_logo_overlay(
+            injected_html,
+            logo_image_url=logo_image_url,
+            brand_name=content.get("brand_name", ""),
+            template_name=template.name,
+        )
 
     logger.info(
         "Rendering poster: template=%s, output=%s, size=%dx%d",
@@ -827,12 +1011,16 @@ def run(
     output_path: str = "",
     brand_name: str = "",
     logo_mark: str = "",
+    logo_image_path: str = "",
     brand_css: dict[str, str] | None = None,
     client_id: str = "",
     style_reference: str = "",
     reference_image_path: str = "",
     palette: dict[str, str] | None = None,
     fonts: dict[str, str] | None = None,
+    revision_goals: list[dict[str, Any]] | None = None,
+    preserve_goals: list[dict[str, Any]] | None = None,
+    prior_poster_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Generate a two-layer poster: AI background + HTML text overlay.
 
@@ -852,6 +1040,9 @@ def run(
         brand_name: Optional brand label injected into templates that support it.
         logo_mark: Optional short brand mark injected into templates that
             support it.
+        logo_image_path: Optional local image path for an official logo asset.
+            When supplied, the renderer overlays it directly instead of asking
+            the image model to invent a logo treatment.
         brand_css: Optional CSS custom property overrides injected into the
             template.
         client_id: Optional client configuration ID for auto-theming.
@@ -863,6 +1054,12 @@ def run(
             background, text hex values.
         fonts: Font pairing dict with heading_font, body_font, weights,
             spacing, and line heights.
+        revision_goals: Optional structured change goals from the poster
+            revision engine.
+        preserve_goals: Optional structured preserve goals from the poster
+            revision engine.
+        prior_poster_context: Optional prior poster context used to make
+            revision-aware prompt decisions.
 
     Returns:
         Dict with poster_path, hero_path, template_used, width, height,
@@ -882,12 +1079,16 @@ def run(
     effective_image_mode = image_mode
     effective_brand_name = brand_name
     effective_logo_mark = logo_mark
+    effective_logo_image_path = logo_image_path.strip()
     effective_brand_css = dict(brand_css) if brand_css is not None else None
     client_style_hint = ""
     style_reference_hint = ""
     style_reference_avoid = ""
     effective_style_reference = style_reference.strip()
     effective_reference_image_path = reference_image_path.strip()
+    normalized_revision_goals = _normalize_goal_items(revision_goals)
+    normalized_preserve_goals = _normalize_goal_items(preserve_goals)
+    prior_revision_context = dict(prior_poster_context or {})
     reference_image_hint = ""
     reference_image_avoid = ""
 
@@ -944,6 +1145,12 @@ def run(
             effective_brand_css = _extract_reference_brand_css(
                 effective_reference_image_path
             )
+
+    if effective_logo_image_path:
+        logo_path = Path(effective_logo_image_path)
+        if not logo_path.exists():
+            msg = f"Logo image not found: {effective_logo_image_path}"
+            raise FileNotFoundError(msg)
 
     if (
         client is not None
@@ -1011,6 +1218,7 @@ def run(
 
     # Resolve template
     template = _resolve_template(effective_template_name)
+    template_source = Path(template.path).read_text(encoding="utf-8")
     art_direction_plan = _build_art_direction_plan(
         template_name=template.name,
         creative_brief=creative_brief,
@@ -1041,6 +1249,19 @@ def run(
     prompt_prefix = ". ".join(prompt_prefix_parts)
     if prompt_prefix:
         prompt_prefix += ". "
+    logo_render_mode = (
+        "asset_overlay"
+        if effective_logo_image_path
+        else "text_mark"
+        if effective_logo_mark
+        else "none"
+    )
+    revision_guardrail_parts = _build_revision_guardrails(
+        normalized_revision_goals,
+        normalized_preserve_goals,
+        logo_render_mode=logo_render_mode,
+        prior_poster_context=prior_revision_context,
+    )
     quality_guardrail_parts = [
         art_direction_plan["composition_instruction"],
         art_direction_plan["hero_instruction"],
@@ -1049,6 +1270,7 @@ def run(
         art_direction_plan["cta_instruction"],
         art_direction_plan["template_profile"]["prompt_guardrail"],
         art_direction_plan["polish_instruction"],
+        *revision_guardrail_parts,
     ]
     quality_guardrails = " ".join(part for part in quality_guardrail_parts if part).strip()
     avoid_parts = [
@@ -1092,6 +1314,7 @@ def run(
 
     # Layer 2: Render template with text + hero as background
     image_uri = _to_data_uri(Path(hero_file))
+    logo_image_uri = _to_data_uri(Path(effective_logo_image_path)) if effective_logo_image_path else ""
     content = {
         "headline": effective_headline,
         "body": effective_body,
@@ -1107,6 +1330,7 @@ def run(
         brand_css=effective_brand_css,
         palette=palette,
         fonts=fonts,
+        logo_image_url=logo_image_uri,
     )
 
     duration = time.monotonic() - t0
@@ -1121,6 +1345,8 @@ def run(
         image_mode=effective_image_mode,
         brand_name=effective_brand_name,
         logo_mark=effective_logo_mark,
+        logo_image_path=effective_logo_image_path,
+        logo_render_mode=logo_render_mode,
     )
     payload: dict[str, Any] = {k: v for k, v in asdict(result).items()}
     payload["creative_brief"] = creative_brief_payload(creative_brief)
@@ -1131,7 +1357,32 @@ def run(
         "effective_prompt": effective_prompt,
         "prompt_prefix_parts": prompt_prefix_parts,
         "quality_guardrail_parts": quality_guardrail_parts,
+        "revision_guardrail_parts": revision_guardrail_parts,
         "avoid_parts": avoid_parts,
+    }
+    payload["logo_rendering"] = {
+        "mode": logo_render_mode,
+        "logo_image_path": effective_logo_image_path,
+        "logo_mark": effective_logo_mark,
+        "asset_rendered": bool(logo_image_uri),
+        "note": (
+            "Rendered a supplied logo asset as a separate overlay."
+            if logo_render_mode == "asset_overlay"
+            else "Fell back to a text logo mark because no official logo asset was supplied."
+            if logo_render_mode == "text_mark"
+            else "No logo asset or logo mark was supplied."
+        ),
+    }
+    payload["render_trace"] = {
+        "template_slots": list(template.slots),
+        "headline_slot_count": _count_slot_occurrences(template_source, "headline"),
+        "logo_asset_overlay": bool(logo_image_uri),
+        "logo_overlay_position": _logo_overlay_inline_style(template.name) if logo_image_uri else "",
+    }
+    payload["revision_trace"] = {
+        "change_goals": normalized_revision_goals,
+        "preserve_goals": normalized_preserve_goals,
+        "prior_poster_context": prior_revision_context,
     }
     trace_path = _derive_trace_path(poster_path)
     payload["trace_path"] = trace_path
@@ -1149,15 +1400,22 @@ def run(
                 "template_name": template_name,
                 "image_mode": image_mode,
                 "brand_name": brand_name,
+                "logo_mark": logo_mark,
+                "logo_image_path": logo_image_path,
                 "client_id": client_id,
                 "style_reference": style_reference,
                 "reference_image_path": reference_image_path,
+                "revision_goals": normalized_revision_goals,
+                "preserve_goals": normalized_preserve_goals,
             },
             "creative_brief": payload["creative_brief"],
             "reference_trace": payload["reference_trace"],
             "art_direction_plan": payload["art_direction_plan"],
             "template_reason": payload["template_reason"],
             "prompt_trace": payload["prompt_trace"],
+            "logo_rendering": payload["logo_rendering"],
+            "render_trace": payload["render_trace"],
+            "revision_trace": payload["revision_trace"],
             "artifact": {
                 "poster_path": poster_path,
                 "hero_path": hero_file,

@@ -25,6 +25,7 @@ from pipelines.poster_generate import (
     _build_design_css,
     _build_font_link,
     _generate_hero_openai,
+    _generate_hero_falai,
     _inject_brand_css,
     _inject_design,
     _inject_slots,
@@ -221,12 +222,16 @@ class TestDataclasses:
         assert req.image_mode == ""
         assert req.brand_name == ""
         assert req.logo_mark == ""
+        assert req.logo_image_path == ""
         assert req.brand_css is None
         assert req.client_id == ""
         assert req.style_reference == ""
         assert req.reference_image_path == ""
         assert req.palette is None
         assert req.fonts is None
+        assert req.revision_goals is None
+        assert req.preserve_goals is None
+        assert req.prior_poster_context is None
 
 
 class TestSubjectClarityGuardrail:
@@ -444,6 +449,39 @@ class TestGenerateHeroOpenAi:
 
         with pytest.raises(RuntimeError, match="Vizier gateway image generation failed"):
             _generate_hero_openai("coffee poster hero", str(tmp_path / "hero.png"))
+
+
+class TestGenerateHeroFalAi:
+    def test_routes_image_generation_through_gateway(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+    ) -> None:
+        requests: list[dict[str, object]] = []
+        output_path = tmp_path / "hero.png"
+        hero_file = tmp_path / "fal-hero.png"
+        hero_file.write_bytes(b"\x89PNG" + b"\x00" * 50)
+
+        def _fake_run(**kwargs: object) -> dict[str, str]:
+            requests.append(dict(kwargs))
+            assert kwargs["gateway_headers"]["x-vizier-source"] == "pipeline"
+            assert kwargs["gateway_headers"]["x-vizier-modality"] == "image_generation"
+            assert kwargs["gateway_headers"]["x-vizier-pipeline-name"] == "poster_generate"
+            assert kwargs["gateway_headers"]["x-vizier-pipeline-version"] == "1.0"
+            assert kwargs["gateway_headers"]["x-vizier-step-name"] == "hero_generate"
+            Path(str(kwargs["output_path"])).write_bytes(hero_file.read_bytes())
+            return {"file_path": str(kwargs["output_path"]), "image_url": "https://fal.ai/output/abc.png"}
+
+        monkeypatch.setattr("scripts.visual.generate_image.run", _fake_run)
+
+        hero_path = _generate_hero_falai("coffee poster hero", str(output_path))
+
+        assert hero_path == str(output_path)
+        assert output_path.read_bytes() == b"\x89PNG" + b"\x00" * 50
+        assert len(requests) == 1
+        assert requests[0]["prompt"] == "coffee poster hero"
+        assert requests[0]["width"] == 1024
+        assert requests[0]["height"] == 1024
 
 
 # ---------------------------------------------------------------------------
@@ -793,6 +831,124 @@ class TestRunPipeline:
                 fonts=SAMPLE_FONTS,
             )
 
+    @patch("pipelines.poster_generate._screenshot")
+    @patch("pipelines.poster_generate._generate_hero")
+    def test_logo_image_path_renders_official_logo_overlay(
+        self,
+        mock_hero: MagicMock,
+        mock_screenshot: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """An explicit logo asset should render as a separate HTML overlay."""
+        hero_file = tmp_path / "hero.png"
+        hero_file.write_bytes(b"\x89PNG" + b"\x00" * 50)
+        logo_file = tmp_path / "logo.png"
+        logo_file.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 50)
+
+        def fake_hero(prompt: str, output_path: str, mode: str) -> str:
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(output_path).write_bytes(hero_file.read_bytes())
+            return output_path
+
+        mock_hero.side_effect = fake_hero
+        mock_screenshot.return_value = None
+
+        result = run(
+            headline="Batik Hari Guru",
+            body="Edisi premium buatan tangan",
+            brand_name="Desa Murni Batik",
+            logo_mark="DMB",
+            logo_image_path=str(logo_file),
+            output_path=str(tmp_path / "poster.png"),
+            palette=SAMPLE_PALETTE,
+            fonts=SAMPLE_FONTS,
+        )
+
+        assert result["logo_rendering"]["mode"] == "asset_overlay"
+        assert result["logo_image_path"] == str(logo_file)
+        assert result["render_trace"]["logo_asset_overlay"] is True
+
+        call_args = mock_screenshot.call_args
+        html_arg = call_args[1]["html"] if "html" in call_args[1] else call_args[0][0]
+        assert "reactor-logo-overlay" in html_arg
+        assert 'alt="Desa Murni Batik logo"' in html_arg
+        assert ".logo-mark {" in html_arg
+        assert "display: none !important;" in html_arg
+
+    def test_missing_logo_image_path_raises(self) -> None:
+        """Unknown logo assets should fail clearly."""
+        with pytest.raises(FileNotFoundError, match="Logo image not found"):
+            run(
+                headline="Test",
+                body="Body",
+                logo_image_path="/tmp/does-not-exist-logo.png",
+                palette=SAMPLE_PALETTE,
+                fonts=SAMPLE_FONTS,
+            )
+
+    @patch("pipelines.poster_generate._screenshot")
+    @patch("pipelines.poster_generate._generate_hero")
+    def test_revision_goals_flow_into_prompt_and_trace(
+        self,
+        mock_hero: MagicMock,
+        mock_screenshot: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """Structured revision goals should add explicit prompt guardrails and trace data."""
+        hero_file = tmp_path / "hero.png"
+        hero_file.write_bytes(b"\x89PNG" + b"\x00" * 50)
+        logo_file = tmp_path / "logo.png"
+        logo_file.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 50)
+
+        def fake_hero(prompt: str, output_path: str, mode: str) -> str:
+            assert "Only one clear primary headline" in prompt
+            assert "Reserve a clean, high-contrast area for the separate official logo overlay" in prompt
+            assert "Treat this as a revision of the existing hero-bottom-text-square composition" in prompt
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(output_path).write_bytes(hero_file.read_bytes())
+            return output_path
+
+        mock_hero.side_effect = fake_hero
+        mock_screenshot.return_value = None
+
+        result = run(
+            headline="Selamat Hari Raya",
+            body="Celebrate the season together.",
+            template_name="hero-bottom-text-square",
+            logo_mark="PETRONAS",
+            logo_image_path=str(logo_file),
+            revision_goals=[
+                {
+                    "key": "increase_logo_visibility",
+                    "category": "change",
+                    "label": "Increase logo visibility",
+                    "instruction": "Make the logo more visible.",
+                },
+                {
+                    "key": "remove_duplicate_main_headline",
+                    "category": "change",
+                    "label": "Remove duplicate main headline",
+                    "instruction": "Use only one main headline.",
+                },
+            ],
+            preserve_goals=[
+                {
+                    "key": "preserve_premium_feel",
+                    "category": "preserve",
+                    "label": "Preserve premium feel",
+                    "instruction": "Keep the premium feel.",
+                }
+            ],
+            prior_poster_context={"template_name": "hero-bottom-text-square"},
+            output_path=str(tmp_path / "poster.png"),
+            palette=SAMPLE_PALETTE,
+            fonts=SAMPLE_FONTS,
+        )
+
+        assert result["prompt_trace"]["revision_guardrail_parts"]
+        assert result["revision_trace"]["change_goals"][0]["key"] == "increase_logo_visibility"
+        assert result["revision_trace"]["preserve_goals"][0]["key"] == "preserve_premium_feel"
+
 
 # ---------------------------------------------------------------------------
 # Plugin registration
@@ -807,9 +963,22 @@ class TestPluginRegistration:
         ctx = MagicMock()
         register(ctx)
 
-        assert ctx.register_tool.call_count == 2
-        generate_kwargs = ctx.register_tool.call_args_list[0][1]
-        revise_kwargs = ctx.register_tool.call_args_list[1][1]
+        registered = {
+            call.kwargs["name"]: call.kwargs
+            for call in ctx.register_tool.call_args_list
+        }
+        assert {
+            "generate_poster",
+            "prepare_poster_revision",
+            "revise_poster_structured",
+            "check_poster_revision",
+            "resolve_brand_asset",
+            "summarize_poster_revision",
+            "revise_poster",
+        } <= set(registered)
+        generate_kwargs = registered["generate_poster"]
+        revise_kwargs = registered["revise_poster"]
+        prepare_kwargs = registered["prepare_poster_revision"]
         assert generate_kwargs["name"] == "generate_poster"
         assert generate_kwargs["toolset"] == "vizier-visual"
         assert "headline" in generate_kwargs["schema"]["properties"]
@@ -819,6 +988,8 @@ class TestPluginRegistration:
         assert revise_kwargs["name"] == "revise_poster"
         assert revise_kwargs["toolset"] == "vizier-visual"
         assert "feedback" in revise_kwargs["schema"]["properties"]
+        assert prepare_kwargs["toolset"] == "vizier-visual"
+        assert "feedback" in prepare_kwargs["schema"]["properties"]
 
         ctx.register_hook.assert_called_once()
         hook_args = ctx.register_hook.call_args[0]
@@ -854,15 +1025,22 @@ class TestPluginRegistration:
         ctx = MagicMock()
         register(ctx)
 
-        generate_kwargs = ctx.register_tool.call_args_list[0][1]
-        revise_kwargs = ctx.register_tool.call_args_list[1][1]
+        registered = {
+            call.kwargs["name"]: call.kwargs
+            for call in ctx.register_tool.call_args_list
+        }
+        generate_kwargs = registered["generate_poster"]
+        revise_kwargs = registered["revise_poster"]
+        prepare_kwargs = registered["prepare_poster_revision"]
         assert generate_kwargs["name"] == "generate_poster"
         assert revise_kwargs["name"] == "revise_poster"
         assert generate_kwargs["check_fn"]() is False
         assert revise_kwargs["check_fn"]() is False
+        assert prepare_kwargs["check_fn"]() is False
 
         set_telegram_mode(platform="telegram", mode="vizier_work")
         assert generate_kwargs["check_fn"]() is True
+        assert prepare_kwargs["check_fn"]() is True
         assert revise_kwargs["check_fn"]() is False
 
     def test_revise_poster_becomes_available_once_session_has_prior_poster(
@@ -885,7 +1063,11 @@ class TestPluginRegistration:
 
         ctx = MagicMock()
         register(ctx)
-        revise_kwargs = ctx.register_tool.call_args_list[1][1]
+        registered = {
+            call.kwargs["name"]: call.kwargs
+            for call in ctx.register_tool.call_args_list
+        }
+        revise_kwargs = registered["revise_poster"]
         assert revise_kwargs["check_fn"]() is False
 
         record_poster_result(
