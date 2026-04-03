@@ -5,9 +5,16 @@ import base64
 import json
 import re
 from pathlib import Path
+import sys
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
 
 from middleware.deliverable_context import clear_context, set_context
 from pipelines.poster_generate import (
