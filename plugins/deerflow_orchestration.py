@@ -6,7 +6,7 @@ from typing import Any
 
 import structlog
 
-from plugins.telegram_mode_state import telegram_mode_allows
+from plugins.telegram_tool_policy import telegram_tool_allows
 
 logger = structlog.get_logger(__name__)
 
@@ -67,7 +67,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-core",
         schema=DECOMPOSE_TASK_SCHEMA,
         handler=lambda args, **kw: '{"error": "Must be handled by agent loop"}',
-        check_fn=lambda: telegram_mode_allows("vizier_work", "operator"),
+        check_fn=lambda: telegram_tool_allows("decompose_task"),
         description=(
             "Decompose a complex task into parallel sub-tasks for delegate_task"
         ),
@@ -77,7 +77,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-core",
         schema=MERGE_RESULTS_SCHEMA,
         handler=lambda args, **kw: '{"error": "Must be handled by agent loop"}',
-        check_fn=lambda: telegram_mode_allows("vizier_work", "operator"),
+        check_fn=lambda: telegram_tool_allows("merge_results"),
         description="Merge child task results into a unified deliverable",
     )
 

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from plugins.design_intelligence.search_engine import BM25Index, load_csv
-from plugins.telegram_mode_state import telegram_mode_allows
+from plugins.telegram_tool_policy import telegram_tool_allows
 from references.query import (
     search_chart_patterns,
     search_quarto_layouts,
@@ -141,7 +141,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-visual",
         schema=SEARCH_PALETTES_SCHEMA,
         handler=lambda args, **kw: _handle_search_palettes(args, None),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("search_palettes"),
         description=(
             "Search the design palette database by mood, style, or content keywords. "
             "Returns top 5 matching color palettes with hex values and mood tags. "
@@ -154,7 +154,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-visual",
         schema=SEARCH_FONTS_SCHEMA,
         handler=lambda args, **kw: _handle_search_fonts(args, None),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("search_fonts"),
         description=(
             "Search the typography database by style, mood, or use-case keywords. "
             "Returns top 5 font pairings with weight and spacing specs. "
@@ -167,7 +167,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-visual",
         schema=SEARCH_UI_STYLES_SCHEMA,
         handler=lambda args, **kw: _handle_reference_search(args, search_ui_styles),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("search_ui_styles"),
         description=(
             "Search local UI style references from UI UX Pro Max, enriched with "
             "visual motifs. Returns top 5 matches from pinned local corpora only."
@@ -179,7 +179,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-visual",
         schema=SEARCH_UX_GUIDELINES_SCHEMA,
         handler=lambda args, **kw: _handle_reference_search(args, search_ux_guidelines),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("search_ux_guidelines"),
         description=(
             "Search local UX do/don't guidance from the normalized UI UX Pro Max "
             "corpus. Returns top 5 matching issues, recommendations, and anti-patterns."
@@ -191,7 +191,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-visual",
         schema=SEARCH_CHART_PATTERNS_SCHEMA,
         handler=lambda args, **kw: _handle_reference_search(args, search_chart_patterns),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("search_chart_patterns"),
         description=(
             "Search local chart references across UI UX Pro Max heuristics and "
             "Vega-Lite example patterns. Reference only; does not invoke a chart runtime."
@@ -203,7 +203,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-document",
         schema=SEARCH_REPORT_LAYOUTS_SCHEMA,
         handler=lambda args, **kw: _handle_reference_search(args, search_report_layouts),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("search_report_layouts"),
         description=(
             "Search local report-layout references across Quarto layout options, "
             "table/figure conventions, and long-form structure patterns."
@@ -215,7 +215,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-document",
         schema=SEARCH_QUARTO_LAYOUTS_SCHEMA,
         handler=lambda args, **kw: _handle_reference_search(args, search_quarto_layouts),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("search_quarto_layouts"),
         description=(
             "Search Quarto-derived layout, publishing, and callout references from "
             "the pinned local corpus. Reference only; Quarto is not executed."

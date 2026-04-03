@@ -9,7 +9,7 @@ import json
 import logging
 from typing import Any
 
-from plugins.telegram_mode_state import telegram_mode_allows
+from plugins.telegram_tool_policy import telegram_tool_allows
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +202,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-visual",
         schema=GENERATE_POSTER_SCHEMA,
         handler=lambda args, **kw: _handle_generate_poster(args, None),
-        check_fn=lambda: telegram_mode_allows("vizier_work"),
+        check_fn=lambda: telegram_tool_allows("generate_poster"),
         description=(
             "Generate a poster with AI background image + HTML text overlay. "
             "Accepts either a raw creative brief or explicit headline/body copy, and "

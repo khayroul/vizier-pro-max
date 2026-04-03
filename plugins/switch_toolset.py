@@ -12,6 +12,7 @@ from typing import Any
 import structlog
 
 from config.toolsets import VIZIER_WORKFLOW_TOOLSETS
+from plugins.telegram_tool_policy import telegram_tool_allows
 
 logger = structlog.get_logger(__name__)
 
@@ -62,7 +63,7 @@ def register(ctx: Any) -> None:
         toolset="vizier-core",
         schema=SWITCH_TOOLSET_SCHEMA,
         handler=_fallback_handler,
-        check_fn=lambda: True,
+        check_fn=lambda: telegram_tool_allows("switch_toolset"),
         description="Switch the active workflow toolset mid-session",
     )
 

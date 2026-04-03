@@ -2,15 +2,30 @@
 from __future__ import annotations
 
 import json
+import sys
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
 
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
+
+from plugins.telegram_mode_state import clear_telegram_mode, set_telegram_mode
 from plugins.switch_toolset import (
     VIZIER_WORKFLOW_TOOLSETS,
     _handle_switch_toolset,
 )
+
+
+@pytest.fixture(autouse=True)
+def _clear_mode_state(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("VIZIER_TELEGRAM_FRONT_DOOR", raising=False)
+    monkeypatch.delenv("MESSAGING_CWD", raising=False)
+    monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    clear_telegram_mode()
 
 
 @pytest.fixture()
@@ -77,6 +92,28 @@ class TestRegister:
         register(ctx)
         ctx.register_tool.assert_called_once()
         ctx.register_hook.assert_called_once()
+
+    def test_register_hides_tool_in_telegram_assistant_mode(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        from plugins.switch_toolset import register
+
+        monkeypatch.setenv("MESSAGING_CWD", "/Users/Executor/vizier-pro-max")
+        monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+
+        ctx = MagicMock()
+        register(ctx)
+
+        check_fn = ctx.register_tool.call_args.kwargs["check_fn"]
+        assert callable(check_fn)
+        assert check_fn() is False
+
+        set_telegram_mode(platform="telegram", mode="vizier_work")
+        assert check_fn() is True
+
+        set_telegram_mode(platform="telegram", mode="operator")
+        assert check_fn() is True
 
     def test_on_agent_ready_injects_handler(self) -> None:
         from plugins.switch_toolset import register

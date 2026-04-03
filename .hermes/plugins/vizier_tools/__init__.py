@@ -132,8 +132,8 @@ def _register_prompt_logging(ctx: Any) -> None:
 
 def _register_cost_observability(ctx: Any) -> None:
     from middleware.cost_ledger import post_llm_call, pre_llm_call
+    from plugins.telegram_tool_policy import telegram_tool_allows
     from plugins.context_injector import inject_from_task_context
-    from plugins.telegram_mode_state import telegram_mode_allows
 
     query_costs_mod = _load_repo_tool_module(
         "_vizier_query_costs_tool",
@@ -152,7 +152,7 @@ def _register_cost_observability(ctx: Any) -> None:
         toolset="vizier-core",
         schema=QUERY_COSTS_SCHEMA,
         handler=query_costs_mod.query_costs,
-        check_fn=lambda: telegram_mode_allows("vizier_work", "operator"),
+        check_fn=lambda: telegram_tool_allows("query_costs"),
         description=(
             "Inspect Vizier cost ledger data for deliverables, clients, models, "
             "and anomaly history."
@@ -161,35 +161,37 @@ def _register_cost_observability(ctx: Any) -> None:
 
 
 def _register_run_pipeline(ctx: Any) -> None:
+    from plugins.telegram_tool_policy import telegram_tool_allows
+
     run_pipeline_mod = _load_repo_tool_module(
         "_vizier_run_pipeline_tool",
         "tools/run_pipeline.py",
     )
-    from plugins.telegram_mode_state import telegram_mode_allows
 
     ctx.register_tool(
         name="run_pipeline",
         toolset="vizier-core",
         schema=RUN_PIPELINE_SCHEMA,
         handler=run_pipeline_mod.run_pipeline,
-        check_fn=lambda: telegram_mode_allows("vizier_work", "operator"),
+        check_fn=lambda: telegram_tool_allows("run_pipeline"),
         description="Execute Vizier collapsed pipelines or list the available ones.",
     )
 
 
 def _register_query_logs(ctx: Any) -> None:
+    from plugins.telegram_tool_policy import telegram_tool_allows
+
     query_logs_mod = _load_repo_tool_module(
         "_vizier_query_logs_tool",
         "tools/query_logs.py",
     )
-    from plugins.telegram_mode_state import telegram_mode_allows
 
     ctx.register_tool(
         name="query_logs",
         toolset="vizier-core",
         schema=QUERY_LOGS_SCHEMA,
         handler=query_logs_mod.query_logs,
-        check_fn=lambda: telegram_mode_allows("vizier_work", "operator"),
+        check_fn=lambda: telegram_tool_allows("query_logs"),
         description="Inspect Vizier prompt logs and token traces.",
     )
 
