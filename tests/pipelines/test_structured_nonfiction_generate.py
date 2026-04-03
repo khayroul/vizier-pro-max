@@ -3,7 +3,16 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 from unittest.mock import patch
+from types import SimpleNamespace
+
+from unittest.mock import MagicMock
+
+sys.modules.setdefault(
+    "structlog",
+    SimpleNamespace(get_logger=lambda *args, **kwargs: MagicMock()),
+)
 
 from pipelines.nonfiction_ebook_generate import run as run_nonfiction_alias
 from pipelines.structured_nonfiction_generate import run
@@ -99,8 +108,17 @@ class TestStructuredNonfictionGenerate:
         assert Path(result["markdown_path"]).exists()
         assert Path(result["pdf_path"]).exists()
         assert Path(result["epub_path"]).exists()
+        assert result["reference_trace"]["task_family"] == "document"
+        assert set(result["reference_trace"]["lookup_tools_used"]) == {
+            "search_report_layouts",
+            "search_quarto_layouts",
+        }
+        assert result["quality_feedback"]["summary"]
+        assert result["quality_feedback"]["improvement_priorities"]
+        assert result["documents"][0]["quality_feedback"]["revision_hints"]
         html = Path(result["html_path"]).read_text(encoding="utf-8")
         assert "Table of Contents" in html
+        assert ".pull-quote" in html
         assert result["quality_report"]["passed"] is True
 
     def test_generates_document_bundle(self, tmp_path: Path) -> None:
@@ -145,6 +163,8 @@ class TestStructuredNonfictionGenerate:
         assert result["package_mode"] == "document_bundle"
         assert result["document_count"] == 2
         assert len(result["documents"]) == 2
+        assert result["quality_feedback"]["document_feedback"]
+        assert result["reference_trace"]["task_family"] == "document"
         assert result["documents"][0]["slug"] == "strategy-plan"
         assert Path(result["documents"][0]["html_path"]).exists()
         assert Path(result["documents"][1]["pdf_path"]).exists()
@@ -303,6 +323,8 @@ class TestStructuredNonfictionGenerate:
             Path(asset["poster_path"]).exists()
             for asset in result["operational_assets"]["assets"]
         )
+        assert result["quality_feedback"]["summary"]
+        assert result["quality_feedback"]["document_feedback"]
         assert result["quality_report"]["passed"] is True
 
     def test_exports_gamma_artifact_when_requested(self, tmp_path: Path) -> None:
@@ -416,3 +438,40 @@ class TestStructuredNonfictionGenerate:
 
         assert result["profile"] == "ebook"
         assert result["package_mode"] == "single_document"
+
+    def test_report_html_uses_passed_brand_tokens(self, tmp_path: Path) -> None:
+        with (
+            patch(
+                "pipelines.structured_nonfiction_generate.render_pdf",
+                side_effect=_fake_pdf_run,
+            ),
+            patch(
+                "pipelines.structured_nonfiction_generate.assemble_epub",
+                side_effect=_fake_epub_run,
+            ),
+        ):
+            result = run(
+                title="Client Narrative",
+                author="Vizier",
+                profile="proposal",
+                sections=[
+                    {"heading": "Overview", "body": "A tighter opening section with more signal.", "callout": "Lead with the decision."},
+                    {"heading": "Evidence", "body": "Supporting proof and context live here."},
+                    {"heading": "Next Steps", "body": "Clear action items conclude the document."},
+                ],
+                brand={
+                    "primary_color": "#123456",
+                    "secondary_color": "#f6efe2",
+                    "accent_color": "#c6782b",
+                    "headline_font": "Merriweather, serif",
+                    "body_font": "Inter, sans-serif",
+                },
+                output_dir=str(tmp_path / "brand"),
+            )
+
+        html = Path(result["html_path"]).read_text(encoding="utf-8")
+        assert "--primary:      #123456;" in html
+        assert "--secondary:    #f6efe2;" in html
+        assert "--accent:       #c6782b;" in html
+        assert "--font-heading: Merriweather, serif;" in html
+        assert "--font-body:    Inter, sans-serif;" in html

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import shutil
 from dataclasses import replace
 from io import StringIO
@@ -34,12 +35,14 @@ from pipelines.longform.spine import (
     uses_marketing_workflow,
     write_text,
 )
+from references import build_document_reference_context
 from scripts.document.assemble_epub import run as assemble_epub
 from scripts.document.render_pdf import run as render_pdf
 from scripts.research.compose_report import run as compose_report
 from scripts.research.render_chart import run as chart_run
 
 logger = structlog.get_logger(__name__)
+_WORD_RE = re.compile(r"\b[\w'-]+\b")
 
 
 def poster_run(**kwargs: object) -> dict[str, object]:
@@ -437,6 +440,203 @@ def _build_markdown_body(
     return rendered
 
 
+def _word_count(text: str) -> int:
+    return len(_WORD_RE.findall(text or ""))
+
+
+def _infer_document_feedback(
+    *,
+    document: Any,
+    package: Any,
+    chart_lookup: dict[str, list[dict[str, str]]],
+    reference_context: dict[str, Any],
+) -> dict[str, Any]:
+    """Build actionable quality feedback for one rendered nonfiction document."""
+    section_word_counts = {
+        section.heading: _word_count(section.body)
+        for section in document.sections
+    }
+    thin_sections = [
+        heading
+        for heading, count in section_word_counts.items()
+        if count < 18
+    ]
+    summary_anchor_present = any(
+        token in section.heading.lower()
+        for section in document.sections
+        for token in ("summary", "overview", "introduction", "abstract")
+    )
+    callout_count = sum(1 for section in document.sections if section.callout.strip())
+    chart_count = sum(len(items) for items in chart_lookup.values())
+    caption_gaps = [
+        chart["title"] or section_heading
+        for section_heading, items in chart_lookup.items()
+        for chart in items
+        if not str(chart.get("caption", "")).strip()
+    ]
+
+    strengths: list[str] = []
+    if reference_context.get("auto_consulted"):
+        strengths.append("Consulted pinned local long-form layout references before rendering.")
+    if package.include_toc:
+        strengths.append("Includes a table of contents for faster navigation.")
+    if summary_anchor_present:
+        strengths.append("Opens with a recognizable summary/overview anchor.")
+    if chart_count:
+        strengths.append(f"Anchors the narrative with {chart_count} chart figure{'s' if chart_count != 1 else ''}.")
+    if callout_count:
+        strengths.append(f"Uses {callout_count} callout{'s' if callout_count != 1 else ''} to break up dense prose.")
+
+    improvement_priorities: list[str] = []
+    revision_hints: list[dict[str, str]] = []
+    if not summary_anchor_present:
+        improvement_priorities.append(
+            "Add a short executive-summary or overview section near the front so the PDF lands the argument faster."
+        )
+        revision_hints.append(
+            {
+                "key": "strengthen_executive_summary",
+                "label": "Strengthen executive summary",
+                "instruction": "Add a concise executive summary or overview near the front with the main thesis, key findings, and next action.",
+                "priority": "high",
+            }
+        )
+    if thin_sections:
+        improvement_priorities.append(
+            "Expand the thinnest sections so they do more than label a topic; the weakest sections are "
+            + ", ".join(thin_sections[:3])
+            + "."
+        )
+        revision_hints.append(
+            {
+                "key": "expand_thin_sections",
+                "label": "Expand thin sections",
+                "instruction": "Deepen the thinnest sections with evidence, explanation, or concrete examples so each section advances the argument.",
+                "priority": "high",
+            }
+        )
+    if chart_count and caption_gaps:
+        improvement_priorities.append(
+            "Add stronger figure captions so the charts carry an explicit takeaway, not just a label."
+        )
+        revision_hints.append(
+            {
+                "key": "clarify_chart_takeaways",
+                "label": "Clarify chart takeaways",
+                "instruction": "Give every chart a caption or nearby sentence that explains the takeaway and why it matters.",
+                "priority": "medium",
+            }
+        )
+    if len(document.sections) >= 5 and callout_count == 0:
+        improvement_priorities.append(
+            "Introduce a few pull quotes or callouts to break up long sections and improve scanability in the PDF."
+        )
+        revision_hints.append(
+            {
+                "key": "add_callouts",
+                "label": "Add callouts",
+                "instruction": "Add selective callouts, pull quotes, or highlighted takeaways to create more visual rhythm in the long-form PDF.",
+                "priority": "medium",
+            }
+        )
+
+    if not improvement_priorities:
+        improvement_priorities.append(
+            "Manual review should focus on tone, pacing, and whether the executive summary earns the rest of the document."
+        )
+
+    avg_words = (
+        sum(section_word_counts.values()) / len(section_word_counts)
+        if section_word_counts
+        else 0.0
+    )
+    summary = (
+        f"{document.title} renders with {len(document.sections)} sections and {chart_count} chart"
+        f"{'s' if chart_count != 1 else ''}. "
+    )
+    if thin_sections:
+        summary += (
+            f"The main structural weakness is thin section coverage in {len(thin_sections)} section"
+            f"{'s' if len(thin_sections) != 1 else ''}. "
+        )
+    else:
+        summary += "Section coverage looks reasonably balanced for a first pass. "
+    if reference_context.get("guidance"):
+        summary += "Local report-layout guidance was consulted."
+
+    return {
+        "summary": summary.strip(),
+        "strengths": strengths,
+        "improvement_priorities": improvement_priorities,
+        "revision_hints": revision_hints,
+        "manual_review": [
+            "Check whether the argument flows cleanly from the summary into the body.",
+            "Check that figure placement and captions feel intentional in the exported PDF.",
+        ],
+        "metrics": {
+            "section_count": len(document.sections),
+            "chart_count": chart_count,
+            "callout_count": callout_count,
+            "summary_anchor_present": summary_anchor_present,
+            "average_section_word_count": round(avg_words, 1),
+            "thin_section_headings": thin_sections,
+            "caption_gap_count": len(caption_gaps),
+        },
+        "reference_guidance": str(reference_context.get("guidance", "")).strip(),
+    }
+
+
+def _aggregate_nonfiction_feedback(
+    *,
+    rendered_documents: list[dict[str, Any]],
+    reference_context: dict[str, Any],
+) -> dict[str, Any]:
+    """Aggregate per-document feedback into one package-level quality view."""
+    document_feedback = [
+        {
+            "title": document["title"],
+            "slug": document["slug"],
+            **document["quality_feedback"],
+        }
+        for document in rendered_documents
+        if isinstance(document.get("quality_feedback"), dict)
+    ]
+    hint_counts: dict[str, int] = {}
+    common_priorities: list[str] = []
+    for feedback in document_feedback:
+        for hint in feedback.get("revision_hints", []):
+            key = str(hint.get("key", "")).strip()
+            if key:
+                hint_counts[key] = hint_counts.get(key, 0) + 1
+        for item in feedback.get("improvement_priorities", []):
+            if item not in common_priorities:
+                common_priorities.append(item)
+    top_hint_keys = [
+        key
+        for key, _count in sorted(
+            hint_counts.items(),
+            key=lambda item: (-item[1], item[0]),
+        )
+    ]
+    summary = (
+        f"Rendered {len(rendered_documents)} nonfiction document"
+        f"{'s' if len(rendered_documents) != 1 else ''}. "
+        "Quality feedback now captures both structure and revision guidance."
+    )
+    if reference_context.get("guidance"):
+        summary += " Local report-layout references were consulted for this package."
+    return {
+        "summary": summary,
+        "document_feedback": document_feedback,
+        "top_revision_hint_keys": top_hint_keys,
+        "common_improvement_priorities": common_priorities[:5],
+        "manual_review": [
+            "Review title-page tone, pacing, and whether the document feels client-ready in PDF form.",
+            "Review whether the highest-priority revision hints should be applied before delivery.",
+        ],
+    }
+
+
 def _build_epub_body_html(
     body: str,
     chart_paths: list[dict[str, str]],
@@ -462,6 +662,7 @@ def _render_document(
     output_dir: Path,
     export_pdf: bool,
     export_epub: bool,
+    reference_context: dict[str, Any],
 ) -> dict[str, Any]:
     """Render one structured nonfiction document."""
     document_metadata = build_metadata(
@@ -550,6 +751,7 @@ def _render_document(
             for items in chart_lookup.values()
             for chart in items
         ],
+        "reference_trace": reference_context,
     }
 
     if export_pdf:
@@ -583,6 +785,14 @@ def _render_document(
         )
         result["epub_path"] = str(epub_path)
 
+    quality_feedback = _infer_document_feedback(
+        document=document,
+        package=package,
+        chart_lookup=chart_lookup,
+        reference_context=reference_context,
+    )
+    result["quality_feedback"] = quality_feedback
+
     quality_props = [
         QualityProperty(
             name="section_count",
@@ -611,6 +821,24 @@ def _render_document(
             pass_delta=1.0,
             fail_delta=0.5,
             detail=f"include_toc={package.include_toc}",
+        ),
+        QualityProperty(
+            name="document_references_consulted",
+            passed=bool(reference_context.get("auto_consulted")),
+            pass_delta=0.5,
+            fail_delta=0.5,
+            detail=(
+                ",".join(reference_context.get("lookup_tools_used", []))
+                if reference_context.get("lookup_tools_used")
+                else "none"
+            ),
+        ),
+        QualityProperty(
+            name="quality_feedback_ready",
+            passed=bool(quality_feedback.get("summary")),
+            pass_delta=0.5,
+            fail_delta=0.5,
+            detail=quality_feedback.get("summary", ""),
         ),
         QualityProperty(
             name="pdf_export",
@@ -856,6 +1084,18 @@ def run(
         output_dir=out_dir,
         export_operational_assets=export_operational_assets,
     )
+    document_reference_context = build_document_reference_context(
+        title=metadata.title,
+        subtitle=metadata.subtitle,
+        profile=package.profile,
+        package_mode=package.package_mode,
+        document_titles=[document.title for document in normalized_documents],
+        section_headings=[
+            section.heading
+            for document in normalized_documents
+            for section in document.sections
+        ],
+    )
 
     rendered_documents = [
         _render_document(
@@ -865,6 +1105,7 @@ def run(
             output_dir=out_dir,
             export_pdf=export_pdf,
             export_epub=export_epub,
+            reference_context=document_reference_context,
         )
         for document in normalized_documents
     ]
@@ -876,6 +1117,7 @@ def run(
         "package_mode": package.package_mode,
         "document_count": len(rendered_documents),
         "documents": rendered_documents,
+        "reference_trace": document_reference_context,
     }
     if marketing_summary is not None:
         result["marketing_summary"] = marketing_summary
@@ -933,11 +1175,17 @@ def run(
             "html_path": primary["html_path"],
             "markdown_path": primary["markdown_path"],
             "chart_paths": primary["chart_paths"],
+            "quality_feedback": primary["quality_feedback"],
         })
         if "pdf_path" in primary:
             result["pdf_path"] = primary["pdf_path"]
         if "epub_path" in primary:
             result["epub_path"] = primary["epub_path"]
+    else:
+        result["quality_feedback"] = _aggregate_nonfiction_feedback(
+            rendered_documents=rendered_documents,
+            reference_context=document_reference_context,
+        )
 
     passing_documents = sum(
         1
@@ -959,6 +1207,17 @@ def run(
             pass_delta=1.0,
             fail_delta=0.0,
             detail=f"profile={package.profile}",
+        ),
+        QualityProperty(
+            name="document_references_consulted",
+            passed=bool(document_reference_context.get("auto_consulted")),
+            pass_delta=0.5,
+            fail_delta=0.5,
+            detail=(
+                ",".join(document_reference_context.get("lookup_tools_used", []))
+                if document_reference_context.get("lookup_tools_used")
+                else "none"
+            ),
         ),
         QualityProperty(
             name="document_quality",
